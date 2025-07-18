@@ -16,6 +16,10 @@ from typing import List, Dict, Optional, Tuple
 import os
 from pathlib import Path
 import pickle
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class GitHubIssuesScraper:
@@ -49,19 +53,39 @@ class GitHubIssuesScraper:
         Returns:
             Tuple of (limit, remaining, reset_timestamp)
         """
-        response = self.session.get(f"{self.BASE_URL}/rate_limit")
-        
-        if response.status_code == 200:
-            data = response.json()
-            core = data['rate']['core']
-            return core['limit'], core['remaining'], core['reset']
-        else:
-            # If we can't check rate limit, return from headers of last request
-            return (
-                int(response.headers.get('X-RateLimit-Limit', 60)),
-                int(response.headers.get('X-RateLimit-Remaining', 0)),
-                int(response.headers.get('X-RateLimit-Reset', 0))
-            )
+        try:
+            response = self.session.get(f"{self.BASE_URL}/rate_limit")
+            
+            if response.status_code == 200:
+                data = response.json()
+                # Handle different response structures
+                if 'rate' in data and 'core' in data['rate']:
+                    core = data['rate']['core']
+                    return core['limit'], core['remaining'], core['reset']
+                elif 'core' in data:
+                    core = data['core']
+                    return core['limit'], core['remaining'], core['reset']
+                else:
+                    # Fallback to headers
+                    return (
+                        int(response.headers.get('X-RateLimit-Limit', 5000 if self.session.headers.get('Authorization') else 60)),
+                        int(response.headers.get('X-RateLimit-Remaining', 50)),
+                        int(response.headers.get('X-RateLimit-Reset', int(time.time()) + 3600))
+                    )
+            else:
+                # If we can't check rate limit, return from headers
+                return (
+                    int(response.headers.get('X-RateLimit-Limit', 5000 if self.session.headers.get('Authorization') else 60)),
+                    int(response.headers.get('X-RateLimit-Remaining', 50)),
+                    int(response.headers.get('X-RateLimit-Reset', int(time.time()) + 3600))
+                )
+        except Exception as e:
+            # Default values based on authentication status
+            print(f"⚠️  Could not check rate limit: {e}")
+            if self.session.headers.get('Authorization'):
+                return 5000, 1000, int(time.time()) + 3600
+            else:
+                return 60, 30, int(time.time()) + 3600
     
     def wait_for_rate_limit(self, reset_time: int):
         """Wait until rate limit resets"""
