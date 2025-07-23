@@ -1,0 +1,55 @@
+[
+  {
+    "number": 6232,
+    "title": "[Bug] Llama4 fails to run on Python 3.9 (AssertionError)",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nRunning llama 4 with Python 3.9 get AssertionError\n\ne.g.`python -m sglang.launch_server --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct --tp 8 --context-length 65536`\n\nThe error does not occur in python 3.10, 3.11, 3.12.\n\n### Reproduction\n\n#### Python 3.9 (AssertionError)\n\n```bash\nmkdir 3-9-test\ncd 3-9-test\nuv init --python 3.9\nuv add \"sglang[all]>=0.4.6.post3\" setuptools\nexport HF_TOKEN=<token>\nuv run -m sglang.launch_server --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct --tp 8 --context-length 65536 --log-level debug\n\n# Boom!! AssertionError!!\n```\n\n[Error log in python 3.9](https://github.com/user-attachments/files/20160697/python-3-9.log)\n\n\n#### Python 3.10, and etc (This is OK)\n\n```bash\nmkdir 3-10-test\ncd 3-10-test\nuv init --python 3.10\nuv add \"sglang[all]>=0.4.6.post3\" setuptools\nexport HF_TOKEN=<token>\nuv run -m sglang.launch_server --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct --tp 8 --context-length 65536 --log-level debug\n\n# Runs OK\n```\n\n### Environment\n\n#### Python 3.9 (AssertionError)\n\n```\nuv run -m sglang.check_env \nPython: 3.9.2 (default, Mar 20 2025, 02:07:39) [GCC 10.2.1 20210110]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA H100 80GB HBM3\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\nCUDA Driver Version: 550.90.07\nPyTorch: 2.6.0+cu124\nsglang: 0.4.6.post3\nsgl_kernel: 0.1.1\nflashinfer_python: 0.2.5\ntriton: 3.2.0\ntransformers: 4.51.1\ntorchao: 0.11.0\nnumpy: 2.0.2\naiohttp: 3.11.18\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.31.1\ninteregular: 0.3.3\nmodelscope: 1.25.0\norjson: 3.10.18\noutlines: 0.1.11\npackaging: 25.0\npsutil: 7.0.0\npydantic: 2.11.4\npython-multipart: 0.0.20\npyzmq: 26.4.0\nuvicorn: 0.34.2\nuvloop: 0.21.0\nvllm: Module Not Found\nxgrammar: 0.1.19\nopenai: 1.75.0\ntiktoken: 0.9.0\nanthropic: 0.51.0\nlitellm: 1.69.0\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    52-103,156-207  1               N/A\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    52-103,156-207  1               N/A\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    52-103,156-207  1               N/A\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      52-103,156-207  1               N/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nHypervisor vendor: KVM\nulimit soft: 1048576\n```\n\n#### Python 3.10, and etc (This is OK)\n\n```\nuv run -m sglang.check_env\nPython: 3.10.17 (main, Apr  9 2025, 04:03:39) [Clang 20.1.0 ]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA H100 80GB HBM3\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\nCUDA Driver Version: 550.90.07\nPyTorch: 2.6.0+cu124\nsglang: 0.4.6.post3\nsgl_kernel: 0.1.1\nflashinfer_python: 0.2.5\ntriton: 3.2.0\ntransformers: 4.51.1\ntorchao: 0.11.0\nnumpy: 2.2.5\naiohttp: 3.11.18\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.31.1\ninteregular: 0.3.3\nmodelscope: 1.25.0\norjson: 3.10.18\noutlines: 0.1.11\npackaging: 25.0\npsutil: 7.0.0\npydantic: 2.11.4\npython-multipart: 0.0.20\npyzmq: 26.4.0\nuvicorn: 0.34.2\nuvloop: 0.21.0\nvllm: Module Not Found\nxgrammar: 0.1.19\nopenai: 1.75.0\ntiktoken: 0.9.0\nanthropic: 0.51.0\nlitellm: 1.69.0\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    52-103,156-207  1               N/A\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    52-103,156-207  1               N/A\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    52-103,156-207  1               N/A\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      52-103,156-207  1               N/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nHypervisor vendor: KVM\nulimit soft: 1048576\n```",
+    "labels": [
+      "good first issue",
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-12T12:05:57+00:00",
+    "closed_at": "2025-06-15T13:15:12+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6232/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6232"
+  },
+  {
+    "number": 1062,
+    "title": "[Feature] P100/Cuda 6.1 support",
+    "body": "### Motivation\n\nAs per https://github.com/sgl-project/sglang/issues/1059 , P100/pascal/6.1 support is not currently a target. This feature request is an official request to support it. This GPU is the least expensive hardware that will run modern LLMs, and is a common GPU in both academia and common use.\r\n\r\nThis issue was created as the original was locked with the cryptic phrase, \"It makes nonsense for me.\", the meaning of which was not clear in context. This issue is intended to be a place where the community can discuss support for these GPUs, as well as petition for support.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-12T20:29:42+00:00",
+    "closed_at": "2024-08-13T04:31:55+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1062/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1062"
+  }
+]

@@ -1,0 +1,505 @@
+[
+  {
+    "number": 5055,
+    "title": "[Feature] support DeepSeek R1 FP4",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled cc @Edwardf0t1 @kushanam @elfiegg \n\nOptimization is also important on Blackwell\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "inactive",
+      "performance",
+      "quant",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-04T01:11:06+00:00",
+    "closed_at": "2025-06-04T00:19:47+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5055/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5055"
+  },
+  {
+    "number": 4462,
+    "title": "[Bug] fix dsv3 awq issue",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nas titled\n\n### Reproduction\n\nN/A\n\n### Environment\n\nN/A",
+    "labels": [
+      "bug",
+      "high priority",
+      "performance",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-16T05:27:20+00:00",
+    "closed_at": "2025-04-07T02:17:41+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4462/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4462"
+  },
+  {
+    "number": 4434,
+    "title": "[Accuracy] [Online Quantization] Llama 1B FP16/FP8/W8A8_FP8 accuracy",
+    "body": "## Conclusion\nW8A8_FP8 quantization doesn't support online quantization\n\n\n### GSM8K\n\n#### Preparation\n```bash\ncurl -o test.jsonl https://raw.githubusercontent.com/openai/grade-school-math/master/grade_school_math/data/test.jsonl\n\nkubectl cp /Users/bhe/Desktop/oss/data/gsm8k/test.jsonl nfs_host:/shared/public/data/gsm8k/test.jsonl\n```\n\nFP16 Baseline:\n```bash\npython3 -m sglang.launch_server --model /shared/public/models/meta-llama/Llama-3.2-1B-Instruct --trust-remote-code\n\npython3 benchmark/gsm8k/bench_sglang.py --num-shots 8 --num-questions 1319 --parallel 1319\n100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 1319/1319 [00:10<00:00, 121.39it/s]\nAccuracy: 0.396\nInvalid: 0.003\nLatency: 10.905 s\nOutput throughput: 11035.006 token/s\n```\n\n\nFP8\n```bash\npython3 -m sglang.launch_server --model /shared/public/models/meta-llama/Llama-3.2-1B-Instruct --quantization fp8 --trust-remote-code\n\n\npython3 benchmark/gsm8k/bench_sglang.py --num-shots 8 --num-questions 1319 --parallel 1319\n100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 1319/1319 [00:10<00:00, 129.00it/s]\nAccuracy: 0.376\nInvalid: 0.001\nLatency: 10.270 s\nOutput throughput: 11708.710 token/s\n```\n\n\nW8A8_FP8\n```bash\npython3 -m sglang.launch_server --model /shared/public/models/meta-llama/Llama-3.2-1B-Instruct --quantization w8a_fp8 --trust-remote-code\n\npython3 benchmark/gsm8k/bench_sglang.py --num-shots 8 --num-questions 1319 --parallel 1319\n100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 1319/1319 [00:38<00:00, 34.36it/s]\nAccuracy: 0.003\nInvalid: 0.284\nLatency: 38.425 s\nOutput throughput: 17575.022 token/s\n```\n\n### MMLU to be added tonight",
+    "labels": [
+      "bug",
+      "high priority",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-14T18:50:27+00:00",
+    "closed_at": "2025-03-17T07:28:58+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4434/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4434"
+  },
+  {
+    "number": 4351,
+    "title": "Speculative Decoding Fails with AWQ Quantized Model",
+    "body": "Description:\n\nI am facing an issue when using speculative decoding with an AWQ quantized model in sglang. The same configuration works fine with an unquantized model (Llama-3.1-8b-Instruct), but fails when I switch to an AWQ quantized model(Nvidia-Llama-3.1-Nemotron-70B-Instruct-HF-AWQ-INT4).\n\nSetup:\n\nGPUs: NVIDIA L40s (48GB VRAM) x 2\nCUDA Version: 12.8\nPyTorch Version: 2.5.1\nsglang Version: 0.4.3.post2\n\nWorking Configuration (Unquantized Model):\n\n```\nimport requests\nimport os\n\nfrom sglang import assistant_begin, assistant_end\nfrom sglang import assistant, function, gen, system, user\nfrom sglang import image\nfrom sglang import RuntimeEndpoint, set_default_backend\nfrom sglang.srt.utils import load_image\nfrom sglang.test.test_utils import is_in_ci\nfrom sglang.utils import print_highlight, terminate_process, wait_for_server\nos.environ[\"CUDA_VISIBLE_DEVICES\"] = \"0,1\"\n\nif is_in_ci():\n    from sglang.docs.frontend.patch import launch_server_cmd\nelse:\n    from sglang.utils import launch_server_cmd\n\nserver_process, port = launch_server_cmd(\n    \"\"\"python -m sglang.launch_server --model-path /LLM/model/Llama-3.1-8B-Instruct \\\n    --tp 2 --tokenizer-mode auto --mem-fraction-static 0.5 --enable-torch-compile --device cuda \\\n    --speculative-algorithm EAGLE --speculative-draft-model-path /LLM/model/sglang-EAGLE-Llama-3.1-Instruct-8B --speculative-num-steps 2 \\\n    --speculative-eagle-topk 4 --speculative-num-draft-tokens 16 --cuda-graph-max-bs 2 --dtype bfloat16\n\"\"\")\n\nwait_for_server(f\"http://localhost:{port}\")\nprint(f\"Server started on http://localhost:{port}\")\n```\nFailing Configuration (AWQ Quantized Model):\nI replaced the base model with an AWQ quantized model (Nvidia-Llama-3.1-Nemotron-70B-Instruct-HF-AWQ-INT4) using the same configuration. When I run the server, I get the following error:\n\nINFO 03-12 15:30:44 __init__.py:190] Automatically detected platform cuda.\n2025-03-12 15:30:45,824 - INFO - flashinfer.jit: Prebuilt kernels not found, using JIT backend\n[2025-03-12 15:30:46] server_args=ServerArgs(model_path='/raid/LLM/model/Nvidia-Llama-3.1-Nemotron-70B-Instruct-HF-AWQ-INT4', tokenizer_path='/raid/LLM/model/Nvidia-Llama-3.1-Nemotron-70B-Instruct-HF-AWQ-INT4', tokenizer_mode='auto', load_format='auto', trust_remote_code=False, dtype='bfloat16', kv_cache_dtype='auto', quantization_param_path=None, quantization=None, context_length=None, device='cuda', served_model_name='/raid/LLM/model/Nvidia-Llama-3.1-Nemotron-70B-Instruct-HF-AWQ-INT4', chat_template=None, is_embedding=False, revision=None, skip_tokenizer_init=False, host='127.0.0.1', port=30218, mem_fraction_static=0.5, max_running_requests=None, max_total_tokens=None, chunked_prefill_size=-1, max_prefill_tokens=16384, schedule_policy='lpm', schedule_conservativeness=1.0, cpu_offload_gb=0, prefill_only_one_req=True, tp_size=2, stream_interval=1, stream_output=False, random_seed=632040603, constrained_json_whitespace_pattern=None, watchdog_timeout=300, download_dir=None, base_gpu_id=0, log_level='info', log_level_http=None, log_requests=False, show_time_cost=False, enable_metrics=False, decode_log_interval=40, api_key=None, file_storage_pth='sglang_storage', enable_cache_report=False, dp_size=1, load_balance_method='round_robin', ep_size=1, dist_init_addr=None, nnodes=1, node_rank=0, json_model_override_args='{}', lora_paths=None, max_loras_per_batch=8, lora_backend='triton', attention_backend='flashinfer', sampling_backend='flashinfer', grammar_backend='outlines', speculative_draft_model_path='/raid/LLM/model/sglang-EAGLE-Llama-3.1-Instruct-8B', speculative_algorithm='EAGLE', speculative_num_steps=2, speculative_num_draft_tokens=16, speculative_eagle_topk=4, enable_double_sparsity=False, ds_channel_config_path=None, ds_heavy_channel_num=32, ds_heavy_token_num=256, ds_heavy_channel_type='qk', ds_sparse_decode_threshold=4096, disable_radix_cache=True, disable_jump_forward=False, disable_cuda_graph=False, disable_cuda_graph_padding=True, enable_nccl_nvls=False, disable_outlines_disk_cache=False, disable_custom_all_reduce=False, disable_mla=False, disable_overlap_schedule=True, enable_mixed_chunk=False, enable_dp_attention=False, enable_ep_moe=False, enable_torch_compile=True, torch_compile_max_bs=32, cuda_graph_max_bs=2, cuda_graph_bs=None, torchao_config='', enable_nan_detection=False, enable_p2p_check=False, triton_attention_reduce_in_fp32=False, triton_attention_num_kv_splits=8, num_continuous_decode_steps=1, delete_ckpt_after_loading=False, enable_memory_saver=False, allow_auto_truncate=False, return_hidden_states=False, enable_custom_logit_processor=False, tool_call_parser=None, enable_hierarchical_cache=False, enable_flashinfer_mla=False)\n[2025-03-12 15:30:46] Casting torch.float16 to torch.bfloat16.\nINFO 03-12 15:30:46 awq_marlin.py:111] The model is convertible to awq_marlin during runtime. Using awq_marlin kernel.\n/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/transformers/models/auto/image_processing_auto.py:590: FutureWarning: The image_processor_class argument is deprecated and will be removed in v4.42. Please use `slow_image_processor_class`, or `fast_image_processor_class` instead\n  warnings.warn(\nINFO 03-12 15:30:48 __init__.py:190] Automatically detected platform cuda.\n/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/transformers/models/auto/image_processing_auto.py:590: FutureWarning: The image_processor_class argument is deprecated and will be removed in v4.42. Please use `slow_image_processor_class`, or `fast_image_processor_class` instead\n  warnings.warn(\n/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/transformers/models/auto/image_processing_auto.py:590: FutureWarning: The image_processor_class argument is deprecated and will be removed in v4.42. Please use `slow_image_processor_class`, or `fast_image_processor_class` instead\n  warnings.warn(\nINFO 03-12 15:30:48 __init__.py:190] Automatically detected platform cuda.\nINFO 03-12 15:30:48 __init__.py:190] Automatically detected platform cuda.\n2025-03-12 15:30:49,916 - INFO - flashinfer.jit: Prebuilt kernels not found, using JIT backend\n2025-03-12 15:30:49,981 - INFO - flashinfer.jit: Prebuilt kernels not found, using JIT backend\n2025-03-12 15:30:50,001 - INFO - flashinfer.jit: Prebuilt kernels not found, using JIT backend\n[2025-03-12 15:30:50 TP0] Casting torch.float16 to torch.bfloat16.\nINFO 03-12 15:30:50 awq_marlin.py:111] The model is convertible to awq_marlin during runtime. Using awq_marlin kernel.\n[2025-03-12 15:30:50 TP1] Casting torch.float16 to torch.bfloat16.\nINFO 03-12 15:30:50 awq_marlin.py:111] The model is convertible to awq_marlin during runtime. Using awq_marlin kernel.\n[2025-03-12 15:30:50 TP0] Casting torch.float16 to torch.bfloat16.\nINFO 03-12 15:30:50 awq_marlin.py:111] The model is convertible to awq_marlin during runtime. Using awq_marlin kernel.\n[2025-03-12 15:30:50 TP0] Init torch distributed begin.\n[2025-03-12 15:30:50 TP1] Casting torch.float16 to torch.bfloat16.\nINFO 03-12 15:30:50 awq_marlin.py:111] The model is convertible to awq_marlin during runtime. Using awq_marlin kernel.\n[2025-03-12 15:30:50 TP1] Init torch distributed begin.\n[2025-03-12 15:30:50 TP0] sglang is using nccl==2.21.5\n[2025-03-12 15:30:50 TP1] sglang is using nccl==2.21.5\n[2025-03-12 15:30:51 TP1] Load weight begin. avail mem=43.74 GB\n[2025-03-12 15:30:51 TP0] Load weight begin. avail mem=43.74 GB\nLoading safetensors checkpoint shards:   0% Completed | 0/9 [00:00<?, ?it/s]\nLoading safetensors checkpoint shards:  11% Completed | 1/9 [00:00<00:04,  1.77it/s]\nLoading safetensors checkpoint shards:  22% Completed | 2/9 [00:01<00:05,  1.39it/s]\nLoading safetensors checkpoint shards:  33% Completed | 3/9 [00:02<00:04,  1.36it/s]\nLoading safetensors checkpoint shards:  44% Completed | 4/9 [00:02<00:03,  1.37it/s]\nLoading safetensors checkpoint shards:  56% Completed | 5/9 [00:03<00:02,  1.37it/s]\nLoading safetensors checkpoint shards:  67% Completed | 6/9 [00:04<00:02,  1.38it/s]\nLoading safetensors checkpoint shards:  78% Completed | 7/9 [00:05<00:01,  1.39it/s]\nLoading safetensors checkpoint shards:  89% Completed | 8/9 [00:06<00:00,  1.13it/s]\nLoading safetensors checkpoint shards: 100% Completed | 9/9 [00:07<00:00,  1.16it/s]\nLoading safetensors checkpoint shards: 100% Completed | 9/9 [00:07<00:00,  1.27it/s]\n\n[2025-03-12 15:31:00 TP1] Load weight end. type=LlamaForCausalLM, dtype=torch.bfloat16, avail mem=25.09 GB\n[2025-03-12 15:31:01 TP0] Load weight end. type=LlamaForCausalLM, dtype=torch.bfloat16, avail mem=25.09 GB\n[2025-03-12 15:31:01 TP0] KV Cache is allocated. K size: 1.61 GB, V size: 1.61 GB.\n[2025-03-12 15:31:01 TP1] KV Cache is allocated. K size: 1.61 GB, V size: 1.61 GB.\n[2025-03-12 15:31:01 TP0] Memory pool end. avail mem=20.65 GB\n[2025-03-12 15:31:01 TP1] Memory pool end. avail mem=20.65 GB\n[2025-03-12 15:31:01 TP0] Capture cuda graph begin. This can take up to several minutes.\n  0%|          | 0/2 [00:00<?, ?it/s][2025-03-12 15:31:01 TP1] Capture cuda graph begin. This can take up to several minutes.\n2025-03-12 15:31:02,528 - INFO - flashinfer.jit: Loading JIT ops: quantization\n2025-03-12 15:31:02,537 - INFO - flashinfer.jit: Finished loading JIT ops: quantization\n2025-03-12 15:31:02,542 - INFO - flashinfer.jit: Loading JIT ops: batch_prefill_with_kv_cache_dtype_q_bf16_dtype_kv_bf16_dtype_o_bf16_dtype_idx_i32_head_dim_qk_128_head_dim_vo_128_posenc_0_use_swa_False_use_logits_cap_False_f16qk_False\n2025-03-12 15:31:02,559 - INFO - flashinfer.jit: Finished loading JIT ops: batch_prefill_with_kv_cache_dtype_q_bf16_dtype_kv_bf16_dtype_o_bf16_dtype_idx_i32_head_dim_qk_128_head_dim_vo_128_posenc_0_use_swa_False_use_logits_cap_False_f16qk_False\n2025-03-12 15:31:02,569 - INFO - flashinfer.jit: Loading JIT ops: quantization\n2025-03-12 15:31:02,578 - INFO - flashinfer.jit: Finished loading JIT ops: quantization\n2025-03-12 15:31:02,583 - INFO - flashinfer.jit: Loading JIT ops: batch_prefill_with_kv_cache_dtype_q_bf16_dtype_kv_bf16_dtype_o_bf16_dtype_idx_i32_head_dim_qk_128_head_dim_vo_128_posenc_0_use_swa_False_use_logits_cap_False_f16qk_False\n2025-03-12 15:31:02,598 - INFO - flashinfer.jit: Finished loading JIT ops: batch_prefill_with_kv_cache_dtype_q_bf16_dtype_kv_bf16_dtype_o_bf16_dtype_idx_i32_head_dim_qk_128_head_dim_vo_128_posenc_0_use_swa_False_use_logits_cap_False_f16qk_False\n100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 2/2 [00:25<00:00, 12.92s/it]\n[2025-03-12 15:31:27 TP1] Registering 322 cuda graph addresses\n[2025-03-12 15:31:27 TP0] Registering 322 cuda graph addresses\n[2025-03-12 15:31:27 TP1] Capture cuda graph end. Time elapsed: 25.85 s\n[2025-03-12 15:31:27 TP0] Capture cuda graph end. Time elapsed: 25.85 s\n[2025-03-12 15:31:28 TP0] Casting torch.float16 to torch.bfloat16.\n[2025-03-12 15:31:28 TP0] Init torch distributed begin.\n[2025-03-12 15:31:28 TP1] Casting torch.float16 to torch.bfloat16.\n[2025-03-12 15:31:28 TP1] Init torch distributed begin.\n[2025-03-12 15:31:28 TP0] Load weight begin. avail mem=19.89 GB\n[2025-03-12 15:31:28 TP1] Load weight begin. avail mem=19.89 GB\nLoading pt checkpoint shards:   0% Completed | 0/1 [00:00<?, ?it/s]\n/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/model_loader/weight_utils.py:447: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.\n  state = torch.load(bin_file, map_location=\"cpu\")\n/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/model_loader/weight_utils.py:447: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.\n  state = torch.load(bin_file, map_location=\"cpu\")\n[2025-03-12 15:31:29 TP1] Load weight end. type=LlamaForCausalLMEagle, dtype=torch.bfloat16, avail mem=18.64 GB\nLoading pt checkpoint shards: 100% Completed | 1/1 [00:00<00:00,  1.03it/s]\nLoading pt checkpoint shards: 100% Completed | 1/1 [00:00<00:00,  1.03it/s]\n\n[2025-03-12 15:31:29 TP0] Load weight end. type=LlamaForCausalLMEagle, dtype=torch.bfloat16, avail mem=18.64 GB\n[2025-03-12 15:31:29 TP0] KV Cache is allocated. K size: 0.02 GB, V size: 0.02 GB.\n[2025-03-12 15:31:29 TP1] KV Cache is allocated. K size: 0.02 GB, V size: 0.02 GB.\n[2025-03-12 15:31:29 TP0] Memory pool end. avail mem=18.56 GB\n[2025-03-12 15:31:29 TP1] Memory pool end. avail mem=18.56 GB\n[2025-03-12 15:31:29 TP1] Capture cuda graph begin. This can take up to several minutes.\n[2025-03-12 15:31:29 TP0] Capture cuda graph begin. This can take up to several minutes.\n  0%|          | 0/2 [00:00<?, ?it/s]2025-03-12 15:31:30,183 - INFO - flashinfer.jit: Loading JIT ops: batch_decode_with_kv_cache_dtype_q_bf16_dtype_kv_bf16_dtype_o_bf16_dtype_idx_i32_head_dim_qk_128_head_dim_vo_128_posenc_0_use_swa_False_use_logits_cap_False\n2025-03-12 15:31:30,186 - INFO - flashinfer.jit: Loading JIT ops: batch_decode_with_kv_cache_dtype_q_bf16_dtype_kv_bf16_dtype_o_bf16_dtype_idx_i32_head_dim_qk_128_head_dim_vo_128_posenc_0_use_swa_False_use_logits_cap_False\n2025-03-12 15:31:30,202 - INFO - flashinfer.jit: Finished loading JIT ops: batch_decode_with_kv_cache_dtype_q_bf16_dtype_kv_bf16_dtype_o_bf16_dtype_idx_i32_head_dim_qk_128_head_dim_vo_128_posenc_0_use_swa_False_use_logits_cap_False\n2025-03-12 15:31:30,251 - INFO - flashinfer.jit: Finished loading JIT ops: batch_decode_with_kv_cache_dtype_q_bf16_dtype_kv_bf16_dtype_o_bf16_dtype_idx_i32_head_dim_qk_128_head_dim_vo_128_posenc_0_use_swa_False_use_logits_cap_False\n[2025-03-12 15:31:30 TP1] Registering 0 cuda graph addresses\n  0%|          | 0/2 [00:00<?, ?it/s]\n[2025-03-12 15:31:30 TP0] Registering 0 cuda graph addresses\n[2025-03-12 15:31:30 TP1] Scheduler hit an exception: Traceback (most recent call last):\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_draft_cuda_graph_runner.py\", line 80, in __init__\n    self.capture()\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_draft_cuda_graph_runner.py\", line 101, in capture\n    CudaGraphRunner.capture(self)\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/model_executor/cuda_graph_runner.py\", line 304, in capture\n    ) = self.capture_one_batch_size(bs, forward)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_draft_cuda_graph_runner.py\", line 164, in capture_one_batch_size\n    run_once()\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_draft_cuda_graph_runner.py\", line 154, in run_once\n    ret = self.eagle_worker.draft_forward(forward_batch)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_worker.py\", line 260, in draft_forward\n    logits_output = self.model_runner.model.forward(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/models/llama.py\", line 393, in forward\n    hidden_states = self.model(input_ids, positions, forward_batch, input_embeds)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/models/llama_eagle.py\", line 88, in forward\n    hidden_states = self.fc(\n                    ^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/nn/modules/linear.py\", line 125, in forward\n    return F.linear(input, self.weight, self.bias)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n**RuntimeError: mat1 and mat2 shapes cannot be multiplied (4x12288 and 8192x4096)**\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/managers/scheduler.py\", line 1816, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/managers/scheduler.py\", line 252, in __init__\n    self.draft_worker = EAGLEWorker(\n                        ^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_worker.py\", line 99, in __init__\n    self.init_cuda_graphs()\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_worker.py\", line 110, in init_cuda_graphs\n    self.cuda_graph_runner = EAGLEDraftCudaGraphRunner(self)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_draft_cuda_graph_runner.py\", line 82, in __init__\n    raise Exception(\nException: Capture cuda graph failed: mat1 and mat2 shapes cannot be multiplied (4x12288 and 8192x4096)\nPossible solutions:\n1. disable cuda graph by --disable-cuda-graph\n2. set --mem-fraction-static to a smaller value (e.g., 0.8 or 0.7)\n3. disable torch compile by not using --enable-torch-compile\n4. specify --dtype to the same dtype (e.g. bfloat16)\nOpen an issue on GitHub https://github.com/sgl-project/sglang/issues/new/choose \n\n\n[2025-03-12 15:31:30 TP0] Scheduler hit an exception: Traceback (most recent call last):\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_draft_cuda_graph_runner.py\", line 80, in __init__\n    self.capture()\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_draft_cuda_graph_runner.py\", line 101, in capture\n    CudaGraphRunner.capture(self)\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/model_executor/cuda_graph_runner.py\", line 304, in capture\n    ) = self.capture_one_batch_size(bs, forward)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_draft_cuda_graph_runner.py\", line 164, in capture_one_batch_size\n    run_once()\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_draft_cuda_graph_runner.py\", line 154, in run_once\n    ret = self.eagle_worker.draft_forward(forward_batch)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_worker.py\", line 260, in draft_forward\n    logits_output = self.model_runner.model.forward(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/models/llama.py\", line 393, in forward\n    hidden_states = self.model(input_ids, positions, forward_batch, input_embeds)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/models/llama_eagle.py\", line 88, in forward\n    hidden_states = self.fc(\n                    ^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib64/python3.11/site-packages/torch/nn/modules/linear.py\", line 125, in forward\n    return F.linear(input, self.weight, self.bias)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: mat1 and mat2 shapes cannot be multiplied (4x12288 and 8192x4096)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/managers/scheduler.py\", line 1816, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/managers/scheduler.py\", line 252, in __init__\n    self.draft_worker = EAGLEWorker(\n                        ^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_worker.py\", line 99, in __init__\n    self.init_cuda_graphs()\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_worker.py\", line 110, in init_cuda_graphs\n    self.cuda_graph_runner = EAGLEDraftCudaGraphRunner(self)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/speculative/eagle_draft_cuda_graph_runner.py\", line 82, in __init__\n    raise Exception(\nException: Capture cuda graph failed: mat1 and mat2 shapes cannot be multiplied (4x12288 and 8192x4096)\nPossible solutions:\n1. disable cuda graph by --disable-cuda-graph\n2. set --mem-fraction-static to a smaller value (e.g., 0.8 or 0.7)\n3. disable torch compile by not using --enable-torch-compile\n4. specify --dtype to the same dtype (e.g. bfloat16)\nOpen an issue on GitHub https://github.com/sgl-project/sglang/issues/new/choose \n\n\n[rank0]:[W312 15:31:31.952292038 ProcessGroupNCCL.cpp:1250] Warning: WARNING: process group has NOT been destroyed before we destruct ProcessGroupNCCL. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL operations have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4 (function operator())\n[rank1]:[W312 15:31:31.523375542 ProcessGroupNCCL.cpp:1250] Warning: WARNING: process group has NOT been destroyed before we destruct ProcessGroupNCCL. On normal program exit, the application should call destroy_process_group to ensure that any pending NCCL operations have finished in this process. In rare cases this process can exit before this point and block the progress of another member of the process group. This constraint has always been present,  but this warning has only been added since PyTorch 2.4 (function operator())\n[2025-03-12 15:31:32] Rank 0 scheduler is dead. Please check if there are relevant logs.\n[2025-03-12 15:31:33] Exit code: 0\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/launch_server.py\", line 14, in <module>\n    launch_server(server_args)\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/entrypoints/http_server.py\", line 491, in launch_server\n    tokenizer_manager, scheduler_info = _launch_subprocesses(server_args=server_args)\n                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/PycharmProjects/sglang-hosting/venv/lib/python3.11/site-packages/sglang/srt/entrypoints/engine.py\", line 449, in _launch_subprocesses\n    data = scheduler_pipe_readers[i].recv()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib64/python3.11/multiprocessing/connection.py\", line 254, in recv\n    buf = self._recv_bytes()\n          ^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib64/python3.11/multiprocessing/connection.py\", line 434, in _recv_bytes\n    buf = self._recv(4)\n          ^^^^^^^^^^^^^\n  File \"/usr/lib64/python3.11/multiprocessing/connection.py\", line 403, in _recv\n    raise EOFError\nEOFError\n\n\n",
+    "labels": [
+      "inactive",
+      "quant",
+      "speculative-decoding"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-12T21:30:32+00:00",
+    "closed_at": "2025-05-13T00:19:02+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4351/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4351"
+  },
+  {
+    "number": 4338,
+    "title": "[Bug] fix DeepSeek V2/V3 awq",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI tried to integrate the awq dequant from sgl-kernel and found that both the main version and the integrated version have issues with the awq of DeepSeek V2 Coder and DeepSeek V3, which need to be fixed.\n\n```\ncasperhansen/deepseek-coder-v2-instruct-awq\ncognitivecomputations/DeepSeek-V3-AWQ\n```\n\n### Reproduction\n\nN/A\n\n### Environment\n\nN/A",
+    "labels": [
+      "bug",
+      "good first issue",
+      "help wanted",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-12T09:23:32+00:00",
+    "closed_at": "2025-04-08T06:26:05+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4338/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4338"
+  },
+  {
+    "number": 4324,
+    "title": "[Bug] fix gemma-2-2b-it-FP8 accuracy",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nThe accuracy of `neuralmagic/gemma-2-2b-it-FP8` drops from 0.62 to 0.52 in the main branch. It was detected by our nightly CI run. We need to fix this.\n\n```\nneuralmagic/gemma-2-2b-it-FP8 | 0.512 | 0.6\n```\nhttps://github.com/sgl-project/sglang/actions/runs/13800885290\n\n### Reproduction\n\nN/A\n\n### Environment\n\nN/A",
+    "labels": [
+      "bug",
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-12T01:27:58+00:00",
+    "closed_at": "2025-05-21T09:30:43+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4324/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4324"
+  },
+  {
+    "number": 4158,
+    "title": "[Bug] Accuracy issue with SGLang using DeepSeek-R1-AWQ",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nThe inference result of a simple question such as \"9.11 and 9.8 which is greater?\" can often time (~4 out of 5 times) result in progressively meaningless texts as more tokens are being generated.\n\nThe model checkpoint is: https://huggingface.co/cognitivecomputations/DeepSeek-R1-AWQ\n\nSGlang installation from pip install \"sglang[all]>=0.4.3.post4\" --find-links https://flashinfer.ai/whl/cu124/torch2.5/flashinfer-python\n\n\n\n\n### Reproduction\n\npython3 -m sglang.launch_server --model /model_ckpt/DeepSeek-R1-AWQ --trust-remote --tp 8 --dtype float16\n\n### Environment\n\nsglang[all]>=0.4.3.post4\nflashinfer.ai/whl/cu124/torch2.5/flashinfer-python",
+    "labels": [
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-07T04:04:05+00:00",
+    "closed_at": "2025-04-07T06:40:34+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4158/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4158"
+  },
+  {
+    "number": 4083,
+    "title": "[Bug] cuda kernel illegal and  GPTQMarlinMoEMethod.apply() got an unexpected keyword argument 'correction_bias'",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI test the model(OPEA/DeepSeek-R1-int4-gptq-sym-inc from HF) with the excellent sglang and two nodes(2 x 8X80G A100). \n\nCOMMANDS:\n**python3 -m sglang.launch_server --model-path /data/LM/hf/DeepSeek-R1-int4-gptq-sym-inc --tp 16 --dist-init-addr xx.yy.zz.210:25000 --nnodes 2 --node-rank 0 --trust-remote-code --host 0.0.0.0 --port 30000** \nand \n**python3 -m sglang.launch_server --model-path /data/LM/hf/DeepSeek-R1-int4-gptq-sym-inc --tp 16 --dist-init-addr xx.yy.zz..210:25000 --nnodes 2 --node-rank 1 --trust-remote-code**\n\nThen get the first error: **RuntimeError: CUDA error: an illegal memory access was encountered**\n\n[2025-03-05 04:48:02 TP3] Scheduler hit an exception: Traceback (most recent call last):\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/managers/scheduler.py\", line 1816, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/managers/scheduler.py\", line 240, in __init__\n    self.tp_worker = TpWorkerClass(\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/managers/tp_worker_overlap_thread.py\", line 63, in __init__\n    self.worker = TpModelWorker(server_args, gpu_id, tp_rank, dp_rank, nccl_port)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/managers/tp_worker.py\", line 68, in __init__\n    self.model_runner = ModelRunner(\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/model_executor/model_runner.py\", line 195, in __init__\n    self.load_model()\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/model_executor/model_runner.py\", line 318, in load_model\n    self.model = get_model(\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/model_loader/__init__.py\", line 22, in get_model\n    return loader.load_model(\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/model_loader/loader.py\", line 362, in load_model\n    model.load_weights(self._get_all_weights(model_config, model))\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/models/deepseek_v2.py\", line 999, in load_weights\n    self_attn.w_vc = w_vc.contiguous().transpose(1, 2)\nRuntimeError: CUDA error: an illegal memory access was encountered\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n\nI add **--disable-mla --disable-cuda-graph** to the end of commands, the get the second error: **TypeError: GPTQMarlinMoEMethod.apply() got an unexpected keyword argument 'correction_bias'**\n\n   File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/managers/tp_worker_overlap_thread.py\", line 109, in forward_thread_func\n    self.forward_thread_func_()\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\n    return func(*args, **kwargs)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/managers/tp_worker_overlap_thread.py\", line 140, in forward_thread_func_\n    logits_output, next_token_ids = self.worker.forward_batch_generation(\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/managers/tp_worker.py\", line 164, in forward_batch_generation\n    logits_output = self.model_runner.forward(forward_batch)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/model_executor/model_runner.py\", line 796, in forward\n    return self.forward_extend(forward_batch)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/model_executor/model_runner.py\", line 761, in forward_extend\n    return self.model.forward(\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\n    return func(*args, **kwargs)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/models/deepseek_v2.py\", line 874, in forward\n    hidden_states = self.model(input_ids, positions, forward_batch)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/models/deepseek_v2.py\", line 835, in forward\n    hidden_states, residual = layer(\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/models/deepseek_v2.py\", line 790, in forward\n    hidden_states = self.mlp(hidden_states)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/models/deepseek_v2.py\", line 177, in forward\n    self.experts(hidden_states=hidden_states, router_logits=router_logits)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1736, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1747, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/data/home/xxyyzz/miniconda3/envs/vllm/lib/python3.10/site-packages/sglang/srt/layers/moe/fused_moe_triton/layer.py\", line 589, in forward\n    final_hidden_states = self.quant_method.apply(\nTypeError: GPTQMarlinMoEMethod.apply() got an unexpected keyword argument 'correction_bias'\n\nI can successfully run the DeepSeek-R1-bf16 model and a QWen2 gptq model from HF with the same env.\n\n\n\n\n### Reproduction\n\nTow nodes(A100 80G) with 8 cards each. The model is downloaded from huggingface.co, OPEA/DeepSeek-R1-int4-gptq-sym-inc.\n\n==command on master node==\n**python3 -m sglang.launch_server --model-path /data/LM/hf/DeepSeek-R1-int4-gptq-sym-inc --tp 16 --dist-init-addr xx.yy.zz.210:25000 --nnodes 2 --node-rank 0 --trust-remote-code --host 0.0.0.0 --port 30000** \n\n==command on worker node==\n**python3 -m sglang.launch_server --model-path /data/LM/hf/DeepSeek-R1-int4-gptq-sym-inc --tp 16 --dist-init-addr xx.yy.zz..210:25000 --nnodes 2 --node-rank 1 --trust-remote-code**\n\n==after cuda kernel error==\nI add **--disable-mla --disable-cuda-graph** to the end of above commands, then get error=>\nTypeError: GPTQMarlinMoEMethod.apply() got an unexpected keyword argument 'correction_bias'\n\n### Environment\n\n2025-03-05 06:31:56.740313: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.\n2025-03-05 06:31:56.762041: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\nWARNING: All log messages before absl::InitializeLog() is called are written to STDERR\nE0000 00:00:1741156316.778497 3200844 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\nE0000 00:00:1741156316.783735 3200844 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n2025-03-05 06:31:56.802124: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.\nTo enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.\nINFO 03-05 06:31:58 __init__.py:190] Automatically detected platform cuda.\nPython: 3.10.15 (main, Oct  3 2024, 07:27:34) [GCC 11.2.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA A100-SXM4-80GB\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 8.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.99\nCUDA Driver Version: 550.127.08\nPyTorch: 2.5.1+cu124\nsglang: 0.4.3.post2\nsgl_kernel: 0.0.3.post6\nflashinfer: 0.2.2.post1+cu124torch2.5\ntriton: 3.1.0\ntransformers: 4.48.3\ntorchao: 0.9.0\nnumpy: 1.26.0\naiohttp: 3.11.11\nfastapi: 0.115.6\nhf_transfer: 0.1.9\nhuggingface_hub: 0.27.1\ninteregular: 0.3.3\nmodelscope: 1.21.0\norjson: 3.10.15\npackaging: 24.2\npsutil: 6.1.1\npydantic: 2.10.5\nmultipart: 0.0.20\nzmq: 26.2.1\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.7.2\nopenai: 1.61.1\nanthropic: 0.49.0\ndecord: 0.6.0\nNVIDIA Topology:\n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    NIC0    NIC1    NIC2    NIC3    NIC4    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV12    NV12    NV12    NV12    NV12    NV12    NV12    NODE    NODE    PXB     NODE    SYS     0-35,72-107     0               N/A\nGPU1    NV12     X      NV12    NV12    NV12    NV12    NV12    NV12    NODE    NODE    PXB     NODE    SYS     0-35,72-107     0               N/A\nGPU2    NV12    NV12     X      NV12    NV12    NV12    NV12    NV12    NODE    NODE    NODE    PXB     SYS     0-35,72-107     0               N/A\nGPU3    NV12    NV12    NV12     X      NV12    NV12    NV12    NV12    NODE    NODE    NODE    PXB     SYS     0-35,72-107     0               N/A\nGPU4    NV12    NV12    NV12    NV12     X      NV12    NV12    NV12    SYS     SYS     SYS     SYS     NODE    36-71,108-143   1               N/A\nGPU5    NV12    NV12    NV12    NV12    NV12     X      NV12    NV12    SYS     SYS     SYS     SYS     NODE    36-71,108-143   1               N/A\nGPU6    NV12    NV12    NV12    NV12    NV12    NV12     X      NV12    SYS     SYS     SYS     SYS     NODE    36-71,108-143   1               N/A\nGPU7    NV12    NV12    NV12    NV12    NV12    NV12    NV12     X      SYS     SYS     SYS     SYS     NODE    36-71,108-143   1               N/A\nNIC0    NODE    NODE    NODE    NODE    SYS     SYS     SYS     SYS      X      PIX     NODE    NODE    SYS\nNIC1    NODE    NODE    NODE    NODE    SYS     SYS     SYS     SYS     PIX      X      NODE    NODE    SYS\nNIC2    PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS     NODE    NODE     X      NODE    SYS\nNIC3    NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     NODE    NODE    NODE     X      SYS\nNIC4    SYS     SYS     SYS     SYS     NODE    NODE    NODE    NODE    SYS     SYS     SYS     SYS      X\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_0\n  NIC1: mlx5_1\n  NIC2: mlx5_2\n  NIC3: mlx5_3\n  NIC4: mlx5_bond_0\n\n\nulimit soft: 1024\n",
+    "labels": [
+      "quant",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-05T06:47:58+00:00",
+    "closed_at": "2025-03-16T07:43:21+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4083/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4083"
+  },
+  {
+    "number": 4028,
+    "title": "[Bug] Config file not found when use NVIDIA_H20-3e",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nWhen I use H20 141G, the device name is NVIDIA_H20-3e\uff0csglang logs:\n\nUsing default W8A8 Block FP8 kernel config. Performance might be sub-optimal! Config file not found at /sgl-workspace/sglang/python/sglang/srt/layers/quantization/configs/N=7168,K=2048,device_name=NVIDIA_H20-3e,dtype=fp8_w8a8,block_shape=[128, 128].json\n\nUsing default MoE config. Performance might be sub-optimal! Config file not found at /sgl-workspace/sglang/python/sglang/srt/layers/moe/fused_moe_triton/configs/E=256,N=256,device_name=NVIDIA_H20-3e,dtype=fp8_w8a8,block_shape=[128, 128].json\n\nI am looking forward to anyones replay! Thanks.\n\n### Reproduction\n\npython3 -m sglang.launch_server --model-path /data/DeepSeek-R1 --served-model-name DeepSeek-R1 --tp 8 --trust-remote-code --port 30000\n\n### Environment\n\nlmsysorg-sglang:v0.4.2-cu124\n\nThe latest version of sglang also has not the config file to support H20 141G nvidia device",
+    "labels": [
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-03T12:12:14+00:00",
+    "closed_at": "2025-03-05T03:29:07+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4028/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4028"
+  },
+  {
+    "number": 4018,
+    "title": "[Bug] KeyError: 'model.layers.0.mlp.down_proj.weight_scale_inv' when run deepseek 671b with 64 RTX 4090 GPU",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nrun deepseek r1 671b with 8 nodes,each nodes with 8 rtx4090 GPU,\nthen follow this problem delete [quantization_config](https://github.com/sgl-project/sglang/issues/3491#issuecomment-2650779851) \n\n![Image](https://github.com/user-attachments/assets/1990c4e7-cfac-4ef1-9d83-c8a27fb6c00a)\n\n### Reproduction\n\nrun 8 nodes one by one:\nexport GLOO_SOCKET_IFNAME=bond0.1593\nexport NCCL_SOCKET_IFNAME=bond0.1593\nexport NCCL_DEBUG=WARN\nexport NCCL_IB_DISABLE=1\n(python3 -m sglang.launch_server --model-path /mnt/DeepSeek-R1 --tp 64 --dist-init-addr 10.7.20.14:5000 --nnodes 8 --node-rank 0 --trust-remote-code  &)\n\n### Environment\n\nCUDA 12.4 with follow pkg installed\nroot@localhost:~# pip list\nPackage                           Version\n--------------------------------- -------------------------\nabsl-py                           2.1.0\naccelerate                        1.4.0\naddict                            2.4.0\naiofiles                          23.2.1\naiohappyeyeballs                  2.4.6\naiohttp                           3.11.12\naiohttp-cors                      0.7.0\naiosignal                         1.3.2\nairportsdata                      20241001\nannotated-types                   0.7.0\nanthropic                         0.46.0\nantlr4-python3-runtime            4.7.2\nanyio                             4.8.0\nastor                             0.8.1\nasttokens                         3.0.0\nasync-timeout                     5.0.1\nattrs                             25.1.0\nBabel                             2.8.0\nblake3                            1.0.4\nblinker                           1.4\ncachetools                        5.5.1\ncertifi                           2020.6.20\nchardet                           4.0.0\ncharset-normalizer                3.4.1\nclick                             8.0.3\ncloud-init                        23.2.2\ncloudpickle                       3.1.1\ncolorama                          0.4.4\ncolorful                          0.5.6\ncompressed-tensors                0.9.1\nconfigobj                         5.0.6\ncontourpy                         1.3.1\ncryptography                      3.4.8\ncuda-bindings                     12.8.0\ncuda-python                       12.8.0\ncycler                            0.12.1\ndatasets                          3.2.0\ndbus-python                       1.2.18\ndecorator                         5.1.1\ndecord                            0.6.0\ndepyf                             0.18.0\ndill                              0.3.8\ndiskcache                         5.6.3\ndistlib                           0.3.9\ndistro                            1.7.0\ndistro-info                       1.1+ubuntu0.1\neditdistance                      0.8.1\neinops                            0.8.1\nexceptiongroup                    1.2.2\nexecuting                         2.2.0\nfastapi                           0.115.8\nffmpy                             0.5.0\nfilelock                          3.17.0\nflashinfer-python                 0.2.1.post2+cu124torch2.5\nfonttools                         4.56.0\nfrozenlist                        1.5.0\nfsspec                            2024.9.0\ngguf                              0.10.0\ngoogle-api-core                   2.24.1\ngoogle-auth                       2.38.0\ngoogleapis-common-protos          1.67.0\ngradio                            5.18.0\ngradio_client                     1.7.2\ngrpcio                            1.70.0\nh11                               0.14.0\nhf_transfer                       0.1.9\nhttpcore                          1.0.7\nhttplib2                          0.20.2\nhttptools                         0.6.4\nhttpx                             0.28.1\nhuggingface-hub                   0.28.1\nidna                              3.3\nimportlib_metadata                8.6.1\niniconfig                         2.0.0\ninteregular                       0.3.3\nipython                           8.32.0\njedi                              0.19.2\njeepney                           0.7.1\njieba                             0.42.1\nJinja2                            3.1.5\njiter                             0.8.2\njoblib                            1.4.2\njsonlines                         4.0.0\njsonpatch                         1.32\njsonpointer                       2.0\njsonschema                        4.23.0\njsonschema-specifications         2024.10.1\nkeyring                           23.5.0\nkiwisolver                        1.4.8\nlangdetect                        1.0.9\nlark                              1.2.2\nlatex2sympy2                      1.9.1\nlaunchpadlib                      1.10.16\nlazr.restfulclient                0.14.4\nlazr.uri                          1.0.6\nlitellm                           1.61.8\nlm-format-enforcer                0.10.10\nlxml                              5.3.1\nmarkdown-it-py                    3.0.0\nMarkupSafe                        2.0.1\nmatplotlib                        3.10.0\nmatplotlib-inline                 0.1.7\nmdurl                             0.1.2\nmistral_common                    1.5.3\nmodelscope                        1.23.0\nmore-itertools                    8.10.0\nmpmath                            1.3.0\nmsgpack                           1.1.0\nmsgspec                           0.19.0\nmultidict                         6.1.0\nmultiprocess                      0.70.16\nnarwhals                          1.28.0\nnest-asyncio                      1.6.0\nnetifaces                         0.11.0\nnetworkx                          3.4.2\nninja                             1.11.1.3\nnltk                              3.9.1\nnumpy                             1.26.4\nnvidia-cublas-cu12                12.4.5.8\nnvidia-cuda-cupti-cu12            12.4.127\nnvidia-cuda-nvrtc-cu12            12.4.127\nnvidia-cuda-runtime-cu12          12.4.127\nnvidia-cudnn-cu12                 9.1.0.70\nnvidia-cufft-cu12                 11.2.1.3\nnvidia-curand-cu12                10.3.5.147\nnvidia-cusolver-cu12              11.6.1.9\nnvidia-cusparse-cu12              12.3.1.170\nnvidia-ml-py                      12.570.86\nnvidia-nccl-cu12                  2.21.5\nnvidia-nvjitlink-cu12             12.4.127\nnvidia-nvtx-cu12                  12.4.127\noauthlib                          3.2.0\nopenai                            1.63.2\nopencensus                        0.11.4\nopencensus-context                0.1.3\nopencv-python-headless            4.11.0.86\norjson                            3.10.15\noutlines                          0.1.11\noutlines_core                     0.1.26\npackaging                         24.2\npandas                            2.2.3\nparso                             0.8.4\npartial-json-parser               0.2.1.1.post5\npexpect                           4.9.0\npillow                            11.1.0\npip                               22.0.2\nplatformdirs                      4.3.6\nplotly                            6.0.0\npluggy                            1.5.0\nply                               3.11\nportalocker                       3.1.1\nprometheus_client                 0.21.1\nprometheus-fastapi-instrumentator 7.0.2\nprompt_toolkit                    3.0.50\npropcache                         0.2.1\nproto-plus                        1.26.0\nprotobuf                          5.29.3\npsutil                            7.0.0\nptyprocess                        0.7.0\npure_eval                         0.2.3\npy-cpuinfo                        9.0.0\npy-spy                            0.4.0\npyarrow                           19.0.1\npyasn1                            0.6.1\npyasn1_modules                    0.4.1\npybind11                          2.13.6\npycountry                         24.6.1\npydantic                          2.10.6\npydantic_core                     2.27.2\npydub                             0.25.1\nPygments                          2.19.1\nPyGObject                         3.42.1\nPyJWT                             2.3.0\nPympler                           1.1\npyparsing                         2.4.7\npyrsistent                        0.18.1\npyserial                          3.5\npytest                            8.3.4\npython-apt                        2.4.0+ubuntu2\npython-dateutil                   2.9.0.post0\npython-dotenv                     1.0.1\npython-multipart                  0.0.20\npytz                              2022.1\nPyYAML                            5.4.1\npyzmq                             26.2.1\nray                               2.42.1\nreferencing                       0.36.2\nregex                             2024.11.6\nrequests                          2.32.3\nrequests-toolbelt                 1.0.0\nrich                              13.9.4\nrouge-chinese                     1.0.3\nrouge-score                       0.1.2\nrpds-py                           0.22.3\nrsa                               4.9\nruff                              0.9.7\nsacrebleu                         2.5.1\nsafehttpx                         0.1.6\nsafetensors                       0.5.2\nscikit-learn                      1.6.1\nscipy                             1.15.2\nseaborn                           0.13.2\nSecretStorage                     3.3.1\nsemantic-version                  2.10.0\nsentencepiece                     0.2.0\nsetproctitle                      1.3.4\nsetuptools                        69.5.1\nsgl-kernel                        0.0.3.post6\nsglang                            0.4.3.post2\nshellingham                       1.5.4\nsimple-ddl-parser                 1.7.1\nsimplejson                        3.20.1\nsix                               1.16.0\nsmart-open                        7.1.0\nsniffio                           1.3.1\nsortedcontainers                  2.4.0\nsse-starlette                     2.2.1\nssh-import-id                     5.11\nstack-data                        0.6.3\nstarlette                         0.45.3\nsympy                             1.13.1\nsystemd-python                    234\ntabulate                          0.9.0\nthreadpoolctl                     3.5.0\ntiktoken                          0.9.0\ntokenizers                        0.21.0\ntomli                             2.2.1\ntomlkit                           0.13.2\ntorch                             2.5.1\ntorchao                           0.8.0\ntorchaudio                        2.5.1\ntorchvision                       0.20.1\ntqdm                              4.67.1\ntraitlets                         5.14.3\ntransformers                      4.48.3\ntransformers-stream-generator     0.0.5\ntriton                            3.1.0\ntyper                             0.15.1\ntyping_extensions                 4.12.2\ntzdata                            2025.1\nubuntu-drivers-common             0.0.0\nunattended-upgrades               0.1\nurllib3                           1.26.5\nuvicorn                           0.34.0\nuvloop                            0.21.0\nvirtualenv                        20.29.2\nvllm                              0.7.2\nwadllib                           1.3.6\nwatchfiles                        1.0.4\nwcwidth                           0.2.13\nwebsockets                        15.0\nwheel                             0.37.1\nword2number                       1.1\nwrapt                             1.17.2\nxformers                          0.0.28.post3\nxgrammar                          0.1.10\nxkit                              0.0.0\nxxhash                            3.5.0\nyarl                              1.18.3\nzipp                              3.21.0\n",
+    "labels": [
+      "help wanted",
+      "inactive",
+      "quant",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-03T09:03:05+00:00",
+    "closed_at": "2025-05-22T00:19:08+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4018/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4018"
+  },
+  {
+    "number": 3476,
+    "title": "[Bug] TypeError: AWQMoEMethod.create_weights() missing 1 required positional argument: 'intermediate_size_per_partition'",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n```\n[2025-02-10 13:35:43 TP3] Scheduler hit an exception: Traceback (most recent call last):\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 1787, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 240, in __init__\n    self.tp_worker = TpWorkerClass(\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker_overlap_thread.py\", line 63, in __init__\n    self.worker = TpModelWorker(server_args, gpu_id, tp_rank, dp_rank, nccl_port)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker.py\", line 68, in __init__\n    self.model_runner = ModelRunner(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 186, in __init__\n    self.load_model()\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 307, in load_model\n    self.model = get_model(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_loader/__init__.py\", line 22, in get_model\n    return loader.load_model(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_loader/loader.py\", line 357, in load_model\n    model = _initialize_model(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_loader/loader.py\", line 138, in _initialize_model\n    return model_class(\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 837, in __init__\n    self.model = DeepseekV2Model(config, quant_config)\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 798, in __init__\n    [\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 799, in <listcomp>\n    DeepseekV2DecoderLayer(\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 729, in __init__\n    self.mlp = DeepseekV2MoE(config=config, quant_config=quant_config)\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 146, in __init__\n    self.experts = MoEImpl(\n  File \"/sgl-workspace/sglang/python/sglang/srt/layers/moe/fused_moe_triton/layer.py\", line 297, in __init__\n    self.quant_method.create_weights(\nTypeError: AWQMoEMethod.create_weights() missing 1 required positional argument: 'intermediate_size_per_partition'\n```\n\n### Reproduction\n\n```\ndocker run --rm --gpus all --shm-size 32g -p 30000:30000 -v /storage/nfs2/ModelHub/:/models --ipc=host lmsysorg/sglang:v0.4.2.post4-cu124-srt \\\n    python3 -m sglang.launch_server --model /models/DeepSeek-R1-awq --tp 8 --enable-p2p-check --trust-remote-code --port 30000\n```\n\n### Environment\n\nenv: 8*A800\ncuda driver\uff1aDriver Version: 535.54.03    CUDA Version: 12.2\ndocker images: lmsysorg/sglang:v0.4.2.post4-cu124-srt",
+    "labels": [
+      "quant",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-11T01:29:30+00:00",
+    "closed_at": "2025-02-12T01:48:29+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3476/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3476"
+  },
+  {
+    "number": 3464,
+    "title": "[Bug] TypeError: _ColumnvLLMParameter.load_column_parallel_weight() got an unexpected keyword argument 'tp_rank'",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n```\nCache shape torch.Size([163840, 64])\nLoading safetensors checkpoint shards:   0% Completed | 0/74 [00:00<?, ?it/s]\n[2025-02-09 22:50:08 TP7] Scheduler hit an exception: Traceback (most recent call last):\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 1787, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 240, in __init__\n    self.tp_worker = TpWorkerClass(\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker_overlap_thread.py\", line 63, in __init__\n    self.worker = TpModelWorker(server_args, gpu_id, tp_rank, dp_rank, nccl_port)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker.py\", line 68, in __init__\n    self.model_runner = ModelRunner(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 186, in __init__\n    self.load_model()\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 307, in load_model\n    self.model = get_model(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_loader/__init__.py\", line 22, in get_model\n    return loader.load_model(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_loader/loader.py\", line 362, in load_model\n    model.load_weights(self._get_all_weights(model_config, model))\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 939, in load_weights\n    weight_loader(param, loaded_weight)\n  File \"/sgl-workspace/sglang/python/sglang/srt/layers/linear.py\", line 424, in weight_loader_v2\n    param.load_column_parallel_weight(\nTypeError: _ColumnvLLMParameter.load_column_parallel_weight() got an unexpected keyword argument 'tp_rank'\n```\n\n### Reproduction\n\n```\ndocker run --rm --gpus all --shm-size 32g -p 30000:30000 -v /storage/nfs2/ModelHub/:/models --ipc=host lmsysorg/sglang:v0.4.2.post3-cu125 \\\n    python3 -m sglang.launch_server --model /models/DeepSeek-R1-awq --tp 8 --enable-p2p-check --trust-remote-code --port 30000\n```\n\n### Environment\n\nenv: 8*A800\ncuda driver\uff1aDriver Version: 535.54.03    CUDA Version: 12.2\ndocker images: lmsysorg/sglang:v0.4.2.post3-cu125",
+    "labels": [
+      "help wanted",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-10T07:25:10+00:00",
+    "closed_at": "2025-02-12T14:11:03+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3464/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3464"
+  },
+  {
+    "number": 3303,
+    "title": "[Bug] TypeError: AWQMoEMethod.create_weights() missing 1 required positional argument: 'intermediate_size_per_partition' when running deepseek-r1-awq model",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nWhen running deepseek-r1-awq model:\nTypeError: AWQMoEMethod.create_weights() missing 1 required positional argument: 'intermediate_size_per_partition'\n\n### Reproduction\n\npython3 -m sglang.launch_server --model-path \"cognitivecomputations/DeepSeek-R1-AWQ\" --tp 8 --port 8411 --host 0.0.0.0 --context-length 8192 --trust-remote-code\n\n### Environment\n\nPython: 3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:27:36) [GCC 11.2.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA Graphics Device\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 8.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.2, V12.2.140\nCUDA Driver Version: 470.103.01\nPyTorch: 2.5.1+cu121\nsglang: 0.4.2.post1\nflashinfer: 0.1.6+cu121torch2.4\ntriton: 3.1.0\ntransformers: 4.48.2\ntorchao: 0.8.0\nnumpy: 1.26.4\naiohttp: 3.11.11\nfastapi: 0.115.8\nhf_transfer: 0.1.9\nhuggingface_hub: 0.28.1\ninteregular: 0.3.3\nmodelscope: 1.22.3\norjson: 3.10.15\npackaging: 24.1\npsutil: 6.1.1\npydantic: 2.10.6\nmultipart: 0.0.20\nzmq: 26.2.1\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.7.1\nopenai: 1.61.0\nanthropic: 0.45.2\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    mlx5_0  mlx5_1  mlx5_2  mlx5_3  mlx5_4  mlx5_5  mlx5_6  mlx5_7  CPU Affinity    NUMA Affinity\nGPU0     X      NV8     NV8     NV8     NV8     NV8     NV8     NV8     PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS     0-63,128-191    0\nGPU1    NV8      X      NV8     NV8     NV8     NV8     NV8     NV8     PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS     0-63,128-191    0\nGPU2    NV8     NV8      X      NV8     NV8     NV8     NV8     NV8     NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     0-63,128-191    0\nGPU3    NV8     NV8     NV8      X      NV8     NV8     NV8     NV8     NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     0-63,128-191    0\nGPU4    NV8     NV8     NV8     NV8      X      NV8     NV8     NV8     SYS     SYS     SYS     SYS     PXB     PXB     NODE    NODE    64-127,192-255  1\nGPU5    NV8     NV8     NV8     NV8     NV8      X      NV8     NV8     SYS     SYS     SYS     SYS     PXB     PXB     NODE    NODE    64-127,192-255  1\nGPU6    NV8     NV8     NV8     NV8     NV8     NV8      X      NV8     SYS     SYS     SYS     SYS     NODE    NODE    PXB     PXB     64-127,192-255  1\nGPU7    NV8     NV8     NV8     NV8     NV8     NV8     NV8      X      SYS     SYS     SYS     SYS     NODE    NODE    PXB     PXB     64-127,192-255  1\nmlx5_0  PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS      X      PIX     NODE    NODE    SYS     SYS     SYS     SYS\nmlx5_1  PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS     PIX      X      NODE    NODE    SYS     SYS     SYS     SYS\nmlx5_2  NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     NODE    NODE     X      PIX     SYS     SYS     SYS     SYS\nmlx5_3  NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     NODE    NODE    PIX      X      SYS     SYS     SYS     SYS\nmlx5_4  SYS     SYS     SYS     SYS     PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS      X      PIX     NODE    NODE\nmlx5_5  SYS     SYS     SYS     SYS     PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS     PIX      X      NODE    NODE\nmlx5_6  SYS     SYS     SYS     SYS     NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     NODE    NODE     X      PIX\nmlx5_7  SYS     SYS     SYS     SYS     NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     NODE    NODE    PIX      X \n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nulimit soft: 1000000",
+    "labels": [
+      "help wanted",
+      "inactive",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-05T00:45:19+00:00",
+    "closed_at": "2025-04-13T00:43:14+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3303/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3303"
+  },
+  {
+    "number": 3007,
+    "title": "[Feature] FP8 weight only w8a16 quantization native support",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nHi,\n\nI was using VLLM for inference and I am using A10 GPU which doesnt have w8a8 fp8 support. But when I use (without quantization beforehand)\n\n`\n./vllm_docker.sh meta-llama/Llama-3.1-8B-Instruct --quantization fp8\n`\n\nthe server starts with \n\n> Your GPU does not have native support for FP8 computation but FP8 quantization is being used. Weight-only FP8 compression will be used leveraging the Marlin kernel. This may degrade performance for compute-heavy workloads.\n\n\nI am ok with the performance gains of w8a16 as my model doesnt degrade much at this quantization level. Is there a way to acheive the same in SGLang?\n\nThanks\n\n\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "inactive",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-20T10:50:31+00:00",
+    "closed_at": "2025-03-23T00:19:17+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3007/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3007"
+  },
+  {
+    "number": 2871,
+    "title": "[Bug] compressed-tensors format not supported",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nsince [AutoFP8](https://github.com/neuralmagic/AutoFP8) has been deprecated in preference of [llm-compressor](https://github.com/vllm-project/llm-compressor), most recent quantization models are quantized by [llm-compressor](https://github.com/vllm-project/llm-compressor), but sglang does not support `compressed-tensors` format directly. for example https://huggingface.co/neuralmagic/Llama-3.1-Nemotron-70B-Instruct-HF-FP8-dynamic\n\n### Reproduction\n\npython3 -m sglang.launch_server --model-path neuralmagic/Llama-3.1-Nemotron-70B-Instruct-HF-FP8-dynamic --quantization compressed-tensors --tp 8\n\n### Environment\n\n`Python: 3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]\r\nCUDA available: True\r\nGPU 0,1,2,3,4,5,6,7: NVIDIA H100 80GB HBM3\r\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\r\nCUDA_HOME: /usr/local/cuda\r\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\r\nCUDA Driver Version: 535.129.03\r\nPyTorch: 2.5.1+cu124\r\nsglang: 0.4.1.post5\r\nflashinfer: 0.1.6+cu124torch2.4\r\ntriton: 3.1.0\r\ntransformers: 4.47.1\r\ntorchao: 0.7.0\r\nnumpy: 1.26.4\r\naiohttp: 3.11.11\r\nfastapi: 0.115.6\r\nhf_transfer: 0.1.9\r\nhuggingface_hub: 0.27.1\r\ninteregular: 0.3.3\r\nmodelscope: 1.22.0\r\norjson: 3.10.12\r\npackaging: 23.2\r\npsutil: 6.0.0\r\npydantic: 2.10.5\r\nmultipart: 0.0.20\r\nzmq: 26.2.0\r\nuvicorn: 0.34.0\r\nuvloop: 0.21.0\r\nvllm: 0.6.4.post1\r\nopenai: 1.55.3\r\nanthropic: 0.42.0\r\ndecord: 0.6.0\r\nNVIDIA Topology: \r\n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    CPU Affinity    NUMA Affinity   GPU NUMA ID\r\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\r\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\r\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\r\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\r\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    52-103,156-207  1               N/A\r\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    52-103,156-207  1               N/A\r\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    52-103,156-207  1               N/A\r\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      52-103,156-207  1               N/A\r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n\r\nHypervisor vendor: KVM\r\nulimit soft: 1024768`",
+    "labels": [
+      "inactive",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-13T18:32:00+00:00",
+    "closed_at": "2025-04-30T00:18:48+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2871/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2871"
+  },
+  {
+    "number": 2591,
+    "title": "[Feature] DeepSeek V3 optimization",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Adoption\n\n[SGLang adoption for DeepSeek V3 and R1](https://github.com/sgl-project/sglang/discussions/3322)\n\n### Usage\n\nUser Guide for Existing System (Installation & Launch)\n\nhttps://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3\n\nPlease use the latest version [v0.4.2.post4](https://pypi.org/project/sglang/0.4.2.post4/). Please prefer to use docker image. `docker pull lmsysorg/sglang:latest`\n\nFor running on AMD MI300X, use this as a reference. [Running DeepSeek-R1 on a single NDv5 MI300X VM](https://techcommunity.microsoft.com/blog/azurehighperformancecomputingblog/running-deepseek-r1-on-a-single-ndv5-mi300x-vm/4372726)\n\n### Features\n\n- [x] Support CUDA Graph @HandH1998 @ispobock \n- [x] Support Torch compile @ispobock \n- [x] Use BF16 for bmm @zhyncs \n- [x] Improve the accuracy for FP8 @HandH1998 @zhyncs @ispobock \n- [x] Tuning FP8 GEMM @HandH1998 @zhyncs \n- [x] Replace `moe_align_block_size` @HandH1998 @zhyncs @BBuf \n- [x] FusedMoE tuning for H200 `E=256,N=256,device_name=NVIDIA_H200,dtype=fp8_w8a8.json` @BBuf \n- [x] TP+DP Attention @Ying1123 \n- [x] Support overlap scheduler with DP attention @merrymercy\n- [x] Fuse Sigmoid Gate  [moe_kernels.cu](https://github.com/NVIDIA/TensorRT-LLM/blob/main/cpp/tensorrt_llm/kernels/mixtureOfExperts/moe_kernels.cu) @NovTi @BBuf (torch compile is sufficient for this use case, so the priority and ROI to support it are not high. Closing for now.)\n- [x] Support `nextn` speculative decoding @ispobock  https://github.com/sgl-project/sglang/issues/3472\n- [x] FP8 GEMM CUTLASS implementation @yizhang2077 \n- [x] Better [fused_experts](https://github.com/sgl-project/sglang/blob/34e405e01f7ff15ad56399999b9c00859a0b5134/python/sglang/srt/layers/moe/fused_moe_triton/fused_moe.py#L1123) @bbuf @zhyncs \n- [x] FlashInfer Prefill and MLA Decoding @zhyncs @ispobock \n- [x] Integrate DeepGemm #4199 #4343\n- [x] Integrate FlashMLA #4472 #4514 \n- [ ] FP8 GEMM Composable Kernel implementation @HaiShaw \n- [ ] Support Pipeline Parallelism @Ying1123  \n\nMore things (e.g., PD disaggregation, cache) are tracked at https://github.com/sgl-project/sglang/issues/4042",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "performance",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-26T08:52:39+00:00",
+    "closed_at": "2025-03-25T04:10:46+00:00",
+    "comments": 52,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2591/reactions",
+      "total_count": 98,
+      "+1": 64,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 14,
+      "rocket": 7,
+      "eyes": 13
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2591"
+  },
+  {
+    "number": 2531,
+    "title": "[Feature] Add Docs For Quantization",
+    "body": "Quick question, what is the recommended way to do offline quantization? I cannot find any documents on this. Thanks in advance!",
+    "labels": [
+      "good first issue",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-20T06:52:31+00:00",
+    "closed_at": "2025-05-24T21:21:43+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2531/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2531"
+  },
+  {
+    "number": 2472,
+    "title": "[Feature] Integrate CUTLASS FP8 GEMM into sgl-kernel",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nref \r\nhttps://github.com/NVIDIA/cutlass/pull/1932/files\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "inactive",
+      "performance",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-12T20:08:31+00:00",
+    "closed_at": "2025-02-12T00:16:40+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2472/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2472"
+  }
+]

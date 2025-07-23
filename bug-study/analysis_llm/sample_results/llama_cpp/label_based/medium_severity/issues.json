@@ -1,0 +1,826 @@
+[
+  {
+    "number": 10031,
+    "title": "Bug: issue in CUDA flash attention",
+    "body": "### What happened?\n\nThere seems to be some memory corruption issue in the CUDA flash attention kernel. \r\n\r\nThis is demonstrated by the debug prints inserted before and after the `vec_dot_KQ` device function here:\r\nhttps://github.com/ggerganov/llama.cpp/compare/master...agray3:llama.cpp:ag_demonstrate_fattn_memory_issue\r\n\r\nThese print out the first element of Q_ds, which is const in the function so shouldn't be altered. (`Q_ds` is in local memory so it also shouldn't be altered by any other thread.)\r\n\r\nHowever we get the result: \r\nBefore vec_dot_KQ: Q_ds=-32752.000000\r\nAfter vec_dot_KQ: Q_ds=nan\r\n\r\nQ_ds is being altered and becoming NAN. This is reproducible across different GPUs and models. \n\n### Name and Version\n\nversion: 3964 (3488adf3)\r\nbuilt with cc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0 for x86_64-linux-gnu\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-24T08:08:06+00:00",
+    "closed_at": "2024-10-24T11:11:31+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10031/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10031"
+  },
+  {
+    "number": 9005,
+    "title": "Llama-Quantize : Layers quantized in the wrong order, thus damaging the variable bits tensor quants scheme consistency.",
+    "body": "### What happened?\r\n\r\nOn master b3573, when quantizing Gemma 9b it:\r\n\r\nThe tensors are quantized in a wrong order.\r\n\r\nRight now, because of the layer jump from 7 to 10 without the ffns of layer 7 to be quantized, it breaks not only the layer quantization order, but also the correlation between ffn_down Q6_K and attn_v Q6_K : From layer 7, some layers will have ffn_down Q6_K and attn_v Q5_K, and some others ffn_down Q5_K and attn_v Q6_K.\r\nThis gives us suboptimal quants per BPW.\r\n\r\nI expect the tensors to be quantized in the right order.\r\n\r\nThis, so the Q5_K_M quant, as well as the othersusing \"use_more_bits(i_layer, n_layer)\" to have a variable quant of ffn_down in conjunction with \"use_more_bits(qs.i_attention_wv, qs.n_attention_wv))\" to have a variable quant of attn_v.weight, can be optimal.\r\n\r\n### Name and Version\r\n\r\nmain: build = 3573 (2589292c)\r\nmain: built with MSVC 19.29.30154.0 for x64\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nWindows\r\n\r\n### Relevant log output\r\n\r\n```shell\r\n[  45/ 464]                  blk.3.attn_v.weight - [ 3584,  2048,     1,     1], type =   bf16, converting to q6_K .. size =    14.00 MiB ->     5.74 MiB\r\n[  46/ 464]               blk.4.attn_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  47/ 464]                blk.4.ffn_down.weight - [14336,  3584,     1,     1], type =   bf16, converting to q6_K .. size =    98.00 MiB ->    40.20 MiB\r\n[  48/ 464]                blk.4.ffn_gate.weight - [ 3584, 14336,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  49/ 464]                  blk.4.ffn_up.weight - [ 3584, 14336,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  50/ 464]     blk.4.post_attention_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  51/ 464]           blk.4.post_ffw_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  52/ 464]                blk.4.ffn_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  53/ 464]                  blk.4.attn_k.weight - [ 3584,  2048,     1,     1], type =   bf16, converting to q5_K .. size =    14.00 MiB ->     4.81 MiB\r\n[  54/ 464]             blk.4.attn_output.weight - [ 4096,  3584,     1,     1], type =   bf16, converting to q5_K .. size =    28.00 MiB ->     9.62 MiB\r\n[  55/ 464]                  blk.4.attn_q.weight - [ 3584,  4096,     1,     1], type =   bf16, converting to q5_K .. size =    28.00 MiB ->     9.62 MiB\r\n[  56/ 464]                  blk.4.attn_v.weight - [ 3584,  2048,     1,     1], type =   bf16, converting to q6_K .. size =    14.00 MiB ->     5.74 MiB\r\n[  57/ 464]               blk.5.attn_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  58/ 464]                blk.5.ffn_down.weight - [14336,  3584,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  59/ 464]                blk.5.ffn_gate.weight - [ 3584, 14336,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  60/ 464]                  blk.5.ffn_up.weight - [ 3584, 14336,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  61/ 464]     blk.5.post_attention_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  62/ 464]           blk.5.post_ffw_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  63/ 464]                blk.5.ffn_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  64/ 464]                  blk.5.attn_k.weight - [ 3584,  2048,     1,     1], type =   bf16, converting to q5_K .. size =    14.00 MiB ->     4.81 MiB\r\n[  65/ 464]             blk.5.attn_output.weight - [ 4096,  3584,     1,     1], type =   bf16, converting to q5_K .. size =    28.00 MiB ->     9.62 MiB\r\n[  66/ 464]                  blk.5.attn_q.weight - [ 3584,  4096,     1,     1], type =   bf16, converting to q5_K .. size =    28.00 MiB ->     9.62 MiB\r\n[  67/ 464]                  blk.5.attn_v.weight - [ 3584,  2048,     1,     1], type =   bf16, converting to q5_K .. size =    14.00 MiB ->     4.81 MiB\r\n[  68/ 464]               blk.6.attn_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  69/ 464]                blk.6.ffn_down.weight - [14336,  3584,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  70/ 464]                blk.6.ffn_gate.weight - [ 3584, 14336,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  71/ 464]                  blk.6.ffn_up.weight - [ 3584, 14336,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  72/ 464]     blk.6.post_attention_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  73/ 464]           blk.6.post_ffw_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  74/ 464]                blk.6.ffn_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  75/ 464]                  blk.6.attn_k.weight - [ 3584,  2048,     1,     1], type =   bf16, converting to q5_K .. size =    14.00 MiB ->     4.81 MiB\r\n[  76/ 464]             blk.6.attn_output.weight - [ 4096,  3584,     1,     1], type =   bf16, converting to q5_K .. size =    28.00 MiB ->     9.62 MiB\r\n[  77/ 464]                  blk.6.attn_q.weight - [ 3584,  4096,     1,     1], type =   bf16, converting to q5_K .. size =    28.00 MiB ->     9.62 MiB\r\n[  78/ 464]                  blk.6.attn_v.weight - [ 3584,  2048,     1,     1], type =   bf16, converting to q5_K .. size =    14.00 MiB ->     4.81 MiB\r\n[  79/ 464]                blk.7.ffn_gate.weight - [ 3584, 14336,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  80/ 464]                  blk.7.ffn_up.weight - [ 3584, 14336,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  81/ 464]                  blk.7.attn_k.weight - [ 3584,  2048,     1,     1], type =   bf16, converting to q5_K .. size =    14.00 MiB ->     4.81 MiB\r\n[  82/ 464]             blk.7.attn_output.weight - [ 4096,  3584,     1,     1], type =   bf16, converting to q5_K .. size =    28.00 MiB ->     9.62 MiB\r\n[  83/ 464]                  blk.7.attn_q.weight - [ 3584,  4096,     1,     1], type =   bf16, converting to q5_K .. size =    28.00 MiB ->     9.62 MiB\r\n[  84/ 464]                  blk.7.attn_v.weight - [ 3584,  2048,     1,     1], type =   bf16, converting to q6_K .. size =    14.00 MiB ->     5.74 MiB\r\n[  85/ 464]              blk.10.attn_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  86/ 464]               blk.10.ffn_down.weight - [14336,  3584,     1,     1], type =   bf16, converting to q6_K .. size =    98.00 MiB ->    40.20 MiB\r\n[  87/ 464]               blk.10.ffn_gate.weight - [ 3584, 14336,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  88/ 464]                 blk.10.ffn_up.weight - [ 3584, 14336,     1,     1], type =   bf16, converting to q5_K .. size =    98.00 MiB ->    33.69 MiB\r\n[  89/ 464]    blk.10.post_attention_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  90/ 464]          blk.10.post_ffw_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  91/ 464]               blk.10.ffn_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n[  92/ 464]                 blk.10.attn_k.weight - [ 3584,  2048,     1,     1], type =   bf16, converting to q5_K .. size =    14.00 MiB ->     4.81 MiB\r\n[  93/ 464]            blk.10.attn_output.weight - [ 4096,  3584,     1,     1], type =   bf16, converting to q5_K .. size =    28.00 MiB ->     9.62 MiB\r\n[  94/ 464]                 blk.10.attn_q.weight - [ 3584,  4096,     1,     1], type =   bf16, converting to q5_K .. size =    28.00 MiB ->     9.62 MiB\r\n[  95/ 464]                 blk.10.attn_v.weight - [ 3584,  2048,     1,     1], type =   bf16, converting to q5_K .. size =    14.00 MiB ->     4.81 MiB\r\n[  96/ 464]              blk.11.attn_norm.weight - [ 3584,     1,     1,     1], type =    f32, size =    0.014 MB\r\n```\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-12T12:59:04+00:00",
+    "closed_at": "2024-09-27T01:07:21+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9005/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9005"
+  },
+  {
+    "number": 8451,
+    "title": "Unable to convert a fireworks ai model to GGUF with gguf-my-repo",
+    "body": "### What happened?\r\n\r\nI  downloaded one of my models from fireworks.ai and pushed it up into huggingface - you can find it here: [llama-3-8b-instruct-danish](https://huggingface.co/HeRksTAn/llama-3-8B-Instruct-Danish)\r\n\r\nI then tried  [gguf-my-repo](https://huggingface.co/spaces/ggml-org/gguf-my-repo) in order to convert it to gguf. \r\n\r\n\r\n1. using https://huggingface.co/spaces/ggml-org/gguf-my-repo \r\n2. logged into my account\r\n3. search the hub id for the repository I want converted into gguf, which is HeRksTAn/llama-3-8B-Instruct-Danish\r\n4. I chose Q4_K_M\r\n5. I clicked submit\r\n\r\n\r\nI get the following error \r\n\r\n`Error: Error converting to fp16: b'INFO:hf-to-gguf:Loading model: llama-3-8B-Instruct-Danish\\nTraceback (most recent call last):\\n File \"/home/user/app/llama.cpp/convert_hf_to_gguf.py\", line 3551, in \\n main()\\n File \"/home/user/app/llama.cpp/convert_hf_to_gguf.py\", line 3517, in main\\n hparams = Model.load_hparams(dir_model)\\n File \"/home/user/app/llama.cpp/convert_hf_to_gguf.py\", line 356, in load_hparams\\n with open(dir_model / \"config.json\", \"r\", encoding=\"utf-8\") as f:\\nFileNotFoundError: [Errno 2] No such file or directory: 'llama-3-8B-Instruct-Danish/config.json'\\n'`\r\n\r\nIt seems like I'm missing some files - can you please pinpoint what I'm missing? or what I should request from fireworks  ai, so that I can convert it to GGUF?\r\n\r\n\r\n![error-converting-to-gguf](https://github.com/user-attachments/assets/f064fc64-7d6c-41da-87ad-db9b8befe3cd)\r\n\r\n### Relevant log output\r\n\r\n```shell\r\n`Error: Error converting to fp16: b'INFO:hf-to-gguf:Loading model: llama-3-8B-Instruct-Danish\\nTraceback (most recent call last):\\n File \"/home/user/app/llama.cpp/convert_hf_to_gguf.py\", line 3551, in \\n main()\\n File \"/home/user/app/llama.cpp/convert_hf_to_gguf.py\", line 3517, in main\\n hparams = Model.load_hparams(dir_model)\\n File \"/home/user/app/llama.cpp/convert_hf_to_gguf.py\", line 356, in load_hparams\\n with open(dir_model / \"config.json\", \"r\", encoding=\"utf-8\") as f:\\nFileNotFoundError: [Errno 2] No such file or directory: 'llama-3-8B-Instruct-Danish/config.json'\\n'`\r\n```\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-12T09:14:13+00:00",
+    "closed_at": "2024-07-23T10:53:50+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8451/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8451"
+  },
+  {
+    "number": 8862,
+    "title": "Bug: src/llama.cpp:15099: Deepseek2 does not support K-shift",
+    "body": "### What happened?\n\nHi, when stress testing llama-server (--parallel 3, prompt=\"Count 1 to 10000 in words\") and running deepseek-coder-v2:16b-lite-instruct-q8_0  i got this assertion error in the logs and everything stopped working, so i have to restart llm-server.\r\n\r\n**Startup script:**\r\n\r\n~/llama.cpp/llama-server -m /usr/share/ollama/.ollama/models/blobs/sha256-373dcfc92e01372709b6164fc836f677a6280e25e9eac5c434c64223207bfc4f --port 8000 --host 0.0.0.0 -ngl 28 -c 24600 --threads 16 --parallel 3 --log-format text --predict -2 --logdir ~/llama.cpp/logs --log-append   $1 $2 >> ~/llama.cpp/logs/deepseek.log 2>&1\r\n\r\n\r\n\r\n\n\n### Name and Version\n\nversion: 3509 (ecf6b7f2)\r\nbuilt with cc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-22.0.1) for x86_64-redhat-linux\r\n\n\n### What operating system are you seeing the problem on?\n\n_No response_\n\n### Relevant log output\n\n```shell\n**Logs just before it crashed:**\r\n\r\nINFO [   launch_slot_with_task] slot is processing task | tid=\"139873529581568\" timestamp=1722830275 id_slot=2 id_task=8969\r\nINFO [            update_slots] kv cache rm [p0, end) | tid=\"139873529581568\" timestamp=1722830275 id_slot=2 id_task=8969 p0=0\r\nINFO [            update_slots] kv cache rm [p0, end) | tid=\"139873529581568\" timestamp=1722830276 id_slot=2 id_task=8969 p0=2046\r\nINFO [            update_slots] kv cache rm [p0, end) | tid=\"139873529581568\" timestamp=1722830277 id_slot=2 id_task=8969 p0=4092\r\nINFO [            update_slots] kv cache rm [p0, end) | tid=\"139873529581568\" timestamp=1722830278 id_slot=2 id_task=8969 p0=6138\r\nINFO [            update_slots] slot context shift | tid=\"139873529581568\" timestamp=1722830294 id_slot=2 id_task=8969 n_keep=1 n_left=8200 n_discard=4100 n_ctx=24608 n_past=8201 n_system_tokens=0 n_cache_tokens=6138\r\nDeepseek2 does not support K-shift\r\n\r\n\r\n**My startup logs:**\r\n\r\nINFO [                    main] build info | tid=\"139628879708160\" timestamp=1722830350 build=3509 commit=\"ecf6b7f2\"\r\nINFO [                    main] system info | tid=\"139628879708160\" timestamp=1722830350 n_threads=16 n_threads_batch=-1 total_threads=32 system_info=\"AVX = 1 | AVX_VNNI = 0 | AVX2 = 1 | AVX512 = 1 | AVX512_VBMI = 1 | AVX512_VNNI = 1 | AVX512_BF16 = 0 | FMA = 1 | NEON = 0 | SVE = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | SSSE3 = 1 | VSX = 0 | MATMUL_INT8 = 0 | LLAMAFILE = 1 | \"\r\nllama_model_loader: loaded meta data with 38 key-value pairs and 377 tensors from /usr/share/ollama/.ollama/models/blobs/sha256-373dcfc92e01372709b6164fc836f677a6280e25e9eac5c434c64223207bfc4f (version GGUF V3 (latest))\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = deepseek2\r\nllama_model_loader: - kv   1:                               general.name str              = DeepSeek-Coder-V2-Lite-Instruct\r\nllama_model_loader: - kv   2:                      deepseek2.block_count u32              = 27\r\nllama_model_loader: - kv   3:                   deepseek2.context_length u32              = 163840\r\nllama_model_loader: - kv   4:                 deepseek2.embedding_length u32              = 2048\r\nllama_model_loader: - kv   5:              deepseek2.feed_forward_length u32              = 10944\r\nllama_model_loader: - kv   6:             deepseek2.attention.head_count u32              = 16\r\nllama_model_loader: - kv   7:          deepseek2.attention.head_count_kv u32              = 16\r\nllama_model_loader: - kv   8:                   deepseek2.rope.freq_base f32              = 10000.000000\r\nllama_model_loader: - kv   9: deepseek2.attention.layer_norm_rms_epsilon f32              = 0.000001\r\nllama_model_loader: - kv  10:                deepseek2.expert_used_count u32              = 6\r\nllama_model_loader: - kv  11:                          general.file_type u32              = 7\r\nllama_model_loader: - kv  12:        deepseek2.leading_dense_block_count u32              = 1\r\nllama_model_loader: - kv  13:                       deepseek2.vocab_size u32              = 102400\r\nllama_model_loader: - kv  14:           deepseek2.attention.kv_lora_rank u32              = 512\r\nllama_model_loader: - kv  15:             deepseek2.attention.key_length u32              = 192\r\nllama_model_loader: - kv  16:           deepseek2.attention.value_length u32              = 128\r\nllama_model_loader: - kv  17:       deepseek2.expert_feed_forward_length u32              = 1408\r\nllama_model_loader: - kv  18:                     deepseek2.expert_count u32              = 64\r\nllama_model_loader: - kv  19:              deepseek2.expert_shared_count u32              = 2\r\nllama_model_loader: - kv  20:             deepseek2.expert_weights_scale f32              = 1.000000\r\nllama_model_loader: - kv  21:             deepseek2.rope.dimension_count u32              = 64\r\nllama_model_loader: - kv  22:                deepseek2.rope.scaling.type str              = yarn\r\nllama_model_loader: - kv  23:              deepseek2.rope.scaling.factor f32              = 40.000000\r\nllama_model_loader: - kv  24: deepseek2.rope.scaling.original_context_length u32              = 4096\r\nllama_model_loader: - kv  25: deepseek2.rope.scaling.yarn_log_multiplier f32              = 0.070700\r\nllama_model_loader: - kv  26:                       tokenizer.ggml.model str              = gpt2\r\nllama_model_loader: - kv  27:                         tokenizer.ggml.pre str              = deepseek-llm\r\nllama_model_loader: - kv  28:                      tokenizer.ggml.tokens arr[str,102400]  = [\"!\", \"\\\"\", \"#\", \"$\", \"%\", \"&\", \"'\", ...\r\nllama_model_loader: - kv  29:                  tokenizer.ggml.token_type arr[i32,102400]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...\r\nllama_model_loader: - kv  30:                      tokenizer.ggml.merges arr[str,99757]   = [\"?|  ?| \", \"?|  t\", \"?|  a\", \"i n\", \"h e...\r\nllama_model_loader: - kv  31:                tokenizer.ggml.bos_token_id u32              = 100000\r\nllama_model_loader: - kv  32:                tokenizer.ggml.eos_token_id u32              = 100001\r\nllama_model_loader: - kv  33:            tokenizer.ggml.padding_token_id u32              = 100001\r\nllama_model_loader: - kv  34:               tokenizer.ggml.add_bos_token bool             = true\r\nllama_model_loader: - kv  35:               tokenizer.ggml.add_eos_token bool             = false\r\nllama_model_loader: - kv  36:                    tokenizer.chat_template str              = {% if not add_generation_prompt is de...\r\nllama_model_loader: - kv  37:               general.quantization_version u32              = 2\r\nllama_model_loader: - type  f32:  108 tensors\r\nllama_model_loader: - type q8_0:  269 tensors\r\nllm_load_vocab: special tokens cache size = 2400\r\nllm_load_vocab: token to piece cache size = 0.6661 MB\r\nllm_load_print_meta: format           = GGUF V3 (latest)\r\nllm_load_print_meta: arch             = deepseek2\r\nllm_load_print_meta: vocab type       = BPE\r\nllm_load_print_meta: n_vocab          = 102400\r\nllm_load_print_meta: n_merges         = 99757\r\nllm_load_print_meta: vocab_only       = 0\r\nllm_load_print_meta: n_ctx_train      = 163840\r\nllm_load_print_meta: n_embd           = 2048\r\nllm_load_print_meta: n_layer          = 27\r\nllm_load_print_meta: n_head           = 16\r\nllm_load_print_meta: n_head_kv        = 16\r\nllm_load_print_meta: n_rot            = 64\r\nllm_load_print_meta: n_swa            = 0\r\nllm_load_print_meta: n_embd_head_k    = 192\r\nllm_load_print_meta: n_embd_head_v    = 128\r\nllm_load_print_meta: n_gqa            = 1\r\nllm_load_print_meta: n_embd_k_gqa     = 3072\r\nllm_load_print_meta: n_embd_v_gqa     = 2048\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-06\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 0.0e+00\r\nllm_load_print_meta: n_ff             = 10944\r\nllm_load_print_meta: n_expert         = 64\r\nllm_load_print_meta: n_expert_used    = 6\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = 0\r\nllm_load_print_meta: rope scaling     = yarn\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 0.025\r\nllm_load_print_meta: n_ctx_orig_yarn  = 4096\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\n\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: model type       = 16B\r\nllm_load_print_meta: model ftype      = Q8_0\r\nllm_load_print_meta: model params     = 15.71 B\r\nllm_load_print_meta: model size       = 15.55 GiB (8.51 BPW)\r\nllm_load_print_meta: general.name     = DeepSeek-Coder-V2-Lite-Instruct\r\nllm_load_print_meta: BOS token        = 100000 '<?~\\begin?~V~Aof?~V~Asentence?~\\>'\r\nllm_load_print_meta: EOS token        = 100001 '<?~\\end?~V~Aof?~V~Asentence?~\\>'\r\nllm_load_print_meta: PAD token        = 100001 '<?~\\end?~V~Aof?~V~Asentence?~\\>'\r\nllm_load_print_meta: LF token         = 126 '?~D'\r\nllm_load_print_meta: max token length = 256\r\nllm_load_print_meta: n_layer_dense_lead   = 1\r\nllm_load_print_meta: n_lora_q             = 0\r\nllm_load_print_meta: n_lora_kv            = 512\r\nllm_load_print_meta: n_ff_exp             = 1408\r\nllm_load_print_meta: n_expert_shared      = 2\r\nllm_load_print_meta: expert_weights_scale = 1.0\r\nllm_load_print_meta: rope_yarn_log_mul    = 0.0707\r\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\r\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\r\nggml_cuda_init: found 1 CUDA devices:\r\n  Device 0: NVIDIA GeForce RTX 4090, compute capability 8.9, VMM: yes\r\nllm_load_tensors: ggml ctx size =    0.32 MiB\r\nllm_load_tensors: offloading 27 repeating layers to GPU\r\nllm_load_tensors: offloading non-repeating layers to GPU\r\nllm_load_tensors: offloaded 28/28 layers to GPU\r\nllm_load_tensors:        CPU buffer size =   212.50 MiB\r\nllm_load_tensors:      CUDA0 buffer size = 15712.47 MiB\r\n.......................................................................................\r\nllama_new_context_with_model: n_ctx      = 24608\r\nllama_new_context_with_model: n_batch    = 2048\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 0.025\r\nllama_kv_cache_init:      CUDA0 KV buffer size =  6488.44 MiB\r\nllama_new_context_with_model: KV self size  = 6488.44 MiB, K (f16): 3893.06 MiB, V (f16): 2595.38 MiB\r\nllama_new_context_with_model:  CUDA_Host  output buffer size =     1.56 MiB\r\nllama_new_context_with_model:      CUDA0 compute buffer size =   841.07 MiB\r\nllama_new_context_with_model:  CUDA_Host compute buffer size =    52.07 MiB\r\nllama_new_context_with_model: graph nodes  = 1924\r\nllama_new_context_with_model: graph splits = 2\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-05T04:14:23+00:00",
+    "closed_at": "2024-10-30T01:19:54+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8862/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8862"
+  },
+  {
+    "number": 7813,
+    "title": "Qwen2-57B-A14B-Instruct not supported",
+    "body": "### What happened?\n\nThe converted model fails to load due to unexpected expert tensor dimensions, the current qwen2moe implementation expects it to be `n_ff`/`n_expert_used`, which it is not.\n\n### Name and Version\n\n./main --version\r\nversion: 3066 (e141ce62)\r\nbuilt with cc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0 for x86_64-linux-gnu\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n```shell\nllama_model_load: error loading model: check_tensor_dims: tensor 'blk.0.ffn_gate_exps.weight' has wrong shape; expected  3584,  2368,    64, got  3584,  2560,    64,     1\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-07T08:47:04+00:00",
+    "closed_at": "2024-06-07T10:00:28+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7813/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7813"
+  },
+  {
+    "number": 8001,
+    "title": "Bug: llama-server + LLava 1.6 hallucinates",
+    "body": "### What happened?\r\n\r\nWhen using `./llama-llava-cli `, I get perfectly fine descriptions of images. But when hosting LLava with `./llama-server`, LLava hallucinates big time. \r\n\r\nHere's how I'm running LLava with the cli:\r\n`./llama-llava-cli -m models/llava-v1.6-vicuna-7b.Q5_K_S.gguf --mmproj models/mmproj-model-f16.gguf --image images/sth.jpeg -c 4096`\r\n\r\nHere's how I'm starting the server:\r\n` ./llama-server -m models/llava-v1.6-vicuna-7b.Q5_K_S.gguf --mmproj models/mmproj-model-f16.gguf -c 2048  --host 127.0.0.1 --port 8000`\r\n\r\nHere's the python code to send the request:\r\n```\r\nimport requests\r\nimport base64\r\n\r\ndef encode_image(image_path):\r\n  with open(image_path, \"rb\") as image_file:\r\n    return base64.b64encode(image_file.read()).decode('utf-8')\r\n\r\nbase64_image = encode_image(\"./images/sth.png\")\r\n      \r\nheaders = {\r\n    'Content-Type': 'application/json',\r\n}\r\n\r\njson_data = {\r\n    'image_data': [{\r\n        'data': base64_image, \r\n        'id': 10\r\n    }],\r\n    \"prompt\": \"USER:[img-10]Describe the image.\\nASSISTANT:\",\r\n\t\"temperature\": 0.1\r\n}\r\n\r\nresponse = requests.post('http://127.0.0.1:8000/completion', headers=headers, json=json_data)\r\nprint(response.json()[\"content\"])\r\n```\r\n\r\n\r\n### Name and Version\r\n\r\n```\r\n./llama-cli --version\r\nversion: 3173 (a94e6ff8)\r\nbuilt with Apple clang version 15.0.0 (clang-1500.3.9.4) for arm64-apple-darwin23.5.0\r\n```\r\n\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nMac\r\n\r\n### Relevant log output\r\n\r\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-19T05:40:15+00:00",
+    "closed_at": "2024-08-03T01:18:10+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8001/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8001"
+  },
+  {
+    "number": 9316,
+    "title": "Bug: llama-perplexity error using multiple-choice binary data",
+    "body": "### What happened?\r\n\r\n\"The multiple choice evaluation has been broken in llama.cpp via commit 6ff13987a.\r\n\r\nThe multiple choice evaluation uses binary data stored in params.prompt. Commit 6ff13987a adds prompt escape character processing, which modifies the binary data and renders it unusable. To preserve whatever utility 6ff13987a might have added, we add a flag indicating if the data stored in params.prompt is binary and, if so, avoid the escape processing.\"  @ikawrakow\r\n\r\n@ikawrakow solved the problem in his llama.cpp fork in the following PR: https://github.com/ikawrakow/ik_llama.cpp/pull/33\r\n\r\n\r\n\r\n### Name and Version\r\n\r\nI tested the issue with the docker release of llama.cpp:\r\n\r\n ghcr.io/ggerganov/llama.cpp:full-cuda--b1-98a532d\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nLinux\r\n\r\n### Relevant log output\r\n\r\n_No response_",
+    "labels": [
+      "bug",
+      "medium severity"
+    ],
+    "state": "open",
+    "created_at": "2024-09-04T19:41:26+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9316/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9316"
+  },
+  {
+    "number": 8378,
+    "title": "Bug: ggml/src/ggml.c: In function 'ggml_vec_mad_f16':",
+    "body": "### What happened?\r\n`GGML_CUDA=1 make -j`\r\n...\r\n```\r\nggml/src/ggml.c: In function 'ggml_vec_mad_f16':\r\nggml/src/ggml.c:2039:45: warning: passing argument 1 of '__sse_f16x4_load' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]\r\n 2039 |             ax[j] = GGML_F16_VEC_LOAD(x + i + j*GGML_F16_EPR, j);\r\n      |                                             ^\r\nggml/src/ggml.c:1491:50: note: in definition of macro 'GGML_F32Cx4_LOAD'\r\n 1491 | #define GGML_F32Cx4_LOAD(x)     __sse_f16x4_load(x)\r\n      |                                                  ^\r\nggml/src/ggml.c:2039:21: note: in expansion of macro 'GGML_F16_VEC_LOAD'\r\n 2039 |             ax[j] = GGML_F16_VEC_LOAD(x + i + j*GGML_F16_EPR, j);\r\n      |                     ^~~~~~~~~~~~~~~~~\r\nggml/src/ggml.c:1466:52: note: expected 'ggml_fp16_t *' {aka 'short unsigned int *'} but argument is of type 'const ggml_fp16_t *' {aka 'const short unsigned int *'}\r\n 1466 | static inline __m128 __sse_f16x4_load(ggml_fp16_t *x) {\r\n      |                                       ~~~~~~~~~~~~~^\r\n```\r\n...\r\n\r\nI expected no error\r\n\r\n### Name and Version\r\n\r\n```\r\n$ ./llama-cli --version\r\nversion: 3349 (a130ecce)\r\nbuilt with x86_64-conda-linux-gnu-cc (conda-forge gcc 12.3.0-13) 12.3.0 for x86_64-conda-linux-gnu\r\n```\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nLinux\r\n\r\n### Relevant log output\r\n\r\n```shell\r\nggml/src/ggml.c: In function 'ggml_vec_mad_f16':\r\nggml/src/ggml.c:2039:45: warning: passing argument 1 of '__sse_f16x4_load' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]\r\n 2039 |             ax[j] = GGML_F16_VEC_LOAD(x + i + j*GGML_F16_EPR, j);\r\n      |                                             ^\r\nggml/src/ggml.c:1491:50: note: in definition of macro 'GGML_F32Cx4_LOAD'\r\n 1491 | #define GGML_F32Cx4_LOAD(x)     __sse_f16x4_load(x)\r\n      |                                                  ^\r\nggml/src/ggml.c:2039:21: note: in expansion of macro 'GGML_F16_VEC_LOAD'\r\n 2039 |             ax[j] = GGML_F16_VEC_LOAD(x + i + j*GGML_F16_EPR, j);\r\n      |                     ^~~~~~~~~~~~~~~~~\r\nggml/src/ggml.c:1466:52: note: expected 'ggml_fp16_t *' {aka 'short unsigned int *'} but argument is of type 'const ggml_fp16_t *' {aka 'const short unsigned int *'}\r\n 1466 | static inline __m128 __sse_f16x4_load(ggml_fp16_t *x) {\r\n      |                                       ~~~~~~~~~~~~~^\r\n```\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-08T21:20:30+00:00",
+    "closed_at": "2024-08-26T01:07:03+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8378/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8378"
+  },
+  {
+    "number": 7709,
+    "title": "Bug: Phi-3 4K output broken after 2000~ tokens (Reproducible)",
+    "body": "### What happened?\r\n\r\nTo reproduce:\r\nDownload the official released gguf model from huggingface/microsoft.\r\nRun **server.exe -m Phi3-mini-4k.gguf -c 4096**\r\n\r\nWhen input prompt < ~2048: Output fine. (but output starts getting weird right after it hits ~2048 in total)\r\nWhen input prompt > ~2048: Output weird.\r\n\r\nThe weird output seems like what we expect to see when the context is more than the model support, but happens in ~2048, which seems like there are some bugs.\r\n\r\nAlso tested Llama3-8B, works fine with input prompt < 8192 as expected (with -c 8192), also works fine with input prompt < 4096 as expected (with -c 4096).\r\n\r\n### Name and Version\r\n\r\nversion: 3015 (74b239b3)\r\nbuilt with MSVC 19.39.33523.0 for x64\r\n\r\nTried both cuda and avx2 version.\r\n\r\nAlso tried latest version built it myself @ Intel SYCL\r\nversion: 3075 (3d7ebf63)\r\nbuilt with IntelLLVM 2024.1.0\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nWin10, Win11\r\n\r\n### Relevant log output\r\n\r\nBefore ~2000 tokens and after\r\n![\u5716\u7247](https://github.com/ggerganov/llama.cpp/assets/23719775/22543e99-7999-4dc9-99af-25e42d22397f)\r\n",
+    "labels": [
+      "bug",
+      "model",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-03T07:25:37+00:00",
+    "closed_at": "2024-12-27T12:33:27+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7709/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7709"
+  },
+  {
+    "number": 8853,
+    "title": "Bug: Gemma 2 incoherent output when using quantized k cache without Flash Attention",
+    "body": "### What happened?\r\n\r\nOutput like \"Mh gi\u00e0u \u3055\u308c rodas reliablyacheteur\u03b4\u03b5 S\u0105\" happens when using quantized K cache, CUDA, with Gemma 2. Here's how to reproduce:\r\n\r\n./llama-server -m \"Gemma-2-9B-It-SPPO-Iter3-Q4_K_S.gguf\" -t 6 -c 8192 -ngl 31 -ctk q4_0 --host 127.0.0.1 --port 8080\r\n\r\nThen connect a frontend like SillyTavern to it. Strangely this only happens with server, not with main-cli. \r\n\r\nThis leads to incoherent output. Note: I can't say if this issue happens when using full offloading, as I just have 6 GB VRAM. \r\n\r\n\r\n### Name and Version\r\n\r\n ./llama-cli --version\r\nversion: 3506 (76614f35)\r\nbuilt with MSVC 19.29.30154.0 for x64\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nWindows\r\n\r\n### Relevant log output\r\n\r\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-04T10:57:51+00:00",
+    "closed_at": "2024-09-18T01:07:04+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8853/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8853"
+  },
+  {
+    "number": 9502,
+    "title": "Bug: Last 2 Chunks In Streaming Mode Come Together In Firefox",
+    "body": "### What happened?\n\nWhen using `/completion` with `stream: true`, the last 2 JSON chunks come together in Firefox, but Chrome seems to handle it fine, so it might be a Firefox bug.\r\n\r\nLooking further into this, it seems like HTTP `Transfer-Encoding: chunked` requires each chunk to be terminated with `\\r\\n`, but here `\\n\\n` is used instead:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/6262d13e0b2da91f230129a93a996609a2f5a2f2/examples/server/utils.hpp#L296-L299\r\n\r\nThis doesn't seem to be just a Windows requirement, but listed as part of the HTTP specification:\r\n[HTTP Chunked Transfer Coding](https://httpwg.org/specs/rfc9112.html#chunked.encoding)\r\n\r\nMore information, including an example `chunked` response:\r\n[Transfer-Encoding Directives](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding#directives)\n\n### Name and Version\n\nllama-server.exe\r\nversion: 3761 (6262d13e)\r\nbuilt with MSVC 19.29.30154.0 for x64\n\n### What operating system are you seeing the problem on?\n\nWindows\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-16T02:14:04+00:00",
+    "closed_at": "2024-09-17T06:48:47+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9502/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9502"
+  },
+  {
+    "number": 8338,
+    "title": "Bug: tab/space mistokenization for gemma spm models",
+    "body": "### What happened?\r\n\r\n```sh\r\n$ ./tokenize codegemma-2b.gguf \"                                         test\"\r\n[snip]\r\n     2 -> '<bos>'\r\n255970 -> '\t\t\t'\r\n255970 -> '\t\t\t'\r\n  2121 -> ' test'\r\n$ echo \"                                             test\" | spm_encode --model codegemma-2b.model --input /dev/stdin --output_format id\r\n255973 2195\r\n$ echo \"255970 255970 2121\" | spm_decode --model codegemma-2b.model --input /dev/stdin --input_format id | jq -R .\r\n\"\\t\\t\\t\\t\\t\\t test\"\r\n$ echo \"255973 2195\" | spm_decode --model codegemma-2b.model --input /dev/stdin --input_format id | jq -R .\r\n\"\\t\\t\\t\\t\\t\\ttest\"\r\n```\r\n\r\nNote that the input is six tabs followed by \"test\", i.e. `\"\\t\\t\\t\\t\\t\\ttest\"`. Take care not to accidentally use spaces when reproducing.\r\n\r\nNote that this is not _just_ inserting a stray space before \"test\": it also breaks the tabs into two sets of 3 instead of a single set of 6.\r\n\r\nInputs like this (leading indentation followed by text) happen a lot with code.\r\n\r\nThere are three issues here:\r\n\r\n* Mismatch between what the model was trained on and how llama.cpp tokenizes it. Adding a space is definitely OOD, particularly for languages with strong formatting opinions (Go) or significant whitespace (Python).\r\n* llama.cpp tokenizer doesn't roundtrip (inserts an extraneous space).\r\n* llama.cpp tokenizer uses more tokens to represent the input.\r\n\r\nThanks!\r\n\r\n\r\n### Name and Version\r\n\r\n```\r\n$ ./llama-cli --version\r\nversion: 3325 (87e25a1d)\r\n```\r\n\r\n(head as of Sat Jul 6 09:22:16 2024 +0200)\r\n\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nLinux, Mac\r\n\r\n### Relevant log output\r\n\r\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-06T16:22:58+00:00",
+    "closed_at": "2024-07-07T00:05:35+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8338/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8338"
+  },
+  {
+    "number": 8101,
+    "title": "Bug: ggml_backend_cpu_buffer_type_alloc_buffer: failed to allocate buffer of size 137438953504",
+    "body": "### What happened?\n\nI'm working on a project with llama.cpp to process a bunch of text files and I'm trying to use multi processing to speed up, so I'm loading the model and context in a child process for each file, launching 10 children at a time but some times one the child process would fail to create the context with the following error:\r\n\r\n`llama_new_context_with_model: n_ctx      = 1048576\r\nllama_new_context_with_model: n_batch    = 2048\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 2804339712.0\r\nllama_new_context_with_model: freq_scale = 1\r\nggml_backend_cpu_buffer_type_alloc_buffer: failed to allocate buffer of size 137438953504\r\nllama_kv_cache_init: failed to allocate buffer for kv cache\r\nllama_new_context_with_model: llama_kv_cache_init() failed for self-attention cache`\r\n\r\nIsn't 137438953504 bytes way too much memory to try to allocate. If I run the files one by one without using child processes it work fine but it takes way to much time.\r\n\r\nI'm running it in a linux server with 32 vCPU and 128 Gib of ram.\r\n\n\n### Name and Version\n\nversion: 3184 (9c77ec1d)\r\nbuilt with cc (Ubuntu 13.2.0-23ubuntu4) 13.2.0 for x86_64-linux-gnu\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n```shell\nllama_new_context_with_model: n_ctx      = 1048576\r\nllama_new_context_with_model: n_batch    = 2048\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 2804339712.0\r\nllama_new_context_with_model: freq_scale = 1\r\nggml_backend_cpu_buffer_type_alloc_buffer: failed to allocate buffer of size 137438953504\r\nllama_kv_cache_init: failed to allocate buffer for kv cache\r\nllama_new_context_with_model: llama_kv_cache_init() failed for self-attention cache\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-24T20:30:57+00:00",
+    "closed_at": "2024-06-24T21:36:37+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8101/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8101"
+  },
+  {
+    "number": 9267,
+    "title": "Bug: symbols conflict with whisper.cpp",
+    "body": "### What happened?\r\n\r\nI'm trying to use llama.cpp alongside whisper.cpp in Rust but I can't link the libraries because they link the same ggml symbols.\r\n\r\n[llama-cpp-2](https://github.com/utilityai/llama-cpp-rs/blob/main/llama-cpp-sys-2/build.rs) and [whisper-rs](https://github.com/tazz4843/whisper-rs)\r\n\r\n\r\n\r\n### Name and Version\r\n\r\n8f1d81a0b6f50b9bad72db0b6fcd299ad9ecd48c\r\nhttps://github.com/ggerganov/whisper.cpp/commit/c96906d84dd6a1c40ea797ad542df3a0c47307a3\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nWindows\r\n\r\n### Relevant log output\r\n\r\n```shell\r\nb\\\\rustlib\\\\etc\\\\libstd.natvis\"\r\n  = note: libllama_cpp_sys_2-1131e8f6e28c8598.rlib(ggml-backend.obj) : error LNK2005: ggml_backend_buft_name already defined in libwhisper_rs_sys-f2fa5877d4809bf3.rlib(ggml-backend.obj)\r\n          libllama_cpp_sys_2-1131e8f6e28c8598.rlib(ggml-backend.obj) : error LNK2005: ggml_backend_buft_alloc_buffer already defined in libwhisper_rs_sys-f2fa5877d4809bf3.rlib(ggml-backend.obj)\r\n```\r\n\r\nIs there a known solution for that? maybe adding prefix to the symbols? can it be configured at compile time per each library with cmake?\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-01T17:07:16+00:00",
+    "closed_at": "2024-10-29T01:07:29+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9267/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9267"
+  },
+  {
+    "number": 8488,
+    "title": "Bug -  Can't build vulkan backend on RISC-V platform anymore",
+    "body": "### What happened?\n\nBug: Can't build vulkan backend on RISC-V platform anymore\n\n### Name and Version\n\ngit clone https://github.com/ggerganov/llama.cpp.git\r\ncd llama.cpp\r\napt-get install cmake\r\ncmake -B build -DGGML_VULKAN=1\r\ncmake --build build --config Release -j8\n\n### What operating system are you seeing the problem on?\n\n_No response_\n\n### Relevant log output\n\n```shell\nVulkan_GLSLC_EXECUTABLE-NOTFOUND -fshader-stage=compute --target-env=vulkan1.2 -O /root/liyong/llama.cpp/ggml/src/vulkan-shaders/mul_mm.comp -o /root/liyong/llama.cpp/build/ggml/src/vulkan-shaders.spv/matmul_f32_f16_aligned_fp32.spv -DB_TYPE=f16vec4 -DDATA_A_F32=1 -DD_TYPE=float -DFLOAT_TYPE=float -DLOAD_VEC_A=4 -DLOAD_VEC_B=4\r\n\r\nsh: 1: Vulkan_GLSLC_EXECUTABLE-NOTFOUND: not found\r\n\r\ncannot compile matmul_f32_f32_aligned_fp32\r\n\r\nVulkan_GLSLC_EXECUTABLE-NOTFOUND -fshader-stage=compute --target-env=vulkan1.2 -O /root/liyong/llama.cpp/ggml/src/vulkan-shaders/mul_mm.comp -o /root/liyong/llama.cpp/build/ggml/src/vulkan-shaders.spv/matmul_f32_f32_aligned_fp32.spv -DB_TYPE=vec4 -DDATA_A_F32=2 -DD_TYPE=float -DFLOAT_TYPE=float -DLOAD_VEC_A=4 -DLOAD_VEC_B=4\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-15T07:08:16+00:00",
+    "closed_at": "2024-09-22T01:07:39+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8488/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8488"
+  },
+  {
+    "number": 9147,
+    "title": "Bug: Processor features are determined at compile time",
+    "body": "### What happened?\n\nI'm running ollama which in turn uses llama.cpp. The server has quad Intel Xeon Sapphire rapids. In the debug line for the \"system info\" i get:\r\n\r\n```shell\r\nINFO [main] system info | n_threads=160 n_threads_batch=-1 system_info=\"AVX = 1 | AVX_VNNI = 0 | AVX2 = 0 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | AVX512_BF16 = 0 | FMA = 0 | NEON = 0 | SVE = 0 | ARM_FMA = 0 | F16C = 0 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | SSSE3 = 1 | VSX = 0 | MATMUL_INT8 = 0 | LLAMAFILE = 1 | \" tid=\"139749882310656\" timestamp=1724406025 total_threads=320\r\n```\r\n\r\nWhich wondered me as the SPR processors have (from /proc/cpuinfo):\r\n\r\n```shell\r\nfpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cat_l2 cdp_l3 invpcid_single intel_ppin cdp_l2 ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect avx_vnni avx512_bf16 wbnoinvd dtherm ida arat pln pts hwp hwp_act_window hwp_epp hwp_pkg_req avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq la57 rdpid bus_lock_detect cldemote movdiri movdir64b enqcmd fsrm md_clear serialize tsxldtrk pconfig arch_lbr avx512_fp16 amx_tile flush_l1d arch_capabilities\r\nvmx flags       : vnmi preemption_timer posted_intr invvpid ept_x_only ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid unrestricted_guest vapic_reg vid ple shadow_vmcs pml ept_mode_based_exec tsc_scaling usr_wait_pause\r\n```\r\n\r\nWhich means avx2 etc. are not listed correctly. I then pulled llama.cpp and checked the source.\r\nIn ggml/src/ggml.c it says:\r\n\r\n```c\r\nint ggml_cpu_has_avx2(void) {\r\n#if defined(__AVX2__)\r\n    return 1;\r\n#else\r\n    return 0;\r\n#endif\r\n}\r\n```\r\n\r\nWhich means that it determines the capabilities of the processor *at compile time* - not at runtime. \r\nThis is pretty unfortunate as software (like ollama) that is being copied over to multiple machines without re-compiling the llama.cpp part, will always assume the capabilities of the system on which it was compiled on and not the one it is running on.\r\n\r\nThere was already a discussion \"Regarding detection and use of processor feature sets #535\" on that topic over a year ago.\r\n\n\n### Name and Version\n\nSource from today b3617 \n\n### What operating system are you seeing the problem on?\n\n_No response_\n\n### Relevant log output\n\n```shell\nSee above.\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-23T10:14:13+00:00",
+    "closed_at": "2024-10-11T01:07:16+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9147/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9147"
+  },
+  {
+    "number": 8490,
+    "title": "Bug: gemma2 perplexity pending forever",
+    "body": "### What happened?\r\n\r\nI am attempting to measure the perplexity of the gemma-2-9b-it-Q4_K_M.gguf model using llama.cpp. However, I encounter an issue where the process gets stuck at the \"tokenizing the input\" stage indefinitely.\r\n\r\nI have confirmed that the qwen2-7b-instruct-q4_k_m.gguf model operates correctly in the same environment, so I expected gemma-2 to function properly as well. Unfortunately, it does not.\r\n\r\nthe model is from huggingface model hub,\r\n bartowski/gemma-2-9b-it-GGUF\r\n\r\n### more information\r\nI just found out that the data I have is a Korean Wikipedia dataset, and it worked fine with qwen2, but it doesn't seem to work with gemma2. After changing the data to a wiki.test.raw file, I confirmed that it works properly\r\n\r\nI also discovered that the original number of files was 10,000, but after reducing it to 500, it worked. It seems to operate much slower compared to Qwen.\r\n\r\n\r\n\uc9c0\ubbf8 \uce74\ud130\r\nIntroduction\r\n\r\n\r\n'''\uc81c\uc784\uc2a4 \uc5bc \u201c\uc9c0\ubbf8\u201d \uce74\ud130 \uc8fc\ub2c8\uc5b4'''(, 1924\ub144 10\uc6d4 1\uc77c~)\ub294 \ubbfc\uc8fc\ub2f9 \ucd9c\uc2e0 \ubbf8\uad6d\uc758 \uc81c39\ub300 \ub300\ud1b5\ub839 (1977-81)\uc774\ub2e4.\r\n\uc57d\ub825\r\n* 1963. \uc870\uc9c0\uc544 \uc8fc \uc758\ud68c \uc0c1\uc6d0\uc758\uc6d0\r\n* 1971.1. \uc81c76\ub300 \uc870\uc9c0\uc544 \uc8fc\uc9c0\uc0ac (1971.1.12.~1975.1.14.)\r\n* 1977.1. \uc81c39\ub300 \ubbf8\uad6d \ub300\ud1b5\ub839 (1977.1.20.~1981.1.20.)\r\n* 1999. \ubbf8\uad6d \ub300\ud1b5\ub839 \uc790\uc720 \ud6c8\uc7a5 \uc218\ud6c8\r\n* 2002. \ub178\ubca8 \ud3c9\ud654\uc0c1 \uc218\uc0c1\r\n* 2007. \uc81c49\ud68c \uadf8\ub798\ubbf8 \uc5b4\uc6cc\ub4dc \ucd5c\uace0\uc758 \ub0ad\ub3c5 \uc568\ubc94\uc0c1 \uc218\uc0c1\r\n* 2016. \uc81c58\ud68c \uadf8\ub798\ubbf8 \uc5b4\uc6cc\ub4dc \ucd5c\uace0\uc758 \ub0ad\ub3c5 \uc568\ubc94\uc0c1 \uc218\uc0c1\r\n\uc0dd\uc560\r\n=== \uc5b4\ub9b0 \uc2dc\uc808 ===\r\n\uc9c0\ubbf8 \uce74\ud130\ub294 \uc870\uc9c0\uc544\uc8fc \uc12c\ud130 \uce74\uc6b4\ud2f0 \ud50c\ub808\uc778\uc2a4 \ub9c8\uc744\uc5d0\uc11c \ud0dc\uc5b4\ub0ac\ub2e4.\r\n\r\n\uc870\uc9c0\uc544 \uacf5\uacfc\ub300\ud559\uad50\ub97c \uc878\uc5c5\ud558\uc600\ub2e4. \uadf8 \ud6c4 \ud574\uad70\uc5d0 \ub4e4\uc5b4\uac00 \uc804\ud568\u00b7\uc6d0\uc790\ub825\u00b7\uc7a0\uc218\ud568\uc758 \uc2b9\ubb34\uc6d0\uc73c\ub85c \uc77c\ud558\uc600\ub2e4. 1953\ub144 \ubbf8\uad6d \ud574\uad70 \ub300\uc704\ub85c \uc608\ud3b8\ud558\uc600\uace0 \uc774\ud6c4 \ub545\ucf69\u00b7\uba74\ud654 \ub4f1\uc744 \uac00\uafd4 \ub9ce\uc740 \ub3c8\uc744 \ubc8c\uc5c8\ub2e4. \uadf8\uc758 \ubcc4\uba85\uc774 \"\ub545\ucf69 \ub18d\ubd80\" (Peanut Farmer)\ub85c \uc54c\ub824\uc84c\ub2e4.\r\n\r\n\r\n\r\n\r\n### Name and Version\r\n\r\nversion: 3392 (bda62d79)\r\nbuilt with cc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0 for x86_64-linux-gnu\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nLinux\r\n\r\n### Relevant log output\r\n\r\n```shell\r\n./llama-perplexity -m /home/jovyan/python-project/malpyeong2024/models/gemma2/gemma-2-9b-it-Q4_K_M.gguf -f /home/jovyan/python-project/malpyeong2024/korean-wikipedia-train.txt -ngl 100\r\n\r\nmain: build = 3392 (bda62d79)\r\nmain: built with cc (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0 for x86_64-linux-gnu\r\nmain: seed  = 1721041506\r\nllama_model_loader: loaded meta data with 33 key-value pairs and 464 tensors from /home/jovyan/python-project/malpyeong2024/models/gemma2/gemma-2-9b-it-Q4_K_M.gguf (version GGUF V3 (latest))\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = gemma2\r\nllama_model_loader: - kv   1:                               general.name str              = gemma-2-9b-it\r\nllama_model_loader: - kv   2:                      gemma2.context_length u32              = 8192\r\nllama_model_loader: - kv   3:                    gemma2.embedding_length u32              = 3584\r\nllama_model_loader: - kv   4:                         gemma2.block_count u32              = 42\r\nllama_model_loader: - kv   5:                 gemma2.feed_forward_length u32              = 14336\r\nllama_model_loader: - kv   6:                gemma2.attention.head_count u32              = 16\r\nllama_model_loader: - kv   7:             gemma2.attention.head_count_kv u32              = 8\r\nllama_model_loader: - kv   8:    gemma2.attention.layer_norm_rms_epsilon f32              = 0.000001\r\nllama_model_loader: - kv   9:                gemma2.attention.key_length u32              = 256\r\nllama_model_loader: - kv  10:              gemma2.attention.value_length u32              = 256\r\nllama_model_loader: - kv  11:                          general.file_type u32              = 15\r\nllama_model_loader: - kv  12:              gemma2.attn_logit_softcapping f32              = 50.000000\r\nllama_model_loader: - kv  13:             gemma2.final_logit_softcapping f32              = 30.000000\r\nllama_model_loader: - kv  14:            gemma2.attention.sliding_window u32              = 4096\r\nllama_model_loader: - kv  15:                       tokenizer.ggml.model str              = llama\r\nllama_model_loader: - kv  16:                         tokenizer.ggml.pre str              = default\r\nllama_model_loader: - kv  17:                      tokenizer.ggml.tokens arr[str,256000]  = [\"<pad>\", \"<eos>\", \"<bos>\", \"<unk>\", ...\r\nllama_model_loader: - kv  18:                      tokenizer.ggml.scores arr[f32,256000]  = [-1000.000000, -1000.000000, -1000.00...\r\nllama_model_loader: - kv  19:                  tokenizer.ggml.token_type arr[i32,256000]  = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, ...\r\nllama_model_loader: - kv  20:                tokenizer.ggml.bos_token_id u32              = 2\r\nllama_model_loader: - kv  21:                tokenizer.ggml.eos_token_id u32              = 1\r\nllama_model_loader: - kv  22:            tokenizer.ggml.unknown_token_id u32              = 3\r\nllama_model_loader: - kv  23:            tokenizer.ggml.padding_token_id u32              = 0\r\nllama_model_loader: - kv  24:               tokenizer.ggml.add_bos_token bool             = true\r\nllama_model_loader: - kv  25:               tokenizer.ggml.add_eos_token bool             = false\r\nllama_model_loader: - kv  26:                    tokenizer.chat_template str              = {{ bos_token }}{% if messages[0]['rol...\r\nllama_model_loader: - kv  27:            tokenizer.ggml.add_space_prefix bool             = false\r\nllama_model_loader: - kv  28:               general.quantization_version u32              = 2\r\nllama_model_loader: - kv  29:                      quantize.imatrix.file str              = /models_out/gemma-2-9b-it-GGUF/gemma-...\r\nllama_model_loader: - kv  30:                   quantize.imatrix.dataset str              = /training_dir/calibration_datav3.txt\r\nllama_model_loader: - kv  31:             quantize.imatrix.entries_count i32              = 294\r\nllama_model_loader: - kv  32:              quantize.imatrix.chunks_count i32              = 128\r\nllama_model_loader: - type  f32:  169 tensors\r\nllama_model_loader: - type q4_K:  252 tensors\r\nllama_model_loader: - type q6_K:   43 tensors\r\nllm_load_vocab: special tokens cache size = 217\r\nllm_load_vocab: token to piece cache size = 1.6014 MB\r\nllm_load_print_meta: format           = GGUF V3 (latest)\r\nllm_load_print_meta: arch             = gemma2\r\nllm_load_print_meta: vocab type       = SPM\r\nllm_load_print_meta: n_vocab          = 256000\r\nllm_load_print_meta: n_merges         = 0\r\nllm_load_print_meta: vocab_only       = 0\r\nllm_load_print_meta: n_ctx_train      = 8192\r\nllm_load_print_meta: n_embd           = 3584\r\nllm_load_print_meta: n_layer          = 42\r\nllm_load_print_meta: n_head           = 16\r\nllm_load_print_meta: n_head_kv        = 8\r\nllm_load_print_meta: n_rot            = 256\r\nllm_load_print_meta: n_swa            = 4096\r\nllm_load_print_meta: n_embd_head_k    = 256\r\nllm_load_print_meta: n_embd_head_v    = 256\r\nllm_load_print_meta: n_gqa            = 2\r\nllm_load_print_meta: n_embd_k_gqa     = 2048\r\nllm_load_print_meta: n_embd_v_gqa     = 2048\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-06\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 0.0e+00\r\nllm_load_print_meta: n_ff             = 14336\r\nllm_load_print_meta: n_expert         = 0\r\nllm_load_print_meta: n_expert_used    = 0\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = 2\r\nllm_load_print_meta: rope scaling     = linear\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: n_ctx_orig_yarn  = 8192\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: model type       = 9B\r\nllm_load_print_meta: model ftype      = Q4_K - Medium\r\nllm_load_print_meta: model params     = 9.24 B\r\nllm_load_print_meta: model size       = 5.36 GiB (4.98 BPW) \r\nllm_load_print_meta: general.name     = gemma-2-9b-it\r\nllm_load_print_meta: BOS token        = 2 '<bos>'\r\nllm_load_print_meta: EOS token        = 1 '<eos>'\r\nllm_load_print_meta: UNK token        = 3 '<unk>'\r\nllm_load_print_meta: PAD token        = 0 '<pad>'\r\nllm_load_print_meta: LF token         = 227 '<0x0A>'\r\nllm_load_print_meta: EOT token        = 107 '<end_of_turn>'\r\nllm_load_print_meta: max token length = 48\r\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\r\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\r\nggml_cuda_init: found 2 CUDA devices:\r\n  Device 0: NVIDIA RTX A6000, compute capability 8.6, VMM: yes\r\n  Device 1: NVIDIA RTX A6000, compute capability 8.6, VMM: yes\r\nllm_load_tensors: ggml ctx size =    0.62 MiB\r\nllm_load_tensors: offloading 42 repeating layers to GPU\r\nllm_load_tensors: offloading non-repeating layers to GPU\r\nllm_load_tensors: offloaded 43/43 layers to GPU\r\nllm_load_tensors:        CPU buffer size =   717.77 MiB\r\nllm_load_tensors:      CUDA0 buffer size =  2484.45 MiB\r\nllm_load_tensors:      CUDA1 buffer size =  3003.94 MiB\r\n...............................................................................\r\nllama_new_context_with_model: n_ctx      = 2048\r\nllama_new_context_with_model: n_batch    = 2048\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 1\r\nllama_kv_cache_init:      CUDA0 KV buffer size =   352.00 MiB\r\nllama_kv_cache_init:      CUDA1 KV buffer size =   320.00 MiB\r\nllama_new_context_with_model: KV self size  =  672.00 MiB, K (f16):  336.00 MiB, V (f16):  336.00 MiB\r\nllama_new_context_with_model:  CUDA_Host  output buffer size =     3.91 MiB\r\nllama_new_context_with_model: pipeline parallelism enabled (n_copies=4)\r\nllama_new_context_with_model:      CUDA0 compute buffer size =   154.01 MiB\r\nllama_new_context_with_model:      CUDA1 compute buffer size =   567.02 MiB\r\nllama_new_context_with_model:  CUDA_Host compute buffer size =    39.02 MiB\r\nllama_new_context_with_model: graph nodes  = 1690\r\nllama_new_context_with_model: graph splits = 3\r\n\r\nsystem_info: n_threads = 16 / 32 | AVX = 1 | AVX_VNNI = 0 | AVX2 = 1 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | AVX512_BF16 = 0 | FMA = 1 | NEON = 0 | SVE = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | SSSE3 = 1 | VSX = 0 | MATMUL_INT8 = 0 | LLAMAFILE = 1 | \r\nperplexity: tokenizing the input ..\r\n```\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-15T11:14:05+00:00",
+    "closed_at": "2024-08-29T01:07:02+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8490/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8490"
+  },
+  {
+    "number": 9716,
+    "title": "Bug: ggml_vulkan can only Found 1 Vulkan devices.",
+    "body": "### What happened?\n\nI have two Vulkan devices  NVIDIA GeForce RTX 3060 Laptop GPU (NVIDIA) and AMD Radeon(TM) Graphics (AMD proprietary driver),but **ggml_vulkan can only found one.**\r\nIn general,the cli output is :\r\n```shell\r\nggml_vulkan: Found 1 Vulkan devices:\r\nVulkan0: NVIDIA GeForce RTX 3060 Laptop GPU (NVIDIA) | uma: 0 | fp16: 1 | warp size: 32\r\nllm_load_tensors: ggml ctx size =    0.19 MiB\r\nllm_load_tensors: offloading 0 repeating layers to GPU\r\nllm_load_tensors: offloaded 0/37 layers to GPU\r\nllm_load_tensors:        CPU buffer size =  3442.89 MiB\r\n``` \r\nIf I disable the NVIDIA in system device manager,then start llamacpp again,ggml_vulkan can found another device:\r\n```shell\r\nggml_vulkan: Found 1 Vulkan devices:\r\nVulkan0: AMD Radeon(TM) Graphics (AMD proprietary driver) | uma: 1 | fp16: 1 | warp size: 64\r\nllm_load_tensors: ggml ctx size =    0.19 MiB\r\nllm_load_tensors: offloading 0 repeating layers to GPU\r\nllm_load_tensors: offloaded 0/37 layers to GPU\r\nllm_load_tensors:        CPU buffer size =  3442.89 MiB\r\n``` \r\nIt seems that only one device can be found by ggml_vulkan at one time.\n\n### Name and Version\n\n.\\llama-cli.exe --version\r\nversion: 3865 (00b7317e)\r\nbuilt with MSVC 19.29.30154.0 for x64\n\n### What operating system are you seeing the problem on?\n\nWindows\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-02T14:38:24+00:00",
+    "closed_at": "2024-11-18T01:07:45+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9716/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9716"
+  },
+  {
+    "number": 8403,
+    "title": "Bug: tokenizer.chat_template missing from key/values",
+    "body": "### What happened?\r\n\r\nI am seeing an issue with the default chat templates not properly loading. It appears as though the `tokenizer.chat_template` key is missing from the model meta-data. Here is a test program showcasing the issue:\r\n\r\n```cpp\r\n    const char * model = \"D:\\\\models\\\\llama-2-7b-chat.Q5_K_M.gguf\";\r\n    struct llama_model_params params = llama_model_default_params();\r\n    params.use_mmap = false;\r\n\r\n    struct llama_model * model_ = llama_load_model_from_file(model, params);\r\n    if (! model_) {\r\n        printf(\"uh oh\");\r\n        exit(1);\r\n    }\r\n\r\n    // This snippet is from recent pull request.\r\n    std::string template_key = \"tokenizer.chat_template\", curr_tmpl;\r\n    int32_t tlen2 = llama_model_meta_val_str(model_, template_key.c_str(), nullptr, 0);\r\n    if (tlen2 > 0) {\r\n        std::vector<char> curr_tmpl_buf(tlen2 + 1, 0);\r\n        if (llama_model_meta_val_str(model_, template_key.c_str(), curr_tmpl_buf.data(), curr_tmpl_buf.size()) =\\\r\n= tlen2) {\r\n            curr_tmpl = std::string(curr_tmpl_buf.data(), tlen2);\r\n            printf(\"%s\", curr_tmpl.c_str());\r\n        }\r\n    }\r\n\r\n```\r\n\r\nI have tried this logic with several models, but never does it pull the template out of model. It looks like there's no `LLM_KV_TOKENIZER_CHAT_TEMPLATE` in `enum llm_kv`. Not sure if that's the issue, but I tried the following patch and didn't seem to be enough either. If anyone has some advice on other places this code might need to be updated that would be great! Thank you.\r\n\r\n```diff\r\ndiff --git a/src/llama.cpp b/src/llama.cpp\r\nindex 2b9ace2..93b573f 100644\r\n--- a/src/llama.cpp\r\n+++ b/src/llama.cpp\r\n@@ -371,6 +371,7 @@ enum llm_kv {\r\n     LLM_KV_TOKENIZER_SUFFIX_ID,\r\n     LLM_KV_TOKENIZER_MIDDLE_ID,\r\n     LLM_KV_TOKENIZER_EOT_ID,\r\n+    LLM_KV_TOKENIZER_CHAT_TEMPLATE,\r\n };\r\n\r\n static const std::map<llm_kv, const char *> LLM_KV_NAMES = {\r\n@@ -464,6 +465,7 @@ static const std::map<llm_kv, const char *> LLM_KV_NAMES = {\r\n     { LLM_KV_TOKENIZER_SUFFIX_ID,            \"tokenizer.ggml.suffix_token_id\"          },\r\n     { LLM_KV_TOKENIZER_MIDDLE_ID,            \"tokenizer.ggml.middle_token_id\"          },\r\n     { LLM_KV_TOKENIZER_EOT_ID,               \"tokenizer.ggml.eot_token_id\"             },\r\n+    { LLM_KV_TOKENIZER_CHAT_TEMPLATE,        \"tokenizer.chat_template\"                 },\r\n };\r\n\r\n struct LLM_KV {\r\n\r\n\r\n```\r\n\r\n### Name and Version\r\n\r\n$ ./build/inst/bin/llama-cli.exe --version\r\nversion: 1 (50da329)\r\nbuilt with cc.exe (Rev3, Built by MSYS2 project) 14.1.0 for x86_64-w64-mingw32\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nx86_64-w64-mingw32\r\n\r\n### Relevant log output\r\n\r\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-09T23:09:25+00:00",
+    "closed_at": "2024-07-10T12:59:30+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8403/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8403"
+  },
+  {
+    "number": 7968,
+    "title": "Bug: Unable to load model using SYCL",
+    "body": "### What happened?\r\n\r\nI am using the commit `0c7b359`\r\nBuild llama.cpp using the command below:\r\n```\r\nsource /opt/intel/oneapi/setvars.sh\r\ncmake -B build -DLLAMA_SYCL=ON -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx\r\ncmake --build build --config Release -j -v\r\n```\r\nTrying to run a llama-2-7b-model.gguf model but got `Segmentation fault (core dumped)`\r\nCommand:\r\n```\r\n./build/bin/llama-cli --model llama-2-7b-model.gguf --gpu-layers 33\r\n```\r\n\r\n### Name and Version\r\n\r\nversion: 3153 (0c7b3595)\r\nbuilt with Intel(R) oneAPI DPC++/C++ Compiler 2024.0.2 (2024.0.2.20231213) for x86_64-unknown-linux-gnu\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nLinux\r\n\r\n### Relevant log output\r\n\r\n```shell\r\nmain: build = 3153 (0c7b3595)\r\nmain: built with Intel(R) oneAPI DPC++/C++ Compiler 2024.0.2 (2024.0.2.20231213) for x86_64-unknown-linux-gnu\r\nmain: seed  = 1718593892\r\nllama_model_loader: loaded meta data with 19 key-value pairs and 291 tensors from llama-2-7b-model.gguf (version GGUF V2)\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = llama\r\nllama_model_loader: - kv   1:                               general.name str              = LLaMA v2\r\nllama_model_loader: - kv   2:                       llama.context_length u32              = 4096\r\nllama_model_loader: - kv   3:                     llama.embedding_length u32              = 4096\r\nllama_model_loader: - kv   4:                          llama.block_count u32              = 32\r\nllama_model_loader: - kv   5:                  llama.feed_forward_length u32              = 11008\r\nllama_model_loader: - kv   6:                 llama.rope.dimension_count u32              = 128\r\nllama_model_loader: - kv   7:                 llama.attention.head_count u32              = 32\r\nllama_model_loader: - kv   8:              llama.attention.head_count_kv u32              = 32\r\nllama_model_loader: - kv   9:     llama.attention.layer_norm_rms_epsilon f32              = 0.000001\r\nllama_model_loader: - kv  10:                          general.file_type u32              = 17\r\nllama_model_loader: - kv  11:                       tokenizer.ggml.model str              = llama\r\nllama_model_loader: - kv  12:                      tokenizer.ggml.tokens arr[str,32000]   = [\"<unk>\", \"<s>\", \"</s>\", \"<0x00>\", \"<...\r\nllama_model_loader: - kv  13:                      tokenizer.ggml.scores arr[f32,32000]   = [0.000000, 0.000000, 0.000000, 0.0000...\r\nllama_model_loader: - kv  14:                  tokenizer.ggml.token_type arr[i32,32000]   = [2, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, ...\r\nllama_model_loader: - kv  15:                tokenizer.ggml.bos_token_id u32              = 1\r\nllama_model_loader: - kv  16:                tokenizer.ggml.eos_token_id u32              = 2\r\nllama_model_loader: - kv  17:            tokenizer.ggml.unknown_token_id u32              = 0\r\nllama_model_loader: - kv  18:               general.quantization_version u32              = 2\r\nllama_model_loader: - type  f32:   65 tensors\r\nllama_model_loader: - type q5_K:  193 tensors\r\nllama_model_loader: - type q6_K:   33 tensors\r\nllm_load_vocab: special tokens cache size = 259\r\nllm_load_vocab: token to piece cache size = 0.1684 MB\r\nllm_load_print_meta: format           = GGUF V2\r\nllm_load_print_meta: arch             = llama\r\nllm_load_print_meta: vocab type       = SPM\r\nllm_load_print_meta: n_vocab          = 32000\r\nllm_load_print_meta: n_merges         = 0\r\nllm_load_print_meta: n_ctx_train      = 4096\r\nllm_load_print_meta: n_embd           = 4096\r\nllm_load_print_meta: n_head           = 32\r\nllm_load_print_meta: n_head_kv        = 32\r\nllm_load_print_meta: n_layer          = 32\r\nllm_load_print_meta: n_rot            = 128\r\nllm_load_print_meta: n_embd_head_k    = 128\r\nllm_load_print_meta: n_embd_head_v    = 128\r\nllm_load_print_meta: n_gqa            = 1\r\nllm_load_print_meta: n_embd_k_gqa     = 4096\r\nllm_load_print_meta: n_embd_v_gqa     = 4096\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-06\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 0.0e+00\r\nllm_load_print_meta: n_ff             = 11008\r\nllm_load_print_meta: n_expert         = 0\r\nllm_load_print_meta: n_expert_used    = 0\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = 0\r\nllm_load_print_meta: rope scaling     = linear\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: n_ctx_orig_yarn  = 4096\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: model type       = 7B\r\nllm_load_print_meta: model ftype      = Q5_K - Medium\r\nllm_load_print_meta: model params     = 6.74 B\r\nllm_load_print_meta: model size       = 4.45 GiB (5.68 BPW) \r\nllm_load_print_meta: general.name     = LLaMA v2\r\nllm_load_print_meta: BOS token        = 1 '<s>'\r\nllm_load_print_meta: EOS token        = 2 '</s>'\r\nllm_load_print_meta: UNK token        = 0 '<unk>'\r\nllm_load_print_meta: LF token         = 13 '<0x0A>'\r\nggml_sycl_init: GGML_SYCL_FORCE_MMQ:   no\r\nggml_sycl_init: SYCL_USE_XMX: yes\r\nggml_sycl_init: found 4 SYCL devices:\r\nget_memory_info: [warning] ext_intel_free_memory is not supported (export/set ZES_ENABLE_SYSMAN=1 to support), use total memory as free memory\r\nget_memory_info: [warning] ext_intel_free_memory is not supported (export/set ZES_ENABLE_SYSMAN=1 to support), use total memory as free memory\r\nget_memory_info: [warning] ext_intel_free_memory is not supported (export/set ZES_ENABLE_SYSMAN=1 to support), use total memory as free memory\r\nget_memory_info: [warning] ext_intel_free_memory is not supported (export/set ZES_ENABLE_SYSMAN=1 to support), use total memory as free memory\r\nllm_load_tensors: ggml ctx size =    0.74 MiB\r\nllm_load_tensors: offloading 32 repeating layers to GPU\r\nllm_load_tensors: offloading non-repeating layers to GPU\r\nllm_load_tensors: offloaded 33/33 layers to GPU\r\nllm_load_tensors:      SYCL0 buffer size =  1100.93 MiB\r\nllm_load_tensors:      SYCL1 buffer size =  1085.26 MiB\r\nllm_load_tensors:      SYCL2 buffer size =  1217.98 MiB\r\nllm_load_tensors:      SYCL3 buffer size =  1070.77 MiB\r\nllm_load_tensors:        CPU buffer size =    85.94 MiB\r\n..................................................................................................\r\nllama_new_context_with_model: n_ctx      = 4096\r\nllama_new_context_with_model: n_batch    = 2048\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 1\r\n[SYCL] call ggml_check_sycl\r\nggml_check_sycl: GGML_SYCL_DEBUG: 0\r\nggml_check_sycl: GGML_SYCL_F16: no\r\nfound 4 SYCL devices:\r\n|  |                   |                                       |       |Max    |        |Max  |Global |                     |\r\n|  |                   |                                       |       |compute|Max work|sub  |mem    |                     |\r\n|ID|        Device Type|                                   Name|Version|units  |group   |group|size   |       Driver version|\r\n|--|-------------------|---------------------------------------|-------|-------|--------|-----|-------|---------------------|\r\n| 0| [level_zero:gpu:0]|                 Intel Iris Xe Graphics|    1.3|     96|     512|   32| 30725M|            1.3.29377|\r\n| 1|     [opencl:gpu:0]|                 Intel Iris Xe Graphics|    3.0|     96|     512|   32| 30725M|        24.17.29377.6|\r\n| 2|     [opencl:cpu:0]|11th Gen Intel Core i7-1165G7 @ 2.80GHz|    3.0|      8|    8192|   64| 33188M|2024.17.3.0.08_160000|\r\n| 3|     [opencl:acc:0]|            Intel FPGA Emulation Device|    1.2|      8|67108864|   64| 33188M|2024.17.3.0.08_160000|\r\nllama_kv_cache_init:      SYCL0 KV buffer size =   512.00 MiB\r\nllama_kv_cache_init:      SYCL1 KV buffer size =   512.00 MiB\r\nllama_kv_cache_init:      SYCL2 KV buffer size =   576.00 MiB\r\nllama_kv_cache_init:      SYCL3 KV buffer size =   448.00 MiB\r\nllama_new_context_with_model: KV self size  = 2048.00 MiB, K (f16): 1024.00 MiB, V (f16): 1024.00 MiB\r\nllama_new_context_with_model:  SYCL_Host  output buffer size =     0.12 MiB\r\nllama_new_context_with_model:      SYCL0 compute buffer size =   296.00 MiB\r\nllama_new_context_with_model:      SYCL1 compute buffer size =   296.00 MiB\r\nllama_new_context_with_model:      SYCL2 compute buffer size =   296.00 MiB\r\nllama_new_context_with_model:      SYCL3 compute buffer size =   296.00 MiB\r\nllama_new_context_with_model:  SYCL_Host compute buffer size =    16.01 MiB\r\nllama_new_context_with_model: graph nodes  = 1030\r\nllama_new_context_with_model: graph splits = 5\r\nSegmentation fault (core dumped)\r\n```\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-17T03:11:56+00:00",
+    "closed_at": "2024-06-18T06:35:40+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7968/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7968"
+  },
+  {
+    "number": 9844,
+    "title": "Bug: [CANN] compile failure ",
+    "body": "### What happened?\n\n# Version\r\nlastest b3906\r\n\r\n# System Info\r\nDevice: Ascend 910B4\r\nOS: EulerOS 2.10  \r\nArch: aarch64\r\n\r\n# What happened\r\nfollow the [CANN.md](https://github.com/ggerganov/llama.cpp/blob/master/docs/backend/CANN.md) try to build llama-cli \r\nfacing compile failure\r\n\r\nlogs\r\n```\r\n/app/ggml/src/ggml-common.h:261:16: warning: ISO C++ prohibits anonymous structs [-Wpedantic]\r\n  261 |         struct {\r\n      |                ^\r\n/app/ggml/src/ggml-common.h:288:16: warning: ISO C++ prohibits anonymous structs [-Wpedantic]\r\n  288 |         struct {\r\n      |                ^\r\n/app/ggml/src/ggml-common.h:305:16: warning: ISO C++ prohibits anonymous structs [-Wpedantic]\r\n  305 |         struct {\r\n      |                ^\r\n/app/ggml/src/ggml-cann.cpp: In function 'ggml_backend_buffer_type* ggml_backend_cann_buffer_type(int32_t)':\r\n/app/ggml/src/ggml-cann.cpp:1154:13: error: no match for 'operator=' (operand types are 'ggml_backend_buffer_type' and '<brace-enclosed initializer list>')\r\n 1154 |             };\r\n      |             ^\r\nIn file included from /app/ggml/src/ggml-cann.cpp:34:\r\n/app/ggml/src/ggml-backend-impl.h:29:12: note: candidate: 'ggml_backend_buffer_type& ggml_backend_buffer_type::operator=(const ggml_backend_buffer_type&)'\r\n   29 |     struct ggml_backend_buffer_type {\r\n      |            ^~~~~~~~~~~~~~~~~~~~~~~~\r\n/app/ggml/src/ggml-backend-impl.h:29:12: note:   no known conversion for argument 1 from '<brace-enclosed initializer list>' to 'const ggml_backend_buffer_type&'\r\n/app/ggml/src/ggml-backend-impl.h:29:12: note: candidate: 'ggml_backend_buffer_type& ggml_backend_buffer_type::operator=(ggml_backend_buffer_type&&)'\r\n/app/ggml/src/ggml-backend-impl.h:29:12: note:   no known conversion for argument 1 from '<brace-enclosed initializer list>' to 'ggml_backend_buffer_type&&'\r\n/app/ggml/src/ggml-cann.cpp: In function 'ggml_backend_event* ggml_backend_cann_event_new(ggml_backend_t)':\r\n/app/ggml/src/ggml-cann.cpp:1873:5: error: could not convert '{backend, event}' from '<brace-enclosed initializer list>' to 'ggml_backend_event'\r\n 1873 |     };\r\n      |     ^\r\n      |     |\r\n      |     <brace-enclosed initializer list>\r\n/app/ggml/src/ggml-cann.cpp: In function 'void ggml_backend_cann_event_record(ggml_backend_event_t)':\r\n/app/ggml/src/ggml-cann.cpp:1900:44: error: 'struct ggml_backend_event' has no member named 'backend'\r\n 1900 |         (ggml_backend_cann_context*)event->backend->context;\r\n      |                                            ^~~~~~~\r\n/app/ggml/src/ggml-cann.cpp: In function 'void ggml_backend_cann_event_wait(ggml_backend_t, ggml_backend_event_t)':\r\n/app/ggml/src/ggml-cann.cpp:1920:37: error: 'struct ggml_backend_event' has no member named 'backend'\r\n 1920 |     if (ggml_backend_is_cann(event->backend)) {\r\n      |                                     ^~~~~~~\r\n/app/ggml/src/ggml-cann.cpp: At global scope:\r\n/app/ggml/src/ggml-cann.cpp:1962:38: error: invalid conversion from 'void (*)(ggml_backend_event_t)' {aka 'void (*)(ggml_backend_event*)'} to 'void (*)(ggml_backend_t, ggml_backend_event_t)' {aka 'void (*)(ggml_backend*, ggml_backend_event*)'} [-fpermissive]\r\n 1962 |     /* .event_record            = */ ggml_backend_cann_event_record,\r\n      |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n      |                                      |\r\n      |                                      void (*)(ggml_backend_event_t) {aka void (*)(ggml_backend_event*)}\r\ngmake[3]: *** [ggml/src/CMakeFiles/ggml.dir/build.make:174: ggml/src/CMakeFiles/ggml.dir/ggml-cann.cpp.o] Error 1\r\ngmake[2]: *** [CMakeFiles/Makefile2:1619: ggml/src/CMakeFiles/ggml.dir/all] Error 2\r\ngmake[1]: *** [CMakeFiles/Makefile2:3368: examples/main/CMakeFiles/llama-cli.dir/rule] Error 2\r\ngmake: *** [Makefile:1323: llama-cli] Error 2\r\nThe command '/bin/sh -c echo \"Building with static libs\" &&     source /usr/local/Ascend/ascend-toolkit/set_env.sh --force &&     cmake -B build -DGGML_CANN=ON -DBUILD_SHARED_LIBS=OFF  &&     cmake --build build --config Release --target llama-cli' returned a non-zero code: 2\r\n```\r\n\r\n\n\n### Name and Version\n\n3906\n\n### What operating system are you seeing the problem on?\n\n_No response_\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "medium severity",
+      "Ascend NPU"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-11T10:27:37+00:00",
+    "closed_at": "2024-10-16T00:52:51+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9844/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9844"
+  },
+  {
+    "number": 9558,
+    "title": "Bug: llama-cli does not show the results of the performance test when SIGINT",
+    "body": "### What happened?\n\nWhen running llama-cli in conversation mode, press Ctrl+C to interject it did not print the results of the performance info.\r\n\r\ngit bisect show it's 6262d13e0b2da91f230129a93a996609a2f5a2f2.\r\n\r\ne6deac31f7e62db43b6afbc3be814f764fd5a187\r\n```\r\n>\r\nllama_perf_sampler_print:    sampling time =      17.31 ms /   124 runs   (    0.14 ms per token,  7164.32 tokens per second)\r\nllama_perf_context_print:        load time =    2548.25 ms\r\nllama_perf_context_print: prompt eval time =    4104.68 ms /    25 tokens (  164.19 ms per token,     6.09 tokens per second)\r\nllama_perf_context_print:        eval time =    6035.09 ms /   109 runs   (   55.37 ms per token,    18.06 tokens per second)\r\nllama_perf_context_print:       total time =   36065.20 ms /   134 tokens\r\nlocalhost:~/code/kleidiai/llama.cpp #\r\n```\r\n\r\n6262d13e0b2da91f230129a93a996609a2f5a2f2: (empty output after Ctrl+C)\r\n```\r\n> localhost:~/code/kleidiai/llama.cpp #\r\n```\r\n\r\n\n\n### Name and Version\n\nlocalhost:~/code/kleidiai/llama.cpp # ./llama-cli --version\r\nversion: 3787 (6026da52)\r\nbuilt with cc (SUSE Linux) 14.2.0 for aarch64-suse-linux\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-20T03:28:12+00:00",
+    "closed_at": "2024-09-20T08:46:57+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9558/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9558"
+  },
+  {
+    "number": 8583,
+    "title": "Bug: null pointer defer in gguf_init_from_file",
+    "body": "### What happened?\n\n``` cpp\r\n            ok = ok && gguf_fread_str(file, &info->name,                          &offset);   // [1] maybe read failed,then info->name = nullptr\r\n            ok = ok && gguf_fread_el (file, &info->n_dims, sizeof(info->n_dims),  &offset);\r\n\r\n            ok = ok && (info->n_dims <= GGML_MAX_DIMS);\r\n\r\n            for (uint32_t j = 0; j < info->n_dims; ++j) {\r\n                ok = ok && gguf_fread_el(file, &info->ne[j], sizeof(info->ne[j]), &offset);\r\n            }\r\n\r\n            ok = ok && gguf_fread_el (file, &info->type,   sizeof(info->type),    &offset);\r\n            ok = ok && gguf_fread_el (file, &info->offset, sizeof(info->offset),  &offset);\r\n\r\n            // TODO: return an error instead of crashing with GGML_ASSERT\r\n            gguf_tensor_info_sanitize(info);\r\n\r\n            // make sure there is no duplicated tensor names\r\n            for (uint64_t j = 0; j < i; ++j) {\r\n                if (strcmp(info->name.data, ctx->infos[j].name.data) == 0) {        // [2] don't check wether data is nullptr\r\n                    fprintf(stderr, \"%s: duplicated tensor name %s\\n\", __func__, info->name.data);\r\n                    ok = false;\r\n                }\r\n            }\r\n```\r\n\r\n\\[1\\]: If gguf_fread_str fails to execute, `name.data` will not call GGML_CLLOC to allocate memory, so name->data will be nullptr.\r\n\r\n\\[2\\]: don't check `name.data` whether is nullptr, so the strcmp will defer a null pointer then trigger segment fault.\r\n\r\n``` cpp\r\nstatic bool gguf_fread_str(FILE * file, struct gguf_str * p, size_t * offset) {\r\n    p->n    = 0;\r\n    p->data = NULL;\r\n\r\n    bool ok = true;\r\n\r\n    ok = ok && gguf_fread_el(file, &p->n, sizeof(p->n), offset);\r\n\r\n    // early exit if string length is invalid, prevents from integer overflow\r\n    if (p->n == SIZE_MAX) {             //  exist before call GGML_CALLOC\r\n        fprintf(stderr, \"%s: invalid string length (%\" PRIu64 \")\\n\", __func__, p->n);  \r\n        return false;\r\n    }\r\n\r\n    p->data = GGML_CALLOC(p->n + 1, 1);\r\n\r\n    ok = ok && gguf_fread_el(file,  p->data, p->n, offset);\r\n\r\n    return ok;\r\n}\r\n```\r\n\r\nthe resulte as follow:\r\n\r\n![](https://raw.githubusercontent.com/Arashimu/images/main/1.png)\r\n\r\nthe poc of gguf file: https://github.com/Arashimu/images/raw/main/npd.gguf\n\n### Name and Version\n\nversion: 3369 (278d0e18)\r\nbuilt with cc (Ubuntu 12.2.0-3ubuntu1) 12.2.0 for x86_64-linux-gnu\n\n### What operating system are you seeing the problem on?\n\n_No response_\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-19T04:49:43+00:00",
+    "closed_at": "2024-07-20T14:15:43+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8583/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8583"
+  },
+  {
+    "number": 7760,
+    "title": "Encountering some errors while using Android NDK with Vulkan",
+    "body": "### What happened?\n\nI am cross-compiling llama.cpp using android-ndk-r25c and Vulkan, but encountering the following error during compilation.\r\n\r\nI found that there is a Vulkan library in NDK-r25c. I included the header file from it. Additionally, I have installed Vulkan SDK on my computer.\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/46549527/7840a78b-f773-4a81-b56f-0ec21200efcb)\r\n\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/46549527/c4e0d084-b75e-401e-961d-2bd7ddd87607)\r\n\r\n\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:164:16: error: call to member function 'destroyCommandPool' is ambiguous\r\n        device.destroyCommandPool(compute_queue.pool);\r\n        ~~~~~~~^~~~~~~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84770:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyCommandPool( VULKAN_HPP_NAMESPACE::CommandPool commandPool, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84777:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyCommandPool( VULKAN_HPP_NAMESPACE::CommandPool commandPool, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:166:20: error: call to member function 'destroyCommandPool' is ambiguous\r\n            device.destroyCommandPool(transfer_queue.pool);\r\n            ~~~~~~~^~~~~~~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84770:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyCommandPool( VULKAN_HPP_NAMESPACE::CommandPool commandPool, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84777:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyCommandPool( VULKAN_HPP_NAMESPACE::CommandPool commandPool, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:179:16: error: call to member function 'destroy' is ambiguous\r\n        device.destroy();\r\n        ~~~~~~~^~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84685:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::AccelerationStructureKHR accelerationStructure, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84697:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::AccelerationStructureKHR accelerationStructure, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84725:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Buffer buffer, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84732:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Buffer buffer, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84755:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::BufferView bufferView, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84762:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::BufferView bufferView, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84785:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::CommandPool commandPool, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84792:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::CommandPool commandPool, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84849:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::DescriptorPool descriptorPool, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84856:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::DescriptorPool descriptorPool, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84879:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::DescriptorSetLayout descriptorSetLayout, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84886:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::DescriptorSetLayout descriptorSetLayout, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84923:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::DescriptorUpdateTemplate descriptorUpdateTemplate, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84930:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::DescriptorUpdateTemplate descriptorUpdateTemplate, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84938:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84945:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84968:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Event event, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84975:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Event event, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84998:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Fence fence, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85005:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Fence fence, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85028:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Framebuffer framebuffer, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85035:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Framebuffer framebuffer, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85058:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Image image, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85065:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Image image, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85088:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::ImageView imageView, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85095:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::ImageView imageView, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85118:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::IndirectCommandsLayoutNV indirectCommandsLayout, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85125:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::IndirectCommandsLayoutNV indirectCommandsLayout, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85148:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Pipeline pipeline, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85155:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Pipeline pipeline, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85178:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::PipelineCache pipelineCache, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85185:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::PipelineCache pipelineCache, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85208:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::PipelineLayout pipelineLayout, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85215:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::PipelineLayout pipelineLayout, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85238:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::PrivateDataSlotEXT privateDataSlot, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85245:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::PrivateDataSlotEXT privateDataSlot, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85268:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::QueryPool queryPool, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85275:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::QueryPool queryPool, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85298:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::RenderPass renderPass, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85305:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::RenderPass renderPass, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85328:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Sampler sampler, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85335:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Sampler sampler, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85372:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::SamplerYcbcrConversion ycbcrConversion, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85379:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::SamplerYcbcrConversion ycbcrConversion, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85402:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Semaphore semaphore, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85409:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::Semaphore semaphore, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85432:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::ShaderModule shaderModule, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85439:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::ShaderModule shaderModule, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85462:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::SwapchainKHR swapchain, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85469:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::SwapchainKHR swapchain, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85492:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::ValidationCacheEXT validationCache, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85499:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroy( VULKAN_HPP_NAMESPACE::ValidationCacheEXT validationCache, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:202:24: error: call to member function 'freeMemory' is ambiguous\r\n        device->device.freeMemory(device_memory);\r\n        ~~~~~~~~~~~~~~~^~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85618:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::freeMemory( VULKAN_HPP_NAMESPACE::DeviceMemory memory, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85625:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::freeMemory( VULKAN_HPP_NAMESPACE::DeviceMemory memory, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:203:24: error: call to member function 'destroyBuffer' is ambiguous\r\n        device->device.destroyBuffer(buffer);\r\n        ~~~~~~~~~~~~~~~^~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84710:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyBuffer( VULKAN_HPP_NAMESPACE::Buffer buffer, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84717:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyBuffer( VULKAN_HPP_NAMESPACE::Buffer buffer, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:502:29: error: call to member function 'destroyDescriptorPool' is ambiguous\r\n        ctx->device->device.destroyDescriptorPool(pool);\r\n        ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84834:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyDescriptorPool( VULKAN_HPP_NAMESPACE::DescriptorPool descriptorPool, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84841:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyDescriptorPool( VULKAN_HPP_NAMESPACE::DescriptorPool descriptorPool, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:541:68: error: conversion from 'int' to 'vk::PipelineCache' is ambiguous\r\n    pipeline->pipeline = ctx->device->device.createComputePipeline(VK_NULL_HANDLE, compute_pipeline_create_info).value;\r\n                                                                   ^~~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan_core.h:55:24: note: expanded from macro 'VK_NULL_HANDLE'\r\n#define VK_NULL_HANDLE 0\r\n                       ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:35907:26: note: candidate constructor\r\n    VULKAN_HPP_CONSTEXPR PipelineCache( std::nullptr_t ) VULKAN_HPP_NOEXCEPT\r\n                         ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:35911:34: note: candidate constructor\r\n    VULKAN_HPP_TYPESAFE_EXPLICIT PipelineCache( VkPipelineCache pipelineCache ) VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:83525:131: note: passing argument to parameter 'pipelineCache' here\r\n  VULKAN_HPP_NODISCARD VULKAN_HPP_INLINE ResultValue<Pipeline> Device::createComputePipeline( VULKAN_HPP_NAMESPACE::PipelineCache pipelineCache, const ComputePipelineCreateInfo & createInfo, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const\r\n                                                                                                                                  ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:551:16: error: call to member function 'destroyDescriptorPool' is ambiguous\r\n        device.destroyDescriptorPool(pool);\r\n        ~~~~~~~^~~~~~~~~~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84834:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyDescriptorPool( VULKAN_HPP_NAMESPACE::DescriptorPool descriptorPool, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84841:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyDescriptorPool( VULKAN_HPP_NAMESPACE::DescriptorPool descriptorPool, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:557:12: error: call to member function 'destroyDescriptorSetLayout' is ambiguous\r\n    device.destroyDescriptorSetLayout(pipeline->dsl);\r\n    ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84864:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyDescriptorSetLayout( VULKAN_HPP_NAMESPACE::DescriptorSetLayout descriptorSetLayout, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84871:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyDescriptorSetLayout( VULKAN_HPP_NAMESPACE::DescriptorSetLayout descriptorSetLayout, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:559:12: error: call to member function 'destroyPipelineLayout' is ambiguous\r\n    device.destroyPipelineLayout(pipeline->layout);\r\n    ~~~~~~~^~~~~~~~~~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85193:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyPipelineLayout( VULKAN_HPP_NAMESPACE::PipelineLayout pipelineLayout, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85200:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyPipelineLayout( VULKAN_HPP_NAMESPACE::PipelineLayout pipelineLayout, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:561:12: error: call to member function 'destroyShaderModule' is ambiguous\r\n    device.destroyShaderModule(pipeline->shader_module);\r\n    ~~~~~~~^~~~~~~~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85417:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyShaderModule( VULKAN_HPP_NAMESPACE::ShaderModule shaderModule, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85424:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyShaderModule( VULKAN_HPP_NAMESPACE::ShaderModule shaderModule, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:563:12: error: call to member function 'destroyPipeline' is ambiguous\r\n    device.destroyPipeline(pipeline->pipeline);\r\n    ~~~~~~~^~~~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85133:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyPipeline( VULKAN_HPP_NAMESPACE::Pipeline pipeline, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85140:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyPipeline( VULKAN_HPP_NAMESPACE::Pipeline pipeline, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:693:40: error: cannot assign to non-static data member 'sType' with const-qualified type 'const vk::StructureType'\r\n            tl_submit_infos[idx].sType = vk::StructureType::eTimelineSemaphoreSubmitInfo;\r\n            ~~~~~~~~~~~~~~~~~~~~~~~~~~ ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:79002:47: note: non-static data member 'sType' declared const here\r\n    const VULKAN_HPP_NAMESPACE::StructureType sType = StructureType::eTimelineSemaphoreSubmitInfo;\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:883:29: error: call to member function 'destroyBuffer' is ambiguous\r\n        ctx->device->device.destroyBuffer(buf->buffer);\r\n        ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84710:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyBuffer( VULKAN_HPP_NAMESPACE::Buffer buffer, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84717:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyBuffer( VULKAN_HPP_NAMESPACE::Buffer buffer, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:892:29: error: call to member function 'destroyBuffer' is ambiguous\r\n        ctx->device->device.destroyBuffer(buf->buffer);\r\n        ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84710:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyBuffer( VULKAN_HPP_NAMESPACE::Buffer buffer, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84717:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyBuffer( VULKAN_HPP_NAMESPACE::Buffer buffer, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:1763:13: error: no type named 'PhysicalDeviceMaintenance4Properties' in namespace 'vk'; did you mean 'PhysicalDeviceMaintenance3Properties'?\r\n        vk::PhysicalDeviceMaintenance4Properties props4;\r\n        ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n            PhysicalDeviceMaintenance3Properties\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:66301:10: note: 'PhysicalDeviceMaintenance3Properties' declared here\r\n  struct PhysicalDeviceMaintenance3Properties\r\n         ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:1778:103: error: no member named 'maxBufferSize' in 'vk::PhysicalDeviceMaintenance3Properties'\r\n            ctx->device->max_memory_allocation_size = std::min(props3.maxMemoryAllocationSize, props4.maxBufferSize);\r\n                                                                                               ~~~~~~ ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:2136:29: error: call to member function 'freeMemory' is ambiguous\r\n        ctx->device->device.freeMemory(buf->device_memory);\r\n        ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85618:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::freeMemory( VULKAN_HPP_NAMESPACE::DeviceMemory memory, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:85625:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::freeMemory( VULKAN_HPP_NAMESPACE::DeviceMemory memory, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AIGC_LLAMA_Project/llama.cpp/ggml-vulkan.cpp:2137:29: error: call to member function 'destroyBuffer' is ambiguous\r\n        ctx->device->device.destroyBuffer(buf->buffer);\r\n        ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84710:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyBuffer( VULKAN_HPP_NAMESPACE::Buffer buffer, const VULKAN_HPP_NAMESPACE::AllocationCallbacks* pAllocator, Dispatch const & d  ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\n/home/zdl/AndroidSDK/android-ndk-r25c/sources/third_party/vulkan/src/include/vulkan/vulkan.hpp:84717:34: note: candidate function [with Dispatch = vk::DispatchLoaderStatic]\r\n  VULKAN_HPP_INLINE void Device::destroyBuffer( VULKAN_HPP_NAMESPACE::Buffer buffer, Optional<const AllocationCallbacks> allocator, Dispatch const & d ) const VULKAN_HPP_NOEXCEPT\r\n                                 ^\r\nfatal error: too many errors emitted, stopping now [-ferror-limit=]\r\n20 errors generated.\r\nmake[2]: *** [CMakeFiles/ggml.dir/build.make:132\uff1aCMakeFiles/ggml.dir/ggml-vulkan.cpp.o] \u9519\u8bef 1\r\nmake[2]: *** \u6b63\u5728\u7b49\u5f85\u672a\u5b8c\u6210\u7684\u4efb\u52a1....\r\n2 warnings generated.\r\nmake[1]: *** [CMakeFiles/Makefile2:802\uff1aCMakeFiles/ggml.dir/all] \u9519\u8bef 2\r\nmake: *** [Makefile:146\uff1aall] \u9519\u8bef 2\r\n\n\n### Name and Version\n\ncmake -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-26 -DCMAKE_SYSTEM_NAME=\"ANDROID\" -DLLAMA_VULKAN=ON ..\r\n\r\nMy environment is Ubuntu 20.04 with Android NDK-r25c.\r\n\r\nCan anyone tell me what might be causing this?\r\n\n\n### What operating system are you seeing the problem on?\n\n_No response_\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-05T05:51:03+00:00",
+    "closed_at": "2024-07-20T01:06:42+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7760/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7760"
+  },
+  {
+    "number": 7578,
+    "title": "Bug: when arrive max ctx, model output garbage",
+    "body": "### What happened?\r\n\r\nThis part has problem in cuda version. if set ngl>0, when arrive max ctx and next turn to chat, the model output garbage.\r\n\r\nllama_kv_cache_seq_rm (ctx, 0, params.n_keep            , params.n_keep + n_discard);\r\nllama_kv_cache_seq_add(ctx, 0, params.n_keep + n_discard, n_past, -n_discard);\r\n\r\nif set ngl =0, everythings ok.\r\n### Name and Version\r\n\r\nllama.cpp-b3014\r\nmain.exe --version\r\nversion: 247 (6765407)\r\nbuilt with MSVC 19.37.32822.0 for x64\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\n_No response_\r\n\r\n### Relevant log output\r\n\r\n_No response_",
+    "labels": [
+      "need more info",
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-28T02:22:16+00:00",
+    "closed_at": "2024-06-18T03:20:17+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7578/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7578"
+  },
+  {
+    "number": 8324,
+    "title": "Gemma 2 inference - continuous token succession",
+    "body": "### What happened?\n\nThere is an issue in which after the models answers the question it keeps on generating 2 tokens until the context is filled up.\r\nTokens in question:\r\n    {\r\n      \"id\": 149,\r\n      \"content\": \"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\",\r\n      \"single_word\": false,\r\n      \"lstrip\": false,\r\n      \"rstrip\": false,\r\n      \"normalized\": false,\r\n      \"special\": false\r\n    },\r\n    {\r\n      \"id\": 108,\r\n      \"content\": \"\\n\",\r\n      \"single_word\": false,\r\n      \"lstrip\": false,\r\n      \"rstrip\": false,\r\n      \"normalized\": false,\r\n      \"special\": false\r\n    },\r\n    \r\n   How the server is run:\r\n   llama-server  --threads 1 --batch-size 256 --threads-batch 32 --n-gpu-layers 43 --main-gpu 0 --metrics --defrag-thold 0.8 --cont-batching -m  /<model_path>/gemma-2-9b-it/gemma-2-9b-it-Q6_K.gguf -v -c 32786 -n 1024  --parallel 16   --host <h>  --port <p>\r\n\r\nThe query to the model is made via the /completion API\r\n\r\nThe model is used in a RAG system, the following prompt has been used:\r\n        prompt = '''\r\n            <bos><start_of_turn>user\r\n            \\n\r\n\t\t\t<prompt engineering>\r\n            \\n\r\n            <prompt engineering>\r\n\r\n            Context: {context_format}\r\n            -----\r\n            Question: {query}\r\n            Answer:\r\n            <end_of_turn>\r\n            <start_of_turn>model\r\n            '''\r\nI've also tried without the <start_of_turn>model template, but still the issue persists.\r\n\r\nThe GGUF models that I've tried (updated as of today):\r\nbartowski/gemma-2-9b-it-Q6_K_L.gguf\r\nbartowski/gemma-2-9b-it-Q6_K.gguf (Llamacpp quants)\r\n\r\nThe interface is via streamlit, the issue persists also in a local chatui (huggingface), but the issue is generating random repeating small words, bullet points & whitespaces.\r\n\r\nThank you,\r\n\n\n### Name and Version\n\n 8.5.0 20210514 \r\n\n\n### What operating system are you seeing the problem on?\n\n_No response_\n\n### Relevant log output\n\n```shell\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [            update_slots] slot decode token | tid=\"140407907995648\" timestamp=1720171553 id_slot=0 id_task=0 n_ctx=32800 n_past=1172 n_system_tokens=0 n_cache_tokens=1024 >\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [            update_slots] decoding batch | tid=\"140407907995648\" timestamp=1720171553 n_tokens=1\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [           process_token] next token | tid=\"140407907995648\" timestamp=1720171553 id_slot=0 id_task=0 token=108 token_text=\"\\n\" has_next_token=true n_remain=959 n_decoded=>\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [            update_slots] run slots completed | tid=\"140407907995648\" timestamp=1720171553\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [              start_loop] wait for new task | tid=\"140407907995648\" timestamp=1720171553\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [              start_loop] new task may arrive | tid=\"140407907995648\" timestamp=1720171553\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [              start_loop] callback_new_task | tid=\"140407907995648\" timestamp=1720171553 id_task=69\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [              start_loop] update_multitasks | tid=\"140407907995648\" timestamp=1720171553\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [              start_loop] callback_update_slots | tid=\"140407907995648\" timestamp=1720171553\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [            update_slots] posting NEXT_RESPONSE | tid=\"140407907995648\" timestamp=1720171553\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [                    post] new task id | tid=\"140407907995648\" timestamp=1720171553 new_id=70\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [            update_slots] slot decode token | tid=\"140407907995648\" timestamp=1720171553 id_slot=0 id_task=0 n_ctx=32800 n_past=1173 n_system_tokens=0 n_cache_tokens=1024 >\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [            update_slots] decoding batch | tid=\"140407907995648\" timestamp=1720171553 n_tokens=1\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [           process_token] next token | tid=\"140407907995648\" timestamp=1720171553 id_slot=0 id_task=0 token=149 token_text=\"            \" has_next_token=true n_remain=958 >\r\nJul 05 12:25:53 <name_server> llama-server[1547085]: VERB [            update_slots] run slots completed | tid=\"140407907995648\" timestamp=1720171553\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-05T09:51:17+00:00",
+    "closed_at": "2024-07-05T14:25:27+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8324/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8324"
+  },
+  {
+    "number": 9472,
+    "title": "Bug: [SYCL] Error loading models larger than Q4",
+    "body": "### What happened?\n\nAfter building the SYCL server image, trying to load a model larger than Q4 on my Arc A770 fails with a memory error.\r\nAnything below Q4 will execute, but this is due to the \"llm_load_tensors:      SYCL0 buffer size\" being below ~4200MiB.\r\nThe Arc A770 has 16GB of VRAM, so should be perfectly capable of loading much higher buffer values into its VRAM.\r\n\r\nLooking for information on this. Thanks!\n\n### Name and Version\n\nRelevant docker run command used:\r\ndocker run -it --rm -p 11434:11434 -v /mnt/user/models/model-files:/app/models --device /dev/dri/renderD128:/dev/dri/renderD128 --device /dev/dri/card0:/dev/dri/card0 -e OverrideGpuAddressSpace=48 -e NEOReadDebugKeys=1 llama-server-cpp-intel -m /app/models/Meta-Llama-3.1-8B-Instruct-Q5_K_L.gguf -n 2048 -e -ngl 33 --port 11434\n\n### What operating system are you seeing the problem on?\n\n_No response_\n\n### Relevant log output\n\n```shell\nllama_model_loader: - kv  29:                      quantize.imatrix.file str              = /models_out/Meta-Llama-3.1-8B-Instruc...\r\nllama_model_loader: - kv  30:                   quantize.imatrix.dataset str              = /training_dir/calibration_datav3.txt\r\nllama_model_loader: - kv  31:             quantize.imatrix.entries_count i32              = 224\r\nllama_model_loader: - kv  32:              quantize.imatrix.chunks_count i32              = 125\r\nllama_model_loader: - type  f32:   66 tensors\r\nllama_model_loader: - type q8_0:    2 tensors\r\nllama_model_loader: - type q5_K:  192 tensors\r\nllama_model_loader: - type q6_K:   32 tensors\r\nllm_load_vocab: special tokens cache size = 256\r\nllm_load_vocab: token to piece cache size = 0.7999 MB\r\nllm_load_print_meta: format           = GGUF V3 (latest)\r\nllm_load_print_meta: arch             = llama\r\nllm_load_print_meta: vocab type       = BPE\r\nllm_load_print_meta: n_vocab          = 128256\r\nllm_load_print_meta: n_merges         = 280147\r\nllm_load_print_meta: vocab_only       = 0\r\nllm_load_print_meta: n_ctx_train      = 131072\r\nllm_load_print_meta: n_embd           = 4096\r\nllm_load_print_meta: n_layer          = 32\r\nllm_load_print_meta: n_head           = 32\r\nllm_load_print_meta: n_head_kv        = 8\r\nllm_load_print_meta: n_rot            = 128\r\nllm_load_print_meta: n_swa            = 0\r\nllm_load_print_meta: n_embd_head_k    = 128\r\nllm_load_print_meta: n_embd_head_v    = 128\r\nllm_load_print_meta: n_gqa            = 4\r\nllm_load_print_meta: n_embd_k_gqa     = 1024\r\nllm_load_print_meta: n_embd_v_gqa     = 1024\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-05\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 0.0e+00\r\nllm_load_print_meta: n_ff             = 14336\r\nllm_load_print_meta: n_expert         = 0\r\nllm_load_print_meta: n_expert_used    = 0\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = 0\r\nllm_load_print_meta: rope scaling     = linear\r\nllm_load_print_meta: freq_base_train  = 500000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: n_ctx_orig_yarn  = 131072\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: ssm_dt_b_c_rms   = 0\r\nllm_load_print_meta: model type       = 8B\r\nllm_load_print_meta: model ftype      = Q5_K - Medium\r\nllm_load_print_meta: model params     = 8.03 B\r\nllm_load_print_meta: model size       = 5.63 GiB (6.03 BPW) \r\nllm_load_print_meta: general.name     = Meta Llama 3.1 8B Instruct\r\nllm_load_print_meta: BOS token        = 128000 '<|begin_of_text|>'\r\nllm_load_print_meta: EOS token        = 128009 '<|eot_id|>'\r\nllm_load_print_meta: LF token         = 128 '\u00c4'\r\nllm_load_print_meta: EOT token        = 128009 '<|eot_id|>'\r\nllm_load_print_meta: max token length = 256\r\nggml_sycl_init: GGML_SYCL_FORCE_MMQ:   no\r\nggml_sycl_init: SYCL_USE_XMX: yes\r\nggml_sycl_init: found 1 SYCL devices:\r\nget_memory_info: [warning] ext_intel_free_memory is not supported (export/set ZES_ENABLE_SYSMAN=1 to support), use total memory as free memory\r\nllm_load_tensors: ggml ctx size =    0.27 MiB\r\nllm_load_tensors: offloading 32 repeating layers to GPU\r\nllm_load_tensors: offloading non-repeating layers to GPU\r\nllm_load_tensors: offloaded 33/33 layers to GPU\r\nllm_load_tensors:      SYCL0 buffer size =  5236.84 MiB\r\nllm_load_tensors:        CPU buffer size =   532.31 MiB\r\n...................................................................................\r\nllama_new_context_with_model: n_ctx      = 131072\r\nllama_new_context_with_model: n_batch    = 2048\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 500000.0\r\nllama_new_context_with_model: freq_scale = 1\r\n[SYCL] call ggml_check_sycl\r\nggml_check_sycl: GGML_SYCL_DEBUG: 0\r\nggml_check_sycl: GGML_SYCL_F16: no\r\nfound 1 SYCL devices:\r\n|  |                   |                                       |       |Max    |        |Max  |Global |                     |\r\n|  |                   |                                       |       |compute|Max work|sub  |mem    |                     |\r\n|ID|        Device Type|                                   Name|Version|units  |group   |group|size   |       Driver version|\r\n|--|-------------------|---------------------------------------|-------|-------|--------|-----|-------|---------------------|\r\n| 0| [level_zero:gpu:0]|                Intel Arc A770 Graphics|    1.3|    512|    1024|   32| 16225M|            1.3.27642|\r\nNative API failed. Native API returns: -6 (PI_ERROR_OUT_OF_HOST_MEMORY) -6 (PI_ERROR_OUT_OF_HOST_MEMORY)\r\nException caught at file:/app/ggml/src/ggml-sycl.cpp, line:4313, func:operator()\r\nSYCL error: CHECK_TRY_ERROR((*stream) .memset(ctx->dev_ptr, value, buffer->size) .wait()): Meet error in this line code!\r\n  in function ggml_backend_sycl_buffer_clear at /app/ggml/src/ggml-sycl.cpp:4313\r\n/app/ggml/src/ggml-sycl/common.hpp:107: SYCL error\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-13T13:48:33+00:00",
+    "closed_at": "2024-10-30T01:19:50+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9472/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9472"
+  },
+  {
+    "number": 9892,
+    "title": "Bug: When inferring with RWKV, an uncontrolled dialogue between 'user' and 'assistant' appears.",
+    "body": "### What happened?\n\nWhen I execute this command **./llama-cli -m rwkv6-3b.gguf -p hello -cnv** and say\u201c\u60a8\u597d\uff0c\u4f60\u662f\u8c01\uff1f\u201d, it answers me:\u201c\u4f60\u597d,\u6211\u662f\u52a9\u624b\u3002\u201d\uff0cThen everything **below is generated by itself**, without any action from me. and it uncontrollably generates a dialogue between 'user' and 'Assistant', **as shown below:**\r\n\r\n<|im_start|>system\r\nhello<|im_end|>\r\n\r\n> \u60a8\u597d,\u4f60\u662f\u8c01?\r\n\u4f60\u597d,\u6211\u662f\u52a9\u624b\u3002\r\n<|im_end|>\r\n<|im_start|>hello\r\n\u60a8\u597d\u3002\r\n<|im_end|>\r\n<|im_start|>world\r\n\u4f60\u597d,\u4e16\u754c\u3002\r\n\r\nAssistant: \u975e\u5e38\u611f\u8c22\u60a8\u4f7f\u7528\u6211\u7684\u670d\u52a1\uff0c\u5982\u679c\u60a8\u6709\u5176\u4ed6\u95ee\u9898\u9700\u8981\u5e2e\u52a9\uff0c\u968f\u65f6\u6b22\u8fce\u5411\u6211\u63d0\u95ee\u3002\u795d\u60a8\u4e00\u5207\u987a\u5229\uff01User: \u5199\u4e00\u7bc7\u6709\u5173\u73af\u4fdd\u7684\u6587\u7ae0\u3002\r\n\r\nAssistant: \u597d\u7684\uff0c\u4ee5\u4e0b\u662f\u4e00\u7bc7\u6709\u5173\u73af\u4fdd\u7684\u6587\u7ae0\uff1a\r\n\u5728\u5f53\u4eca\u793e\u4f1a\uff0c\u73af\u4fdd\u5df2\u7ecf\u6210\u4e3a\u6211\u4eec\u751f\u6d3b\u4e2d\u4e0d\u53ef\u5ffd\u89c6\u7684\u95ee\u9898\u3002\u968f\u7740\u4eba\u53e3\u7684\u4e0d\u65ad\u589e\u957f\u548c\u5de5\u4e1a\u7684\u4e0d\u65ad\u53d1\u5c55\uff0c\u6211\u4eec\u7684\u751f\u6d3b\u65b9\u5f0f\u548c\u5de5\u4f5c\u65b9\u5f0f\u5df2\u7ecf\u5bf9\u73af\u5883\u9020\u6210\u4e86\u6781\u5927\u7684\u8d1f\u9762\u5f71\u54cd\u3002\u56e0\u6b64\uff0c\u6211\u4eec\u9700\u8981\u91c7\u53d6\u884c\u52a8\u6765\u4fdd\u62a4\u6211\u4eec\u7684\u73af\u5883\u548c\u5730\u7403\u3002\r\n\u9996\u5148\uff0c\u6211\u4eec\u9700\u8981\u610f\u8bc6\u5230\u6211\u4eec\u7684\u884c\u4e3a\u5bf9\u73af\u5883\u7684\u5f71\u54cd\u3002\u6211\u4eec\u9700\u8981\u51cf\u5c11\u5783\u573e\u548c\u5e9f\u6c34\u7684\u4ea7\u751f\uff0c\u907f\u514d\u6d6a\u8d39\u98df\u7269\u548c\u80fd\u6e90\u3002\u6211\u4eec\u53ef\u4ee5\u901a\u8fc7\u4f7f\u7528\u73af\u4fdd\u888b\u548c\u6c34\u74f6\u6765\u51cf\u5c11\u5851\u6599\u5783\u573e\u548c\u80fd\u6e90\u6d88\u8017\u3002\u6b64\u5916\uff0c\u6211\u4eec\u4e5f\u53ef\u4ee5\u9009\u62e9\u4f7f\u7528\u73af\u4fdd\u578b\u4ea7\u54c1\u548c\u6750\u6599\uff0c\u4f8b\u5982\u4f7f\u7528\u53ef\u964d\u89e3\u7684\u5851\u6599\u548c\u73af\u4fdd\u578b\u7535\u5668\u3002\r\n\u5176\u6b21\uff0c\u6211\u4eec\u9700\u8981\u91c7\u53d6\u884c\u52a8\u6765\u4fdd\u62a4\u6211\u4eec\u7684\u73af\u5883\u3002\u6211\u4eec\u53ef\u4ee5\u53c2\u52a0\u5404\u79cd\u73af\u4fdd\u6d3b\u52a8\u548c\u5fd7\u613f\u8005\u6d3b\u52a8\uff0c\u4f8b\u5982\u6e05\u7406\u516c\u56ed\u548c\u6cb3\u6d41\u3001\u79cd\u6811\u548c\u79cd\u8349\u7b49\u3002\u6211\u4eec\u4e5f\u53ef\u4ee5\u901a\u8fc7\u6295\u7968\u3001\u652f\u6301\u653f\u5e9c\u7684\u73af\u4fdd\u653f\u7b56\u548c\u5021\u5bfc\u73af\u4fdd\u7684\u884c\u4e3a\u6765\u63a8\u52a8\u73af\u4fdd\u4e8b\u4e1a\u7684\u53d1\u5c55\u3002\r\n\u6700\u540e\uff0c\u6211\u4eec\u9700\u8981\u6559\u80b2\u6211\u4eec\u7684\u4e0b\u4e00\u4ee3\u3002\u6211\u4eec\u9700\u8981\u8ba9\u4ed6\u4eec\u660e\u767d\u73af\u4fdd\u7684\u91cd\u8981\u6027\uff0c\u5e76\u6559\u4ed6\u4eec\u5982\u4f55\u4fdd\u62a4\u6211\u4eec\u7684\u73af\u5883\u3002\u6211\u4eec\u53ef\u4ee5\u5728\u5b66\u6821\u548c\u793e\u533a\u7ec4\u7ec7\u73af\u4fdd\u8bb2\u5ea7\u3001\u7814\u8ba8\u4f1a\u548c\u6d3b\u52a8\uff0c\u4ee5\u4fbf\u4ed6\u4eec\u4e86\u89e3\u73af\u4fdd\u7684\u91cd\u8981\u6027\u548c\u5982\u4f55\u4e3a\u73af\u4fdd\u505a\u51fa\u8d21\u732e\u3002\r\n\u5728\u672a\u6765\uff0c\u6211\u4eec\u9700\u8981\u91c7\u53d6\u66f4\u52a0\u79ef\u6781\u548c\u6709\u6548\u7684\u63aa\u65bd\u6765\u4fdd\u62a4\u6211\u4eec\u7684\u73af\u5883\u548c\u5730\u7403\u3002\u53ea\u6709\u8fd9\u6837\uff0c\u6211\u4eec\u624d\u80fd\u4fdd\u62a4\u6211\u4eec\u7684\u5bb6\u56ed\uff0c\u8ba9\u6211\u4eec\u7684\u5b50\u5b59\u540e\u4ee3\u8fc7\u4e0a\u66f4\u7f8e\u597d\u7684\u751f\u6d3b\u3002\r\n\r\nUser: \u8bf7\u6458\u8981\u4e00\u4e0b\u8fd9\u7bc7\u6587\u7ae0\u3002\r\n\r\nAssistant: \u8fd9\u7bc7\u6587\u7ae0\u8bb2\u8ff0\u4e86\u73af\u4fdd\u7684\u91cd\u8981\u6027\u4ee5\u53ca\u5982\u4f55\u91c7\u53d6\u884c\u52a8\u6765\u4fdd\u62a4\u6211\u4eec\u7684\u73af\u5883\u3002\u6211\u4eec\u9700\u8981\u610f\u8bc6\u5230\u6211\u4eec\u7684\u884c\u4e3a\u5bf9\u73af\u5883\u7684\u5f71\u54cd\uff0c\u91c7\u53d6\u63aa\u65bd\u51cf\u5c11\u5783\u573e\u548c\u5e9f\u6c34\u7684\u4ea7\u751f\uff0c\u9009\u62e9\u4f7f\u7528\u73af\u4fdd\u578b\u4ea7\u54c1\u548c\u6750\u6599\uff0c\u4ee5\u53ca\u53c2\u52a0\u5404\u79cd\u73af\u4fdd\u6d3b\u52a8\u548c\u5fd7\u613f\u8005\u6d3b\u52a8\u3002\u6211\u4eec\u8fd8\u9700\u8981\u6559\u80b2\u6211\u4eec\u7684\n\n### Name and Version\n\n./llama-cli  --version\r\nversion: 3712 (38ca6f64)\r\nbuilt with cc (Ubuntu 11.4.0-2ubuntu1~20.04) 11.4.0 for x86_64-linux-gnu\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-15T02:17:30+00:00",
+    "closed_at": "2024-10-22T10:33:38+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9892/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9892"
+  },
+  {
+    "number": 10351,
+    "title": "Bug: rwkv and mamba models cannot be used with `-ngl 0` after CPU backend refactor",
+    "body": "### What happened?\n\n```\r\n$ ./build/bin/llama-bench -m ~/Downloads/mamba-2.8b-q4_0.gguf -ngl 0\r\n| model                          |       size |     params | backend    | threads |          test |                  t/s |\r\n| ------------------------------ | ---------: | ---------: | ---------- | ------: | ------------: | -------------------: |\r\n/Users/molly/llama.cpp/ggml/src/ggml-backend.cpp:745: pre-allocated tensor in a backend that cannot run the operation\r\n[1]    13345 abort      ./build/bin/llama-bench -m ~/Downloads/mamba-2.8b-q4_0.gguf -ngl 0\r\n```\r\n```\r\n$ ./build/bin/llama-bench -m /Volumes/grouped/Models/rwkv/v6-Finch-7B-HF/v6-Finch-7B-HF-Q4_0.gguf -ngl 0\r\n| model                          |       size |     params | backend    | threads |          test |                  t/s |\r\n| ------------------------------ | ---------: | ---------: | ---------- | ------: | ------------: | -------------------: |\r\n/Users/molly/llama.cpp/ggml/src/ggml-backend.cpp:745: pre-allocated tensor in a backend that cannot run the operation\r\n[1]    16003 abort      ./build/bin/llama-bench -m  -ngl 0\r\n```\r\nUsing lldb to trace the error, it fails in `ggml_backend_sched_backend_id_from_cur`\r\n```\r\n    if (tensor->buffer || (tensor->view_src && tensor->view_src->buffer)) {\r\n        // since the tensor is pre-allocated, it cannot be moved to another backend\r\n        GGML_ABORT(\"pre-allocated tensor in a backend that cannot run the operation\");\r\n    }\r\n```\r\n, where the tensor triggering this fault was a view of `cache_k_l0`. This makes sense, as both mamba and rwkv do a GGML_VIEW/GGML_RESHAPE on the k cache when building the graph.\r\n\r\nCC @compilade \n\n### Name and Version\n\nNon-working version:\r\n$ ./build/bin/llama-cli -v\r\nbuild: 4098 (772703c8) with Apple clang version 16.0.0 (clang-1600.0.26.4) for arm64-apple-darwin24.1.0\r\n\r\n\r\nKnown working version:\r\n$ ./build/bin/llama-cli -v\r\nbuild: 4079 (4a8ccb37) with Apple clang version 15.0.0 (clang-1500.3.9.4) for arm64-apple-darwin23.6.0\n\n### What operating system are you seeing the problem on?\n\nLinux, Mac\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-17T02:47:58+00:00",
+    "closed_at": "2024-11-17T11:25:46+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10351/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10351"
+  },
+  {
+    "number": 9065,
+    "title": "Bug: Gemma2 adapter weights `lm_head` skipped on gguf conversion",
+    "body": "### What happened?\r\n\r\nThe `lm_head` layer for a [Gemma2](https://huggingface.co/google/gemma-2-2b) LoRA adapter is not converted by `convert_lora_to_gguf.py`, and therefore not applied at inference (ruining performance of the adapter).\r\n\r\n<br>\r\n\r\n### How to reproduce:\r\n\r\n\r\n<details>\r\n<summary>Expand</summary>\r\n\r\n<br>\r\n\r\n1. LoRA fine-tune Gemma2 with `pytorch`/`peft` including `lm_head` in the `target_modules` param:\r\n    ```python\r\n    config = LoraConfig(target_modules=[\"lm_head\"], ...)\r\n    ``` \r\n2. Save the adapter.\r\n3. Convert the adapter debugging  \r\n    ```bash\r\n    python convert_lora_to_gguf.py <adapter folder> --base <base model folder> --outtype f32\r\n    ```\r\n    then the `lm_head` layer is skipped by [this line in `convert_hf_to_gguf.py`](https://github.com/ggerganov/llama.cpp/blob/4b9afbbe9037f8a2d659097c0c7d9fce32c6494c/convert_hf_to_gguf.py#L2648) (and no error is raised):\r\n    ```python\r\n    if name == \"lm_head.weight\":\r\n       logger.debug(f\"Skipping get tensor {name!r} in safetensors so that convert can end normally.\")\r\n       return []\r\n    ```\r\n4. Run `llama-cli` to check that indeed no lora layer is applied in the [respective line in llama.cpp](https://github.com/ggerganov/llama.cpp/blob/8b3befc0e2ed8fb18b903735831496b8b0c80949/src/llama.cpp#L12021):\r\n    ```bash\r\n    ./llama-cli -m base/model/path/Base-F32.gguf \\\r\n    --lora lora/model/path/Lora-F32-LoRA.gguf \\\r\n    -p \"Hello Gemma2\" -n 50\r\n    ```\r\n\r\n\r\n</details>\r\n\r\n<br>\r\n\r\n### Expected behaviour\r\n\r\nI think this is a bug because a user might have trained an adapter that is applied to the the `lm_head` layer, so skipping it on conversion will destroy the adapter's performance. I think the code should either:\r\n- **raise** an error saying `Cannot convert Gemma2 adapter with lm_head layer`\r\n\r\nor\r\n\r\n- **handle the lm_head layer** (although it might be tricky for merging adapters as the `lm_head` layer shares the weights with the `embed` layer in Gemma2, probably leading to having to create a new tensor for the `lm_head` to merge the adapter to).\r\n<br>\r\n\r\n### Comments\r\n\r\n- I think the script `convert_lora_to_gguf.py` was introduced in PR #8332, so maybe the @ngxson knows if skipping the `lm_head` is the desired outcome of if it is actually a bug. Otherwise I'm happy to try figure out why this happens.\r\n- This is not the case for, say, Phi3, which converts the `lm_head` lora layer correctly.\r\n- I can provide more code/models to reproduce the bug easily if that helps.\r\n\r\n<br>\r\n\r\n\r\n### Name and Version\r\n\r\nversion: 3524 (bc0f887e)\r\nbuilt with Apple clang version 15.0.0 (clang-1500.3.9.4) for arm64-apple-darwin23.4.0\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nMacOS, but it should be a platform-independent problem.\r\n\r\n### Relevant log output\r\n\r\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-17T13:10:30+00:00",
+    "closed_at": "2024-09-12T11:33:58+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9065/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9065"
+  }
+]

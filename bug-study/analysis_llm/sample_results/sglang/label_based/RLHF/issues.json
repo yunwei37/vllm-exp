@@ -1,0 +1,312 @@
+[
+  {
+    "number": 5963,
+    "title": "[Feature] support abort ongoing request",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nIt would be great if we can have an endpoint to support ending certain requests with `rid`.\n\nThe main use case is that in rl training, we may do over-sampling, and as long as the number of generated responses meets the required batch size, we can stop the remaining requests.\n\nA reference implementation would be the `AsyncLLM.abort` in vllm ( https://github.com/vllm-project/vllm/blob/296c6572dd1f76b31b93be19e550790afcfb8843/vllm/v1/engine/async_llm.py#L348).\n\nI'd love to help :)\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-02T02:04:47+00:00",
+    "closed_at": "2025-05-25T23:36:54+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5963/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5963"
+  },
+  {
+    "number": 5093,
+    "title": "[Bug] SGLang on ROCm - NameError: name 'torch_memory_saver' is not defined",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n[RCOm Docker - `lmsysorg/sglang:v0.4.4.post3-rocm630-srt`]\nThe issue arises from here:\nhttps://github.com/sgl-project/sglang/blob/main/python/sglang/srt/torch_memory_saver_adapter.py#L48\n\n1. In line 6, if the code fails to import torch_memory_saver, it just bypasses instead of triggering any error. Thus, if the code calls line46 class and uses def configure_subprocess(self), it cannot find `torch_memory_saver` , thereby triggering NameError: name 'torch_memory_saver' is not defined error on later.\n2. `torch_memory_saver`  should be supported in this docker (`lmsysorg/sglang:v0.4.4.post3-rocm630-srt`)\n\n### Reproduction\n\nSee above\n\n### Environment\n\nYou can try in this (latest) docker \n```bash\ndocker run --rm -it \\\n  --device /dev/dri \\\n  --device /dev/kfd \\\n  -p 8265:8265 \\\n  --group-add video \\\n  --cap-add SYS_PTRACE \\\n  --security-opt seccomp=unconfined \\\n  --privileged \\\n  -v $HOME/.ssh:/root/.ssh \\\n  -v $HOME:$HOME \\\n  --shm-size 128G \\\n  --name sglang_rocm_test \\\n  -w $PWD \\\n  lmsysorg/sglang:v0.4.4.post3-rocm630-srt \\\n  /bin/bash\n```",
+    "labels": [
+      "high priority",
+      "inactive",
+      "amd",
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-05T23:11:55+00:00",
+    "closed_at": "2025-06-08T00:21:35+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5093/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5093"
+  },
+  {
+    "number": 3871,
+    "title": "[Feature] Support token-in-token-out for Vision LM",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nConsidering what we need in LLM RLHF, rollout engine just needs token in, and give token out.\n\nWe are working on VLM RLHF with veRL, could we support VLM token-in-token-out. Here is something maybe useful:\n\n`test/srt/test_skip_tokenizer_init.py`: this is for LLM.\n\nI actually do not know how to get token of VLM \ud83d\ude02\n\nHope to get the answer.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "inactive",
+      "RLHF",
+      "MLLM"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-26T04:35:56+00:00",
+    "closed_at": "2025-04-29T00:18:49+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3871/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3871"
+  },
+  {
+    "number": 3726,
+    "title": "[Bug] update_weights_from_tensor raise EOFError when TP>1",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n An EOFError error was raised when using `update_weights_from_tensor` at TP>4, it seens the data deserialize before the full data received.\n\nPython error trace info:\n```\nTraceback (most recent call last):                                                                                                                        \n  File \"/usr/lib64/python3.9/multiprocessing/resource_sharer.py\", line 143, in _serve                                                                     \n    send, close = self._cache.pop(key)                                                                                                                    \nKeyError: 1                                                                                                                                               \n[2025-02-20 15:22:31 TP1] Scheduler hit an exception: Traceback (most recent call last):                                                                  \n  File \"/usr/local/lib/python3.9/site-packages/sglang/srt/managers/scheduler.py\", line 1796, in run_scheduler_process                                     \n    scheduler.event_loop_overlap()                                                                                                                        \n  File \"/usr/local/lib64/python3.9/site-packages/torch/utils/_contextlib.py\", line 116, in decorate_context                                               \n    return func(*args, **kwargs)                                                                                                                          \n  File \"/usr/local/lib/python3.9/site-packages/sglang/srt/managers/scheduler.py\", line 494, in event_loop_overlap                                         \n    self.process_input_requests(recv_reqs)                                                                                                                \n  File \"/usr/local/lib/python3.9/site-packages/sglang/srt/managers/scheduler.py\", line 580, in process_input_requests                                     \n    output = self._request_dispatcher(recv_req)                                                                                                           \n  File \"/usr/local/lib/python3.9/site-packages/sglang/utils.py\", line 374, in __call__                                                                    \n    return fn(obj)                                                                                                                                        \n  File \"/usr/local/lib/python3.9/site-packages/sglang/srt/managers/scheduler.py\", line 1670, in update_weights_from_tensor                                \n    success, message = self.tp_worker.update_weights_from_tensor(recv_req)                                                                                \n  File \"/usr/local/lib/python3.9/site-packages/sglang/srt/managers/tp_worker_overlap_thread.py\", line 226, in update_weights_from_tensor                  \n    success, message = self.worker.update_weights_from_tensor(recv_req)                                                                                   \n  File \"/usr/local/lib/python3.9/site-packages/sglang/srt/managers/tp_worker.py\", line 208, in update_weights_from_tensor                                 \n    MultiprocessingSerializer.deserialize(recv_req.serialized_named_tensors)                                                                              \n  File \"/usr/local/lib/python3.9/site-packages/sglang/srt/utils.py\", line 1280, in deserialize                                                            \n    return ForkingPickler.loads(data)                                                                                                                     \n  File \"/usr/local/lib64/python3.9/site-packages/torch/multiprocessing/reductions.py\", line 541, in rebuild_storage_fd                                    \n    fd = df.detach()                                                                                                                                      \n  File \"/usr/lib64/python3.9/multiprocessing/resource_sharer.py\", line 58, in detach                                                                      \n    return reduction.recv_handle(conn)                                                                                                                    \n  File \"/usr/lib64/python3.9/multiprocessing/reduction.py\", line 189, in recv_handle                                                                      \n    return recvfds(s, 1)[0]                                                                                                                               \n  File \"/usr/lib64/python3.9/multiprocessing/reduction.py\", line 159, in recvfds                                                                          \n    raise EOFError                                                                                                                                        \nEOFError\n```\n\n\n### Reproduction\n\n```python\nimport os\nimport argparse\nimport math\nimport glob\n\nimport torch\n\nfrom sglang.srt.server_args import ServerArgs\nimport sglang as sgl\nfrom sglang.srt.model_loader.weight_utils import filter_duplicate_safetensors_files, safetensors_weights_iterator\n\n\ndef load_hf_weights(hf_folder):\n    pattern = \"*.safetensors\"\n    hf_weights_files = glob.glob(os.path.join(hf_folder, pattern))\n    index_file = \"model.safetensors.index.json\"\n    hf_weights_files = filter_duplicate_safetensors_files(hf_weights_files, hf_folder, index_file)\n    weights_iterator = safetensors_weights_iterator(hf_weights_files)\n\n    for name, param in weights_iterator:\n        yield name, param\n\n\nchief_ip='127.0.0.1'\nhost = '0.0.0.0'\nport = 29000\n\nmodel_name = 'Qwen2.5-7B-Instruct'\nmodel_path='./Qwen2.5-7B-Instruct'\ntp_size = 4\n\nserver_args = ServerArgs(\n    model_path=model_path,\n    dtype='bfloat16',\n    tp_size=tp_size,\n    mem_fraction_static=0.9,\n    # request\n    max_running_requests=max_batch_size,\n    max_prefill_tokens=max_input_len,\n    context_length=max_input_len+max_output_len,\n    # serving\n    host=host,\n    port=int(port),\n    device='cuda',\n    served_model_name=model_name,\n    log_level='info',\n    trust_remote_code=True,\n    log_requests=True,\n    enable_metrics=True,\n    show_time_cost=True,\n    # Multi-node distributed serving\n    dist_init_addr=f\"{chief_ip}:{port}\",\n    nnodes = 1,\n    node_rank = 0,\n)\nllm = sgl.Engine(server_args=server_args)\n\nfor name, param in load_hf_weights(model_path):\n    llm.update_weights_from_tensor([(name, param)])\n```\n\n### Environment\n\nVerison: lastest v0.4.2 build from source\nGPU: NVIDIA H20 x4",
+    "labels": [
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-20T07:57:02+00:00",
+    "closed_at": "2025-02-24T17:12:54+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3726/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3726"
+  },
+  {
+    "number": 3209,
+    "title": "Support for saving sharded checkpoints?",
+    "body": "Does sglang support sharded checkpoints? I see in here https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/model_loader/loader.py#L492 that there is a loader and it recommends using `examples/save_sharded_state.py` to save the sharded state, but this file doesn't exist. \n\nDoes it refer to this one from vllm https://github.com/vllm-project/vllm/blob/main/examples/offline_inference/save_sharded_state.py? \n\nAlso the load-format doesn't have a choice for sharded_state https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/server_args.py#L315, is that a typo or it's not supposed to be used?\n\nMy real problem is that I'm trying to load DeepSeek-R1 and it takes a very long time. I have a sharded checkpoint that vllm can load instantly, but sglang raises the following error (after I add \"sharded_state\" to choices in launcher to avoid error right away)\n\n\n```\nTraceback (most recent call last):\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 1773, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 239, in __init__\n    self.tp_worker = TpWorkerClass(\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker_overlap_thread.py\", line 63, in __init__\n    self.worker = TpModelWorker(server_args, gpu_id, tp_rank, dp_rank, nccl_port)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker.py\", line 68, in __init__\n    self.model_runner = ModelRunner(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 185, in __init__\n    self.load_model()\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 306, in load_model\n    self.model = get_model(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_loader/__init__.py\", line 22, in get_model\n    return loader.load_model(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_loader/loader.py\", line 605, in load_model\n    param_data = state_dict[key].data\nKeyError: 'model.layers.10.mlp.experts.e_score_correction_bias'\n```\n\nDoes it mean that sglang shards model differently and I need to redo the sharding in some way? Or it's not supported at all? Or is there any other recommended way to load R1/V3 model fast?",
+    "labels": [
+      "help wanted",
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-30T03:07:40+00:00",
+    "closed_at": "2025-03-14T16:03:28+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3209/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3209"
+  },
+  {
+    "number": 2968,
+    "title": "[Feature] Add docs for Offline Engine token-in token-out",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nWe have token-in-token-out pipeline in Sever already. But we need it for engine also.\n\n```python\nclass SGLangLLMRayActor:\n    def __init__(self, *args, **kwargs):\n        self.llm = sglang.Engine(\n            model_path=args[0],\n            trust_remote_code=kwargs.get(\"trust_remote_code\", True),\n            dtype=kwargs.get(\"dtype\", \"auto\"),\n            tp_size=kwargs.get(\"tensor_parallel_size\", 1),\n            device=\"cuda\",\n            random_seed=kwargs.get(\"seed\", 42),\n            disable_radix_cache=not kwargs.get(\"enable_prefix_caching\", False),\n            disable_cuda_graph=not kwargs.get(\"enforce_eager\", False),\n            disable_cuda_graph_padding=not kwargs.get(\"enable_prefix_caching\", False),\n            context_length=kwargs.get(\"max_model_len\", None),\n            log_level=\"info\",\n            skip_tokenizer_init=True,\n        )\n\n    def generate(self, sampling_params, prompt_token_ids, stop_token_ids):\n\n        # min_tokens, include_stop_str_in_output is not used in sglang\n\n        sampling_params = dict(\n            max_new_tokens=sampling_params.get(\"max_tokens\", 1024),\n            top_p=sampling_params.get(\"top_p\", 1),\n            top_k=sampling_params.get(\"top_k\", 50),\n            temperature=sampling_params.get(\"temperature\", 1),\n            repetition_penalty=sampling_params.get(\"repetition_penalty\", 1),\n            skip_special_tokens=sampling_params.get(\"skip_special_tokens\", False),\n            stop_token_ids=stop_token_ids,\n        )\n\n        outputs = self.llm.generate(input_ids=prompt_token_ids, sampling_params=sampling_params)\n        return outputs\n```\n\nAlso, I added `skip_special_tokens=False`, but there is still no `eos` at the end.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-18T20:13:02+00:00",
+    "closed_at": "2025-05-26T02:22:39+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2968/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2968"
+  },
+  {
+    "number": 2668,
+    "title": "How to obtain the hidden states of generated tokens?",
+    "body": "Thank you for your outstanding work! I was wondering if there\u2019s a way to access the hidden states for each generated token at every layer. Many thanks!",
+    "labels": [
+      "inactive",
+      "feature",
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-30T11:08:54+00:00",
+    "closed_at": "2025-03-01T00:18:53+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2668/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2668"
+  },
+  {
+    "number": 2661,
+    "title": "[Feature] Add docs for pass in token ids directly",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nIn most of RLHF frameworks, the prompts are pre-tokenized when data processing, so they can directly pass in token ids to the sglang engine rather than the prompts. So we should add docs on how to do this and how to get tokens directly.\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "RLHF"
+    ],
+    "state": "open",
+    "created_at": "2024-12-30T07:51:00+00:00",
+    "closed_at": null,
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2661/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2661"
+  },
+  {
+    "number": 2660,
+    "title": "[Feature] Rewrite the SRT Backend docs",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThis doc has been outdated for a long time:\r\n\r\nhttps://sgl-project.github.io/backend/backend.html#backend-sglang-runtime-srt\r\n\r\n1. Only keep an explanation for server arguments and give the link to sampling parameters.\r\n2. Add essential explanation for server arguments. Remember to add these kinds of arguments. https://lmsys.org/blog/2024-12-04-sglang-v0-4/#data-parallelism-attention-for-deepseek-models\r\n3. A group of parameters have ##, ### is not allowed.\r\n4. Use Models From ModelScope and Run Llama 3.1 405B move to reference, and potentially adds docs for deepseek.\r\n5. change main readme.md.\r\n\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted",
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-30T07:49:17+00:00",
+    "closed_at": "2025-05-24T21:27:16+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2660/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2660"
+  },
+  {
+    "number": 2657,
+    "title": "[Feature] Add arguments mapping between SGLang / vllm / trt-llm",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThis is what I need to do for integrating SGLang into OpenRLHF. OpenRLHF already supports vllm. We need to add sglang. I need to map the server and sampling parameters from vllm to sglang. I think this is a good issue for us to let our users switch smoothly between mainstream engines.\r\n\r\n**I attached how I am doing right now. But it may be wrong.**\n\n### Related resources\n\n**The args Mapping from vllm to sglang**\r\n\r\nThese are the server parameters of vllm:\r\n\r\n```python\r\npretrain,\r\nnoset_visible_devices=noset_visible_devices,\r\ntrust_remote_code=True,\r\ntensor_parallel_size=tensor_parallel_size,\r\ndtype=\"bfloat16\",\r\nseed=seed + i,\r\nenable_prefix_caching=enable_prefix_caching,\r\nenforce_eager=enforce_eager,\r\nmax_model_len=max_model_len,\r\nbackend=backend,\r\n```        \r\n\r\nAmong them, pretrain is the model path, and this is my mapping in sglang:\r\n\r\n```python\r\n#! TODO chenyang check engine params\r\nsglang_params = {\r\n    \"model_path\": args[0],  # pretrain path\r\n    \"trust_remote_code\": kwargs.get(\"trust_remote_code\", True),\r\n    \"dtype\": kwargs.get(\"dtype\", \"auto\"),\r\n    \"tp_size\": kwargs.get(\"tensor_parallel_size\", 1),\r\n    \"device\": \"cuda\",\r\n    \"disable_radix_cache\": not kwargs.get(\"enable_prefix_caching\", False),\r\n    \"random_seed\": kwargs.get(\"seed\", 42),\r\n    \"disable_cuda_graph\": not kwargs.get(\"enforce_eager\", False),\r\n    \"disable_cuda_graph_padding\": not kwargs.get(\"enable_prefix_caching\", False),\r\n    \"context_length\": kwargs.get(\"max_model_len\", None),\r\n    \"log_level\": \"info\",\r\n    \"return_token_ids\": True,\r\n}\r\nself.llm = sglang.Engine(**sglang_params)\r\n```\r\n\r\n</details>\r\n\r\n**The Sampling Params Mapping from vllm to sglang**\r\n\r\n```python\r\nif self.backend == \"vllm\":\r\n    outputs = self.llm.generate(\r\n        sampling_params=kwargs[\"sampling_params\"], prompt_token_ids=kwargs[\"prompt_token_ids\"]\r\n    )\r\nelif self.backend == \"sglang\":\r\n    # Note that sglang sampling params are different from vllm\r\n    sampling_params = kwargs[\"sampling_params\"]\r\n    all_prompts = kwargs[\"all_prompts\"]\r\n\r\n    # min_tokens, include_stop_str_in_output is not used in sglang\r\n\r\n    sampling_params = dict(\r\n        max_new_tokens=sampling_params.max_tokens,\r\n        top_p=sampling_params.top_p,\r\n        top_k=sampling_params.top_k,\r\n        temperature=sampling_params.temperature,\r\n        repetition_penalty=sampling_params.repetition_penalty,\r\n        skip_special_tokens=sampling_params.skip_special_tokens,\r\n    )\r\n    outputs = self.llm.generate(all_prompts, sampling_params)\r\n```\r\n\r\nOf course, the sampling params passed in from the front end are as follows:\r\n\r\n```python\r\nsampling_params = SamplingParams(\r\n    temperature=kwargs.get(\"temperature\", 1.0),\r\n    top_p=kwargs.get(\"top_p\", 1.0),\r\n    top_k=kwargs.get(\"top_k\", -1),\r\n    max_tokens=kwargs.get(\"max_new_tokens\", 1024),\r\n    min_tokens=kwargs.get(\"min_new_tokens\", 1),\r\n    skip_special_tokens=kwargs.get(\"skip_special_tokens\", False),\r\n    include_stop_str_in_output=True,\r\n)\r\n```\r\n\r\n**There may be problems with my these mappings. We need documentation as a guide.** ",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted",
+      "RLHF"
+    ],
+    "state": "open",
+    "created_at": "2024-12-30T07:23:00+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2657/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2657"
+  },
+  {
+    "number": 2569,
+    "title": "[Feature] (Willing to PR) Proposal: Drop-in fast replacement of `PreTrainedModel.generate`",
+    "body": "### Checklist\r\n\r\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 2. Please use English, otherwise it will be closed.\r\n\r\n### Motivation\r\n\r\nHi thanks for the lib! Currently, a lot of code uses `model.generate()`, such as TRL's PPOTrainer, etc. If we can make a drop-in replacement of it using SGLang, then everyone can very easily speed up their code related to generation. For example, TRL's PPOTrainer, OpenRLHF's train_ppo.py (not the train_ppo_ray.py which is more for distributed training). IMHO there are many places this can be useful - many online RL algorithm can benefit from this.\r\n\r\nAs for when to update SGLang weight from HF weight, most naive solution may be, we update weights *every* time the generate is called. This may not be a big problem, because we can configure the PPO batch size to be so huge that the model.generate is only called once.\r\n\r\nRelated: https://github.com/sgl-project/sglang/issues/2542 With that, we can reduce memory footprint outside generate.\r\n\r\n### Related resources\r\n\r\n_No response_",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "collaboration",
+      "inactive",
+      "feature",
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-24T06:18:24+00:00",
+    "closed_at": "2025-03-30T00:19:36+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2569/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2569"
+  }
+]

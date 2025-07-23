@@ -1,0 +1,59 @@
+[
+  {
+    "number": 6546,
+    "title": "kubernetes example",
+    "body": "### Motivation\r\n\r\nKubernetes is widely used in the industry to deploy product and application at scale.\r\n\r\nIt can be useful for the community to have a `llama.cpp` [helm](https://helm.sh/docs/intro/quickstart/) chart for the server.\r\n\r\nI have started several weeks ago, I will continue when I have more time, meanwhile any help is welcomed:\r\n\r\nhttps://github.com/phymbert/llama.cpp/tree/example/kubernetes/examples/kubernetes\r\n\r\n### References\r\n- #6545\r\n",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "server/webui",
+      "kubernetes"
+    ],
+    "state": "open",
+    "created_at": "2024-04-08T16:31:37+00:00",
+    "closed_at": null,
+    "comments": 18,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6546/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6546"
+  },
+  {
+    "number": 6545,
+    "title": "server-cuda closes connection while still processing tasks",
+    "body": "Issue to be published in the llama.cpp github: \r\n\r\n\r\nI am using the Docker Image ghcr.io/ggerganov/llama.cpp:server-cuda to deploy the server in a Kubernetes cluster in AWS using four A10G gpus. This is the configuration setup: \r\n\r\n>     - name: llama-cpp-server\r\n>         image: ghcr.io/ggerganov/llama.cpp:server-cuda\r\n>         args:\r\n>         - \"--model\"\r\n>         - \"/models/mixtral-8x7b-instruct-v0.1.Q5_K_M.gguf\"\r\n>         - \"--port\"\r\n>         - \"8000\"\r\n>         - \"--host\"\r\n>         - \"0.0.0.0\"\r\n>         - \"--ctx-size\"\r\n>         - \"100000\"\r\n>         - \"--n-gpu-layers\"\r\n>         - \"256\"\r\n>         - \"--cont-batching\"\r\n>         - \"--parallel\" \r\n>         - \"10\"\r\n>         - \"--batch-size\"\r\n>         - \"4096\"\r\n\r\n(not sure if it adds context, but I'm using a persistentVolumeClaim where I download and persist the model)\r\n\r\nI already reviewed the server readme and all the command line options and also tested different image tags for server-cuda from the past days. \r\n\r\nBased on [this discussion](https://github.com/ggerganov/llama.cpp/discussions/4130#discussioncomment-8053636) y understand I have 10 slots for processing parallel requests, and I could be able to process 10 sequences with 10000 tokens each. The gpu I'm using should be able to process this load. \r\n\r\nWith this configuration, I executed a test for sending 5 concurrent requests of ~2300 tokens each. I understand this should be way below the maximum processable limit, but I'm getting a connection closed from the server while its is still processing the tasks in the used slots. The process is the following:\r\n\r\n1. I send multiple requests to the server (5)\r\n2. The server gets disconnected without sending a response for some of the requests\r\n3. I check again the /health and see that the slots are still running\r\n4.  I check the logs for the server and see that all tasks finish successfully. I don't see any error logs in the server\r\n\r\nI am trying to understand if there is some additional configuration I'm missing or how can I improve concurrency in these cases without handling connection error from outside (additionally, when a the connection gets closed, I cannot reprocess the requests immediately since the server is still processing the previous requests)\r\n",
+    "labels": [
+      "server/webui",
+      "bug-unconfirmed",
+      "kubernetes"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-08T16:09:49+00:00",
+    "closed_at": "2024-04-08T20:34:17+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6545/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6545"
+  }
+]

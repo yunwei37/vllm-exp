@@ -1,0 +1,786 @@
+[
+  {
+    "number": 13860,
+    "title": "Automatic optimization of runtime parameters such as -ngl given memory constraints",
+    "body": "I'm interested in implementing code for automatically determining the optimal runtime parameters given some model and memory constraints. I imagine the implementation to use something like a \"dummy\" parameter which, when set, does not result in any actual memory allocations but enables the creation of `llama_model` and `llama_context` dummies that can be used to determine how much memory would be used for some choice of `llama_model_params` and `llama_context_params`. By comparing the amount of memory that was used for the dummies with the amount of memory that is actually available the implementation could then iteratively optimize parameters such as context size or the number of GPU layers.\n\nOne roadblock that I have run into is how to make this implementation minimally invasive for the rest of the code. Right now I think the way to do it would be:\n\n* Extend `ggml_backend_device` to track the amount of memory that has been allocated to this device by the current process.\n* Add a function like `ggml_backend_dev_get_device_dummy` that returns a dummy instead of the actual device.\n* In llama.cpp, conditionally fetch the dummy devices. Some additional logic in `llama-model-load.cpp` will still be needed to avoid temporarily loading data from disk to RAM.\n* Extend the logic of `llama_decode` a bit to allow for determining the allocated size of the worst-case graph.\n* In the runtime parameter optimization code, simply iterate over the dummy devices and retrieve the amount of memory that was allocated.\n\nI'm very much open to suggestions, particularly from @slaren .",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-28T13:57:26+00:00",
+    "closed_at": "2025-07-13T01:08:22+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/13860/reactions",
+      "total_count": 7,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 3,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/13860"
+  },
+  {
+    "number": 7969,
+    "title": "Bug: b3028 breaks mixtral 8x22b",
+    "body": "### What happened?\n\nMixtral 8x22b model running with server.\r\n\r\nb3027: good\r\nlm hi\r\n Hello! How can I help you today? Is there something specific you would like to talk about or ask about? I'm here to provide information and answer questions to the best of my ability.\r\n\r\nb3028: garbage\r\nlm hi\r\n\ud83d\udc4b\r\n\r\n[INST] I'm here to help you with your questions about the [/INST] \ud83e\udd13\r\n\r\n[INST] I can provide information on a variety of topics, such as [/INST] \ud83d\udcda\r\n\r\n[INST] - [/INST] \ud83c\udfeb\r\n- [/INST] \ud83d\udcbb\r\n- [/INST] \ud83d\udcc8\r\n- [/INST] \ud83d\udcca\r\n- [/INST] \ud83d\udcc8\r\n- [/INST] \ud83d\udcca\r\n- [/INST] \ud83d\udcc8\r\n- [/INST] \ud83d\udcca\r\n- [/INST] \ud83d\udcc8\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n\n### Name and Version\n\nb3027 for good run\r\nb3028 for broken run\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n```shell\nna\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "high severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-17T05:04:18+00:00",
+    "closed_at": "2024-08-20T01:06:49+00:00",
+    "comments": 20,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7969/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7969"
+  },
+  {
+    "number": 6614,
+    "title": "llama_tensor_get_type falling back when not necessary?",
+    "body": "Noticed while making some quants for Q2_K that I was getting messages:\r\n\r\nllama_tensor_get_type : tensor cols 14464 x 4096 are not divisible by 256, required for q3_K - using fallback quantization iq4_nl\r\n\r\nBut by my math, it definitely is? Anything multiplied by 4096 should be. Is the error message misleading or is there some accidental miscalculation going on?",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-11T17:32:32+00:00",
+    "closed_at": "2024-04-11T17:38:48+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6614/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 1,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6614"
+  },
+  {
+    "number": 3983,
+    "title": "Can't Quantize gguf files: zsh: illegal hardware instruction on M1 MacBook Pro",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [Y] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [Y] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [Y] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [Y] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\nSuccessfully quantize and run large language models that I convert to gguf on M1 MacBook Pro\r\n\r\n# Current Behavior\r\nQuantization halts due to \"zsh: illegal hardware instruction\".\r\n\r\n# Environment and Context\r\nOS: Mac OS Sonoma\r\nSystem: 2020 M1 MacBook Pro 16GB RAM\r\nXcode: Version 15.0.1 (15A507)\r\nApple clang version 15.0.0 (clang-1500.0.40.1)\r\nMake 3.81 (GNU)\r\nPython 3.11.5\r\nHomebrew 4.1.19\r\nAnaconda3 (23.10.0)\r\n\r\n```\r\nllama.cpp $ git log | head -1 \r\ncommit 381efbf480959bb6d1e247a8b0c2328f22e350f8\r\n\r\n$ uname -a \r\nDarwin Kernel Version 23.1.0: Mon Oct  9 21:28:12 PDT 2023; root:xnu-10002.41.9~6/RELEASE_ARM64_T8103 arm64\r\n\r\n$ python -m pip list | egrep \"torch|numpy|sentencepiece\"\r\nnumpy                         1.24.4\r\nnumpydoc                      1.5.0\r\ntorch                         2.1.0\r\ntorchvision                   0.16.0\r\n\r\n$ python3 --version\r\nPython 3.11.5\r\n\r\n$ make  --version | head -1\r\nGNU Make 4.3\r\n\r\n$ g++ --version\r\nApple clang version 15.0.0 (clang-1500.0.40.1)\r\nTarget: arm64-apple-darwin23.1.0\r\nThread model: posix\r\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin\r\n\r\n$ brew --version\r\nHomebrew 4.1.19\r\n\r\n$ conda --version\r\nconda 23.10.0\r\n\r\n$ file quantize\r\nquantize: Mach-O 64-bit executable arm64\r\n\r\n```\r\n\r\n# Failure Information (for bugs)\r\nzsh: illegal hardware instruction \r\n\r\n\r\n# Steps to Reproduce\r\n\r\nPlease provide detailed steps for reproducing the issue. We are not sitting in front of your screen, so the more detail the better.\r\n\r\n1. Download Llama-2-13B-Chat files from huggingface\r\n2. Convert Llama-2-13B-Chat to gguf (F16)\r\n3. Attempt to quantize ggml-model-f16.gguf\r\n4. quantize should halt mid-way through quantization process with \"zsh: illegal hardware instruction\" error.\r\n\r\n# Failure Logs\r\n```\r\n$ ../llama.cpp/quantize ggml-model-f16.gguf test.gguf 17\r\nmain: build = 1493 (381efbf)\r\nmain: built with Apple clang version 15.0.0 (clang-1500.0.40.1) for arm64-apple-darwin23.1.0\r\nmain: quantizing 'ggml-model-f16.gguf' to 'test.gguf' as Q5_K\r\nllama_model_loader: loaded meta data with 18 key-value pairs and 363 tensors from ggml-model-f16.gguf (version GGUF V3 (latest))\r\nllama_model_loader: - tensor    0:                token_embd.weight f16      [  5120, 32000,     1,     1 ]\r\nllama_model_loader: - tensor    1:              blk.0.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor    2:              blk.0.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor    3:              blk.0.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor    4:         blk.0.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor    5:            blk.0.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor    6:            blk.0.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor    7:              blk.0.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor    8:           blk.0.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor    9:            blk.0.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   10:              blk.1.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   11:              blk.1.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   12:              blk.1.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   13:         blk.1.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   14:            blk.1.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   15:            blk.1.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   16:              blk.1.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   17:           blk.1.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   18:            blk.1.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   19:              blk.2.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   20:              blk.2.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   21:              blk.2.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   22:         blk.2.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   23:            blk.2.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   24:            blk.2.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   25:              blk.2.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   26:           blk.2.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   27:            blk.2.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   28:              blk.3.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   29:              blk.3.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   30:              blk.3.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   31:         blk.3.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   32:            blk.3.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   33:            blk.3.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   34:              blk.3.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   35:           blk.3.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   36:            blk.3.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   37:              blk.4.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   38:              blk.4.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   39:              blk.4.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   40:         blk.4.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   41:            blk.4.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   42:            blk.4.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   43:              blk.4.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   44:           blk.4.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   45:            blk.4.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   46:              blk.5.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   47:              blk.5.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   48:              blk.5.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   49:         blk.5.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   50:            blk.5.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   51:            blk.5.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   52:              blk.5.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   53:           blk.5.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   54:            blk.5.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   55:              blk.6.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   56:              blk.6.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   57:              blk.6.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   58:         blk.6.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   59:            blk.6.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   60:            blk.6.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   61:              blk.6.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   62:           blk.6.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   63:            blk.6.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   64:              blk.7.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   65:              blk.7.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   66:              blk.7.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   67:         blk.7.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   68:            blk.7.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   69:            blk.7.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   70:              blk.7.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   71:           blk.7.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   72:            blk.7.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   73:              blk.8.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   74:              blk.8.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   75:              blk.8.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   76:         blk.8.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   77:            blk.8.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   78:            blk.8.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   79:              blk.8.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   80:           blk.8.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   81:            blk.8.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   82:              blk.9.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   83:              blk.9.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   84:              blk.9.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   85:         blk.9.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   86:            blk.9.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   87:            blk.9.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   88:              blk.9.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   89:           blk.9.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   90:            blk.9.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   91:             blk.10.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   92:             blk.10.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   93:             blk.10.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   94:        blk.10.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   95:           blk.10.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   96:           blk.10.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor   97:             blk.10.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor   98:          blk.10.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor   99:           blk.10.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  100:             blk.11.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  101:             blk.11.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  102:             blk.11.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  103:        blk.11.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  104:           blk.11.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  105:           blk.11.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  106:             blk.11.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  107:          blk.11.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  108:           blk.11.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  109:             blk.12.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  110:             blk.12.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  111:             blk.12.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  112:        blk.12.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  113:           blk.12.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  114:           blk.12.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  115:             blk.12.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  116:          blk.12.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  117:           blk.12.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  118:             blk.13.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  119:             blk.13.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  120:             blk.13.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  121:        blk.13.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  122:           blk.13.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  123:           blk.13.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  124:             blk.13.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  125:          blk.13.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  126:           blk.13.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  127:             blk.14.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  128:             blk.14.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  129:             blk.14.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  130:        blk.14.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  131:           blk.14.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  132:           blk.14.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  133:             blk.14.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  134:          blk.14.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  135:           blk.14.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  136:             blk.15.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  137:             blk.15.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  138:             blk.15.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  139:        blk.15.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  140:           blk.15.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  141:           blk.15.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  142:             blk.15.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  143:          blk.15.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  144:           blk.15.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  145:             blk.16.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  146:             blk.16.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  147:             blk.16.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  148:        blk.16.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  149:           blk.16.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  150:           blk.16.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  151:             blk.16.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  152:          blk.16.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  153:           blk.16.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  154:             blk.17.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  155:             blk.17.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  156:             blk.17.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  157:        blk.17.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  158:           blk.17.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  159:           blk.17.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  160:             blk.17.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  161:          blk.17.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  162:           blk.17.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  163:             blk.18.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  164:             blk.18.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  165:             blk.18.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  166:        blk.18.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  167:           blk.18.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  168:           blk.18.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  169:             blk.18.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  170:          blk.18.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  171:           blk.18.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  172:             blk.19.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  173:             blk.19.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  174:             blk.19.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  175:        blk.19.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  176:           blk.19.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  177:           blk.19.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  178:             blk.19.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  179:          blk.19.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  180:           blk.19.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  181:             blk.20.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  182:             blk.20.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  183:             blk.20.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  184:        blk.20.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  185:           blk.20.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  186:           blk.20.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  187:             blk.20.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  188:          blk.20.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  189:           blk.20.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  190:             blk.21.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  191:             blk.21.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  192:             blk.21.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  193:        blk.21.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  194:           blk.21.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  195:           blk.21.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  196:             blk.21.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  197:          blk.21.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  198:           blk.21.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  199:             blk.22.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  200:             blk.22.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  201:             blk.22.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  202:        blk.22.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  203:           blk.22.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  204:           blk.22.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  205:             blk.22.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  206:          blk.22.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  207:           blk.22.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  208:             blk.23.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  209:             blk.23.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  210:             blk.23.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  211:        blk.23.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  212:           blk.23.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  213:           blk.23.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  214:             blk.23.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  215:          blk.23.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  216:           blk.23.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  217:             blk.24.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  218:             blk.24.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  219:             blk.24.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  220:        blk.24.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  221:           blk.24.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  222:           blk.24.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  223:             blk.24.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  224:          blk.24.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  225:           blk.24.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  226:             blk.25.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  227:             blk.25.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  228:             blk.25.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  229:        blk.25.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  230:           blk.25.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  231:           blk.25.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  232:             blk.25.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  233:          blk.25.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  234:           blk.25.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  235:             blk.26.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  236:             blk.26.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  237:             blk.26.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  238:        blk.26.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  239:           blk.26.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  240:           blk.26.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  241:             blk.26.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  242:          blk.26.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  243:           blk.26.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  244:             blk.27.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  245:             blk.27.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  246:             blk.27.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  247:        blk.27.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  248:           blk.27.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  249:           blk.27.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  250:             blk.27.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  251:          blk.27.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  252:           blk.27.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  253:             blk.28.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  254:             blk.28.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  255:             blk.28.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  256:        blk.28.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  257:           blk.28.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  258:           blk.28.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  259:             blk.28.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  260:          blk.28.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  261:           blk.28.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  262:             blk.29.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  263:             blk.29.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  264:             blk.29.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  265:        blk.29.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  266:           blk.29.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  267:           blk.29.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  268:             blk.29.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  269:          blk.29.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  270:           blk.29.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  271:             blk.30.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  272:             blk.30.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  273:             blk.30.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  274:        blk.30.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  275:           blk.30.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  276:           blk.30.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  277:             blk.30.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  278:          blk.30.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  279:           blk.30.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  280:             blk.31.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  281:             blk.31.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  282:             blk.31.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  283:        blk.31.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  284:           blk.31.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  285:           blk.31.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  286:             blk.31.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  287:          blk.31.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  288:           blk.31.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  289:             blk.32.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  290:             blk.32.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  291:             blk.32.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  292:        blk.32.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  293:           blk.32.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  294:           blk.32.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  295:             blk.32.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  296:          blk.32.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  297:           blk.32.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  298:             blk.33.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  299:             blk.33.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  300:             blk.33.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  301:        blk.33.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  302:           blk.33.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  303:           blk.33.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  304:             blk.33.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  305:          blk.33.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  306:           blk.33.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  307:             blk.34.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  308:             blk.34.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  309:             blk.34.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  310:        blk.34.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  311:           blk.34.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  312:           blk.34.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  313:             blk.34.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  314:          blk.34.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  315:           blk.34.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  316:             blk.35.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  317:             blk.35.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  318:             blk.35.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  319:        blk.35.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  320:           blk.35.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  321:           blk.35.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  322:             blk.35.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  323:          blk.35.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  324:           blk.35.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  325:             blk.36.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  326:             blk.36.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  327:             blk.36.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  328:        blk.36.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  329:           blk.36.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  330:           blk.36.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  331:             blk.36.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  332:          blk.36.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  333:           blk.36.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  334:             blk.37.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  335:             blk.37.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  336:             blk.37.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  337:        blk.37.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  338:           blk.37.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  339:           blk.37.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  340:             blk.37.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  341:          blk.37.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  342:           blk.37.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  343:             blk.38.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  344:             blk.38.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  345:             blk.38.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  346:        blk.38.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  347:           blk.38.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  348:           blk.38.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  349:             blk.38.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  350:          blk.38.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  351:           blk.38.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  352:             blk.39.attn_q.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  353:             blk.39.attn_k.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  354:             blk.39.attn_v.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  355:        blk.39.attn_output.weight f16      [  5120,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  356:           blk.39.ffn_gate.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  357:           blk.39.ffn_down.weight f16      [ 13824,  5120,     1,     1 ]\r\nllama_model_loader: - tensor  358:             blk.39.ffn_up.weight f16      [  5120, 13824,     1,     1 ]\r\nllama_model_loader: - tensor  359:          blk.39.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  360:           blk.39.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  361:               output_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  362:                    output.weight f16      [  5120, 32000,     1,     1 ]\r\nllama_model_loader: - kv   0:                       general.architecture str     \r\nllama_model_loader: - kv   1:                               general.name str     \r\nllama_model_loader: - kv   2:                       llama.context_length u32     \r\nllama_model_loader: - kv   3:                     llama.embedding_length u32     \r\nllama_model_loader: - kv   4:                          llama.block_count u32     \r\nllama_model_loader: - kv   5:                  llama.feed_forward_length u32     \r\nllama_model_loader: - kv   6:                 llama.rope.dimension_count u32     \r\nllama_model_loader: - kv   7:                 llama.attention.head_count u32     \r\nllama_model_loader: - kv   8:              llama.attention.head_count_kv u32     \r\nllama_model_loader: - kv   9:     llama.attention.layer_norm_rms_epsilon f32     \r\nllama_model_loader: - kv  10:                          general.file_type u32     \r\nllama_model_loader: - kv  11:                       tokenizer.ggml.model str     \r\nllama_model_loader: - kv  12:                      tokenizer.ggml.tokens arr     \r\nllama_model_loader: - kv  13:                      tokenizer.ggml.scores arr     \r\nllama_model_loader: - kv  14:                  tokenizer.ggml.token_type arr     \r\nllama_model_loader: - kv  15:                tokenizer.ggml.bos_token_id u32     \r\nllama_model_loader: - kv  16:                tokenizer.ggml.eos_token_id u32     \r\nllama_model_loader: - kv  17:            tokenizer.ggml.unknown_token_id u32     \r\nllama_model_loader: - type  f32:   81 tensors\r\nllama_model_loader: - type  f16:  282 tensors\r\nllama_model_quantize_internal: meta size = 745344 bytes\r\n\r\n**[   1/ 363]                    token_embd.weight - [ 5120, 32000,     1,     1], type =    f16, quantizing to q5_K .. zsh: illegal hardware instruction  ../llama.cpp/quantize ggml-model-f16.gguf test.gguf 17**\r\n```\r\n",
+    "labels": [
+      "macos",
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-08T00:19:22+00:00",
+    "closed_at": "2023-11-14T17:35:34+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3983/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3983"
+  },
+  {
+    "number": 3322,
+    "title": "Guide: Fixing wsl issues (instruction failures) and general guide for 11.6+",
+    "body": "```\r\n    .run files\r\n    #to match max compute capability\r\n        \r\n    nano Makefile (wsl)\r\n        NVCCFLAGS += -arch=native\r\n        Change it to specify the correct architecture for your GPU. For a GPU with Compute Capability 5.2, you should replace it with:\r\n\r\n        makefile\r\n        Copy code\r\n        NVCCFLAGS += -arch=sm_52\r\n        \r\n    modified makefile\r\n    #https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/\r\n    \r\n    apt-get remove --purge '^nvidia-.*' '^cuda-.*'\r\n     sudo apt-get autoremove\r\n    sudo apt-get autoclean\r\n    sudo find / \\( -path /home -o -path /mnt -o -path /usr/local/lib/python3.10 \\) -prune -o ! -user root \\( -name '*nvidia*' -o -name '*cuda*' \\) -print\r\n\r\n    cat /var/log/cuda-uninstaller.log\r\n\r\n    modprobe -r nvidia\r\n    \r\n    dpkg -l | grep -i nvidia | awk '{print $2}' | xargs sudo apt-get --purge remove -y\r\n\r\n    sudo rm -rf /etc/systemd/system/nvidia*\r\n    sudo rm -rf /etc/systemd/system/display-manager.service.d\r\n    sudo rm -rf /etc/modprobe.d/nvidia*\r\n    sudo rm -rf /etc/modules-load.d/nvidia*\r\n    sudo rm -rf /etc/kernel/postinst.d/nvidia*\r\n    sudo rm -rf /usr/lib/nvidia*\r\n    sudo rm -rf /usr/share/doc/nvidia*\r\n    sudo rm -rf /var/lib/dkms/nvidia*\r\n    sudo rm -rf /var/log/nvidia*\r\n    sudo rm -rf /usr/local/cuda*\r\n\r\n    Failed to initialize NVML: GPU access blocked by the operating system\r\n    Failed to properly shut down NVML: GPU access blocked by the operating system\r\n    \r\n    Reinstall windows driver\r\n    =D\r\n    \r\n    cd /data/llama.cpp\r\n    make LLAMA_CUBLAS=1\r\n    \r\n    python -m pip install --force-reinstall --no-deps llama-cpp-python llama-cpp-python[server] --prefer-binary --extra-index-url=https://jllllll.github.io/llama-cpp-python-cuBLAS-wheels/AVX/cu122 pydantic pydantic_settings fastapi\r\n    \r\n    python3 -m llama_cpp.server --model /root/text-gen-install/text-generation-webui/models/llama-2-7b-chat.Q2_K.gguf --n_gpu_layers 24\r\n```",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-09-23T22:14:59+00:00",
+    "closed_at": "2023-09-23T22:40:37+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3322/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3322"
+  },
+  {
+    "number": 6163,
+    "title": "bad command line parsing behaviour with some filenames",
+    "body": "quantize (only command I have tested this with) gets confused by some filenames of some models, e.g.\r\n\r\n   quantize 08x7bhf.gguf 08x7bhfGGUF~ Q4_K_S\r\n\r\n... should quantize one gguf file into another, but instead, it fails with a weird error message:\r\n\r\n   main: invalid nthread 'Q4_K_S' (stoi)\r\n\r\nMy guess is that somehow it interprets the 08x name as a number, but that's clearly not the whole story. Might even be a security issue if commands can be tricked into misinterinterpreting filenames as something else (this behaviuour cannot be suppressed with \"--\" either).\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-19T15:55:05+00:00",
+    "closed_at": "2024-07-15T01:06:59+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6163/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6163"
+  },
+  {
+    "number": 4243,
+    "title": "Launching Server With Parameters",
+    "body": "It'd be great if we can prefilled all the parameters such as temperature, prompt, max gen length, etc. when launching server through either a configuration file or cli flags.\r\n\r\nThen we don't have to modify the parameters every time after launching server.",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-28T04:03:11+00:00",
+    "closed_at": "2024-04-03T01:15:06+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4243/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4243"
+  },
+  {
+    "number": 5998,
+    "title": "CUDA 12.4 released incompletely.",
+    "body": "Last week my Fedora env upgraded and I found CUDA 12.4 arrived (before Nvidia's own release notes even). They haven't yet pushed the nvidia/cuda:12.4.0 container so Docker builds are failing and I've had to revert the update. Just a heads-up if someone else hits automation issues with CUDA 12.4. Hopefully NVidia will push their 12.4.0 container asap.\r\n\r\nhttps://forums.fedoraforum.org/showthread.php?332179-RPMFusion-Nvidia-driver-repo-not-retaining-versions\r\n\r\nRelease notes for 12.4 finally landed a day or so after the update came in:\r\nhttps://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html\r\n\r\nI will close this once Nvidia pushes `docker.io/nvidia/cuda:12.4.0`",
+    "labels": [
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-11T13:36:03+00:00",
+    "closed_at": "2024-04-25T01:12:27+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5998/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5998"
+  },
+  {
+    "number": 12982,
+    "title": "Feature Request: Make chat sessions possible with multi model cli tools",
+    "body": "Hi,\n\nAs a blind person it would be interesting to be able to chat with the model when a image is submitted.\nSo more questions about the image can be asked.\nI wasn't able to find a conversation option for the multi model cli tools.\n\nGreetings,\nSimon",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-16T20:01:07+00:00",
+    "closed_at": "2025-05-31T01:07:44+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12982/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12982"
+  },
+  {
+    "number": 5023,
+    "title": "[BUG] Using `--no-mmap --mlock` crashes the `server`",
+    "body": "Something about the latest commits has messed with the `server`. The same command to start the server now exits like this:\r\n\r\n```\r\nGGML_ASSERT: llama.cpp:1064: addr == NULL && size == 0\r\nfish: Job 1, './server -m \"/Users/behnam/Down\u2026' terminated by signal SIGABRT (Abort)\r\n```\r\n\r\n* How to reproduce\r\n\r\nUpgrade to the latest commit and do:\r\n\r\n```\r\n./server -m \"<gguf model>\" --ctx-size 4096 --threads 8 -ngl 128 --port 8080 --mlock --no-mmap\r\n```\r\n\r\n* Using `--mlock` or `--no-mmap` alone doesn't crash the server.",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-18T19:12:15+00:00",
+    "closed_at": "2024-01-18T20:12:17+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5023/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5023"
+  },
+  {
+    "number": 12624,
+    "title": "Misc. bug: HIP when using llama.bench and kv cache quant cpu is doing the work instead of gpu",
+    "body": "### Name and Version\n\nb4958 LLama 3.2 1b q8_0 gguf\n\n### Operating systems\n\nLinux\n\n### Which llama.cpp modules do you know to be affected?\n\nOther (Please specify in the next section)\n\n### Command line\n\n```shell\npl752@pl752-desktop:~$ ROCR_VISIBLE_DEVICES=0 llama.cpp/build/bin/llama-bench -m /models/llm_models/Llama-3.2-1B-Instruct-Q8_0.gguf -p 4096,16384 -n 128,1024 -fa 1 -ctk q8_0 -ctv q8_0\n```\n\n### Problem description & steps to reproduce\n\ncpu usage is 100%, gpu vram is filled, but almost no activity\n(pp4096 speed is 200 t/s, against 2000 without cache quant)\n\n### First Bad Commit\n\n_No response_\n\n### Relevant log output\n\n```shell\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\nggml_cuda_init: found 1 ROCm devices:\n  Device 0: AMD Radeon VII, gfx906:sramecc+:xnack- (0x906), VMM: no, Wave Size: 64\n| model                          |       size |     params | backend    | ngl | type_k | type_v | fa |          test |                  t/s |\n| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | -: | ------------: | -------------------: |\n```\n(also have gfx1030 (rx 6900xt) but no difference is observed)",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-28T10:34:46+00:00",
+    "closed_at": "2025-04-17T02:59:53+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12624/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12624"
+  },
+  {
+    "number": 95,
+    "title": "Different outputs for differents numbers of threads (same seed)",
+    "body": "Hello,\r\n\r\nI simply wanted to bring up the point that the output can vary based on the number of threads selected, even if the seed stays constant.\r\n\r\nI have an intel core i7 10700K that has 16 threads.\r\n\r\nFor this example I'm using the 13B model (./models/13B/ggml-model-q4_0.bin)\r\n\r\nWhen I put -t 14 (make -j && ./main -m ./models/13B/ggml-model-q4_0.bin -p \"Building a website can be done in 10 simple steps:\" -t 14 -n 50 --seed 1678486056), I got this result:\r\n![duU196l](https://user-images.githubusercontent.com/110173477/224762353-1c5565d8-478c-41c6-ac13-f7883dc3ec50.png)\r\n\r\nWhen I put -t 15 (make -j && ./main -m ./models/13B/ggml-model-q4_0.bin -p \"Building a website can be done in 10 simple steps:\" -t 15 -n 50 --seed 1678486056), I got this result:\r\n![5WIrvd1](https://user-images.githubusercontent.com/110173477/224762999-258a6235-b14c-4db8-8b04-163a0b92d356.png)\r\n\r\nI have zero knowledge in machine learning, perhaps this is a normal behavior.\r\n\r\nLooking forward for your reactions!\r\n\r\n\r\n",
+    "labels": [
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-13T16:20:56+00:00",
+    "closed_at": "2023-03-23T21:30:06+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/95/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/95"
+  },
+  {
+    "number": 1018,
+    "title": "Cannot load 2 bit quantized ggml model on Windows",
+    "body": "```\r\nC:\\Users\\micro\\Downloads>main -m ggml-model-q2_0.bin\r\nmain: seed = 1681700481\r\nllama.cpp: loading model from ggml-model-q2_0.bin\r\nerror loading model: unrecognized tensor type 5\r\n\r\nllama_init_from_file: failed to load model\r\nmain: error: failed to load model 'ggml-model-q2_0.bin'\r\n```",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-04-17T03:02:57+00:00",
+    "closed_at": "2023-04-17T18:06:50+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1018/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1018"
+  },
+  {
+    "number": 3483,
+    "title": "[Feature Request] Dynamic temperature sampling for better coherence / creativity",
+    "body": "# Prerequisites\r\n\r\n- [\u2705] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Feature Idea\r\n\r\nTypical sampling methods for large language models, such as Top P and Top K, (as well as alternative sampler modes that decide the Top K dynamically like Mirostat) are based off the assumption that a static temperature value (a consistently randomized probability distribution) is the ideal sampler conditioning. Mirostat, most notably, was designed to 'learn' a certain targeted level of 'entropy' over time; this helped the model find the most grammatically coherent selection of tokens to be considered by the sampler for good results. Most of these sampling implementations weren't designed to be used together. Some, like TFS, were created when the largest available models were smaller ones like GPT2. Those models struggled a _lot_ more when attempting to generalize in different directions, and it makes sense to me that they'd need unique sampler tricks to keep them grammatically coherent.\r\n\r\nI've tested and played around with these settings for Llama models, and while Mirostat seemed like a step in the right direction, especially for preventing repetition, I realized that nobody had made a sampler mode that would control temperature _directly_ per token. My implementation of this would be calculated based on a simple metric; take the standard deviation of all tokens being considered by your top P / top K before applying the temperature randomization, and based on the 'confidence' of the model (as represented by the variation in choice), you can apply a temperature adjustment proportional to the variation of probability seen in the sampled set of tokens being chosen from.\r\n\r\nThe main idea is to **encourage randomizing 'uncertain' probabilities** (e.g, open ended writing, abstract concepts that can be represented with many words, and aren't deterministic by nature) while **keeping the temperature low for more deterministic tokens** without having to find the ideal selection of candidates for sampling per token (which I believe is how Mirostat was designed to work). \r\n\r\nList of possible advantages could be:\r\n- Having a definable range between the 'Base Temperature' and 'Maximum Temperature' could generally improve the creative problem solving ability of the model.\r\n- Certain tokens are highly important to the context and are more important than others. For example, if the probability was randomized too far for at least one token that represents something deterministic like a certain character in a programming syntax, this leads to a higher failure rate for the rest of the generation.\r\n- Could help prevent the model's generations from trending towards repetition due to a much broader range of probabilities that could be considered without impacting the model's intelligence as broadly (e.g a max temperature of 1.5 might not impact the model as strongly compared to if every token was sampled with that value). If this is the case, biasing against repeated tokens artificially through the Repetition Penalty would become less necessary.\r\n\r\nList of possible disadvantages could be:\r\n- A lot of faith is being put in the idea that strong variations of possibilities have a correlation with a high amount of acceptable / reasonable tokens. If the correlation is mild, the default range values would have to be adjusted to accomodate this, but that could be mitigated by testing different values for the base/max temp range, or through benchmarking them individually.\r\n- The rate at which a model becomes more certain might not be linear; there might be a very short gap between 'low deviation' and 'high deviation' on unsampled probabilities.\r\n- Reproducability might be more difficult, but I'm unsure of this. I'm guessing you could just use the same seed for every temperature value variation.",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-05T02:23:01+00:00",
+    "closed_at": "2024-06-12T01:06:49+00:00",
+    "comments": 47,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3483/reactions",
+      "total_count": 10,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 10,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3483"
+  },
+  {
+    "number": 9765,
+    "title": "Bug:  Rocm extreme slow down on GFX1100 with release binary",
+    "body": "### What happened?\n\nThere are large slow down on gfx1100\n\n### Name and Version\n\n.\\llama-cli.exe --version\r\nversion: 1 (b6d6c52)\r\nbuilt with  for x86_64-pc-windows-msvc\r\n\r\n.\\llama-cli.exe --version\r\nversion: 3235 (88540445)\r\nbuilt with  for x86_64-pc-windows-msvc\n\n### What operating system are you seeing the problem on?\n\nWindows\n\n### Relevant log output\n\n```shell\nlatest release binary\r\n.\\llama-bench.exe -m W:\\model\\qwen2-7b-instruct-q5_k_m.gguf -ngl 99 -fa 1,0\r\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\r\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\r\nggml_cuda_init: found 1 ROCm devices:\r\n  Device 0: AMD Radeon RX 7900 XTX, compute capability 11.0, VMM: no\r\n| model                          |       size |     params | backend    | ngl | fa |          test |                  t/s |\r\n| ------------------------------ | ---------: | ---------: | ---------- | --: | -: | ------------: | -------------------: |\r\n| qwen2 ?B Q5_K - Medium         |   5.07 GiB |     7.62 B | CUDA       |  99 |  1 |         pp512 |       1443.02 \u00b1 4.16 |\r\n| qwen2 ?B Q5_K - Medium         |   5.07 GiB |     7.62 B | CUDA       |  99 |  1 |         tg128 |          5.17 \u00b1 0.03 |\r\n| qwen2 ?B Q5_K - Medium         |   5.07 GiB |     7.62 B | CUDA       |  99 |  0 |         pp512 |       1588.26 \u00b1 4.46 |\r\n| qwen2 ?B Q5_K - Medium         |   5.07 GiB |     7.62 B | CUDA       |  99 |  0 |         tg128 |          5.16 \u00b1 0.04 |\r\n\r\nbuild: b6d6c52 (1)\r\n\r\n\r\nbefore\r\n\r\n.\\llama-bench.exe -m W:\\model\\qwen2-7b-instruct-q5_k_m.gguf -ngl 99 -fa 1,0\r\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\r\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\r\nggml_cuda_init: found 1 ROCm devices:\r\n  Device 0: AMD Radeon RX 7900 XTX, compute capability 11.0, VMM: no\r\n| model                          |       size |     params | backend    | ngl | fa |          test |              t/s |\r\n| ------------------------------ | ---------: | ---------: | ---------- | --: | -: | ------------: | ---------------: |\r\n| qwen2 ?B Q5_K - Medium         |   5.07 GiB |     7.62 B | ROCm       |  99 |  1 |         pp512 |  2775.82 \u00b1 13.51 |\r\n| qwen2 ?B Q5_K - Medium         |   5.07 GiB |     7.62 B | ROCm       |  99 |  1 |         tg128 |     90.52 \u00b1 0.20 |\r\n| qwen2 ?B Q5_K - Medium         |   5.07 GiB |     7.62 B | ROCm       |  99 |  0 |         pp512 |  3108.33 \u00b1 26.07 |\r\n| qwen2 ?B Q5_K - Medium         |   5.07 GiB |     7.62 B | ROCm       |  99 |  0 |         tg128 |     89.28 \u00b1 0.21 |\r\n\r\nbuild: 88540445 (3235)\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-06T17:16:14+00:00",
+    "closed_at": "2024-11-20T01:07:29+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9765/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9765"
+  },
+  {
+    "number": 3076,
+    "title": "Support starcoder family architectures (1B/3B/7B/13B)",
+    "body": "Related Issues:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/issues/1901\r\nhttps://github.com/ggerganov/llama.cpp/issues/1441\r\nhttps://github.com/ggerganov/llama.cpp/issues/1326\r\n\r\nPreviously, it wasn't recommended to incorporate non-llama architectures into llama.cpp. However, in light of the recent addition of the Falcon architecture (see [Pull Request #2717](https://github.com/ggerganov/llama.cpp/pull/2717)), it might be worth reconsidering this stance.\r\n\r\nOne distinguishing feature of Starcoder is its ability to provide a complete series of models ranging from 1B to 13B. This capability can prove highly beneficial for speculative decoding and making coding models available for edge devices (e.g., M1/M2 Macs).\r\n\r\nI can contribute the PR if it matches llama.cpp's roadmap.",
+    "labels": [
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-09-08T02:40:11+00:00",
+    "closed_at": "2023-09-15T19:15:21+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3076/reactions",
+      "total_count": 9,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 6,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3076"
+  },
+  {
+    "number": 2785,
+    "title": "[User] Mac with Intel CPU + AMD GPU",
+    "body": "Since Llama.cpp now supports ROCM, is that possible to support Mac with Intel CPU + AMD GPU as well?",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-08-25T14:47:54+00:00",
+    "closed_at": "2024-04-09T01:06:49+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2785/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2785"
+  },
+  {
+    "number": 7819,
+    "title": "Bug: Running a large model through the server using vulkan backend always generates gibberish after first call.",
+    "body": "### What happened?\n\nBug: Running a model through the server using vulkan backend always works for the first time, but always generates gibberish in subsequent calls\n\n### Name and Version\n\n .\\server.exe -m ..\\gguf_models\\Cat-Llama-3-70B-instruct-Q4_K_M.gguf -ngl 70 -c 8192\n\n### What operating system are you seeing the problem on?\n\nWindows\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-07T18:26:59+00:00",
+    "closed_at": "2024-07-22T01:06:52+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7819/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7819"
+  },
+  {
+    "number": 5130,
+    "title": "Add `--grammar-file` argument to `server` (similar to how `main` does it)",
+    "body": "# Feature Description\r\n\r\nSimilar to the docs for `main` (https://github.com/ggerganov/llama.cpp/blob/master/grammars/README.md), it'd be great to have the `--grammar-file=...` flag available in `server` as well.\r\n\r\n# Motivation\r\n\r\nCurrently, `server` can't process long grammars. I don't know if it's a bug but I've noticed that even with the `json.gbnf` files in the repo. Basically, the content of the file gets too complicated for the grammar parser to read. I think it has to do with how multi-line strings are treated in terminal.\r\n\r\nIn any case, using `grammar-file` simplifies API calls a lot.",
+    "labels": [
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-26T01:00:52+00:00",
+    "closed_at": "2024-01-27T22:34:11+00:00",
+    "comments": 17,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5130/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5130"
+  },
+  {
+    "number": 7708,
+    "title": "Bug: Could NOT find BLAS (missing: BLAS_LIBRARIES)",
+    "body": "### What happened?\r\n\r\nWhen building package for ALT Linux I found that with `-DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS` OpenBLAS support is still not built.\r\n\r\n\r\n### Name and Version\r\n\r\nVersion b3012\r\n\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nLinux\r\n\r\n### Relevant log output\r\n\r\n```shell\r\n-- Could NOT find BLAS (missing: BLAS_LIBRARIES)\r\nCMake Warning at CMakeLists.txt:374 (message):\r\n  BLAS not found, please refer to\r\n  https://cmake.org/cmake/help/latest/module/FindBLAS.html#blas-lapack-vendors\r\n  to set correct LLAMA_BLAS_VENDOR\r\n```\r\n~I think this is because of this code:~\r\n```\r\n    set(BLA_VENDOR ${LLAMA_BLAS_VENDOR})\r\n    find_package(BLAS)\r\n```\r\n~Instead of setting `BLAS_VENDOR`.~\r\n\r\n~There also other instances for setting `BLA_` variables,~ but I am not sure this is not intended since I'm not into BLAS.\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-03T04:08:47+00:00",
+    "closed_at": "2024-07-18T01:06:43+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7708/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7708"
+  },
+  {
+    "number": 2283,
+    "title": "Llama 2 and server",
+    "body": "Hi, I' using llama-2-13b-chat.ggmlv3.q4_1.bin and M2 16GB of memory.\r\nUsing regular llama cpp, works fine with context 2048. But in server mode, it will crash even if context if 1536. I set it to 1024 and it works\r\n\r\nIs there difference in llama 2 ? I use older model like vicuna 13b with 2048 context and works just fine",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-07-20T03:26:20+00:00",
+    "closed_at": "2024-04-09T01:07:47+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2283/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2283"
+  },
+  {
+    "number": 9392,
+    "title": "Bug: docker GGML_CUDA=1 make [on llama-gen-docs] fails since arg refactor",
+    "body": "### What happened?\n\nError given is\r\n\r\n```\r\n./llama-gen-docs: error while loading shared libraries: libcuda.so.1: cannot open shared object file: No such file or directory\r\n```\r\n\r\nSince this was only recently added in https://github.com/ggerganov/llama.cpp/pull/9308 I'm guessing that's to blame\r\n\r\nI've been able to get around it by running:\r\n\r\n```\r\nRUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1\r\nRUN LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH GGML_CUDA=1 make -j64\r\nRUN rm /usr/local/cuda/lib64/stubs/libcuda.so.1\r\n```\r\n\r\nbut I guess my question is just *why* does it need this library at all and why is only this one failing?\n\n### Name and Version\n\nb3707 ubuntu\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n```shell\n./llama-gen-docs: error while loading shared libraries: libcuda.so.1: cannot open shared object file: No such file or directory\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "low severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-09T17:36:42+00:00",
+    "closed_at": "2024-09-10T06:12:49+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9392/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9392"
+  },
+  {
+    "number": 1371,
+    "title": "I have manged to get termux on wear os but....",
+    "body": "I have manged to get termux on wear os but due to storage constrains i am looking for the smallest model supported plz help",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-05-08T19:27:27+00:00",
+    "closed_at": "2023-05-09T16:27:42+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1371/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1371"
+  },
+  {
+    "number": 1650,
+    "title": "[Feature request] Support for \"Falcon\" model",
+    "body": "\"Falcon\" is a new Large Language Model which seems to be better than Llama.\r\nSee https://falconllm.tii.ae/ and\r\nhttps://iamgeekydude.com/2023/05/28/falcon-llm-the-40-billion-parameters-llm/ and\r\nhttps://www.marktechpost.com/2023/05/28/technology-innovation-institute-open-sourced-falcon-llms-a-new-ai-model-that-uses-only-75-percent-of-gpt-3s-training-compute-40-percent-of-chinchillas-and-80-percent-of-palm-62b/\r\n\r\nActually, it is the best open-source model currently available according to the authors.\r\n\r\nModel (for Huggingface Transformers library) with 40B and 7B parameters is available at :\r\nhttps://huggingface.co/tiiuae/falcon-40b\r\n\r\nWould be great if it would be supported also in llama.cpp.\r\nNote it uses some novel layers (FlashAttention, Multiquery).",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-05-30T09:31:10+00:00",
+    "closed_at": "2023-05-30T11:34:52+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1650/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1650"
+  },
+  {
+    "number": 2157,
+    "title": "not able to load quantized llama-7B model on m1",
+    "body": "# Hi there \ud83d\udc4b  \r\n\r\nAndroid dev ~6 yrs of exp [Kotlin and Java] just trying my best to transition to ML as fast as I can-- bc I got real bad FOMO \ud83d\ude22 \r\n\r\nAnyways, as the title suggests I did what I presume to be the correct steps to setup the [simplest model](https://huggingface.co/decapoda-research/llama-7b-hf) I could find, and after struggling a bit to get the setup correct I eventually got the 7B model downloaded ([all 33 pieces of it](https://huggingface.co/decapoda-research/llama-7b-hf/tree/main)).\r\n\r\nfollowed the[ Metal Build](https://github.com/ggerganov/llama.cpp#metal-build) instructions and everything seemed to be going wonderfully well so far-- until it didnt...\r\n\r\n# Steps and Logs\r\n\r\n## All the files needed\r\n\r\n<img width=\"778\" alt=\"Screenshot 2023-07-09 at 11 32 03 AM\" src=\"https://github.com/ggerganov/llama.cpp/assets/45348368/7c60d306-c344-4880-82f5-b8f873b267e7\">\r\n\r\n## Convert models to `ggml` format and quantize (**_see pic above_**):\r\n\r\n- `python convert-pth-to-ggml.py models/7B/ 1`\r\n- `./quantize ./models/7B/ggml-model-f16.bin ./models/7B/ggml-model-q4_0.bin 2`\r\n\r\n## Running Metal make:\r\n```\r\n====  Run ./main -h for help.  ====\r\n\r\nc++ -I. -I./examples -O3 -std=c++11 -fPIC -DNDEBUG -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -DGGML_USE_K_QUANTS -DGGML_USE_METAL examples/quantize/quantize.cpp ggml.o llama.o k_quants.o ggml-metal.o -o quantize  -framework Accelerate -framework Foundation -framework Metal -framework MetalKit -framework MetalPerformanceShaders\r\nc++ -I. -I./examples -O3 -std=c++11 -fPIC -DNDEBUG -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -DGGML_USE_K_QUANTS -DGGML_USE_METAL examples/quantize-stats/quantize-stats.cpp ggml.o llama.o k_quants.o ggml-metal.o -o quantize-stats  -framework Accelerate -framework Foundation -framework Metal -framework MetalKit -framework MetalPerformanceShaders\r\nc++ -I. -I./examples -O3 -std=c++11 -fPIC -DNDEBUG -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -DGGML_USE_K_QUANTS -DGGML_USE_METAL examples/perplexity/perplexity.cpp ggml.o llama.o common.o k_quants.o ggml-metal.o -o perplexity  -framework Accelerate -framework Foundation -framework Metal -framework MetalKit -framework MetalPerformanceShaders\r\nc++ -I. -I./examples -O3 -std=c++11 -fPIC -DNDEBUG -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -DGGML_USE_K_QUANTS -DGGML_USE_METAL examples/embedding/embedding.cpp ggml.o llama.o common.o k_quants.o ggml-metal.o -o embedding  -framework Accelerate -framework Foundation -framework Metal -framework MetalKit -framework MetalPerformanceShaders\r\nc++ -I. -I./examples -O3 -std=c++11 -fPIC -DNDEBUG -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -DGGML_USE_K_QUANTS -DGGML_USE_METAL pocs/vdot/vdot.cpp ggml.o k_quants.o ggml-metal.o -o vdot  -framework Accelerate -framework Foundation -framework Metal -framework MetalKit -framework MetalPerformanceShaders\r\nc++ -I. -I./examples -O3 -std=c++11 -fPIC -DNDEBUG -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -DGGML_USE_K_QUANTS -DGGML_USE_METAL examples/train-text-from-scratch/train-text-from-scratch.cpp ggml.o llama.o k_quants.o ggml-metal.o -o train-text-from-scratch  -framework Accelerate -framework Foundation -framework Metal -framework MetalKit -framework MetalPerformanceShaders\r\nc++ -I. -I./examples -O3 -std=c++11 -fPIC -DNDEBUG -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -DGGML_USE_K_QUANTS -DGGML_USE_METAL examples/simple/simple.cpp ggml.o llama.o common.o k_quants.o ggml-metal.o -o simple  -framework Accelerate -framework Foundation -framework Metal -framework MetalKit -framework MetalPerformanceShaders\r\nc++ -I. -I./examples -O3 -std=c++11 -fPIC -DNDEBUG -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -DGGML_USE_K_QUANTS -DGGML_USE_METAL -Iexamples/server examples/server/server.cpp ggml.o llama.o common.o k_quants.o ggml-metal.o -o server  -framework Accelerate -framework Foundation -framework Metal -framework MetalKit -framework MetalPerformanceShaders\r\nc++ --shared -I. -I./examples -O3 -std=c++11 -fPIC -DNDEBUG -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -DGGML_USE_K_QUANTS -DGGML_USE_METAL examples/embd-input/embd-input-lib.cpp ggml.o llama.o common.o k_quants.o ggml-metal.o -o libembdinput.so  -framework Accelerate -framework Foundation -framework Metal -framework MetalKit -framework MetalPerformanceShaders\r\nc++ -I. -I./examples -O3 -std=c++11 -fPIC -DNDEBUG -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -DGGML_USE_K_QUANTS -DGGML_USE_METAL examples/embd-input/embd-input-test.cpp ggml.o llama.o common.o k_quants.o ggml-metal.o -o embd-input-test  -framework Accelerate -framework Foundation -framework Metal -framework MetalKit -framework MetalPerformanceShaders -L. -lembdinput\r\n```\r\n\r\n## Complied successfully.\r\n\r\n```\r\n\u256d\u2500\ue0ba \uf179 \ue0bc \uf07c \u2026/llama.cpp \ue0bc \uf113 \ue0a0 master \uf02bmaster-1d16309 \uf421 \ue0b0                                                                                                                                                  \ue0ba \u2714 \ue0ba 19s \uf252 \ue0bc\r\n\u2570\u2500\u276f ./main -m ./models/7B/ggml-model-q4_0.bin -n 128 -ngl 1\r\n```\r\n\r\n##  Loading the model \r\n\r\n```\r\nmain: build = 812 (1d16309)\r\nmain: seed  = 1688916282\r\nllama.cpp: loading model from ./models/7B/ggml-model-q4_0.bin\r\nllama_model_load_internal: format     = ggjt v3 (latest)\r\nllama_model_load_internal: n_vocab    = 32000\r\nllama_model_load_internal: n_ctx      = 512\r\nllama_model_load_internal: n_embd     = 4096\r\nllama_model_load_internal: n_mult     = 256\r\nllama_model_load_internal: n_head     = 32\r\nllama_model_load_internal: n_layer    = 32\r\nllama_model_load_internal: n_rot      = 128\r\nllama_model_load_internal: ftype      = 2 (mostly Q4_0)\r\nllama_model_load_internal: n_ff       = 11008\r\nllama_model_load_internal: model size = 7B\r\n```\r\n\r\n## Model seemed to load OK but its empty(?)\r\n\r\n```\r\nllama_model_load_internal: ggml ctx size =    0.00 MB\r\nerror loading model: llama.cpp: tensor 'tok_embeddings.weight' is missing from model\r\nllama_load_model_from_file: failed to load model\r\nllama_init_from_gpt_params: error: failed to load model './models/7B/ggml-model-q4_0.bin'\r\nmain: error: unable to load model\r\n```\r\n\r\nI would really appreciate not only guidance on how to understand what this issue is but also just some general resources to speed my transitioning period because ya boy is lowkey lost af trying to figure out where and what to look for when it comes to training/fine tuning models, how quantization works-- and what other forms of compression and optimizations are there, etc.\r\n\r\nObs: I know I can just ask chatGPT but I was hoping to hear it from humans with exp on the field xD\r\n\r\n# So, where did I go wrong? (or did I)\r\n\r\n",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-07-09T16:06:00+00:00",
+    "closed_at": "2023-07-10T03:06:09+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2157/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2157"
+  },
+  {
+    "number": 6931,
+    "title": "main: crashing upon loading model since commit 83b72cb0 - Windows MSVC + CUDA",
+    "body": "Commit https://github.com/ggerganov/llama.cpp/commit/83b72cb086ce46a33dececc86bfe4648b6120aa8 introduces a bug where main.exe crashes immediately after loading the model running on Windows.\r\n\r\nThe crash occurs in `void gguf_free(struct gguf_context * ctx)`.\r\n\r\n```\r\ncmake -S . -B build -DLLAMA_CUDA=ON && cmake --build build --config Release\r\n```\r\n\r\n```\r\nmain -ngl 33 -c 0 -f prompt.txt -m ggml-meta-llama-3-8b-instruct-f16.gguf\r\n```\r\n\r\n```\r\n>\tllama.dll!gguf_free(gguf_context * ctx) Line 20991\tC\r\n \tllama.dll!llama_model_loader::~llama_model_loader() Line 3232\tC++\r\n \tllama.dll!llama_model_load(const std::string & fname, llama_model & model, llama_model_params & params) Line 6042\tC++\r\n \tllama.dll!llama_load_model_from_file(const char * path_model, llama_model_params params) Line 15225\tC++\r\n \tmain.exe!llama_init_from_gpt_params(gpt_params & params) Line 2224\tC++\r\n \tmain.exe!main(int argc, char * * argv) Line 199\tC++\r\n```",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-04-26T14:29:11+00:00",
+    "closed_at": "2024-04-26T15:07:43+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6931/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6931"
+  },
+  {
+    "number": 9178,
+    "title": "Dynatemp and min_p upgrade?",
+    "body": "i've stumbled upon dynatemp and have a question/proposal.\r\n\r\nI believe, that the thing that was missed during dynatemp implementation is the underlying concept of what it's needed for. \r\n\r\nPrompts may require 2 types of replies: deterministic replies and creative replies. These are opposite in terms of sampling approach.\r\n\r\nDeterministic approach would be required, for example, by programming and by answering knowledge related question. Then you *wish* llm to provide with the most probable tokens.\r\n\r\nCreative approach would be required in writing stories and general conversations with llms.\r\n\r\nFor example, we all know parasite words of llms, like \"Maniacally laughing\" of llama 3 and \"Ahahahaha\" that it inserts into nearly every reply. Tokens forming these are super probable. So, in case of using the dynatemp here, we will only increase changes to get \"ahahahahahahaha\" instead of \"ahaha\" and that's what i saw in my tests :).\r\n\r\nMeanwhile, the whole idea for creative tasks the situation is opposite to deterministic. We need to skip \"overfitten\" tokens and instead flatten the rest of the tokens to walk around the \"deadends\".\r\n\r\nSo, we need to have exactly opposite to min_p and dynatemp. Actually, i thought i could use negative values for dynatemp, but it turned out that in the code we have:\r\n\r\ncase llama_sampler_type::TEMPERATURE:\r\n                if (dynatemp_range > 0) {\r\n                    float dynatemp_min = std::max(0.0f, temp - dynatemp_range);\r\n                    float dynatemp_max = std::max(0.0f, temp + dynatemp_range);\r\n                    llama_sample_entropy(ctx_main, &cur_p, dynatemp_min, dynatemp_max, dynatemp_exponent);\r\n                } else {\r\n                    llama_sample_temp(ctx_main, &cur_p, temp);\r\n                }\r\n                \r\nwhich makes it impossible, despite the fact that it actually could be possible :).\r\n\r\nThe question is obvious, shouldn't we patch it to allow for negative dynatemp? It would make perfect sense and would help to get more creative replies, as with positive it creates more deterministic replies.\r\n\r\nAnd we need something like max_p to exclude super probable tokens that are chosen with no alternatives every time.",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-25T23:54:00+00:00",
+    "closed_at": "2024-10-14T01:40:38+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9178/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9178"
+  },
+  {
+    "number": 10348,
+    "title": "webUI local storage can become corrupted",
+    "body": "### Discussed in https://github.com/ggerganov/llama.cpp/discussions/10347\r\n\r\n<div type='discussions-op-text'>\r\n\r\n<sup>Originally posted by **pikor69** November 17, 2024</sup>\r\nThe page at http://127.0.0.1:8080 says:\r\nTypeError: Cannot read properties of undefined (reading 'content')\r\n\r\nWhat changed since yesterday when it was working? Nothing.\r\nThe last time I was able to start I tried to run a much higher content length than the model allowed and things crashed.\r\n\r\n</div>",
+    "labels": [
+      "bug",
+      "good first issue",
+      "server/webui"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-17T01:29:31+00:00",
+    "closed_at": "2024-12-13T16:37:13+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10348/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10348"
+  },
+  {
+    "number": 4958,
+    "title": "`convert.py`: --pad-vocab not working with SPM, `'SentencePieceVocab' object has no attribute 'added_tokens_dict'. Did you mean: 'added_tokens_list'?`",
+    "body": "Hi guys\r\n\r\nI've just noticed that since the recent `convert.py` refactor, the new `--pad-vocab` feature does not work with SPM vocabs.  It does work as expected with HFFT.  *EDIT: actually there might be a different bug with HFFT, see next post on that.*\r\n\r\nExample command, converting model: https://huggingface.co/TigerResearch/tigerbot-13b-chat-v5\r\n```\r\npython3 ./convert.py /workspace/process/tigerresearch_tigerbot-13b-chat-v5/source --outtype f16 --outfile /workspace/process/tigerresearch_tigerbot-13b-chat-v5/gguf/tigerbot-13b-chat-v5.fp16.gguf --pad-vocab\r\n```\r\n\r\nError message:\r\n```\r\nWriting /workspace/process/tigerresearch_tigerbot-13b-chat-v5/gguf/tigerbot-13b-chat-v5.fp16.gguf, format 1\r\nPadding vocab with 2 token(s) - <dummy00001> through <dummy00002>\r\nTraceback (most recent call last):\r\n  File \"/workspace/git/llama.cpp/./convert.py\", line 1658, in <module>\r\n    main(sys.argv[1:])  # Exclude the first element (script name) from sys.argv\r\n    ^^^^^^^^^^^^^^^^^^\r\n  File \"/workspace/git/llama.cpp/./convert.py\", line 1643, in main\r\n    OutputFile.write_all(\r\n  File \"/workspace/git/llama.cpp/./convert.py\", line 1188, in write_all\r\n    check_vocab_size(params, vocab, pad_vocab=pad_vocab)\r\n  File \"/workspace/git/llama.cpp/./convert.py\", line 1008, in check_vocab_size\r\n    vocab.added_tokens_dict[f\"<dummy{i:05}>\"] = -1\r\n    ^^^^^^^^^^^^^^^^^^^^^^^\r\nAttributeError: 'SentencePieceVocab' object has no attribute 'added_tokens_dict'. Did you mean: 'added_tokens_list'?\r\n```\r\n\r\nIn this example, I did the conversion with `--vocab-type hfft` instead which worked OK.\r\n\r\nThanks in advance for looking at this.",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-01-15T17:03:28+00:00",
+    "closed_at": "2024-01-17T13:45:04+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4958/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4958"
+  },
+  {
+    "number": 7757,
+    "title": "Bug: `-ins` command gone from main.exe",
+    "body": "### What happened?\n\nThere seems to be no way to activate instruct mode in main.exe, this causes my scripts to break.\n\n### Name and Version\n\nversion: 3089 (c90dbe02)\r\nbuilt with MSVC 19.39.33523.0 for x64\n\n### What operating system are you seeing the problem on?\n\nWindows\n\n### Relevant log output\n\n```shell\nerror: unknown argument: -ins\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "high severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-05T03:00:56+00:00",
+    "closed_at": "2024-06-05T07:03:06+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7757/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7757"
+  }
+]

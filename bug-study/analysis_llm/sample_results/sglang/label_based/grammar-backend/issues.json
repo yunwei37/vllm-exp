@@ -1,0 +1,138 @@
+[
+  {
+    "number": 3383,
+    "title": "[Feature] Use xgrammar as default grammar backend to aviod I/O errors while using Outlines in a multi-node setting",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nrelated issues:\n#3375 \nrelated discussiton:\n[#vllm 4193](https://github.com/vllm-project/vllm/issues/4193)\nrelated pr:\nhttps://github.com/sgl-project/sglang/pull/3379\n\n### Related resources\n\nxGrammar stores its cache in RAM instead of disk, avoiding file system conflicts.\nCache size is small (typically <0.5MB per schema), meaning it doesn't require persistent disk storage.\nxGrammar is thread-safe, ensuring it can run across multiple Slurm nodes without concurrency issues.",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "grammar-backend"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-07T23:11:12+00:00",
+    "closed_at": "2025-05-26T21:08:02+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3383/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3383"
+  },
+  {
+    "number": 2549,
+    "title": "[Feature] Set outlines and xgrammar as addtional dependency",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nI am trying to integrate SGLang and vllm into OpenRLHF. For the grammar backend, could we set it as additional requirements, i.e. import it when we use it? Like:\r\n\r\n```python\r\n\r\ndef __init__():\r\n    if use_constrained_decoding:\r\n        if grammar_backend == \"xgrammar\":\r\n            import xgrammar\r\n            xgrammar.function()\r\n        if grammar_backend == \"outlines\":\r\n            import outlines\r\n            outlines.function()\r\n```\r\n\r\nThis to avoid the version conflicts with vllm.\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "enhancement",
+      "inactive",
+      "grammar-backend"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-23T02:35:28+00:00",
+    "closed_at": "2025-02-22T00:16:13+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2549/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2549"
+  },
+  {
+    "number": 2045,
+    "title": "[BUG] Problems with jump forward decoding",
+    "body": "There are still some issues with jump forward decoding for both backends (outlines and xgrammar). The outputs w/ jump forward are different from the outputs w/o jump forward. I tested the first 10 examples in https://github.com/sgl-project/sglang/tree/main/benchmark/json_schema and found the following issues.\r\n\r\n## Issues with Outlines \r\nThere is an extra space \" \" before the colon \":\" for each key in the json. You can compare the outputs below.\r\n\r\n### The outputs of outlines w/ jumpforward\r\n```\r\n{\"ssid\" : \"OfficeNetSecure\", \"securityProtocol\" : \"WPA2-Enterprise\", \"bandwidth\" : \"1300 Mbps on the 5 GHz band\"}\r\n{\"/\" : {\"device\" : \"string\", \"mount_point\" : \"string\", \"file_system_type\" : \"string\", \"options\" : \"string\", \"dump\" : \"0\", \"pass\" : \"1\"}}\r\n{\"campaignID\" : \"CAMP123456\", \"productID\" : \"PROD7891011\", \"startDate\" : \"2023-06-01\", \"endDate\" : \"2023-06-30\", \"discountDetails\" : \"15% off on all purchases\"}\r\n{\"reservationID\" : \"AH-158394\", \"guestName\" : \"Alexander Hamilton\", \"reservationTime\" : \"2023-04-15T19:30:00\", \"specialRequests\" : [\"table by the window\", \"surprise dessert for special occasion\"]}\r\n{\"HomeImprovement\" : {\"room_interest\" : \"living room\", \"budget\" : 500, \"preferred_style\" : \"minimalist\", \"project_ideas\" : [\"installing floating shelves\", \"creating a gallery wall\", \"repainting the walls\", \"upcycling old furniture\", \"adding greenery with low-maintenance indoor plants\"]}}\r\n{\"deviceID\" : \"MON123456\", \"patientID\" : \"PAT654321\", \"metrics\" : {\"heartRate\" : 78, \"bloodPressure\" : \"120/80 mmHg\", \"oxygenSaturation\" : 98}, \"timestamp\" : \"2023-04-05T14:30:00Z\"}\r\n{\"FitnessTracking\" : {\"current_health_status\" : {\"weight\" : 70, \"height\" : 175, \"heart_rate\" : 62}, \"health_goals\" : [\"increase muscle mass\", \"improve cardiovascular endurance\", \"enhance flexibility\"], \"recommended_routines\" : [\"Strength training sessions three times a week focusing on major muscle groups\", \"Cardiovascular exercises such as running or cycling for at least 30 minutes, five days a week\", \"Daily stretching exercises to improve flexibility, including yoga or pilates\"]}}\r\n{\"seatNumber\" : \"12A\", \"serviceType\" : \"vegetarian meal\", \"specialInstructions\" : \"gluten-free\"}\r\n{\"SKU\" : \"TOB-1928\", \"quantity\" : 150, \"restockDate\" : \"2023-04-15\", \"supplier\" : \"Global Tobacco Ltd.\"}\r\n{\"patentId\" : \"US98765432A\", \"applicationDate\" : \"2021-07-15\", \"inventorNames\" : [\"Dr. Alice Smith\", \"Dr. Bob Jones\"], \"currentStatus\" : \"Pending Examination\"}\r\n```\r\n\r\n### The outputs of outlines w/o jumpforward\r\n```\r\n{\"ssid\": \"OfficeNetSecure\", \"securityProtocol\": \"WPA2-Enterprise\", \"bandwidth\": \"1300 Mbps on the 5 GHz band\"}\r\n{\"/\": {\"device\": \"string\", \"mount_point\": \"string\", \"file_system_type\": \"string\", \"options\": \"string\", \"dump\": \"0\", \"pass\": \"1\"}}\r\n{\"campaignID\": \"CAMP123456\", \"productID\": \"PROD7891011\", \"startDate\": \"2023-06-01\", \"endDate\": \"2023-06-30\", \"discountDetails\": \"15% off on all purchases\"}\r\n{\"reservationID\": \"AH-158394\", \"guestName\": \"Alexander Hamilton\", \"reservationTime\": \"2023-04-15T19:30:00\", \"specialRequests\": [\"table by the window\", \"surprise dessert for special occasion\"]}\r\n{\"HomeImprovement\": {\"room_interest\": \"living room\", \"budget\": 500, \"preferred_style\": \"minimalist\", \"project_ideas\": [\"installing floating shelves\", \"creating a gallery wall\", \"repainting the walls\", \"upcycling old furniture\", \"adding greenery with low-maintenance indoor plants\"]}}\r\n{\"deviceID\": \"MON123456\", \"patientID\": \"PAT654321\", \"metrics\": {\"heartRate\": 78, \"bloodPressure\": \"120/80 mmHg\", \"oxygenSaturation\": 98}, \"timestamp\": \"2023-04-05T14:30:00Z\"}\r\n{\"FitnessTracking\": {\"current_health_status\": {\"weight\": 70, \"height\": 175, \"heart_rate\": 62}, \"health_goals\": [\"increase muscle mass\", \"improve cardiovascular endurance\", \"enhance flexibility\"], \"recommended_routines\": [\"Strength training sessions three times a week focusing on major muscle groups\", \"Cardiovascular exercises such as running or cycling for at least 30 minutes, five days a week\", \"Daily stretching exercises to improve flexibility, including yoga or pilates\"]}}\r\n{\"seatNumber\": \"12A\", \"serviceType\": \"vegetarian meal\", \"specialInstructions\": \"gluten-free\"}\r\n{\"SKU\": \"TOB-1928\", \"quantity\": 150, \"restockDate\": \"2023-04-15\", \"supplier\": \"Global Tobacco Ltd.\"}\r\n{\"patentId\": \"US98765432A\", \"applicationDate\": \"2021-07-15\", \"inventorNames\": [\"Dr. Alice Smith\", \"Dr. Bob Jones\"], \"currentStatus\": \"Pending Examination\"}\r\n```\r\n\r\n## Issues with xgrammar \r\nSometimes, the output will include an additional \"/\" before the string value. For example, in the last line in the following outputs, the output w/ jumpforward for the key \"inventorNames\"  is \"/Dr. Alice Smith\", but the correct output should be \"Dr. Alice Smith\". It also happens for the key \"health_goals\" in the following examples. \r\nThis is a very critical bug.\r\n\r\n### The outputs of xgrammar w/ jumpforward\r\n```\r\n{\"ssid\": \"OfficeNetSecure\", \"securityProtocol\": \"WPA2-Enterprise\", \"bandwidth\": \"1300 Mbps (5 GHz)\"}\r\n{\"/\": {\"device\": \"string\", \"mount_point\": \"string\", \"file_system_type\": \"string\", \"options\": \"string\", \"dump\": \"string\", \"pass\": \"string\"}}\r\n{\"campaignID\": \"CAMP123456\", \"productID\": \"PROD7891011\", \"startDate\": \"2023-06-01\", \"endDate\": \"2023-06-30\", \"discountDetails\": \"15% off on all purchases\"}\r\n{\"reservationID\": \"AH-158394\", \"guestName\": \"Alexander Hamilton\", \"reservationTime\": \"2023-04-15T19:30:00\", \"specialRequests\": [\"> A table by the window\", \"Note to the chef: Celebrating a special occasion, surprise dessert would be wonderful\"]}\r\n{\"HomeImprovement\": {\"room_interest\": \"living room\", \"budget\": 500, \"preferred_style\": \"minimalist\", \"project_ideas\": [\">installing floating shelves for a clean look and extra storage\", \"creating a gallery wall with my favorite prints and photographs\", \"repainting the walls with a neutral color palette for a fresh feel\", \"upcycling old furniture with a new coat of paint or new upholstery\", \"adding some greenery with low-maintenance indoor plants\"]}}\r\n{\"deviceID\": \"MON123456\", \"patientID\": \"PAT654321\", \"metrics\": {\"heartRate\": 78, \"bloodPressure\": \"120/80 mmHg\", \"oxygenSaturation\": 98}, \"timestamp\": \"2023-04-05T14:30:00Z\"}\r\n{\"FitnessTracking\": {\"current_health_status\": {\"weight\": 70, \"height\": 175, \"heart_rate\": 62}, \"health_goals\": [\"/increase muscle mass\", \"improve cardiovascular endurance\", \"enhance flexibility\"], \"recommended_routines\": [\"/Strength training sessions three times a week focusing on major muscle groups\", \"Cardiovascular exercises such as running or cycling for at least 30 minutes, five days a week\", \"Daily stretching exercises to improve flexibility, including yoga or pilates\"]}}\r\n{\"seatNumber\": \"12A\", \"serviceType\": \"vegetarian meal\", \"specialInstructions\": \"gluten-free\"}\r\n{\"SKU\": \"TOB-1928\", \"quantity\": 150, \"restockDate\": \"2023-04-15\", \"supplier\": \"Global Tobacco Ltd.\"}\r\n{\"patentId\": \"US98765432A\", \"applicationDate\": \"2021-07-15\", \"inventorNames\": [\"/Dr. Alice Smith\", \"Dr. Bob Jones\"], \"currentStatus\": \"Pending Examination\"}\r\n```\r\n\r\n### The outputs of xgrammar w/o jumpforward\r\n```\r\n{\"ssid\": \"OfficeNetSecure\", \"securityProtocol\": \"WPA2-Enterprise\", \"bandwidth\": \"1300 Mbps on the 5 GHz band\"}\r\n{\"/\": {\"device\": \"string\", \"mount_point\": \"string\", \"file_system_type\": \"string\", \"options\": \"string\", \"dump\": \"string\", \"pass\": \"string\"}}\r\n{\"campaignID\": \"CAMP123456\", \"productID\": \"PROD7891011\", \"startDate\": \"2023-06-01\", \"endDate\": \"2023-06-30\", \"discountDetails\": \"15% off on all purchases\"}\r\n{\"reservationID\": \"AH-158394\", \"guestName\": \"Alexander Hamilton\", \"reservationTime\": \"2023-04-15T19:30:00\", \"specialRequests\": [\"table by the window\", \"surprise dessert for special occasion\"]}\r\n{\"HomeImprovement\": {\"room_interest\": \"living room\", \"budget\": 500, \"preferred_style\": \"minimalist\", \"project_ideas\": [\"installing floating shelves\", \"creating a gallery wall\", \"repainting the walls\", \"upcycling old furniture\", \"adding greenery with low-maintenance indoor plants\"]}}\r\n{\"deviceID\": \"MON123456\", \"patientID\": \"PAT654321\", \"metrics\": {\"heartRate\": 78, \"bloodPressure\": \"120/80 mmHg\", \"oxygenSaturation\": 98}, \"timestamp\": \"2023-04-05T14:30:00Z\"}\r\n{\"FitnessTracking\": {\"current_health_status\": {\"weight\": 70, \"height\": 175, \"heart_rate\": 62}, \"health_goals\": [\"increase muscle mass\", \"improve cardiovascular endurance\", \"enhance flexibility\"], \"recommended_routines\": [\"Strength training sessions three times a week focusing on major muscle groups\", \"Cardiovascular exercises such as running or cycling for at least 30 minutes, five days a week\", \"Daily stretching exercises to improve flexibility, including yoga or pilates\"]}}\r\n{\"seatNumber\": \"12A\", \"serviceType\": \"vegetarian meal\", \"specialInstructions\": \"gluten-free\"}\r\n{\"SKU\": \"TOB-1928\", \"quantity\": 150, \"restockDate\": \"2023-04-15\", \"supplier\": \"Global Tobacco Ltd.\"}\r\n{\"patentId\": \"US98765432A\", \"applicationDate\": \"2021-07-15\", \"inventorNames\": [\"Dr. Alice Smith\", \"Dr. Bob Jones\"], \"currentStatus\": \"Pending Examination\"}\r\n```\r\n\r\n### Generate outputs\r\n```\r\npython3 -m sglang.launch_server --model-path meta-llama/Llama-3.1-8B-Instruct --port 30000\r\n```\r\n```\r\n~/sglang/benchmark/json_schema# python3 bench_sglang.py --num-json 10 --parallel 1 --port 30000\r\n```",
+    "labels": [
+      "inactive",
+      "grammar-backend"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-15T14:33:07+00:00",
+    "closed_at": "2025-01-24T00:16:13+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2045/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2045"
+  },
+  {
+    "number": 2025,
+    "title": "[BUG] Jump forward w/ outlines backend slightly changes the decoding results",
+    "body": "## Observation\r\nFor a json schema, outlines w/o jump forward and outlines w/ jump forward give slightly different results. We want to understand whether it is a bug or it is expected.\r\n\r\noutlines w/ jumpforward\r\n`{ \"name\" : \"Paris\" , \"population\" : 2 }`\r\n\r\noutlines w/o jumpforward\r\n`{ \"name\": \"Paris\", \"population\": 2140000 }`\r\n\r\nxgrammar w/ jumpforward\r\n`{\"name\": \"Paris\", \"population\": 2140000}`\r\n\r\nxgrammar w/o jumpforward\r\n`{\"name\": \"Paris\", \"population\": 2140000}`\r\n\r\n## Reproduce\r\n```\r\npython3 -m sglang.launch_server --model meta-llama/Meta-Llama-3.1-8B\r\n```\r\n\r\n```\r\nimport json\r\nimport requests\r\n\r\njson_schema = json.dumps(\r\n    {\r\n        \"type\": \"object\",\r\n        \"properties\": {\r\n            \"name\": {\"type\": \"string\"},\r\n            \"population\": {\"type\": \"integer\"},\r\n        },\r\n        \"required\": [\"name\", \"population\"],\r\n    }\r\n)\r\n\r\n# JSON\r\nresponse = requests.post(\r\n    \"http://localhost:30000/generate\",\r\n    json={\r\n        \"text\": \"Here is the information of the capital of France in the JSON format.\\n\",\r\n        \"sampling_params\": {\r\n            \"temperature\": 0,\r\n            \"max_new_tokens\": 32,\r\n            \"json_schema\": json_schema,\r\n        },\r\n    },\r\n)\r\nprint(response.json())\r\n```",
+    "labels": [
+      "inactive",
+      "grammar-backend"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-13T22:44:40+00:00",
+    "closed_at": "2025-01-15T00:16:35+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2025/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2025"
+  },
+  {
+    "number": 2017,
+    "title": "[BUG] xgrammar does not follow the constraint",
+    "body": "xgrammar does not follow the integer constraint and generate a floating number for an integer filed.\r\n\r\n## Schema\r\nhttps://github.com/sgl-project/sglang/blob/1f4514601e4c6595bb7b79dd24347ad01fa1d119/test/srt/test_json_constrained.py#L30\r\n\r\n## Error\r\n```\r\n======================================================================\r\nFAIL: test_json_openai (__main__.TestJSONConstrained)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"/root/sglang/test/srt/test_json_constrained.py\", line 109, in test_json_openai\r\n    assert isinstance(js_obj[\"population\"], int), f\"{js_obj=}\"\r\nAssertionError: js_obj={'name': 'Paris', 'population': 2.0}\r\n```\r\n\r\n## Reproduce:\r\n\r\nbranch: https://github.com/sgl-project/sglang/tree/xgrammar-fail\r\n\r\n```\r\npython3 test/srt/test_json_constrained.py TestJSONConstrained.test_json_openai\r\n```\r\n",
+    "labels": [
+      "grammar-backend"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-12T17:30:13+00:00",
+    "closed_at": "2024-11-28T05:46:05+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2017/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2017"
+  }
+]

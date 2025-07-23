@@ -1,0 +1,29 @@
+[
+  {
+    "number": 16825,
+    "title": "[Bug]: Bug in LRUEvictor: priority_queue and free_table desynchronization cause error",
+    "body": "### Your current environment\n\nvllm 0.7.3\n\n### \ud83d\udc1b Describe the bug\n\n### Your current environment\nvllm 0.7.3\n### \ud83d\udc1b Describe the bug\nWe encountered a bug in the LRUEvictor implementation when running VLLM (version 0.7.3) with the --preemption-mode swap flag.\nThe issue arises due to desynchronization between self.priority_queue and self.free_table in the remove method.\n<img width=\"1561\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/4d048b91-f914-43b9-89e2-5b6daf0c2012\" />\nAdd logging to evictor.py and prefix_caching_block.py to track block additions and removals.\n<img width=\"1259\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/e2b876a9-bff6-4004-b591-636d77eaa64d\" />\n<img width=\"589\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/1a72b5d7-867c-49d9-a0af-cc3229a3ed47\" />\n<img width=\"644\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/996e42c3-5899-4d33-8532-9193eb91c3f0\" />\n<img width=\"761\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/d60ab91e-185c-4676-a530-4734d1a6fe29\" />\n<img width=\"705\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/c9f57cd2-07ba-44ff-8dd7-41b03f046fcf\" />\n<img width=\"1047\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/a363db5b-8adc-43cd-b7d7-f1b1c4128268\" />\nThe issue by observing the following sequence:\nline 25: block (block_id=862 content_hash=4781171782003088483 num_hashed_tokens=768 last_accessed=-1) is added to self.free_table and self.priority_queue. (in add method)\nline 26: The block is removed from self.free_table but remains in self.priority_queue. (in remove method, only self.free_table is altered)\nline 28: The block is added again to self.free_table and self.priority_queue. (in add method)\nline 29: The block is removed from self.free_table, and the one added in line 25 is removed from self.priority_queue. (in evict method)\nline 31: block(block_id=862 content_hash=-1708738876872868168 num_hashed_tokens=192 last_accessed=-1) is added to self.free_table and self.priority_queue. note the content_hash is different\u3002(in add method)\nline 32: evict method remove the one added in line 31 from self.free_table but pop the one added in line 28 from self.priority_queue, they have different content_hash. and the error occured.\n<img width=\"1447\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/12b122f0-a8a0-48d1-9f56-615490138bfd\" />\n\nI think in evict method\uff0cwe should compare all field in BlockMetaData to get the right block to return, just like blow\n<img width=\"771\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/eb4e881f-d783-4209-9c3c-71313a84184d\" />\n\nAfter making the change, we tested it and found no problems.",
+    "labels": [
+      "bug",
+      "v0"
+    ],
+    "state": "open",
+    "created_at": "2025-04-18T08:19:48+00:00",
+    "closed_at": null,
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/16825/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/16825"
+  }
+]

@@ -1,0 +1,832 @@
+[
+  {
+    "number": 3377,
+    "title": "llama : support sliding window attention",
+    "body": "For more info, see: https://github.com/mistralai/mistral-src and references there in.\r\n\r\nAlso: https://arxiv.org/pdf/2310.06825v1.pdf\r\n\r\nWith #3228 it should be relatively easy to support this.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-09-28T12:12:40+00:00",
+    "closed_at": "2024-11-01T01:21:36+00:00",
+    "comments": 21,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3377/reactions",
+      "total_count": 58,
+      "+1": 44,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 13,
+      "eyes": 1
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3377"
+  },
+  {
+    "number": 705,
+    "title": "Windows page fault disk i/o slow on first load",
+    "body": "Hello,\r\n\r\nAs of https://github.com/ggerganov/llama.cpp/pull/613 I have experienced significant regression in model loading speed (I'm on windows, compiled msvc llama.cpp, llama.cpp is located on HDD to prevent SSD wear in my case)\r\n\r\nIt takes roughly 15 minutes for model to load first time after each computer restart/hibernation, during this time my HDD usage is at 100% and my non-llama.cpp read/write operations are slowed down on my pc\r\n![hdd](https://user-images.githubusercontent.com/76458234/229345728-b597023b-f7e3-4a8b-b550-3159863ba03d.png)\r\n\r\nBefore that, previous commits took 60 - 180 seconds at worst to load model first time, and after first loading occured, model loaded within 5 - 10 seconds on each program restart until pc reboot/hibernation\r\n\r\nBefore Commit:\r\n![timings2](https://user-images.githubusercontent.com/76458234/229347345-2053d645-0f26-42ef-9f8e-5fc69ad04e1c.png)\r\n\r\nAfter:\r\n![timings1](https://user-images.githubusercontent.com/76458234/229345966-ee606c92-e7cb-42f6-8b6f-2d6924ebcfee.png)\r\n\r\nI see reason why model might load faster for some while slower (like my case) for others after recent changes, therefore in my opinion best solution is adding parameter that lets people disable llama.cpp's recent model loading changes if thats possible\r\n\r\n- Thanks",
+    "labels": [
+      "performance",
+      "windows",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-02T10:04:24+00:00",
+    "closed_at": "2024-04-11T01:07:14+00:00",
+    "comments": 37,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/705/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/705"
+  },
+  {
+    "number": 462,
+    "title": "[fixed]The last code build with memory fix running result is not good in my pc.",
+    "body": "Be obviously slower with Q_1 30b model. And the memory usage become garbage...\n(Linux 5.19 x64 Ubuntu base)",
+    "labels": [
+      "bug",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-24T14:22:06+00:00",
+    "closed_at": "2023-03-27T00:13:38+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/462/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/462"
+  },
+  {
+    "number": 4218,
+    "title": "llama : speed-up grammar sampling",
+    "body": "There have been a few reports where the grammar sampling can significantly degrade the performance.\r\nIt would be nice to profile and optimize the implementation - there should be room for improvements.\r\n\r\nAlready on-going efforts:\r\n\r\n- #4210 \r\n- #4213\r\n\r\nProbably worth looking in multi-threading the implementation as well.",
+    "labels": [
+      "performance",
+      "refactoring",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2023-11-25T17:04:06+00:00",
+    "closed_at": null,
+    "comments": 40,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4218/reactions",
+      "total_count": 20,
+      "+1": 20,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4218"
+  },
+  {
+    "number": 637,
+    "title": "Performance investigation using AMD BLIS instead of OpenBLAS on 16 core AMD Zen1",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [X] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [X] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\nCompiling against AMD optimized BLS implementation of BLAS allows me to run perplexity tests\r\n\r\n# Current Behavior\r\nCompiling against AMD optimized BLS implementation of BLAS causes perplexity command to process 0 chunks\r\n\r\n* Physical (or virtual) hardware you are using, e.g. for Linux:\r\n```\r\nllama.cpp$ lscpu | egrep \"AMD|Flags\"\r\nVendor ID:                       AuthenticAMD\r\nModel name:                      AMD Ryzen Threadripper 1950X 16-Core Processor\r\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid amd_dcm aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb hw_pstate ssbd ibpb vmmcall fsgsbase bmi1 avx2 smep bmi2 rdseed adx smap clflushopt sha_ni xsaveopt xsavec xgetbv1 xsaves clzero irperf xsaveerptr arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif overflow_recov succor smca sme sev\r\nVirtualization:                  AMD-V\r\n```\r\n\r\n* Operating System, e.g. for Linux:\r\n```\r\nllama.cpp$ uname -a\r\nLinux asushimu 5.15.0-60-generic #66-Ubuntu SMP Fri Jan 20 14:29:49 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux\r\n```\r\n* SDK version, e.g. for Linux:\r\n\r\n```\r\nllama.cpp$ git log | head -1\r\ncommit 3df890aef432ce68143cfafcd7caf828bc4c3e55\r\nllama.cpp$ python3 --version\r\nPython 3.10.9\r\nllama.cpp$ make --version | head -1\r\nGNU Make 4.3\r\nllama.cpp$ g++ --version | head -1\r\ng++ (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\n```\r\n# Steps to Reproduce\r\n\r\n1. Install latest bliss libs from github\r\n\r\n```\r\nblis$ sudo make install\r\nInstalling libblis.a into /usr/local/lib/\r\nInstalling libblis.so.4.0.0 into /usr/local/lib/\r\nGenerating monolithic cblas.h.........\r\nGenerated include/zen/cblas.h\r\nInstalling blis.h cblas.h blis.hh cblas.hh into /usr/local/include/blis/\r\nInstalling config.mk common.mk into /usr/local/share/blis/\r\nInstalling config/zen/make_defs.mk into /usr/local/share/blis/config/zen\r\nmkdir -p /usr/local/share/pkgconfig\r\nInstalling blis.pc into /usr/local/share/pkgconfig/\r\ninstall -c -m 0644 blis.pc /usr/local/share/pkgconfig\r\n```\r\n3. Update Makefile to use blis instead of blas\r\n\r\n```\r\nllama.cpp$ diff Makefile.bliss Makefile.dist \r\n183,184c183,184\r\n< \tCFLAGS  += -DGGML_USE_OPENBLAS -I/usr/local/include/blis\r\n< \tLDFLAGS += -lblis\r\n---\r\n> \tCFLAGS  += -DGGML_USE_OPENBLAS -I/usr/local/include/openblas\r\n> \tLDFLAGS += -lopenblas\r\n```\r\n\r\n5. Compile against blis, perplexity processes 0 chunks\r\n\r\n174 second run just calling `./main` linked against OpenBLAS:\r\n```\r\nllama.cpp$ make -f Makefile.dist clean && LLAMA_OPENBLAS=1 make -f Makefile.dist;ldd ./main;time ./main -t 16 -m ./models/7B/ggml-model-q4_0.bin -b 256 -n 512 -p \"blis or blas\"\r\nI llama.cpp build info: \r\nI UNAME_S:  Linux\r\nI UNAME_P:  x86_64\r\nI UNAME_M:  x86_64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -mavx -mavx2 -mfma -mf16c -msse3\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread\r\nI LDFLAGS:  \r\nI CC:       cc (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\nI CXX:      g++ (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\n\r\nrm -vf *.o main quantize perplexity embedding\r\nremoved 'common.o'\r\nremoved 'ggml.o'\r\nremoved 'llama.o'\r\nremoved 'main'\r\nremoved 'quantize'\r\nremoved 'perplexity'\r\nremoved 'embedding'\r\nI llama.cpp build info: \r\nI UNAME_S:  Linux\r\nI UNAME_P:  x86_64\r\nI UNAME_M:  x86_64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -mavx -mavx2 -mfma -mf16c -msse3 -DGGML_USE_OPENBLAS -I/usr/local/include/openblas\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread\r\nI LDFLAGS:  -lopenblas\r\nI CC:       cc (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\nI CXX:      g++ (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\n\r\ncc  -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -mavx -mavx2 -mfma -mf16c -msse3 -DGGML_USE_OPENBLAS -I/usr/local/include/openblas   -c ggml.c -o ggml.o\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread -c llama.cpp -o llama.o\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread -c examples/common.cpp -o common.o\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/main/main.cpp ggml.o llama.o common.o -o main -lopenblas\r\n\r\n====  Run ./main -h for help.  ====\r\n\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/quantize/quantize.cpp ggml.o llama.o -o quantize -lopenblas\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/perplexity/perplexity.cpp ggml.o llama.o common.o -o perplexity -lopenblas\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/embedding/embedding.cpp ggml.o llama.o common.o -o embedding -lopenblas\r\n\tlinux-vdso.so.1 (0x00007ffd8c7a7000)\r\n\tlibopenblas.so.0 => /lib/x86_64-linux-gnu/libopenblas.so.0 (0x00007f3bb8880000)\r\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f3bb8656000)\r\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f3bb856f000)\r\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f3bb854f000)\r\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f3bb8327000)\r\n\tlibgfortran.so.5 => /lib/x86_64-linux-gnu/libgfortran.so.5 (0x00007f3bb804a000)\r\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f3bbadd8000)\r\n\tlibquadmath.so.0 => /lib/x86_64-linux-gnu/libquadmath.so.0 (0x00007f3bb8002000)\r\nmain: seed = 1680212228\r\nllama_model_load: loading model from './models/7B/ggml-model-q4_0.bin' - please wait ...\r\nllama_model_load: n_vocab = 32000\r\nllama_model_load: n_ctx   = 512\r\nllama_model_load: n_embd  = 4096\r\nllama_model_load: n_mult  = 256\r\nllama_model_load: n_head  = 32\r\nllama_model_load: n_layer = 32\r\nllama_model_load: n_rot   = 128\r\nllama_model_load: f16     = 2\r\nllama_model_load: n_ff    = 11008\r\nllama_model_load: n_parts = 1\r\nllama_model_load: type    = 1\r\nllama_model_load: ggml map size = 4017.70 MB\r\nllama_model_load: ggml ctx size =  81.25 KB\r\nllama_model_load: mem required  = 5809.78 MB (+ 1026.00 MB per state)\r\nllama_model_load: loading tensors from './models/7B/ggml-model-q4_0.bin'\r\nllama_model_load: model size =  4017.27 MB / num tensors = 291\r\nllama_init_from_file: kv self size  =  256.00 MB\r\n\r\nsystem_info: n_threads = 16 / 32 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | VSX = 0 | \r\nsampling: temp = 0.800000, top_k = 40, top_p = 0.950000, repeat_last_n = 64, repeat_penalty = 1.100000\r\ngenerate: n_ctx = 512, n_batch = 256, n_predict = 512, n_keep = 0\r\n\r\n\r\n blis or blas\r\n\"Blas,\" said the voice in the dark. \"There is a Blas. He's been here all day long. He hasn't moved. I think he might be asleep.\"\r\nI could hear breathing, but it was too distant to place where it was coming from. Blas. The name came to me from some forgotten dream. I couldn't recall why I had remembered it or where the thought had come from, but the name was there in my head: Blas. And then it was gone again, like a bird in flight.\r\n\"Is he still here?\" said the voice. \"I can't see him.\"\r\n\"Here,\" I said. \"Yes.\" The word hung on the air of our cave, suspended between us. But that word was also gone.\r\nWe had been together for three days now. Three days ago we had met in the woods; on day two we had found a cave deep in the forest and had made it into our own little world. Now it was nighttime again and Blas slept. I could hear his breathing, but there were other sounds too: waves, a distant breeze, the creaking of tree limbs heavy with snow.\r\n\"I think he might be asleep,\" said the voice in the dark.\r\nIt was a strange thing to hear that voice again: we had come to know it so well since we'd met\u2014it had been there in my head for weeks and weeks, but now suddenly it seemed like an old friend, someone I knew very well from childhood days: my mother's voice, or the sound of the sea. I couldn't quite work out what it was. And then again, that name was gone, swirling round in me like a leaf flung against a stone in a river. Blas. It must have been some kind of bird, perhaps a small bird with a short tail.\r\n\"I think he might be asleep,\" said the voice. \"What shall we do?\"\r\n\"Shall we go to bed?\" I asked. I could hear my own words coming out of the dark cave like birdsong: they had been there in me for days and now suddenly they were back again, like a message from the past. And then it was gone too.\r\nThe voice sighed with relief as if at some unsaid thing that was now gone\u2014and it came to me again: \"Shall we\r\nllama_print_timings:        load time =  1072.38 ms\r\nllama_print_timings:      sample time =   401.94 ms /   512 runs   (    0.79 ms per run)\r\nllama_print_timings: prompt eval time = 15402.35 ms /   263 tokens (   58.56 ms per token)\r\nllama_print_timings:        eval time = 157868.10 ms /   510 runs   (  309.55 ms per run)\r\nllama_print_timings:       total time = 174278.01 ms\r\n\r\nreal\t2m54.504s\r\nuser\t46m6.640s\r\nsys\t3m35.773s\r\n```\r\n\r\n47 second run calling `./main` linked against AMD bliss BLAS libs:\r\n```\r\nllama.cpp$ make -f Makefile.bliss clean && LLAMA_OPENBLAS=1 make -f Makefile.bliss;ldd ./main;time ./main -t 16 -m ./models/7B/ggml-model-q4_0.bin -b 256 -n 512 -p \"blis or blas\"\r\nI llama.cpp build info: \r\nI UNAME_S:  Linux\r\nI UNAME_P:  x86_64\r\nI UNAME_M:  x86_64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -mavx -mavx2 -mfma -mf16c -msse3\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread\r\nI LDFLAGS:  \r\nI CC:       cc (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\nI CXX:      g++ (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\n\r\nrm -vf *.o main quantize perplexity embedding\r\nremoved 'common.o'\r\nremoved 'ggml.o'\r\nremoved 'llama.o'\r\nremoved 'main'\r\nremoved 'quantize'\r\nremoved 'perplexity'\r\nremoved 'embedding'\r\nI llama.cpp build info: \r\nI UNAME_S:  Linux\r\nI UNAME_P:  x86_64\r\nI UNAME_M:  x86_64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -mavx -mavx2 -mfma -mf16c -msse3 -DGGML_USE_OPENBLAS -I/usr/local/include/blis\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread\r\nI LDFLAGS:  -lblis\r\nI CC:       cc (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\nI CXX:      g++ (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\n\r\ncc  -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -mavx -mavx2 -mfma -mf16c -msse3 -DGGML_USE_OPENBLAS -I/usr/local/include/blis   -c ggml.c -o ggml.o\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread -c llama.cpp -o llama.o\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread -c examples/common.cpp -o common.o\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/main/main.cpp ggml.o llama.o common.o -o main -lblis\r\n\r\n====  Run ./main -h for help.  ====\r\n\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/quantize/quantize.cpp ggml.o llama.o -o quantize -lblis\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/perplexity/perplexity.cpp ggml.o llama.o common.o -o perplexity -lblis\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/embedding/embedding.cpp ggml.o llama.o common.o -o embedding -lblis\r\n\tlinux-vdso.so.1 (0x00007fff553ed000)\r\n\tlibblis.so.4 => /usr/local/lib/libblis.so.4 (0x00007f1011a8c000)\r\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f1011862000)\r\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f101177b000)\r\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f101175b000)\r\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f1011533000)\r\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f101200e000)\r\nmain: seed = 1680212135\r\nllama_model_load: loading model from './models/7B/ggml-model-q4_0.bin' - please wait ...\r\nllama_model_load: n_vocab = 32000\r\nllama_model_load: n_ctx   = 512\r\nllama_model_load: n_embd  = 4096\r\nllama_model_load: n_mult  = 256\r\nllama_model_load: n_head  = 32\r\nllama_model_load: n_layer = 32\r\nllama_model_load: n_rot   = 128\r\nllama_model_load: f16     = 2\r\nllama_model_load: n_ff    = 11008\r\nllama_model_load: n_parts = 1\r\nllama_model_load: type    = 1\r\nllama_model_load: ggml map size = 4017.70 MB\r\nllama_model_load: ggml ctx size =  81.25 KB\r\nllama_model_load: mem required  = 5809.78 MB (+ 1026.00 MB per state)\r\nllama_model_load: loading tensors from './models/7B/ggml-model-q4_0.bin'\r\nllama_model_load: model size =  4017.27 MB / num tensors = 291\r\nllama_init_from_file: kv self size  =  256.00 MB\r\n\r\nsystem_info: n_threads = 16 / 32 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | VSX = 0 | \r\nsampling: temp = 0.800000, top_k = 40, top_p = 0.950000, repeat_last_n = 64, repeat_penalty = 1.100000\r\ngenerate: n_ctx = 512, n_batch = 256, n_predict = 512, n_keep = 0\r\n\r\n\r\n blis or blas\r\nI know the word is spelled either with a B, L or an S. I believe it was used for either a sword (blade) or a small dagger or short knife.\r\nDoes anyone know the correct spelling?\r\nThanks in advance to everyone who might answer this question.\r\nblis, blas\r\nIt is indeed possible that it's spelt both ways: https://en.wikipedia.org/wiki/Bliss_(disambiguation)\r\nSo you are correct it could be either way but it would depend on the context. It is used in Scottish names like Bliss-Carver or Blaisdell for example.\r\nI agree with @MikeSteeden, it's possible to find it spelled both ways. I am not sure what exactly is your question: do you want to know if either one of these variants is correct? If so, then the answer is yes: bliss and blaise are acceptable spellings.\r\nI wanted to know which is correct. It's a family name and I just got confused as to which spelling is correct since I have seen it in two different ways. Thanks for your answers. [end of text]\r\n\r\nllama_print_timings:        load time =  1076.06 ms\r\nllama_print_timings:      sample time =   190.66 ms /   243 runs   (    0.78 ms per run)\r\nllama_print_timings: prompt eval time =   482.64 ms /     6 tokens (   80.44 ms per token)\r\nllama_print_timings:        eval time = 46036.34 ms /   242 runs   (  190.23 ms per run)\r\nllama_print_timings:       total time = 47307.07 ms\r\n\r\nreal\t0m47.525s\r\nuser\t12m20.192s\r\nsys\t0m1.248s\r\n```\r\nPerplexity run with blis doesn't process any chunks :\r\n```\r\nllama.cpp$ make -f Makefile.bliss clean && LLAMA_OPENBLAS=1 make -f Makefile.bliss;ldd ./perplexity ;time ./perplexity -t 16 -m ./models/7B/ggml-model-q4_0.bin -f /data/llama/wikitext-2-raw/wiki.wiki.test.raw\r\nI llama.cpp build info: \r\nI UNAME_S:  Linux\r\nI UNAME_P:  x86_64\r\nI UNAME_M:  x86_64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -mavx -mavx2 -mfma -mf16c -msse3\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread\r\nI LDFLAGS:  \r\nI CC:       cc (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\nI CXX:      g++ (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\n\r\nrm -vf *.o main quantize perplexity embedding\r\nremoved 'common.o'\r\nremoved 'ggml.o'\r\nremoved 'llama.o'\r\nremoved 'main'\r\nremoved 'quantize'\r\nremoved 'perplexity'\r\nremoved 'embedding'\r\nI llama.cpp build info: \r\nI UNAME_S:  Linux\r\nI UNAME_P:  x86_64\r\nI UNAME_M:  x86_64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -mavx -mavx2 -mfma -mf16c -msse3 -DGGML_USE_OPENBLAS -I/usr/local/include/blis\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread\r\nI LDFLAGS:  -lblis\r\nI CC:       cc (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\nI CXX:      g++ (Ubuntu 10.4.0-4ubuntu1~22.04) 10.4.0\r\n\r\ncc  -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -mavx -mavx2 -mfma -mf16c -msse3 -DGGML_USE_OPENBLAS -I/usr/local/include/blis   -c ggml.c -o ggml.o\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread -c llama.cpp -o llama.o\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread -c examples/common.cpp -o common.o\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/main/main.cpp ggml.o llama.o common.o -o main -lblis\r\n\r\n====  Run ./main -h for help.  ====\r\n\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/quantize/quantize.cpp ggml.o llama.o -o quantize -lblis\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/perplexity/perplexity.cpp ggml.o llama.o common.o -o perplexity -lblis\r\ng++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -pthread examples/embedding/embedding.cpp ggml.o llama.o common.o -o embedding -lblis\r\n\tlinux-vdso.so.1 (0x00007ffced7f6000)\r\n\tlibblis.so.4 => /usr/local/lib/libblis.so.4 (0x00007fbe1ee26000)\r\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fbe1ebfc000)\r\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fbe1eb15000)\r\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fbe1eaf5000)\r\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fbe1e8cd000)\r\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fbe1f3a6000)\r\nmain: seed = 1680214250\r\nllama_model_load: loading model from './models/7B/ggml-model-q4_0.bin' - please wait ...\r\nllama_model_load: n_vocab = 32000\r\nllama_model_load: n_ctx   = 512\r\nllama_model_load: n_embd  = 4096\r\nllama_model_load: n_mult  = 256\r\nllama_model_load: n_head  = 32\r\nllama_model_load: n_layer = 32\r\nllama_model_load: n_rot   = 128\r\nllama_model_load: f16     = 2\r\nllama_model_load: n_ff    = 11008\r\nllama_model_load: n_parts = 1\r\nllama_model_load: type    = 1\r\nllama_model_load: ggml map size = 4017.70 MB\r\nllama_model_load: ggml ctx size =  81.25 KB\r\nllama_model_load: mem required  = 5809.78 MB (+ 1026.00 MB per state)\r\nllama_model_load: loading tensors from './models/7B/ggml-model-q4_0.bin'\r\nllama_model_load: model size =  4017.27 MB / num tensors = 291\r\nllama_init_from_file: kv self size  =  256.00 MB\r\n\r\nsystem_info: n_threads = 16 / 32 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | VSX = 0 | \r\nperplexity : calculating perplexity over 0 chunks\r\n\r\n\r\nllama_print_timings:        load time =     9.90 ms\r\nllama_print_timings:      sample time =     0.00 ms /     1 runs   (    0.00 ms per run)\r\nllama_print_timings: prompt eval time =     0.00 ms /     1 tokens (    0.00 ms per token)\r\nllama_print_timings:        eval time =     0.00 ms /     1 runs   (    0.00 ms per run)\r\nllama_print_timings:       total time =   578.24 ms\r\n\r\nreal\t0m0.700s\r\nuser\t0m0.105s\r\nsys\t0m0.579s\r\n```\r\n",
+    "labels": [
+      "enhancement",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-30T22:14:53+00:00",
+    "closed_at": "2023-04-13T08:09:16+00:00",
+    "comments": 30,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/637/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/637"
+  },
+  {
+    "number": 6292,
+    "title": "Add some models in ggml-models HF repo",
+    "body": "### Motivation\r\n\r\nIn the context of:\r\n\r\n- #6233\r\n\r\nNeed to add some models in the [GGML HF Repo](https://huggingface.co/ggml-org/models/tree/main):\r\n\r\n- mixtral8x7B Q4 Q8 F16 in split format\r\n- bert-bge-large F16\r\n- llama7B 13B split Q4 F16\r\n",
+    "labels": [
+      "enhancement",
+      "performance",
+      "model",
+      "testing",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-25T06:36:44+00:00",
+    "closed_at": "2024-05-18T01:58:22+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6292/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6292"
+  },
+  {
+    "number": 3422,
+    "title": "[User] AMD GPU slower than CPU",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [x] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [x] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [x] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\nGPU inference should be faster than CPU.\r\n\r\n\r\n# Current Behavior\r\n\r\nI have 13900K CPU & 7900XTX 24G hardware. I built llama.cpp using the [hipBLAS](https://github.com/ggerganov/llama.cpp#hipblas) and it builds. However, I noticed that when I offload all layers to GPU, it is noticably slower \r\n\r\n## GPU\r\n```\r\n./main -m ../model/llama-2-13b-chat/ggml-model-q4.gguf -n 128 -ngl 50\r\n----\r\nLog start\r\nmain: build = 1299 (f5ef5cf)\r\nmain: built with cc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0 for x86_64-linux-gnu\r\nmain: seed  = 1696212406\r\nggml_init_cublas: found 1 ROCm devices:\r\n  Device 0: Radeon RX 7900 XTX, compute capability 11.0\r\nllama_model_loader: loaded meta data with 16 key-value pairs and 363 tensors from ../model/llama-2-13b-chat/ggml-model-q4.gguf (version GGUF V2 (latest))\r\nllama_model_loader: - tensor    0:                token_embd.weight q4_0     [  5120, 32000,     1,     1 ]\r\nllama_model_loader: - tensor    1:               output_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor    2:                    output.weight q6_K     [  5120, 32000,     1,     1 ]\r\n...\r\nllama_model_loader: - tensor  361:          blk.39.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  362:           blk.39.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - kv   0:                       general.architecture str\r\nllama_model_loader: - kv   1:                               general.name str\r\nllama_model_loader: - kv   2:                       llama.context_length u32\r\nllama_model_loader: - kv   3:                     llama.embedding_length u32\r\nllama_model_loader: - kv   4:                          llama.block_count u32\r\nllama_model_loader: - kv   5:                  llama.feed_forward_length u32\r\nllama_model_loader: - kv   6:                 llama.rope.dimension_count u32\r\nllama_model_loader: - kv   7:                 llama.attention.head_count u32\r\nllama_model_loader: - kv   8:              llama.attention.head_count_kv u32\r\nllama_model_loader: - kv   9:     llama.attention.layer_norm_rms_epsilon f32\r\nllama_model_loader: - kv  10:                          general.file_type u32\r\nllama_model_loader: - kv  11:                       tokenizer.ggml.model str\r\nllama_model_loader: - kv  12:                      tokenizer.ggml.tokens arr\r\nllama_model_loader: - kv  13:                      tokenizer.ggml.scores arr\r\nllama_model_loader: - kv  14:                  tokenizer.ggml.token_type arr\r\nllama_model_loader: - kv  15:               general.quantization_version u32\r\nllama_model_loader: - type  f32:   81 tensors\r\nllama_model_loader: - type q4_0:  281 tensors\r\nllama_model_loader: - type q6_K:    1 tensors\r\nllm_load_print_meta: format           = GGUF V2 (latest)\r\nllm_load_print_meta: arch             = llama\r\nllm_load_print_meta: vocab type       = SPM\r\nllm_load_print_meta: n_vocab          = 32000\r\nllm_load_print_meta: n_merges         = 0\r\nllm_load_print_meta: n_ctx_train      = 4096\r\nllm_load_print_meta: n_embd           = 5120\r\nllm_load_print_meta: n_head           = 40\r\nllm_load_print_meta: n_head_kv        = 40\r\nllm_load_print_meta: n_layer          = 40\r\nllm_load_print_meta: n_rot            = 128\r\nllm_load_print_meta: n_gqa            = 1\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-05\r\nllm_load_print_meta: n_ff             = 13824\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: model type       = 13B\r\nllm_load_print_meta: model ftype      = mostly Q4_0\r\nllm_load_print_meta: model params     = 13.02 B\r\nllm_load_print_meta: model size       = 6.86 GiB (4.53 BPW)\r\nllm_load_print_meta: general.name   = LLaMA v2\r\nllm_load_print_meta: BOS token = 1 '<s>'\r\nllm_load_print_meta: EOS token = 2 '</s>'\r\nllm_load_print_meta: UNK token = 0 '<unk>'\r\nllm_load_print_meta: LF token  = 13 '<0x0A>'\r\nllm_load_tensors: ggml ctx size =    0.12 MB\r\nllm_load_tensors: using ROCm for GPU acceleration\r\nllm_load_tensors: mem required  =   88.01 MB\r\nllm_load_tensors: offloading 40 repeating layers to GPU\r\nllm_load_tensors: offloading non-repeating layers to GPU\r\nllm_load_tensors: offloaded 43/43 layers to GPU\r\nllm_load_tensors: VRAM used: 6936.01 MB\r\n...................................................................................................\r\nllama_new_context_with_model: n_ctx      = 512\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 1\r\nllama_kv_cache_init: offloading v cache to GPU\r\nllama_kv_cache_init: offloading k cache to GPU\r\nllama_kv_cache_init: VRAM kv self = 400.00 MB\r\nllama_new_context_with_model: kv self size  =  400.00 MB\r\nllama_new_context_with_model: compute buffer total size = 80.88 MB\r\nllama_new_context_with_model: VRAM scratch buffer: 75.00 MB\r\nllama_new_context_with_model: total VRAM used: 7411.01 MB (model: 6936.01 MB, context: 475.00 MB)\r\n\r\nsystem_info: n_threads = 16 / 32 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | SSSE3 = 1 | VSX = 0 |\r\nsampling: repeat_last_n = 64, repeat_penalty = 1.100000, presence_penalty = 0.000000, frequency_penalty = 0.000000, top_k = 40, tfs_z = 1.000000, top_p = 0.950000, typical_p = 1.000000, temp = 0.800000, mirostat = 0, mirostat_lr = 0.100000, mirostat_ent = 5.000000\r\ngenerate: n_ctx = 512, n_batch = 512, n_predict = 128, n_keep = 0\r\n\r\n\r\npgfplotstablecolumntypes\r\n\r\nIn addition to the built-in types provided by `pgfplots`, you can also use your own custom column types. Here are some examples of how to define and use custom column types:\r\n\r\n1. `boolean` type:\r\n\\documentclass{article}\r\n\\usepackage{pgfplotstable}\r\n\\begin{document}\r\n\\pgfplotstabletypeset[\r\n    columns/my_column/type={boolean},\r\n    data=mydata,\r\n    every head row/.style={before row={\\hline}}\r\n]{%\r\n    my_column & other_column\r\nllama_print_timings:        load time =  6432.57 ms\r\nllama_print_timings:      sample time =    32.92 ms /   128 runs   (    0.26 ms per token,  3888.10 tokens per second)\r\nllama_print_timings: prompt eval time =     0.00 ms /     1 tokens (    0.00 ms per token,      inf tokens per second)\r\nllama_print_timings:        eval time = 22756.97 ms /   128 runs   (  177.79 ms per token,     5.62 tokens per second)\r\nllama_print_timings:       total time = 22857.59 ms\r\nLog end\r\n```\r\n\r\n## CPU\r\n```\r\n./main -m ../model/llama-2-13b-chat/ggml-model-q4.gguf -n 128\r\n\r\n----\r\nLog start\r\nmain: build = 1299 (f5ef5cf)\r\nmain: built with cc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0 for x86_64-linux-gnu\r\nmain: seed  = 1696212490\r\nggml_init_cublas: found 1 ROCm devices:\r\n  Device 0: Radeon RX 7900 XTX, compute capability 11.0\r\nllama_model_loader: loaded meta data with 16 key-value pairs and 363 tensors from ../model/llama-2-13b-chat/ggml-model-q4.gguf (version GGUF V2 (latest))\r\nllama_model_loader: - tensor    0:                token_embd.weight q4_0     [  5120, 32000,     1,     1 ]\r\nllama_model_loader: - tensor    1:               output_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor    2:                    output.weight q6_K     [  5120, 32000,     1,     1 ]\r\n...\r\nllama_model_loader: - tensor  361:          blk.39.attn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - tensor  362:           blk.39.ffn_norm.weight f32      [  5120,     1,     1,     1 ]\r\nllama_model_loader: - kv   0:                       general.architecture str\r\nllama_model_loader: - kv   1:                               general.name str\r\nllama_model_loader: - kv   2:                       llama.context_length u32\r\nllama_model_loader: - kv   3:                     llama.embedding_length u32\r\nllama_model_loader: - kv   4:                          llama.block_count u32\r\nllama_model_loader: - kv   5:                  llama.feed_forward_length u32\r\nllama_model_loader: - kv   6:                 llama.rope.dimension_count u32\r\nllama_model_loader: - kv   7:                 llama.attention.head_count u32\r\nllama_model_loader: - kv   8:              llama.attention.head_count_kv u32\r\nllama_model_loader: - kv   9:     llama.attention.layer_norm_rms_epsilon f32\r\nllama_model_loader: - kv  10:                          general.file_type u32\r\nllama_model_loader: - kv  11:                       tokenizer.ggml.model str\r\nllama_model_loader: - kv  12:                      tokenizer.ggml.tokens arr\r\nllama_model_loader: - kv  13:                      tokenizer.ggml.scores arr\r\nllama_model_loader: - kv  14:                  tokenizer.ggml.token_type arr\r\nllama_model_loader: - kv  15:               general.quantization_version u32\r\nllama_model_loader: - type  f32:   81 tensors\r\nllama_model_loader: - type q4_0:  281 tensors\r\nllama_model_loader: - type q6_K:    1 tensors\r\nllm_load_print_meta: format           = GGUF V2 (latest)\r\nllm_load_print_meta: arch             = llama\r\nllm_load_print_meta: vocab type       = SPM\r\nllm_load_print_meta: n_vocab          = 32000\r\nllm_load_print_meta: n_merges         = 0\r\nllm_load_print_meta: n_ctx_train      = 4096\r\nllm_load_print_meta: n_embd           = 5120\r\nllm_load_print_meta: n_head           = 40\r\nllm_load_print_meta: n_head_kv        = 40\r\nllm_load_print_meta: n_layer          = 40\r\nllm_load_print_meta: n_rot            = 128\r\nllm_load_print_meta: n_gqa            = 1\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-05\r\nllm_load_print_meta: n_ff             = 13824\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: model type       = 13B\r\nllm_load_print_meta: model ftype      = mostly Q4_0\r\nllm_load_print_meta: model params     = 13.02 B\r\nllm_load_print_meta: model size       = 6.86 GiB (4.53 BPW)\r\nllm_load_print_meta: general.name   = LLaMA v2\r\nllm_load_print_meta: BOS token = 1 '<s>'\r\nllm_load_print_meta: EOS token = 2 '</s>'\r\nllm_load_print_meta: UNK token = 0 '<unk>'\r\nllm_load_print_meta: LF token  = 13 '<0x0A>'\r\nllm_load_tensors: ggml ctx size =    0.12 MB\r\nllm_load_tensors: using ROCm for GPU acceleration\r\nllm_load_tensors: mem required  = 7024.01 MB\r\nllm_load_tensors: offloading 0 repeating layers to GPU\r\nllm_load_tensors: offloaded 0/43 layers to GPU\r\nllm_load_tensors: VRAM used: 0.00 MB\r\n...................................................................................................\r\nllama_new_context_with_model: n_ctx      = 512\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 1\r\nllama_new_context_with_model: kv self size  =  400.00 MB\r\nllama_new_context_with_model: compute buffer total size = 80.88 MB\r\nllama_new_context_with_model: VRAM scratch buffer: 75.00 MB\r\nllama_new_context_with_model: total VRAM used: 75.00 MB (model: 0.00 MB, context: 75.00 MB)\r\n\r\nsystem_info: n_threads = 16 / 32 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | SSSE3 = 1 | VSX = 0 |\r\nsampling: repeat_last_n = 64, repeat_penalty = 1.100000, presence_penalty = 0.000000, frequency_penalty = 0.000000, top_k = 40, tfs_z = 1.000000, top_p = 0.950000, typical_p = 1.000000, temp = 0.800000, mirostat = 0, mirostat_lr = 0.100000, mirostat_ent = 5.000000\r\ngenerate: n_ctx = 512, n_batch = 512, n_predict = 128, n_keep = 0\r\n\r\n\r\ntikz\\draw[fill=blue!50] (0,0) rectangle (1.5,1.5);\r\n\\tikz\\draw[fill=red!50] (1.5,0) rectangle (3,1.5);\r\n\\tikz\\draw[fill=green!50] (3,0) rectangle (4.5,1.5);\r\n\\end{tikzpicture}\r\n\r\nIn this example, the rectangles are drawn with different colors: blue, red and green.\r\n\r\nYou can also use other shapes like circles, triangles, etc. by changing the\r\nllama_print_timings:        load time =   363.76 ms\r\nllama_print_timings:      sample time =    36.15 ms /   128 runs   (    0.28 ms per token,  3541.29 tokens per second)\r\nllama_print_timings: prompt eval time =     0.00 ms /     1 tokens (    0.00 ms per token,      inf tokens per second)\r\nllama_print_timings:        eval time = 19588.62 ms /   128 runs   (  153.04 ms per token,     6.53 tokens per second)\r\nllama_print_timings:       total time = 19695.27 ms\r\nLog end\r\n```\r\n\r\n# Environment and Context\r\n\r\n\r\nCPU: i9-13900KF\r\nOS: Linux pia 6.2.0-33-generic #33~22.04.1-Ubuntu\r\nGPU: 7900XTX\r\nPython: 3.10\r\ng++: 11.4.0\r\nMake: 4.3\r\n\r\n\r\nBuild command\r\n\r\n```\r\nmake LLAMA_HIPBLAS=1\r\n```\r\n\r\nrocminfo\r\n\r\n```\r\n\r\n\u276f rocminfo\r\nROCk module is loaded\r\n=====================\r\nHSA System Attributes\r\n=====================\r\nRuntime Version:         1.1\r\nSystem Timestamp Freq.:  1000.000000MHz\r\nSig. Max Wait Duration:  18446744073709551615 (0xFFFFFFFFFFFFFFFF) (timestamp count)\r\nMachine Model:           LARGE\r\nSystem Endianness:       LITTLE\r\n\r\n==========\r\nHSA Agents\r\n==========\r\n*******\r\nAgent 1\r\n*******\r\n  Name:                    13th Gen Intel(R) Core(TM) i9-13900KF\r\n  Uuid:                    CPU-XX\r\n  Marketing Name:          13th Gen Intel(R) Core(TM) i9-13900KF\r\n  Vendor Name:             CPU\r\n  Feature:                 None specified\r\n  Profile:                 FULL_PROFILE\r\n  Float Round Mode:        NEAR\r\n  Max Queue Number:        0(0x0)\r\n  Queue Min Size:          0(0x0)\r\n  Queue Max Size:          0(0x0)\r\n  Queue Type:              MULTI\r\n  Node:                    0\r\n  Device Type:             CPU\r\n  Cache Info:\r\n    L1:                      32768(0x8000) KB\r\n  Chip ID:                 0(0x0)\r\n  ASIC Revision:           0(0x0)\r\n  Cacheline Size:          64(0x40)\r\n  Max Clock Freq. (MHz):   5500\r\n  BDFID:                   0\r\n  Internal Node ID:        0\r\n  Compute Unit:            32\r\n  SIMDs per CU:            0\r\n  Shader Engines:          0\r\n  Shader Arrs. per Eng.:   0\r\n  WatchPts on Addr. Ranges:1\r\n  Features:                None\r\n  Pool Info:\r\n    Pool 1\r\n      Segment:                 GLOBAL; FLAGS: FINE GRAINED\r\n      Size:                    98692092(0x5e1ebfc) KB\r\n      Allocatable:             TRUE\r\n      Alloc Granule:           4KB\r\n      Alloc Alignment:         4KB\r\n      Accessible by all:       TRUE\r\n    Pool 2\r\n      Segment:                 GLOBAL; FLAGS: KERNARG, FINE GRAINED\r\n      Size:                    98692092(0x5e1ebfc) KB\r\n      Allocatable:             TRUE\r\n      Alloc Granule:           4KB\r\n      Alloc Alignment:         4KB\r\n      Accessible by all:       TRUE\r\n    Pool 3\r\n      Segment:                 GLOBAL; FLAGS: COARSE GRAINED\r\n      Size:                    98692092(0x5e1ebfc) KB\r\n      Allocatable:             TRUE\r\n      Alloc Granule:           4KB\r\n      Alloc Alignment:         4KB\r\n      Accessible by all:       TRUE\r\n  ISA Info:\r\n*******\r\nAgent 2\r\n*******\r\n  Name:                    gfx1100\r\n  Uuid:                    GPU-754358d3215edcd7\r\n  Marketing Name:          Radeon RX 7900 XTX\r\n  Vendor Name:             AMD\r\n  Feature:                 KERNEL_DISPATCH\r\n  Profile:                 BASE_PROFILE\r\n  Float Round Mode:        NEAR\r\n  Max Queue Number:        128(0x80)\r\n  Queue Min Size:          64(0x40)\r\n  Queue Max Size:          131072(0x20000)\r\n  Queue Type:              MULTI\r\n  Node:                    1\r\n  Device Type:             GPU\r\n  Cache Info:\r\n    L1:                      32(0x20) KB\r\n    L2:                      6144(0x1800) KB\r\n    L3:                      98304(0x18000) KB\r\n  Chip ID:                 29772(0x744c)\r\n  ASIC Revision:           0(0x0)\r\n  Cacheline Size:          64(0x40)\r\n  Max Clock Freq. (MHz):   2304\r\n  BDFID:                   768\r\n  Internal Node ID:        1\r\n  Compute Unit:            96\r\n  SIMDs per CU:            2\r\n  Shader Engines:          6\r\n  Shader Arrs. per Eng.:   2\r\n  WatchPts on Addr. Ranges:4\r\n  Features:                KERNEL_DISPATCH\r\n  Fast F16 Operation:      TRUE\r\n  Wavefront Size:          32(0x20)\r\n  Workgroup Max Size:      1024(0x400)\r\n  Workgroup Max Size per Dimension:\r\n    x                        1024(0x400)\r\n    y                        1024(0x400)\r\n    z                        1024(0x400)\r\n  Max Waves Per CU:        32(0x20)\r\n  Max Work-item Per CU:    1024(0x400)\r\n  Grid Max Size:           4294967295(0xffffffff)\r\n  Grid Max Size per Dimension:\r\n    x                        4294967295(0xffffffff)\r\n    y                        4294967295(0xffffffff)\r\n    z                        4294967295(0xffffffff)\r\n  Max fbarriers/Workgrp:   32\r\n  Pool Info:\r\n    Pool 1\r\n      Segment:                 GLOBAL; FLAGS: COARSE GRAINED\r\n      Size:                    25149440(0x17fc000) KB\r\n      Allocatable:             TRUE\r\n      Alloc Granule:           4KB\r\n      Alloc Alignment:         4KB\r\n      Accessible by all:       FALSE\r\n    Pool 2\r\n      Segment:                 GROUP\r\n      Size:                    64(0x40) KB\r\n      Allocatable:             FALSE\r\n      Alloc Granule:           0KB\r\n      Alloc Alignment:         0KB\r\n      Accessible by all:       FALSE\r\n  ISA Info:\r\n    ISA 1\r\n      Name:                    amdgcn-amd-amdhsa--gfx1100\r\n      Machine Models:          HSA_MACHINE_MODEL_LARGE\r\n      Profiles:                HSA_PROFILE_BASE\r\n      Default Rounding Mode:   NEAR\r\n      Default Rounding Mode:   NEAR\r\n      Fast f16:                TRUE\r\n      Workgroup Max Size:      1024(0x400)\r\n      Workgroup Max Size per Dimension:\r\n        x                        1024(0x400)\r\n        y                        1024(0x400)\r\n        z                        1024(0x400)\r\n      Grid Max Size:           4294967295(0xffffffff)\r\n      Grid Max Size per Dimension:\r\n        x                        4294967295(0xffffffff)\r\n        y                        4294967295(0xffffffff)\r\n        z                        4294967295(0xffffffff)\r\n      FBarrier Max Size:       32\r\n*** Done ***\r\n```\r\n\r\n\r\n## Additional comparison between Nvidia RTX 4700 ti vs RX7900XTX\r\n\r\nI further tested RTX 4700 TI... it is probably 10x faster than RX7900XTX...\r\n\r\n### Nvidia GPU (4700TI)\r\n\r\n**4700ti 56.23 tokens**\r\n```\r\nllama_print_timings:        load time =   824.29 ms\r\nllama_print_timings:      sample time =    52.74 ms /   128 runs   (    0.41 ms per token,  2427.18 tokens per second)\r\nllama_print_timings: prompt eval time =     0.00 ms /     1 tokens (    0.00 ms per token,      inf tokens per second)\r\nllama_print_timings:        eval time =  2276.23 ms /   128 runs   (   17.78 ms per token,    56.23 tokens per second)\r\nllama_print_timings:       total time =  2357.70 ms\r\nLog end\r\n```\r\n\r\n### 7900XTX 5.62 tokens per second\r\n```\r\nllama_print_timings:        load time =  6432.57 ms\r\nllama_print_timings:      sample time =    32.92 ms /   128 runs   (    0.26 ms per token,  3888.10 tokens per second)\r\nllama_print_timings: prompt eval time =     0.00 ms /     1 tokens (    0.00 ms per token,      inf tokens per second)\r\nllama_print_timings:        eval time = 22756.97 ms /   128 runs   (  177.79 ms per token,     5.62 tokens per second)\r\nllama_print_timings:       total time = 22857.59 ms\r\n```\r\n",
+    "labels": [
+      "performance",
+      "AMD GPU",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-01T05:57:21+00:00",
+    "closed_at": "2024-05-12T01:35:23+00:00",
+    "comments": 40,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3422/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3422"
+  },
+  {
+    "number": 160,
+    "title": "Add avx-512 support?",
+    "body": "No clue but I think it may work faster",
+    "labels": [
+      "enhancement",
+      "performance",
+      "hardware"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-15T12:10:17+00:00",
+    "closed_at": "2023-03-28T09:54:15+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/160/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 2,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/160"
+  },
+  {
+    "number": 9369,
+    "title": "llama : refactor llama_vocab",
+    "body": "As of today we support 5 tokenizer implementations:\r\n\r\n```c\r\n        LLAMA_VOCAB_TYPE_SPM  = 1, // LLaMA tokenizer based on byte-level BPE with byte fallback\r\n        LLAMA_VOCAB_TYPE_BPE  = 2, // GPT-2 tokenizer based on byte-level BPE\r\n        LLAMA_VOCAB_TYPE_WPM  = 3, // BERT tokenizer based on WordPiece\r\n        LLAMA_VOCAB_TYPE_UGM  = 4, // T5 tokenizer based on Unigram\r\n        LLAMA_VOCAB_TYPE_RWKV = 5, // RWKV tokenizer based on greedy tokenization\r\n```\r\n\r\nThe function `llama_tokenize_internal` in `llama-vocab.cpp` currently constructs a tokenizer instance on every call which for some of the tokenizers incurs significant overhead. This should be avoided by pre-constructing the tokenizer object upon `llama-vocab` creation and abstracting the objects (e.g. `llm_tokenizer_spm`, `llm_tokenizer_bpe`, etc.) with a common interface.\r\n\r\nHowever, we want `llama_tokenize_internal` to remain thread-safe as it currently is (I think). Therefore, the tokenizer objects would likely need to be split into 2 parts:\r\n\r\n- immutable pre-computed data (such as tries and lookup tables)\r\n- mutable work data\r\n\r\nThe first one will be initialized once upon `llama-vocab` creation. The latter will be created each time within `llama_tokenize_internal` and will be used to store fleeting data while tokenizing.\r\n\r\nA test that guarantees thread-safety for all tokenizer via thread sanitizers would be useful.\r\n\r\nThis should resolve https://github.com/ggerganov/llama.cpp/issues/9180 and also help to multi-thread the tokenization process in `llama-server`.\r\n\r\nWhile working on this, the `llama-vocab.cpp` can use various simplifications and improvements as well.",
+    "labels": [
+      "good first issue",
+      "performance",
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-08T13:00:28+00:00",
+    "closed_at": "2024-09-30T18:02:31+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9369/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9369"
+  },
+  {
+    "number": 1217,
+    "title": "ClBlast - no gpu load, no perfomans difference.",
+    "body": "How i build:\r\n\r\n1.  I use [w64devkit](https://github.com/skeeto/w64devkit/releases)\r\n2. I download [CLBlast](https://github.com/CNugteren/CLBlast) and [OpenCL-SDK](https://github.com/KhronosGroup/OpenCL-SDK)\r\n3. Put folders lib and include from [CLBlast](https://github.com/CNugteren/CLBlast) and [OpenCL-SDK](https://github.com/KhronosGroup/OpenCL-SDK) to w64devkit_1.18.0\\x86_64-w64-mingw32\r\n4. Using w64devkit.exe cd to llama.cpp\r\n5. make LLAMA_CLBLAST=1\r\n6. Put clblast.dll near main.exe\r\n\r\nWhen load i got this: \r\n\r\n> Initializing CLBlast (First Run)...\r\n> Attempting to use: Platform=0, Device=0 (If invalid, program will crash)\r\n> Using Platform: AMD Accelerated Parallel Processing Device: gfx90c\r\n> llama_init_from_file: kv self size  = 1600.00 MB\r\n> \r\n> system_info: n_threads = 7 / 16 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | VSX = 0 |\r\n> main: interactive mode on.\r\n> Reverse prompt: '### Human:'\r\n> Reverse prompt: '### Instruction:\r\n\r\nBut no gpu load, no perfomans difference. Btw when i use koboldcpp i got ~40-60% gpu load.\r\n\r\nWhat could have gone wrong? And how build CLBlast with static libraries?\r\n\r\nP.S. I use ryzen 5700u without dgpu.\r\n\r\n",
+    "labels": [
+      "performance",
+      "hardware",
+      "build"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-28T16:05:41+00:00",
+    "closed_at": "2023-05-05T00:51:53+00:00",
+    "comments": 28,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1217/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1217"
+  },
+  {
+    "number": 4085,
+    "title": "metal : compile-time kernel args and params",
+    "body": "I was just thinking about this idea, so writing it down for future research.\r\n\r\nWe should be able to fairly easy generate model-specific Metal code that has hardcoded kernels for every single node in the computation graph. The idea is to make an initial pass of a certain graph where we record all kernel calls with their respective argument values and parameters and then generate a model-specific MSL source file with all these kernels instances - either copy-paste or via templates. I guess this is something similar to what people call JIT. Wondering what kind of speed-up we will be able to see with this strategy.",
+    "labels": [
+      "performance",
+      "research \ud83d\udd2c",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2023-11-15T11:09:39+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4085/reactions",
+      "total_count": 9,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 2,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4085"
+  },
+  {
+    "number": 5417,
+    "title": "CPU performance bottleneck(?) when using macOS Accelerate",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [x] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [x] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [x] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Feature Description\r\n\r\nI've been doing some performance testing of llama.cpp in macOS (On M2 Ultra 24-Core) and was comparing the CPU performance of inference with various options, and ran into a very large performance drop - Mixtral model inference on 16 cores (16 because it's only the performance cores, the other 8 are efficiency cores on my CPU) was much faster without Accelerate. This prompted me to test other models of different sizes and across using 3 different core counts.\r\n\r\n<img width=\"621\" alt=\"Screenshot 2024-02-08 at 16 39 16\" src=\"https://github.com/ggerganov/llama.cpp/assets/521581/b1820086-bca5-4740-a7b2-e190c2d6b5db\">\r\n\r\nNotes:\r\n- All tests fit the model in RAM, there was no swapping/paging.\r\n- Performance gains are in green, drops are in red. Significant changes are bolded, the others may just be due to single iterations.\r\n- The drop in performance that caught my eye was the Mixtral with 16 cores drop in performance, which is the most pronounced above, bottom-right.)\r\n\r\nThe initial results suggest that there is some asymptotic \"ceiling\" in CPU inference when using Accelerate, that seems to show up when a sufficient amount of cores is engaged. So while it starts off providing a big performance boost as expected, the more cores that are added, the growth in performance levels out. This flattening seems to be accelerated (no pun intended) the larger the model is. In comparison not using Accelerate starts off much slower but keeps growing almost linearly as cores are added.\r\n\r\n# Motivation\r\n\r\nAllowing llama.cpp to run as fast as possible on more variants of Apple Silicon.\r\n\r\n# Possible Implementation\r\n\r\nI will try to run this through the profiler to see if there is some code bottleneck. There are two possibilities that I can think of, off the top of my head:\r\n\r\n**If this is because of Apple Silicon architecture and/or the vDSP/Accelerate framework function dispatches**, then it may be useful to add parameters to ggml CPU contexts which, even if Accelerate support is compiled-in, can still turn it off. This way applications can, based on the hardware, disable the accelerate code paths at runtime (for instance, disabling accelerate code paths when running with 16 cores on CPU)\r\n\r\n**If this is because of some code bottleneck in the ggml library**, then it may be worth identifying and seeing how it can be alleviated. I'll try some profiling on my machine, but it's possible that someone with more experience of this codebase can have tips or suggestions on what may be going on, or tips on the best places to start looking.\r\n",
+    "labels": [
+      "enhancement",
+      "performance",
+      "macos",
+      "threading"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-08T16:53:12+00:00",
+    "closed_at": "2024-02-11T19:12:45+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5417/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5417"
+  },
+  {
+    "number": 1714,
+    "title": "Support CoreML like whisper.cpp?",
+    "body": "I have tried whisper.cpp on my iPhone and it runs very fast , so I wonder if it is possible that llama.cpp could support it. \r\nthank you .",
+    "labels": [
+      "help wanted",
+      "performance",
+      "macos"
+    ],
+    "state": "open",
+    "created_at": "2023-06-06T09:23:08+00:00",
+    "closed_at": null,
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1714/reactions",
+      "total_count": 17,
+      "+1": 10,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 7
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1714"
+  },
+  {
+    "number": 6233,
+    "title": "server: bench: continuous performance testing",
+    "body": "#### Motivation\r\n\r\n**llama.cpp** is under active development, new papers on LLM are implemented quickly (for the good) and backend device\r\noptimizations are continuously added.\r\n\r\nAll these factors have an impact on the server performances, especially the following metrics:\r\n\r\n1. **latency**: pp (prompt processing) + tg (tokens generation) per request\r\n2. **server latency**: total pp+tg per second across all requests with continuous batching\r\n3. **concurrency**: how many concurrent request/users the server can handle in parallel\r\n4. **VRAM** usage\r\n5. **RAM** usage\r\n6. **GPU** usage\r\n7. **CPU** usage\r\n\r\nIt is important to monitor and control the impact of the codebase evolution on these metrics,\r\nexample [from](https://towardsdatascience.com/increase-llama-2s-latency-and-throughput-performance-by-up-to-4x-23034d781b8c):\r\n\r\n<p align=\"center\">\r\n    <img width=\"60%\" height=\"60%\" src=\"https://github.com/ggerganov/llama.cpp/assets/5741141/2f518477-941d-41e1-9427-873ca0cb9846\" alt=\"prompt_tokens_seconds\" />\r\n</p>\r\n\r\nSince #5941, we have a server bench framework, we can now trigger it based on different events:\r\n\r\n1. scheduled on master branch\r\n2. on PR pushes\r\n\r\nThe approach should be reproducible: use the same hardware architecture, same models size and quants.\r\n\r\nIt would be nice to follow performances changes on a time series graph like it is done\r\nin [Apache Lucene](https://home.apache.org/~mikemccand/lucenebench/indexing.html).\r\n\r\n### Proposed approach\r\n\r\nBench will run on a [T4 GPU node](https://learn.microsoft.com/en-us/azure/virtual-machines/nct4-v3-series) in Azure\r\nCloud, so:\r\n\r\n- Standard_NC4as_T4_v3\r\n- 20.04.1-Ubuntu\r\n- 4 VCPU\r\n- 28GB RAM\r\n- 1 NVidia Tesla T4\r\n- 16GB VRAM\r\n- /dev/sdb, 256GB standard SSD, mounted at /\r\n- /dev/sda, 1T premium SSD, mounted at /mnt\r\n\r\nOn\r\na [GitHub self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners)\r\nwith [prometheus](https://prometheus.io/docs/introduction/first_steps/) installed.\r\n\r\nA [GitHub workflow](https://docs.github.com/en/actions/using-workflows), will:\r\n\r\n1. build the server target using cmake `Release` build type and `LLAMA_CUDA` with `native` CUDA architecture\r\n2. for each bench parameters\r\n3. start the server\r\n4. configure prometheus scrapping on the server instance\r\n5. wait for the server to start\r\n6. build the relevant dataset for the test\r\n7. start performance test scenario using the right dataset\r\n8. export the results to json\r\n9. Download prometheus metrics graph\r\n10. plot results into time series images\r\n11. Add a comment in the PR with the metrics results images\r\n\r\n### Technical consideration\r\n\r\nOne important aspect of this configuration would be to make it easy to add more nodes in the future.\r\nIf we see that it works and is useful, we can find ways to add more hardware in order to do metrics for different cases.\r\nAll the code used must be stored in `examples/server/bench` folder.\r\n\r\n#### GitHub Self-Hosted runner security\r\n\r\n[Self-hosted runner security](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners#self-hosted-runner-security):\r\n\r\n> Warning: We recommend that you only use self-hosted runners with private repositories. This is because forks of your\r\n> public repository can potentially run dangerous code on your self-hosted runner machine by creating a pull request\r\n> that\r\n> executes the code in a workflow.\r\n\r\nBy design, we will be [using just-in-time runners](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-just-in-time-runners):\r\n\r\n1. with [ggml-ci](https://github.com/ggml-org/ci) in a docker container, loop look for new workflow job waiting for the host GPU series type label:\r\n2. [Create configuration for a just-in-time runner with this label](https://docs.github.com/en/rest/actions/self-hosted-runners?apiVersion=2022-11-28#create-configuration-for-a-just-in-time-runner-for-an-organization)\r\n3. Start a rootless docker container with nvidia docker runtime with the JIT configuration token\r\n4. start the GitHub runner within the container\r\n5. wait for the container to exit\r\n6. restart the loop\r\n\r\nAs the GitHub checks can only be run by collaborators, the job is running in a non-root docker container, I think we are safe.\r\n\r\n### Server scenario parameters matrix\r\n\r\n| scenario    | duration | users | hf-repo         | hf-file                            | model-alias    | model-size | model-type    | ngl  | parallel | ctx-size | batch-size | ubatch-size | n-predict | grp-attn-n | grp-attn-w | embeddings | CUDA_VISIBLE_DEVICES | SERVER_BENCH_N_PROMPTS | SERVER_BENCH_MAX_PROMPT_TOKENS | SERVER_BENCH_MAX_CONTEXT |   |\r\n|-------------|----------|-------|-----------------|------------------------------------|----------------|------------|---------------|------|----------|----------|------------|-------------|-----------|------------|------------|------------|----------------------|------------------------|--------------------------------|--------------------------|---|\r\n| completions | 10m      | 8     | TODO            |                                    | phi2           | 3B         | F16           | 33   | 8        | 16384    | 2048       | 256         | 2048      | 1          | 512        | false      | 0                    | 1000                   | 1024                           | 1024                     |   |\r\n| completions | 10m      | 8     | ggml-org/models | phi-2/ggml-model-q4_0.gguf         | phi2           | 3B         | MOSTLY_Q4_K_M | 33   | 8        | 16384    | 2048       | 256         | 2048      | 1          | 512        | false      | 0                    | 1000                   | 1024                           | 1024                     |   |\r\n| embeddings  | 5m       | 8     | ggml-org/models | bert-bge-large/ggml-model-f16.gguf | bert-bge-large | ?          | F16           | TODO | 8        | 16384    | 4096       | 4096        | NA        | NA         | NA         | true       | 0                    | 1000                   | 4096                           | NA                       |   |\r\n\r\nIn addition, following parameters will be used:\r\n\r\n- `--log-disable` no need to have a log file\r\n- `--metrics` to allow prometheus metrics scrapping\r\n- `--cont-batching`, probably need to enable by default #6229\r\n- `--threads 1`, we will test only with all layers offloaded to GPU\r\n- `--threads-batch 1`, we will test only with all layers offloaded to GPU\r\n- `--model ggml-model.gguf` as now we can download anything from HF\r\n- `--defrag-thold 0.1`\r\n\r\nOnly the OAI Chat completions endpoint with streaming enabled will be tested for completions.\r\n\r\n### Dataset consideration\r\n\r\n1. dataset must contain system, assistant and user prompts (in order to test chat template overhead if any)\r\n2. random must not be used to select prompt, running the test twice must output almost the same metrics\r\n5. it must be possible to select prompts in order they fit in KV Cache (or not) using parameters listed\r\n   in [bench/README.md](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/bench/README.md):\r\n    - `SERVER_BENCH_N_PROMPTS` total prompts to select in the benchmark\r\n    - `SERVER_BENCH_MAX_PROMPT_TOKENS` maximum prompt tokens to filter out in the dataset\r\n    - `SERVER_BENCH_MAX_CONTEXT` maximum context size of the completions request to filter out in the dataset: prompt +\r\n      predicted tokens\r\n\r\nSelected dataset:\r\n\r\n| scenario    | dataset                                                                                                                                                     | comment                                                                                                                    |\r\n|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|\r\n| completions | [ShareGPT_Vicuna_unfiltered](https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered/blob/main/ShareGPT_V3_unfiltered_cleaned_split.json) | taken from [VLLM](https://github.com/vllm-project/vllm/blob/main/benchmarks/README.md) to have a baseline                  |\r\n| embeddings  | [IMDB Data](https://github.com/nas5w/imdb-data/blob/master/reviews.json)                                                                                    | [suggested](https://github.com/ggerganov/llama.cpp/pull/5941#discussion_r1518282581) by @ngxson, looks good for embeddings |\r\n\r\n### Tasks\r\n\r\n- [x] Have a dedicated GPU node (T4), thanks to @aigrant [for](https://aigrant.com/) [ggml](https://ggml.ai/)\r\n- [x] [Install drivers on the GPU nodes](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/n-series-driver-setup),\r\n  was not so easy actually\r\n    - as noted there: do not install NVidia third party repo before installing ubuntu signed shipped drivers\r\n    - need to install `alsa-utils` in order to prevent: `could not open aplay -l` during installation\r\n- [x] Select the right datasets\r\n- [x] Add `install-docker.sh` in ggml-ci: https://github.com/ggml-org/ci/pull/1\r\n- [x] Setup github-runners-manager: https://github.com/ggml-org/ci/pull/2\r\n- [x] support curl in docker images: #6291 #6474\r\n- [x] Write a simple GitHub workflow with k6: #6283\r\n- [x] Comment the `--ubatch-size` option in the README: #6254\r\n- [x] #6230\r\n- [ ] #6293\r\n- [x] Rewrite the bench scenario to support streaming/SSE https://github.com/grafana/k6/pull/3639 https://github.com/phymbert/xk6-sse #6495\r\n- [ ] Write the embeddings scenario\r\n- [x] #6292\r\n- [x] Write a python script to wrap the bench step: start the server, run k6, collect metrics\r\n- [ ] Add MOE model after receiving feedback about the current approach\r\n- [ ] After some enough commit history, make a performance history dashboard",
+    "labels": [
+      "enhancement",
+      "performance",
+      "server/webui",
+      "need feedback",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-22T11:36:09+00:00",
+    "closed_at": "2024-07-03T01:06:46+00:00",
+    "comments": 19,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6233/reactions",
+      "total_count": 6,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 1,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6233"
+  },
+  {
+    "number": 1081,
+    "title": "Multi-thread the Q8_0 quantization in ggml_compute_forward_mul_mat_q_f32()",
+    "body": "This part takes about 10% of the total inference time for 7B and it is currently single-threaded:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/6a9661ea5ad72166b700ae5e87976e4452499dda/ggml.c#L7877-L7884\r\n\r\nTry to multi-thread this by splitting the work across rows.\r\nSince the `GGML_TASK_INIT` currently runs only 1 thread, either:\r\n- update `ggml` to support multi-threaded `GGML_TASK_INIT`\r\n- move the quantization in `GGML_TASK_COMPUTE` (might be difficult since no barrier mechanism)",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-20T15:24:39+00:00",
+    "closed_at": "2023-04-23T10:35:28+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1081/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1081"
+  },
+  {
+    "number": 7456,
+    "title": "Optimisation of per-token CPU activities for GPU inference",
+    "body": "When using a GPU backend, for each token evaluation there exists not only computation on the GPU but also significant CPU computation which can potentially be optimized. \r\n\r\nHere are some timing measurements of the critical path for each token for llama2 Q4_K_M 7B and 13B models on A100 and H100 GPUs.\r\n\r\nFirstly, here are absolute times:  \r\n<img src=\"https://github.com/ggerganov/llama.cpp/assets/10851179/fb8ee0a5-09e1-4a05-a042-f60964694f8f\" width=\"70%\">\r\n\r\n\r\nand here are the same data presented as a percentage breakdown in each case:\r\n<img src=\"https://github.com/ggerganov/llama.cpp/assets/10851179/8ea0edfe-95de-43ac-8088-b996e3e0870e\" width=\"70%\">\r\n\r\n`CUDA Graph Execution` is the time spent executing the compute graph on the GPU, which is responsible for around 85-90% of the time taken in evaluating each token..\r\n \r\nThe remaining 10-15% of the time is taken by CPU activities, the most dominant of which are discussed below.\r\n\r\n**GGML Graph Preparation:** `llama_build_graph` and `ggml_backend_sched_split_graph` are related to the building/preparation of the compute graph in GGML format for each token, which is ultimately translated into a CUDA graph for execution. However, we know from the CUDA graph implementation (https://github.com/ggerganov/llama.cpp/issues/6763) that only very minor adjustments are required across the majority of tokens. Therefore, it seems that most of the work is not required and we should be able to cache/reuse components of the GGML graph across tokens, in a similar way that we reuse each CUDA graph with only minor adjustments. E.g. in `build_llama()` we could add some code to save state across tokens, rather than perform the full re-build every token.\r\n\r\n**Sampling:**  `llama_sampling_sample` uses the CPU to perform sampling on the logits that have been evaluated on the GPU, for each token. In principle this sampling could be ported to the GPU.\r\n\r\nI will continue to investigate these optimization possibilities.\r\n\r\n \r\n",
+    "labels": [
+      "performance",
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-22T08:24:24+00:00",
+    "closed_at": "2024-08-23T01:07:15+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7456/reactions",
+      "total_count": 8,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7456"
+  },
+  {
+    "number": 906,
+    "title": "perf: parallelize quantization",
+    "body": "https://github.com/ggerganov/llama.cpp/blob/8b679987cdce292ff36bd741f6715e4927e26f9b/llama.cpp#L1558\r\n\r\nIs currently single threaded. Quantization is quite slow (vicuna 7B: 65156.31 ms, vicuna 13B: 129902.48 ms).",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-12T03:38:23+00:00",
+    "closed_at": "2023-04-22T17:45:20+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/906/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/906"
+  },
+  {
+    "number": 2060,
+    "title": "llama : try to avoid context swap",
+    "body": "Currently, when the context becomes full, we pick part of the tokens and recompute the KV cache.\r\n\r\nInstead, try to either:\r\n- store non-RoPEd KV cache, \"shift\" it when the context is full and compute the RoPE over the entire cache for every new token taking into account the current positions\r\n- store RoPEd KV cache (as we do now), \"shift\" it when the context is full and apply extra shift-RoPE on it (assuming RoPE is \"additive\")",
+    "labels": [
+      "performance",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-30T19:53:55+00:00",
+    "closed_at": "2023-09-28T16:04:38+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2060/reactions",
+      "total_count": 9,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 4
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2060"
+  },
+  {
+    "number": 633,
+    "title": "~2x perf improvement on Apple Silicon by changing state_shared.has_work access from atomic to mutex/conditional",
+    "body": "### Discussed in https://github.com/ggerganov/llama.cpp/discussions/616\r\n\r\n<div type='discussions-op-text'>\r\n\r\n<sup>Originally posted by **izard** March 30, 2023</sup>\r\nI profiled on a latest Mac Book Pro machine and found that significantly more time is spent in atomic checks for `state_shared.has_work` in while loops than doing actual work in matrix multiply.\r\nSo I changed busy waits like: \r\n```\r\npthread_mutex_lock(&state->shared->mutex);\r\n   while (state->shared->has_work) {\r\n     pthread_cond_wait(&state->shared->cond, &state->shared->mutex);\r\n// unlock\r\n```\r\n\r\nand setting `has_work` to \r\n```\r\npthread_mutex_lock(&state_shared.mutex);\r\nstate_shared.has_work = true;\r\npthread_cond_broadcast(&state_shared.cond);\r\npthread_mutex_unlock(&state_shared.mutex);\r\n\r\n```\r\nGot a nice 2x speedup in time/token.\r\n\r\nI can't post a patch/pull request because everything I do in spare time still belongs to my employer, but the change is trivial as described above. Probably won't provide much benefit (if any) for other platforms though.\r\n</div>",
+    "labels": [
+      "enhancement",
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-30T19:18:14+00:00",
+    "closed_at": "2024-04-12T01:07:15+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/633/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/633"
+  },
+  {
+    "number": 1098,
+    "title": "Try to use quantized `ggml_mul_mat` in attention layer",
+    "body": "The following 2 matrix multiplication calls sill remain in FP16 precission:\r\n\r\n- https://github.com/ggerganov/llama.cpp/blob/d40fded93e1a533e969768e1e335c15c61c296ce/llama.cpp#L1135-L1137\r\n- https://github.com/ggerganov/llama.cpp/blob/d40fded93e1a533e969768e1e335c15c61c296ce/llama.cpp#L1158-L1160\r\n\r\nWas wondering, if we quantize those on-the-fly would there be any benefit.\r\nThe quantization can be done with an extra `ggml_cpy()` call, before the `ggml_mul_mat()` call.\r\n\r\nSee if this speeds up the computation and how it affects perplexity",
+    "labels": [
+      "good first issue",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-21T07:38:58+00:00",
+    "closed_at": "2023-04-22T08:37:55+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1098/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1098"
+  },
+  {
+    "number": 163,
+    "title": "Not an issue but what depends on the number of threads?",
+    "body": "I've been testing your code from 1 to 8 threads and the output is always different. The speed is not depend on the number of threads. On the contrary, 4 threads may perform much better than 1, whereas 8 threads supposedly provides a better result. However, the same prompt may give the same excellent output with triple speed with 4 threads compared to 8. But still, when I use 8 threads (my maximum on M1) I use all my CPU resources, but it doesn't affect speed at all (seemingly works slower) and not giving quality effect (apparently). Am I wrong? Can you correct me if I'm mistaken? May be there is some best speed/quality option and I just that stupid that was unable to figure out how to use this option?",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-15T16:03:26+00:00",
+    "closed_at": "2023-03-15T20:54:16+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/163/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/163"
+  },
+  {
+    "number": 3869,
+    "title": "CTX Processing regression for Pascal - Commit 2b4ea35",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [X] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [X] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\n\r\nThere is a regression on Context processing introduced in commit https://github.com/ggerganov/llama.cpp/commit/2b4ea35e56792064598e922e46d081e02bc96b94 \r\n\r\nThis is specifically for Pascal (6.1) with 1/64th fp16 performance.  Problem is worse with longer CTX, getting up to 6x slower by 8kCTX\r\n\r\n\r\n```ggml_init_cublas: found 1 CUDA devices:\r\n  Device 0: Tesla P40, compute capability 6.1\r\n| model                          |       size |     params | backend    | ngl |    threads | test       |              t/s |\r\n| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | ---------- | ---------------: |\r\n| llama 13B mostly Q8_0          |  12.88 GiB |    13.02 B | CUDA       |  99 |          1 | pp 512     |    485.03 \u00b1 0.34 |\r\n| llama 13B mostly Q8_0          |  12.88 GiB |    13.02 B | CUDA       |  99 |          1 | tg 128     |     18.30 \u00b1 0.00 |\r\n\r\nbuild: daab3d7 (1421)\r\n```\r\n# Current Behavior\r\n```\r\nggml_init_cublas: found 1 CUDA devices:\r\n  Device 0: Tesla P40, compute capability 6.1\r\n| model                          |       size |     params | backend    | ngl |    threads | test       |              t/s |\r\n| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | ---------- | ---------------: |\r\n| llama 13B mostly Q8_0          |  12.88 GiB |    13.02 B | CUDA       |  99 |          1 | pp 512     |    207.34 \u00b1 0.28 |\r\n| llama 13B mostly Q8_0          |  12.88 GiB |    13.02 B | CUDA       |  99 |          1 | tg 128     |     18.28 \u00b1 0.01 |\r\n\r\nbuild: 2b4ea35 (1422)\r\n```\r\n```\r\nggml_init_cublas: GGML_CUDA_FORCE_MMQ:   yes\r\nggml_init_cublas: CUDA_USE_TENSOR_CORES: no\r\nggml_init_cublas: found 1 CUDA devices:\r\n  Device 0: Tesla P40, compute capability 6.1\r\n| model                          |       size |     params | backend    | ngl |    threads |   main_gpu | test       |              t/s |\r\n| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | ---------: | ---------- | ---------------: |\r\nwarning: cannot set main_device=1 because there are only 1 devices. Using device 0 instead.\r\n| llama 13B mostly Q8_0          |  12.88 GiB |    13.02 B | CUDA       |  99 |          1 |          1 | pp 512     |    208.54 \u00b1 0.58 |\r\n| llama 13B mostly Q8_0          |  12.88 GiB |    13.02 B | CUDA       |  99 |          1 |          1 | tg 128     |     18.29 \u00b1 0.00 |\r\n\r\nbuild: 207b519 (1446)\r\n```\r\n# Environment and Context\r\n\r\nPlease provide detailed information about your computer setup. This is important in case the issue is not reproducible except for under certain specific conditions.\r\n\r\n* 5800X + 64GB DDR 3733 \r\n* 3060ti (8GB) + TESLA P40 (24GB) \r\n\r\n* Operating System, e.g. for Linux: Windows 11\r\n\r\n\r\n* SDK version, : MSVC 2022\r\n\r\n```\r\n$ python3 -- 3.10.11\r\n$ Cmake --version 3.27.4\r\n```\r\n\r\n@LostRuins \r\n\r\n",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-31T11:01:49+00:00",
+    "closed_at": "2023-11-02T06:35:12+00:00",
+    "comments": 18,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3869/reactions",
+      "total_count": 5,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3869"
+  },
+  {
+    "number": 4624,
+    "title": "`llama_decode` is significantly slower if `n_tokens > 1` ",
+    "body": "Issue\r\n---\r\nIt is expected that `llama_decode` should take more time if more tokens are present in the batch, but on my system (Apple M1 Max 32GB) with `mistral-7b-instruct-v0.2.Q4_0.gguf` model, the increase in time taken is quite significant. I plotted some avg latencies on my system with different `n_tokens` using a modified version of `speculative` and putting timing around `llama_decode(ctx_tgt, batch_tgt);`:\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/1957903/d9683434-6278-41b2-9018-d60acbe4ec2a)\r\n\r\nThere is more 5x jump in latency of `llama_decode` when `n_tokens` goes from 1 to 2 (which I feel is too high), but a very gradual increase after that. This means that techniques like `speculative` and `lookup` decoding **cannot give speed benefits** for small draft sizes ( `n_draft < 5`) even if drafts are 100% correct, since **autoregressively decoding 5 tokens 1 at a time is just as fast as decoding 5 tokens at once**, so the advantage of speculation is lost.\r\n\r\nI'm not sure this counts as a bug or expected behaviour, but the stark difference in latencies b/w 1 token decoding and 2 token decoding seems weird to me. Decoding 2 tokens should at most take 2x the time, not 5x?\r\n\r\nTo reproduce:\r\n---\r\nThe easiest way to see this is running `main` with a one word prompt. The `prompt eval time` will be the time taken for the few prompt tokens, and `eval time` will show throughput for rest of tokens. e.g. `./main -m models/7B/mistral-7b-instruct-v0.2.Q4_0.gguf -p \"A\" -n 100 -e` gives me\r\n\r\n```\r\nllama_print_timings:        load time =     385.80 ms\r\nllama_print_timings:      sample time =       8.03 ms /   100 runs   (    0.08 ms per token, 12451.75 tokens per second)\r\nllama_print_timings: prompt eval time =      85.81 ms /     2 tokens (   42.90 ms per token,    23.31 tokens per second)\r\nllama_print_timings:        eval time =    1637.12 ms /    99 runs   (   16.54 ms per token,    60.47 tokens per second)\r\nllama_print_timings:       total time =    1744.09 ms\r\n```\r\n\r\nwhich shows ~85ms for the initial forward pass with just 2 tokens, and ~16ms for all other tokens.\r\n\r\nTo see this effect in `speculative`, one can compare `--draft 0` with `--draft 1`. Use same model as draft model and main model to ensure 100% acceptance. On my system, draft 0 gave better timing of target model than draft 1, which shouldn't really happen IMO\r\n\r\ndraft = 0 command:\r\n```\r\n./speculative \\\r\n    -m models/7B/mistral-7b-instruct-v0.2.Q4_0.gguf -md models/7B/mistral-7b-instruct-v0.2.Q4_0.gguf \\\r\n    -p \"A\" \\\r\n    -e -ngl 1 -t 4 -n 100 -c 4096 -b 4096 -s 20 --draft 0 -np 1 --temp 0.0 --verbose-prompt --color\r\n```\r\n\r\nTimings:\r\n```\r\nn_draft   = 0\r\nn_predict = 101\r\nn_drafted = 0\r\nn_accept  = 0\r\naccept    = nan%\r\n\r\ndraft:\r\n\r\nllama_print_timings:        load time =     982.45 ms\r\nllama_print_timings:      sample time =       0.00 ms /     1 runs   (    0.00 ms per token,      inf tokens per second)\r\nllama_print_timings: prompt eval time =      85.60 ms /     2 tokens (   42.80 ms per token,    23.36 tokens per second)\r\nllama_print_timings:        eval time =    1653.63 ms /   101 runs   (   16.37 ms per token,    61.08 tokens per second)\r\nllama_print_timings:       total time =    3453.52 ms\r\n\r\ntarget:\r\n\r\nllama_print_timings:        load time =     479.45 ms\r\nllama_print_timings:      sample time =      17.57 ms /   101 runs   (    0.17 ms per token,  5750.07 tokens per second)\r\nllama_print_timings: prompt eval time =       0.00 ms /     1 tokens (    0.00 ms per token,      inf tokens per second)\r\nllama_print_timings:        eval time =    1676.51 ms /   102 runs   (   16.44 ms per token,    60.84 tokens per second)\r\nllama_print_timings:       total time =    4460.08 ms\r\n```\r\n\r\ndraft = 1 command:\r\n```\r\n./speculative \\\r\n    -m models/7B/mistral-7b-instruct-v0.2.Q4_0.gguf -md models/7B/mistral-7b-instruct-v0.2.Q4_0.gguf \\\r\n    -p \"A\" \\\r\n    -e -ngl 1 -t 4 -n 100 -c 4096 -b 4096 -s 20 --draft 1 -np 1 --temp 0.0 --verbose-prompt --color\r\n```\r\n\r\nTimings:\r\n```\r\nn_draft   = 1\r\nn_predict = 102\r\nn_drafted = 36\r\nn_accept  = 36\r\naccept    = 100.000%\r\n\r\ndraft:\r\n\r\nllama_print_timings:        load time =     960.89 ms\r\nllama_print_timings:      sample time =     124.45 ms /     1 runs   (  124.45 ms per token,     8.04 tokens per second)\r\nllama_print_timings: prompt eval time =      85.81 ms /     2 tokens (   42.91 ms per token,    23.31 tokens per second)\r\nllama_print_timings:        eval time =    1701.90 ms /   102 runs   (   16.69 ms per token,    59.93 tokens per second)\r\nllama_print_timings:       total time =    5584.70 ms\r\n\r\ntarget:\r\n\r\nllama_print_timings:        load time =     431.73 ms\r\nllama_print_timings:      sample time =      19.67 ms /   102 runs   (    0.19 ms per token,  5184.77 tokens per second)\r\nllama_print_timings: prompt eval time =    3076.34 ms /    72 tokens (   42.73 ms per token,    23.40 tokens per second)\r\nllama_print_timings:        eval time =     520.40 ms /    31 runs   (   16.79 ms per token,    59.57 tokens per second)\r\nllama_print_timings:       total time =    6569.38 ms\r\n```\r\n\r\nSo draft=1 has much slower target model, taking 6.5 sec compared to 4.4 sec if there was no draft model, which is weird. ",
+    "labels": [
+      "performance",
+      "macos",
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-12-24T23:05:48+00:00",
+    "closed_at": "2024-04-02T01:10:00+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4624/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4624"
+  },
+  {
+    "number": 3479,
+    "title": "llama : improve batched decoding performance",
+    "body": "Based on info from the following post, [vLLM](https://github.com/vllm-project/vllm) can achieve the following speeds for parallel decoding on A100 GPU:\r\n\r\nhttps://docs.mystic.ai/docs/mistral-ai-7b-vllm-fast-inference-guide\r\n\r\nBatch size | Tokens/s\r\n-- | --\r\n1 | 46\r\n10 | 400\r\n60 | 1.8k\r\n\r\n(thanks to @wsxiaoys for bringing my attention to this)\r\n\r\nEven though `llama.cpp`'s single batch inference is faster ([~72 t/s](https://github.com/ggerganov/llama.cpp/discussions/3359)) we currently don't seem to scale well with batch size. At batch size 60 for example, the performance is roughly x5 slower than what is reported in the post above.\r\n\r\nWe should understand where is the bottleneck and try to optimize the performance.\r\n\r\n```bash\r\n# batch size 1\r\n./parallel -m ~/f16.gguf -t 1 -ngl 100 -c 8192 -b 512 -s 1 -np 1 -ns 128 -n 100 -cb\r\n\r\n# batch size 10\r\n./parallel -m ~/f16.gguf -t 1 -ngl 100 -c 8192 -b 512 -s 1 -np 10 -ns 128 -n 100 -cb\r\n\r\n# batch size 60\r\n./parallel -m ~/f16.gguf -t 1 -ngl 100 -c 8192 -b 512 -s 1 -np 60 -ns 128 -n 100 -cb\r\n```\r\n\r\nAs discussed with @slaren, the discrepancy is likely due to lack of Flash Attention and CUDA tensor core utilization in `llama.cpp`. Still, I wouldn't be surprised if there is some low-hanging fruit that would improve the performance similar to #3412.\r\n\r\nAt the very least, we should profile things and have a better understanding where to focus in the future.\r\n\r\n---\r\n\r\nHere are some results with `llama.cpp` on A100 (48edda30ee545fdac2e7a33d505382888f748bbf) using OpenLLaMA 7B F16\r\n\r\nTo measure this, I've remove the system prompt from the `parallel` example to match better the vllm test above.\r\nWe count both the prompt and the generated tokens.\r\n\r\nBatch size | Tokens/s\r\n-- | --\r\n1 | 108.29\r\n8 | 247.30\r\n10 | 296.58\r\n16 | 368.59\r\n32 | 422.33\r\n60 | 489.99\r\n64 | 481.83\r\n\r\n```bash\r\n# single batch\r\nLLAMA_CUBLAS=1 make -j && CUDA_VISIBLE_DEVICES=5 ./parallel -m models/openllama-7b/ggml-model-f16.gguf -t 1 -ngl 100 -c 8192 -b 512 -s 1 -np 1 -ns 128 -n 100 -cb\r\n\r\nTotal prompt tokens:   2011, speed: 53.51 t/s\r\nTotal gen tokens:      2059, speed: 54.79 t/s\r\nTotal speed (AVG):           speed: 108.29 t/s\r\n```\r\n\r\n<details>\r\n\r\n```java\r\nmain: clearing the KV cache\r\nClient   0, seq  126, started decoding ...\r\nClient   0, seq  126, prompt   18 t, response   13 t, time  0.25 s, speed 126.04 t/s, cache miss 0  \r\n\r\nInput:    If you could have any superpower, what would it be?\r\nResponse: If you could have any superpower, what would it be?\r\n\r\nmain: clearing the KV cache\r\nClient   0, seq  127, started decoding ...\r\nClient   0, seq  127, prompt   23 t, response   23 t, time  0.40 s, speed 113.95 t/s, cache miss 0  \r\n\r\nInput:    Are you familiar with the Special Theory of Relativity and can you explain it to me?\r\nResponse: I have a question. Are you familiar with the Special Theory of Relativity and can you explain it to me?\r\n\r\nmain: clearing the KV cache\r\n\r\n\r\nTotal prompt tokens:   2011, speed: 53.51 t/s\r\nTotal gen tokens:      2059, speed: 54.79 t/s\r\nTotal speed (AVG):           speed: 108.29 t/s\r\nCache misses:             0\r\n\r\n\r\n\r\nllama_print_timings:        load time =  3377.87 ms\r\nllama_print_timings:      sample time =  1735.54 ms /  2187 runs   (    0.79 ms per token,  1260.13 tokens per second)\r\nllama_print_timings: prompt eval time =  5227.17 ms /  2011 tokens (    2.60 ms per token,   384.72 tokens per second)\r\nllama_print_timings:        eval time = 29932.81 ms /  2060 runs   (   14.53 ms per token,    68.82 tokens per second)\r\nllama_print_timings:       total time = 37582.41 ms\r\n```\r\n</details>\r\n\r\n```bash\r\n# n_parallel = 8\r\nLLAMA_CUBLAS=1 make -j && CUDA_VISIBLE_DEVICES=5 ./parallel -m models/openllama-7b/ggml-model-f16.gguf -t 1 -ngl 100 -c 8192 -b 512 -s 1 -np 8 -ns 128 -n 100 -cb\r\n\r\nTotal prompt tokens:   2011, speed: 124.95 t/s\r\nTotal gen tokens:      1969, speed: 122.34 t/s\r\nTotal speed (AVG):           speed: 247.30 t/s\r\n```\r\n\r\n<details>\r\n\r\n```\r\nClient   7, seq  119, prompt   12 t, response   38 t, time  2.34 s, speed 21.33 t/s, cache miss 0  \r\n\r\nInput:    What is the meaning of life?\r\nResponse: Hello. This is the United States Army, and we need your help! You\u2019ve been drafted to fight in a war against an army of zombies that have taken over the world.\r\n\r\nClient   3, seq  117, prompt   15 t, response   46 t, time  2.82 s, speed 21.66 t/s, cache miss 0  \r\n\r\nInput:    Tell me an interesting fact about llamas.\r\nResponse: I don't know of any interesting facts about llamas, so I searched for \"interesting facts about llama\" on the internet. (Search engine). I found a couple of websites and read some of them.\r\n\r\nClient   6, seq  120, prompt   13 t, response   44 t, time  2.47 s, speed 23.06 t/s, cache miss 0  \r\n\r\nInput:    How to get a job at Google?\r\nResponse: The job is to make sure that Google search works as intended by organizing and maintaining the database. They are also responsible for making sure that everything is running smoothly, updating the website and keeping it up-to-date.\r\n\r\nmain: clearing the KV cache\r\n\r\n\r\nTotal prompt tokens:   2011, speed: 124.95 t/s\r\nTotal gen tokens:      1969, speed: 122.34 t/s\r\nTotal speed (AVG):           speed: 247.30 t/s\r\nCache misses:             0\r\n\r\n\r\n\r\nllama_print_timings:        load time =  3436.27 ms\r\nllama_print_timings:      sample time =  1684.62 ms /  2097 runs   (    0.80 ms per token,  1244.79 tokens per second)\r\nllama_print_timings: prompt eval time = 13690.16 ms /  3975 tokens (    3.44 ms per token,   290.35 tokens per second)\r\nllama_print_timings:        eval time =    94.53 ms /     6 runs   (   15.75 ms per token,    63.47 tokens per second)\r\nllama_print_timings:       total time = 16093.98 ms\r\n```\r\n</details>\r\n\r\n\r\n```bash\r\n# n_parallel = 10\r\nLLAMA_CUBLAS=1 make -j && CUDA_VISIBLE_DEVICES=5 ./parallel -m models/openllama-7b/ggml-model-f16.gguf -t 1 -ngl 100 -c 8192 -b 512 -s 1 -np 10 -ns 128 -n 100 -cb\r\n\r\nTotal prompt tokens:   2011, speed: 153.91 t/s\r\nTotal gen tokens:      1864, speed: 142.66 t/s\r\nTotal speed (AVG):           speed: 296.58 t/s\r\n```\r\n\r\n<details>\r\n\r\n```\r\nClient   7, seq  127, prompt   23 t, response   19 t, time  1.06 s, speed 39.77 t/s, cache miss 0  \r\n\r\nInput:    Are you familiar with the Special Theory of Relativity and can you explain it to me?\r\nResponse: We can try! If we go back in time, everything will be the same, right?\r\n\r\nClient   5, seq  112, prompt   13 t, response   59 t, time  3.26 s, speed 22.08 t/s, cache miss 0  \r\n\r\nInput:    How to get a job at Google?\r\nResponse: \u201cI\u2019ve been with Google for seven years. I started as a summer intern and have worked in a variety of roles, including Search Ads Product Marketing Manager and now Senior Manager of Product Management, Search Ads Strategy. For me, the most memorable aspect of working at Google is the people.\r\n\r\nmain: clearing the KV cache\r\n\r\n\r\nTotal prompt tokens:   2011, speed: 153.91 t/s\r\nTotal gen tokens:      1864, speed: 142.66 t/s\r\nTotal speed (AVG):           speed: 296.58 t/s\r\nCache misses:             0\r\n\r\n\r\n\r\nllama_print_timings:        load time =  3420.25 ms\r\nllama_print_timings:      sample time =  1693.70 ms /  1992 runs   (    0.85 ms per token,  1176.12 tokens per second)\r\nllama_print_timings: prompt eval time = 10678.86 ms /  3870 tokens (    2.76 ms per token,   362.40 tokens per second)\r\nllama_print_timings:        eval time =    96.14 ms /     6 runs   (   16.02 ms per token,    62.41 tokens per second)\r\nllama_print_timings:       total time = 13064.91 ms\r\n```\r\n</details>\r\n\r\n\r\n```bash\r\n# n_parallel = 16\r\nLLAMA_CUBLAS=1 make -j && CUDA_VISIBLE_DEVICES=5 ./parallel -m models/openllama-7b/ggml-model-f16.gguf -t 1 -ngl 100 -c 8192 -b 512 -s 1 -np 16 -ns 128 -n 100 -cb\r\n\r\nTotal prompt tokens:   2011, speed: 181.94 t/s\r\nTotal gen tokens:      2063, speed: 186.65 t/s\r\nTotal speed (AVG):           speed: 368.59 t/s\r\n```\r\n\r\n<details>\r\n\r\n```\r\n\r\nInput:    What is the best way to learn a new language?\r\nResponse: The easiest way to learn any language is to live with someone that speaks that language. However, if that isn\u2019t an option, the best way to learn any language is to use a program that uses a combination of verbal learning and verbal reinforcement to help you learn. When I first started studying Russian, I used programs like Rosetta Stone (which is great for beginners), but what worked best for me was a method\r\n\r\nClient   9, seq   90, prompt   15 t, response   71 t, time  4.76 s, speed 18.08 t/s, cache miss 0  \r\n\r\nInput:    What is the best way to cook a steak?\r\nResponse: The best way to cook a steak is to first preheat your oven to 425 degrees. Then, lightly season both sides of the steak with salt and pepper. Put it on a baking sheet lined with aluminum foil, drizzle with olive oil, and bake it in the oven for 10 minutes, or until medium-rare.\r\n\r\nClient  13, seq  111, prompt   15 t, response   58 t, time  3.22 s, speed 22.69 t/s, cache miss 0  \r\n\r\nInput:    I want to learn how to play the piano.\r\nResponse: I think you are a good piano player and I can teach you all about the piano. You will learn how to play all the songs that you like on the piano in no time. I can teach you how to improve your piano playing so that you can become an even better piano player.\r\n\r\nmain: clearing the KV cache\r\n\r\n\r\nTotal prompt tokens:   2011, speed: 181.94 t/s\r\nTotal gen tokens:      2063, speed: 186.65 t/s\r\nTotal speed (AVG):           speed: 368.59 t/s\r\nCache misses:             0\r\n\r\n\r\n\r\nllama_print_timings:        load time =  3391.46 ms\r\nllama_print_timings:      sample time =  1843.20 ms /  2191 runs   (    0.84 ms per token,  1188.69 tokens per second)\r\nllama_print_timings: prompt eval time =  8358.01 ms /  4063 tokens (    2.06 ms per token,   486.12 tokens per second)\r\nllama_print_timings:        eval time =   200.03 ms /    12 runs   (   16.67 ms per token,    59.99 tokens per second)\r\nllama_print_timings:       total time = 11052.24 ms\r\n```\r\n</details>\r\n\r\n\r\n```bash\r\n# n_parallel = 32\r\nLLAMA_CUBLAS=1 make -j && CUDA_VISIBLE_DEVICES=5 ./parallel -m models/openllama-7b/ggml-model-f16.gguf -t 1 -ngl 100 -c 8192 -b 512 -s 1 -np 32 -ns 128 -n 100 -cb\r\n\r\nTotal prompt tokens:   2011, speed: 186.50 t/s\r\nTotal gen tokens:      2543, speed: 235.83 t/s\r\nTotal speed (AVG):           speed: 422.33 t/s\r\n```\r\n\r\n<details>\r\n\r\n```\r\nInput:    How to get a job at Google?\r\nResponse: Job Description. As an assistant, you will support the people who work at Google and our partners. This includes supporting some of the most senior leaders as they run their teams. You will have a wide variety of responsibilities, including scheduling meetings, booking travel and supporting senior leadership in planning events.\r\n\r\nClient  19, seq   87, prompt   13 t, response   87 t, time  7.09 s, speed 14.11 t/s, cache miss 0  \r\n\r\nInput:    How to get a job at Google?\r\nResponse: Google is a search engine for the Internet and one of the most visited sites on the Internet. However, it has not been easy to work at Google since its creation, as it has taken more than ten years to find it. At the beginning, Larry Page and Sergey Brin were looking for employees who were as intelligent as possible. They did not really understand how to work well or where to search for good workers. They simply thought\r\n\r\nClient  25, seq  127, prompt   23 t, response   75 t, time  4.29 s, speed 22.83 t/s, cache miss 0  \r\n\r\nInput:    Are you familiar with the Special Theory of Relativity and can you explain it to me?\r\nResponse: Yes. The Special Theory of Relativity (SR) is a theory that, in essence, says that the speed of light is constant for all observers. For example, if you have three observers at rest with respect to one another, who are moving towards each other and who have different speeds, the three will measure the same speed of light for any object that they view.\r\n\r\nmain: clearing the KV cache\r\n\r\n\r\nTotal prompt tokens:   2011, speed: 186.50 t/s\r\nTotal gen tokens:      2543, speed: 235.83 t/s\r\nTotal speed (AVG):           speed: 422.33 t/s\r\nCache misses:             0\r\n\r\n\r\n\r\nllama_print_timings:        load time =  3420.38 ms\r\nllama_print_timings:      sample time =  2267.36 ms /  2671 runs   (    0.85 ms per token,  1178.02 tokens per second)\r\nllama_print_timings: prompt eval time =  7318.15 ms /  4535 tokens (    1.61 ms per token,   619.69 tokens per second)\r\nllama_print_timings:        eval time =   412.22 ms /    20 runs   (   20.61 ms per token,    48.52 tokens per second)\r\nllama_print_timings:       total time = 10782.65 ms\r\n```\r\n</details>\r\n\r\n\r\n```bash\r\n# n_parallel = 60\r\nLLAMA_CUBLAS=1 make -j && CUDA_VISIBLE_DEVICES=5 ./parallel -m models/openllama-7b/ggml-model-f16.gguf -t 1 -ngl 100 -c 8192 -b 512 -s 1 -np 60 -ns 128 -n 100 -cb\r\n\r\nTotal prompt tokens:   2011, speed: 235.90 t/s\r\nTotal gen tokens:      2166, speed: 254.09 t/s\r\nTotal speed (AVG):           speed: 489.99 t/s\r\n```\r\n\r\n<details>\r\n\r\n```\r\nClient  33, seq   78, prompt   13 t, response   72 t, time  6.70 s, speed 12.69 t/s, cache miss 0  \r\n\r\nInput:    How to get a job at Google?\r\nResponse: Assistant role at Google is one of the most important jobs in the organization. The job requires candidates who are passionate, enthusiastic and well-versed with the latest technology in the market. The candidates must be passionate and able to understand and solve problems on their own. They should also be able to collaborate with others, communicate effectively, and have a strong work ethic\r\n\r\nClient  26, seq   77, prompt   23 t, response   77 t, time  7.00 s, speed 14.29 t/s, cache miss 0  \r\n\r\nInput:    Are you familiar with the Special Theory of Relativity and can you explain it to me?\r\nResponse: \u201cNo, sir. It is not my specialty. I only know that the theory was first put forward by Einstein, it was quite an influential theory of his and it has been used in a lot of scientific experiments and measurements. There is a whole bunch of experiments that have been done to prove it, but I cannot explain them to you. You should speak to one of my colleagues.\u201d\r\n\r\nClient  29, seq  102, prompt   16 t, response   79 t, time  6.41 s, speed 14.83 t/s, cache miss 0  \r\n\r\nInput:    What is the best way to learn a new language?\r\nResponse: Well I do know that you have to know the grammar, you have to know vocabulary, and you have to get a feel for the sounds and the way it is pronounced. You also have to know the culture of where the language is spoken. And you also have to have friends that are natives of the country to practice with, and that\u2019s really the best way to do it.\r\n\r\nmain: clearing the KV cache\r\n\r\n\r\nTotal prompt tokens:   2011, speed: 235.90 t/s\r\nTotal gen tokens:      2166, speed: 254.09 t/s\r\nTotal speed (AVG):           speed: 489.99 t/s\r\nCache misses:             0\r\n\r\n\r\n\r\nllama_print_timings:        load time =  3407.33 ms\r\nllama_print_timings:      sample time =  1923.99 ms /  2294 runs   (    0.84 ms per token,  1192.31 tokens per second)\r\nllama_print_timings: prompt eval time =  5760.76 ms /  4170 tokens (    1.38 ms per token,   723.86 tokens per second)\r\nllama_print_timings:        eval time =   159.77 ms /     8 runs   (   19.97 ms per token,    50.07 tokens per second)\r\nllama_print_timings:       total time =  8524.06 ms\r\n```\r\n</details>\r\n\r\n\r\n```bash\r\n# n_parallel = 64\r\nLLAMA_CUBLAS=1 make -j && CUDA_VISIBLE_DEVICES=5 ./parallel -m models/openllama-7b/ggml-model-f16.gguf -t 1 -ngl 100 -c 8192 -b 512 -s 1 -np 64 -ns 128 -n 100 -cb\r\n\r\nTotal prompt tokens:   2011, speed: 228.04 t/s\r\nTotal gen tokens:      2238, speed: 253.78 t/s\r\nTotal speed (AVG):           speed: 481.83 t/s\r\n```\r\n\r\n<details>\r\n\r\n```\r\nClient  61, seq   61, prompt   23 t, response   77 t, time  8.09 s, speed 12.36 t/s, cache miss 0  \r\n\r\nInput:    Are you familiar with the Special Theory of Relativity and can you explain it to me?\r\nResponse: Sure. The Special Theory of Relativity is very simply understood by the layman. It concerns the speed of light and how to measure distance. You can imagine a room with a large light bulb at one end, a meter stick on the floor and a tape measure, a ruler, etc. at the other end of the room. When we go to that far end of the room\r\n\r\nClient  15, seq   82, prompt   23 t, response   74 t, time  7.03 s, speed 13.79 t/s, cache miss 0  \r\n\r\nInput:    Are you familiar with the Special Theory of Relativity and can you explain it to me?\r\nResponse: Yes, you can ask me about the Special Theory of Relativity. This theory states that the speed of light in vacuum is constant and independent of the source or the observer in a coordinate system moving relative to the source. Einstein's relativity theory also states that gravity is not a force but that it can be described as the curvature of space-time.\r\n\r\nClient  47, seq  127, prompt   23 t, response   77 t, time  5.48 s, speed 18.24 t/s, cache miss 0  \r\n\r\nInput:    Are you familiar with the Special Theory of Relativity and can you explain it to me?\r\nResponse: I\u2019m sure you have heard about the Special Theory of Relativity by now, although it is not very often brought up in the classroom. It is a theory developed by the famous physicist Albert Einstein that explains how space and time are interrelated. For example, if you travel fast enough across space, you would experience time as speeding up. On the other hand, in general rel\r\n\r\nmain: clearing the KV cache\r\n\r\n\r\nTotal prompt tokens:   2011, speed: 228.04 t/s\r\nTotal gen tokens:      2238, speed: 253.78 t/s\r\nTotal speed (AVG):           speed: 481.83 t/s\r\nCache misses:             0\r\n\r\n\r\n\r\nllama_print_timings:        load time =  3401.75 ms\r\nllama_print_timings:      sample time =  1976.50 ms /  2366 runs   (    0.84 ms per token,  1197.06 tokens per second)\r\nllama_print_timings: prompt eval time =  5806.75 ms /  4234 tokens (    1.37 ms per token,   729.15 tokens per second)\r\nllama_print_timings:        eval time =   335.70 ms /    16 runs   (   20.98 ms per token,    47.66 tokens per second)\r\nllama_print_timings:       total time =  8817.67 ms\r\n```\r\n</details>",
+    "labels": [
+      "performance",
+      "Nvidia GPU"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-04T20:20:55+00:00",
+    "closed_at": "2023-10-24T13:48:38+00:00",
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3479/reactions",
+      "total_count": 13,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3479"
+  },
+  {
+    "number": 1241,
+    "title": "Use different bit arrangement for quants (nibbles)",
+    "body": "In the existing `llama.cpp` implementation, quantization bits of consecutive model weights are packed together one after the other. E.g., for 4-bit quantization, the 8 bits of two consecutive weights are stored into a `uint8_t`. The disadvantage of this approach is that when the data is to be used in dot products or is being de-quantized for matrix multiplications done via BLAS, and the operations are performed using SIMD instructions, one needs to shuffle the de-quantized bytes to get them into the correct order. These shuffle operations can be avoided by arranging the bits differently. For instance, for 4-bit quantization in blocks of 32 weights (`Q4_0`), one can store the quants of the first 16 weights into the low 4 bits of the 16 `uint8_t`'s, and the quants of the second 16 weights in the block of 32 into the high 4-bits. The same or similar strategy can also be applied for other block sizes or when using 2 bits per weight. \r\n\r\nThe performance gain is not earth-shattering: in a synthetic benchmark performing `Q4_0_Q8_0` dot products I measured about a 10% speedup from avoiding the shuffle. Still, it is a trivial change, so why leave this low-hanging fruit hanging?  ",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-29T20:01:06+00:00",
+    "closed_at": "2023-05-11T21:23:10+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1241/reactions",
+      "total_count": 7,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1241"
+  },
+  {
+    "number": 909,
+    "title": "Investigate alternative ggml_compute_forward_mul_mat_q_f32() implementation",
+    "body": "This is the most computationally significant call in the entire transformer evaluation, so we have to be sure that it is running optimally.\r\n\r\nIt computes the matrix multiplication: `z = x * y`\r\n\r\n- `x` is quantized\r\n- `y` is F32\r\n- `z` is F32\r\n\r\nCurrently, it runs in 2 modes, depending on the tensor shapes:\r\n\r\n- (A) for bigger tensors, if BLAS is available, `x` is dequantized to F32 and we use `sgemm` to perform the matrix multiplication\r\n- (B) for smaller tensors, or if BLAS is not available, `y` is quantized to 4-bits on-the-fly and we use integer-based dot products to perform the matrix multiplication\r\n\r\nThe former method is much more accurate than the latter. This can be clearly observed during perplexity computations.\r\nHowever, during text generation (i.e. batch = 1), it is not feasible to use it - my experience is that there is significant overhead of calling BLAS for smaller tensor shapes, typical for single-token inference calls.\r\n\r\nThere are at least two alternative modes of operation that can be explored:\r\n\r\n- (C) for smaller tensors, or if BLAS is not available, `x` is dequantized to F32 and we use `ggml_vec_dot_f32()` to perform the multiplication\r\n- (D) for smaller tensors, or if BLAS is not available, `x` is dequantized to F16, `y` is converted to F16 and we use `ggml_vec_dot_f16()` to perform the multiplication\r\n- (E) for smaller tensors, or if BLAS is not available, `y` is quantized on-the-fly to 8-bits and we use a new `ggml` dot-product call that operates on `4-bit x` and `8-bit y`. This call will still unpack `x` into 8-bits as usual and perform the 8-bit dot-product as in the existing routines, but in contrast to (B), `y` will already be unpacked to 8-bits and the precision loss will be significantly slower\r\n\r\nTo me it is not immediately clear if (C) or (D) would be significantly slower compared to (B), but they should be much more accurate compared to (B) and probably as accurate as (A).\r\n\r\nI think, one has to be careful and choose the respective mode based on the tensor shapes, trying to find a good balance between speed and accuracy. Ideally, I am hoping after this investigation that we will achieve noticeable perplexity gain without using BLAS at the cost of a slightly slower single-token (i.e. batch = 1) computation.\r\n\r\nEdit: after the analysis and discussion in #896 I added a new mode (E) which I think is very important to be explored. Unless I am missing something, I believe this mode can be exactly as efficient as (B), but with significantly higher accuracy. Much higher than what can be achieved via improving the quantization RMS.\r\nSo I believe we have to investigate this with very high priority.",
+    "labels": [
+      "help wanted",
+      "performance",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-12T07:36:24+00:00",
+    "closed_at": "2023-04-15T14:53:24+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/909/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/909"
+  },
+  {
+    "number": 2030,
+    "title": "llama : add example for speculative sampling",
+    "body": "Speculative sampling is explained here: https://arxiv.org/abs/2302.01318\r\n\r\nIn more simple terms here:\r\n\r\n- https://github.com/ggerganov/llama.cpp/issues/630#issuecomment-1518745593\r\n- https://github.com/ggerganov/llama.cpp/issues/630#issuecomment-1556448281\r\n\r\nFor start, the \"draft\" model can be generated using the [train-text-from-scratch](https://github.com/ggerganov/llama.cpp/tree/master/examples/train-text-from-scratch) example using the same vocab as LLaMA. Later, we can try to utilize better models.\r\n\r\nWe also assume that batching multiple tokens with the \"main\" model is significantly faster compared to processing the tokens one-by-one. This may not yet be the case, but it will be when we close https://github.com/ggerganov/ggml/issues/293\r\n\r\n\r\n\r\n",
+    "labels": [
+      "performance",
+      "generation quality",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-28T05:20:52+00:00",
+    "closed_at": "2023-09-03T12:29:06+00:00",
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2030/reactions",
+      "total_count": 22,
+      "+1": 9,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 12,
+      "eyes": 1
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2030"
+  },
+  {
+    "number": 4226,
+    "title": "lookahead-prompt : add example",
+    "body": "Add an example implementing the \"Prompt Lookup Decoding\" technique:\r\n\r\nhttps://github.com/apoorvumang/prompt-lookup-decoding\r\n\r\nThis should be a great exercise for people looking to become familiar with `llama.cpp`'s KV cache management and batched decoding API. Looking for contributions.\r\n\r\nThe following examples can be used as starting points:\r\n\r\n- `speculative`\r\n- `lookahead`\r\n- `batched`",
+    "labels": [
+      "good first issue",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-26T18:39:11+00:00",
+    "closed_at": "2023-12-30T21:20:14+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4226/reactions",
+      "total_count": 7,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 7,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4226"
+  },
+  {
+    "number": 13565,
+    "title": "Misc. bug: HIP backend performs poorly on AMD Ryzen AI MAX 395 (Strix Halo gfx1151)",
+    "body": "### Name and Version\n\n```\n\u276f build/bin/llama-cli --version\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\nggml_cuda_init: found 1 ROCm devices:\n  Device 0: AMD Radeon Graphics, gfx1151 (0x1151), VMM: no, Wave Size: 32\nversion: 5392 (c753d7be)\nbuilt with cc (GCC) 15.0.1 20250418 (Red Hat 15.0.1-0) for x86_64-redhat-linux\n```\n\n### Operating systems\n\nLinux\n\n### Which llama.cpp modules do you know to be affected?\n\nllama-bench\n\n### Command line\n\n```shell\nllama.cpp-cpu/build/bin/llama-bench -m ~/models/llama-2-7b.Q4_0.gguf\nllama.cpp-vulkan/build/bin/llama-bench -m ~/models/llama-2-7b.Q4_0.gguf\nllama.cpp-hip/build/bin/llama-bench -m ~/models/llama-2-7b.Q4_0.gguf\n```\n\n### Problem description & steps to reproduce\n\nRecently I've been testing a Strix Halo (gfx1151) system and was a bit surprised by how poorly the HIP backend ran. All tests were run with `llama-bench` built on HEAD (b5392) with the standard [TheBloke/Llama-2-7B-GGUF](https://huggingface.co/TheBloke/Llama-2-7B-GGUF) (Q4_0):\n\n| Backend|pp512 (t/s)|tg128 (t/s)|\n|:-|:-|:-|\n|CPU|304.42 \u00b1 2.05|28.65 \u00b1 0.03|\n|HIP|348.62 \u00b1 0.35|48.70 \u00b1 0.02|\n|Vulkan|881.38 \u00b1 2.11|52.82 \u00b1 0.04|\n\nThe HIP version performs far below what you'd expect in terms of tok/TFLOPS efficiency for prompt processing vs other RDNA3 architectures:\n\n- `gfx1103` Radeon 780M iGPU gets 14.51 tok/TFLOP. At that efficiency you'd expect the about 850 tok/s that the Vulkan backend delivers.\n- `gfx1100` Radeon 7900 XTX gets 25.12 tok/TFLOP. At that efficiency you'd expect almost 1500 tok/s, almost double what the Vulkan backend delivers, and >4X what the current HIP backend delivers.\n- HIP pp512 barely beats out CPU backend numbers. I don't have an explanation for this.\n- Just for a reference of how bad the HIP performance is, an 18CU M3 Pro has \\~12.8 FP16 TFLOPS (4.6X less compute than Strix Halo) and delivers about the same pp512. Lunar Lake Arc 140V has 32 FP16 TFLOPS (almost 1/2 Strix Halo) and has a pp512 of 657 tok/s (1.9X faster)\n- With the Vulkan backend pp512 is about the same as an M4 Max and tg128 is about equivalent to an M4 Pro\n\nWith monitoring, I've confirmed that both HIP and Vulkan reach the max graphics clock. This is a system running Linux 6.15.0-0.rc3, so should be up to date with the latest AMDGPU drivers.\n\nThese results are from a standard `llama-bench` run. I've tried `-fa 1` and a rocWMMA build but they don't make much difference so excluded for clarity.\n\nOne interesting observation that may help track a potential regression, when I compile w/ gfx1100 support and run with HSA_OVERRIDE_GFX_VERSION=11.0.0 , the pp512 basically doubles to 598.84 \u00b1 1.41 (this eventually leads to MES/kernel errors so obviously is not recommended for use, just an interesting observation that might help in tracking down the issue).\n\n### First Bad Commit\n\n_No response_\n\n### Relevant log output\n\n```shell\n\n```",
+    "labels": [
+      "performance",
+      "AMD GPU"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-15T14:12:58+00:00",
+    "closed_at": "2025-05-18T16:49:49+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/13565/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/13565"
+  },
+  {
+    "number": 578,
+    "title": "|BUG] ggml spawns threads even BLAS is used",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [X] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [X] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\nggml should not spawn threads for the initial prompt ingestion when using BLAS.\r\n\r\n# Current Behavior\r\nggml does spawn threads even when using BLAS.\r\n\r\n# Environment and Context \r\nReproducible using latest OpenBLAS with PR https://github.com/xianyi/OpenBLAS/pull/3970 (for Intel 13th gen support) and Intel MKL's BLAS implementation.\r\n\r\n```bash\r\nArchitecture:            x86_64\r\n  CPU op-mode(s):        32-bit, 64-bit\r\n  Address sizes:         46 bits physical, 48 bits virtual\r\n  Byte Order:            Little Endian\r\nCPU(s):                  20\r\n  On-line CPU(s) list:   0-19\r\nVendor ID:               GenuineIntel\r\n  Model name:            13th Gen Intel(R) Core(TM) i5-13500\r\n    CPU family:          6\r\n    Model:               191\r\n    Thread(s) per core:  2\r\n    Core(s) per socket:  14\r\n    Socket(s):           1\r\n    Stepping:            2\r\n    CPU max MHz:         4800.0000\r\n    CPU min MHz:         800.0000\r\n    BogoMIPS:            4992.00\r\n    Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx \r\n                         fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bt\r\n                         s rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 mo\r\n                         nitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe po\r\n                         pcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb i\r\n                         nvpcid_single ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad\r\n                          fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_p\r\n                         t sha_ni xsaveopt xsavec xgetbv1 xsaves avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_a\r\n                         ct_window hwp_epp hwp_pkg_req hfi umip pku ospke waitpkg gfni vaes vpclmulqdq tme rdpid movdi\r\n                         ri movdir64b fsrm md_clear serialize pconfig arch_lbr ibt flush_l1d arch_capabilities\r\n```\r\n* Operating System, e.g. for Linux:\r\nUbuntu 22.04 with custom Kernel\r\n`Linux XXX 6.1.6-060106-generic #202301141035 SMP PREEMPT_DYNAMIC Sat Jan 14 11:15:19 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux`\r\n\r\n# Failure Information (for bugs)\r\nRead this discussion for full context https://github.com/ggerganov/llama.cpp/discussions/229#discussioncomment-5454503\r\n@slaren mentioned that the issue is:\r\n> By default llama.cpp will limit ggml to 1 thread when using BLAS only if the batch size is >255:\r\n> \r\n> https://github.com/ggerganov/llama.cpp/blob/4b8efff0e3945090379aa2f897ff125c8f9cdbae/llama.cpp#L859\r\n> \r\n> \r\n> The problem is that there is a mismatch in ggml which will use BLAS as long as the batch size is >= 32:\r\n> https://github.com/ggerganov/llama.cpp/blob/4b8efff0e3945090379aa2f897ff125c8f9cdbae/ggml.c#L5784\r\n> \r\n> This leads to issues when the batch size is >32 and <=255. We need to determine what is the optimal batch size to start using BLAS, and use that value consistently.\r\n\r\n# Steps to Reproduce\r\nI tried using -b 256 and -b 512, and ggml's 6 threads (from -t 6) are still spawned by ggml (alongside BLAS threads) when doing initial prompt ingestion:\r\n```bash\r\nllama -m /opt/models/llama-30B/ggml-model-q4_0.bin -n -1 --color -i -r \"User:\" -f /opt/prompts/chat-with-bob.txt -t 6 -b 256 -c 2048\r\n```\r\nUsing `-t 1` yields the expected behavior (only 1 thread for ggml, and the threads I set in env variable for BLAS)\r\n\r\n# Failure Logs\r\nhtop shows more core usages than expected.",
+    "labels": [
+      "bug",
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-28T15:02:01+00:00",
+    "closed_at": "2024-04-12T01:07:25+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/578/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/578"
+  }
+]

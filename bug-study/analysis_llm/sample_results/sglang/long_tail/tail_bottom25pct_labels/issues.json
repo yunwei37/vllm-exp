@@ -1,0 +1,302 @@
+[
+  {
+    "number": 6232,
+    "title": "[Bug] Llama4 fails to run on Python 3.9 (AssertionError)",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nRunning llama 4 with Python 3.9 get AssertionError\n\ne.g.`python -m sglang.launch_server --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct --tp 8 --context-length 65536`\n\nThe error does not occur in python 3.10, 3.11, 3.12.\n\n### Reproduction\n\n#### Python 3.9 (AssertionError)\n\n```bash\nmkdir 3-9-test\ncd 3-9-test\nuv init --python 3.9\nuv add \"sglang[all]>=0.4.6.post3\" setuptools\nexport HF_TOKEN=<token>\nuv run -m sglang.launch_server --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct --tp 8 --context-length 65536 --log-level debug\n\n# Boom!! AssertionError!!\n```\n\n[Error log in python 3.9](https://github.com/user-attachments/files/20160697/python-3-9.log)\n\n\n#### Python 3.10, and etc (This is OK)\n\n```bash\nmkdir 3-10-test\ncd 3-10-test\nuv init --python 3.10\nuv add \"sglang[all]>=0.4.6.post3\" setuptools\nexport HF_TOKEN=<token>\nuv run -m sglang.launch_server --model-path meta-llama/Llama-4-Scout-17B-16E-Instruct --tp 8 --context-length 65536 --log-level debug\n\n# Runs OK\n```\n\n### Environment\n\n#### Python 3.9 (AssertionError)\n\n```\nuv run -m sglang.check_env \nPython: 3.9.2 (default, Mar 20 2025, 02:07:39) [GCC 10.2.1 20210110]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA H100 80GB HBM3\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\nCUDA Driver Version: 550.90.07\nPyTorch: 2.6.0+cu124\nsglang: 0.4.6.post3\nsgl_kernel: 0.1.1\nflashinfer_python: 0.2.5\ntriton: 3.2.0\ntransformers: 4.51.1\ntorchao: 0.11.0\nnumpy: 2.0.2\naiohttp: 3.11.18\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.31.1\ninteregular: 0.3.3\nmodelscope: 1.25.0\norjson: 3.10.18\noutlines: 0.1.11\npackaging: 25.0\npsutil: 7.0.0\npydantic: 2.11.4\npython-multipart: 0.0.20\npyzmq: 26.4.0\nuvicorn: 0.34.2\nuvloop: 0.21.0\nvllm: Module Not Found\nxgrammar: 0.1.19\nopenai: 1.75.0\ntiktoken: 0.9.0\nanthropic: 0.51.0\nlitellm: 1.69.0\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    52-103,156-207  1               N/A\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    52-103,156-207  1               N/A\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    52-103,156-207  1               N/A\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      52-103,156-207  1               N/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nHypervisor vendor: KVM\nulimit soft: 1048576\n```\n\n#### Python 3.10, and etc (This is OK)\n\n```\nuv run -m sglang.check_env\nPython: 3.10.17 (main, Apr  9 2025, 04:03:39) [Clang 20.1.0 ]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA H100 80GB HBM3\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\nCUDA Driver Version: 550.90.07\nPyTorch: 2.6.0+cu124\nsglang: 0.4.6.post3\nsgl_kernel: 0.1.1\nflashinfer_python: 0.2.5\ntriton: 3.2.0\ntransformers: 4.51.1\ntorchao: 0.11.0\nnumpy: 2.2.5\naiohttp: 3.11.18\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.31.1\ninteregular: 0.3.3\nmodelscope: 1.25.0\norjson: 3.10.18\noutlines: 0.1.11\npackaging: 25.0\npsutil: 7.0.0\npydantic: 2.11.4\npython-multipart: 0.0.20\npyzmq: 26.4.0\nuvicorn: 0.34.2\nuvloop: 0.21.0\nvllm: Module Not Found\nxgrammar: 0.1.19\nopenai: 1.75.0\ntiktoken: 0.9.0\nanthropic: 0.51.0\nlitellm: 1.69.0\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    0-51,104-155    0               N/A\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    52-103,156-207  1               N/A\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    52-103,156-207  1               N/A\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    52-103,156-207  1               N/A\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      52-103,156-207  1               N/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nHypervisor vendor: KVM\nulimit soft: 1048576\n```",
+    "labels": [
+      "good first issue",
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-12T12:05:57+00:00",
+    "closed_at": "2025-06-15T13:15:12+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6232/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6232"
+  },
+  {
+    "number": 1062,
+    "title": "[Feature] P100/Cuda 6.1 support",
+    "body": "### Motivation\n\nAs per https://github.com/sgl-project/sglang/issues/1059 , P100/pascal/6.1 support is not currently a target. This feature request is an official request to support it. This GPU is the least expensive hardware that will run modern LLMs, and is a common GPU in both academia and common use.\r\n\r\nThis issue was created as the original was locked with the cryptic phrase, \"It makes nonsense for me.\", the meaning of which was not clear in context. This issue is intended to be a place where the community can discuss support for these GPUs, as well as petition for support.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-12T20:29:42+00:00",
+    "closed_at": "2024-08-13T04:31:55+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1062/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1062"
+  },
+  {
+    "number": 2732,
+    "title": "[Feature] optimize moe_align_block_size_kernel",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe original version performs poorly and needs optimization. I suggest rewriting a new implementation.\r\n\r\nhttps://github.com/sgl-project/sglang/blob/main/sgl-kernel/src/sgl-kernel/csrc/moe_align_kernel.cu\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "high priority",
+      "wip",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-05T05:56:21+00:00",
+    "closed_at": "2025-03-25T04:11:57+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2732/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2732"
+  },
+  {
+    "number": 1673,
+    "title": "[Feature] Make vLLM optional in model code",
+    "body": "### UPDATE(11/23/2024)\n\nCurrently, @james-p-xu  is removing rope, @yizhang2077  is removing distributed, @HandH1998 is removing weight loader. Optimistically, we can remove these dependencies by the end of the month and make quant optional (try import). cc @merrymercy @Ying1123 \n\n### Motivation\n\nThis is a tracker of removing vLLM dependencies in general model code (not considering quantization). This is our current  import from vLLM, and we want to remove all them.\n\n```python\nfrom vllm.config import CacheConfig\nfrom vllm.distributed import get_tensor_model_parallel_world_size\nfrom vllm.model_executor.layers.rotary_embedding import get_rope\nfrom vllm.model_executor.layers.vocab_parallel_embedding import (\n   ParallelLMHead,\n   VocabParallelEmbedding,\n)\n```\n\n### Tracker\n\n- [x] Remove `CacheConfig`: https://github.com/sgl-project/sglang/pull/1658\n- [x] Remove RoPE: https://github.com/flashinfer-ai/flashinfer/issues/530\n- [x] Remove `get_tensor_model_parallel_world_size`\n- [x] Remove `ParallelLMHead`: https://github.com/sgl-project/sglang/pull/1856\n- [x] Remove `VocabParallelEmbedding`:  https://github.com/sgl-project/sglang/pull/1856\n\n",
+    "labels": [
+      "wip"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-15T06:49:05+00:00",
+    "closed_at": "2025-03-03T23:17:23+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1673/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1673"
+  },
+  {
+    "number": 6544,
+    "title": "[Feature] Phi-4-MM support",
+    "body": "### Update\n\nCurrently we have added text & vision support. \n\nRepeated MMMU benchmark runs range between 53.6 - 55.5, consistent with the the benchmark reported in the original paper (55).\n\n**Known limitations:** (See *Execution Plan* before for full list):\n\n1. Audio capabilities: currently we do not support audio at all. \n2. ~~LoRA / Image quality: Phi4MM depends on LoRA for full image capability, but there is some compatibility issues with the native SGL LORA solution. We are working on solving it by refactoring / generalizing SGL LoRA capabilities.~~ Fixed with #6585, #6734, #6861)\n3. Token: Phi4MM supports two types of image token conventions (`<|image1|>` and `<|endoftext10|>`), currently we only support  the latter. If you use the default chat template, it will automatically pick up the supported one.\n\n### Motivation\n\nSupporting the Phi4 Multimodal model (https://[huggingface.co/microsoft/Phi-4-multimodal-instruct](https://huggingface.co/microsoft/Phi-4-multimodal-instruct) in SGL. \n\nExecution Plan: \n\n- [x] Basic text + image support (@lifuhuang #6494 )\n- [x] LoRA support (required for full image understanding capability): (@lifuhuang #6585 , #6734 , #6861 )\n- [x] perf optimization (@lifuhuang #6960 #6994)\n- [ ] SGLang LoRA compatibility with Radix Attention (@Fridge003 #7216 )\n- [ ] audio support (@byjiang1996  #8048)\n- [ ] (low priority) Precomputed feature support. \n- [ ] (low priority) Refactor SGL MM processor logic support for support the original token variable image token (e.g., `<image_1>`)\n\n\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "help wanted",
+      "high priority",
+      "microsoft"
+    ],
+    "state": "open",
+    "created_at": "2025-05-23T04:17:59+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6544/reactions",
+      "total_count": 8,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6544"
+  },
+  {
+    "number": 5973,
+    "title": "[Feature] Generative Score API",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nSimilar to the cross-encoder Score API proposed here: https://github.com/sgl-project/sglang/issues/5577\n\nGoal is to score items \"generatively\" using decoder-only models.\n\nE.g. \"Given a user liked A, B, and C, will the user like this item? Please answer \"yes\" or \"no.\" The item is: D\"\n\n### API\n```\n{\n  \"text_1\": [\n    \"Given a user liked A, B, and C, will the user like this item? Please answer \"yes\" or \"no.\" The item is:\",\n  ],  \n\"text_2\": [\n     \"D\",\n     \"E\"\n   ],\n  \"positiveToken\": \"yes\",\n  \"negativeToken\": \"no\"\n}\n```\n\nReturns: \n\n```\n{\n  \"scores\": [\n    0.874,\n    0.231\n  ]\n}\n```\n\n### Related resources\n\nOriginal idea comes from this paper: [Holistic Evaluation of Language Models](https://arxiv.org/pdf/2211.09110) which states the following:\n```\nWe address the re-ranking task in a pointwise fashion: we formulate the information\nretrieval problem using prompting as a binary log-probability problem, similar to Nogueira & Cho (2019):\nGiven a passage ci and a query q, we ask the model whether the passage contains an answer to the query. If\nthe model\u2019s answer is Yes with a high probability, we rank the corresponding ci higher, while the No answer\nwith high probability achieves the opposite. Figure 12 depicts an example instance. The rankings produced\nare then evaluated using standard information retrieval metrics\n\n```\n\nA Thorough Comparison of Cross-Encoders and LLMs for Reranking SPLADE https://arxiv.org/html/2403.10407v1 \n\nActions Speak Louder than Words: Trillion-Parameter Sequential Transducers for Generative Recommendations https://proceedings.mlr.press/v235/zhai24a.html\n\nMore docs to be added",
+    "labels": [
+      "high priority",
+      "linkedin"
+    ],
+    "state": "open",
+    "created_at": "2025-05-02T10:43:23+00:00",
+    "closed_at": null,
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5973/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5973"
+  },
+  {
+    "number": 5372,
+    "title": "[Bug] hierarchical_cache oom",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nhi~ @xiezhq-hermann You are the main contributor to hierarchical cache, thank you for your great work\uff01  I have a few questions about hierarchical cache, I'm very confused so I'm looking for your help.\n\nRecently we want to try to use hierarchical cache, before that, for DeepSeek R1 , our online args `--mem-fraction-static` is 0.95.\n\n- When I try to launch sglang server with args `--mem-fraction-static=0.95`, `--enable-hierarchical-cache`, `--hicache-ratio=2` , OOM occurs before the server is successfully started\n-  with args `--mem-fraction-static=0.94`, `--enable-hierarchical-cache`, `--hicache-ratio=2` , sglang server is successfully started  but OOM occurs while running the benchmark.\n- with args `--mem-fraction-static=0.93`, `--enable-hierarchical-cache`, `--hicache-ratio=10` , OOM occurs while running the benchmark\n\nSo I can only reduce `--mem-fraction-static` to 0.93.  Based on 0.93, I tried to set different `--hicache-ratio` values, and I found that the memory usage of GPU0 device was significantly higher than that of other devices. which is the main cause of OOM. The following figure was taken after sglang server was successfully started and before running the benchmark.\n\n<img width=\"879\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/13fdbd60-7b9d-4432-961c-16b0986ba56b\" />\n\nI debugged the hierarchical cache code and found that HiCacheController used multi stream to read and write CPU cache. When I disabled multi stream with [code](https://github.com/sgl-project/sglang/compare/main...AniZpZ:sglang:disable_hicache_multi_stream), The phenomenon that GPU0 device has higher memory usage than other devices has disappeared. At this point I can even launch sglang server with args `--mem-fraction-static=0.95`, `--enable-hierarchical-cache`, `--hicache-ratio 13`, the server can be started successfully, but it will oom when running the benchmark. I found that the oom probably occurs when the cache is loaded from the CPU to GPU for the first time. I will confirm this.\n\nI have a few questions:\n\n- Why does multi stream cause GPU0 to occupy more GPU memory?\n- Why does gpu0 need more memory, but other gpus don't?\n- Why does the additional memory usage of gpu0 vary with different `--hicache-ratio`\uff1fHicache-ratio is just the ratio of CPU: GPU cache. As far as I understand, it has no direct connection with GPU memory.\n\n\nFor DeepSeek R1 , reducing `--mem-fraction-static` to 0.93  has a significant impact on throughput. Because the number of GPU tokens is reduced by 23%, if the hit rate of the CPU cache is not high, there will be no benefit at all.  `max_total_num_tokens` Data are as follows\uff1a\n\n<img width=\"479\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/6daaf010-6161-4b12-bdb8-ba7b878d1549\" />\n\nI wonder if it is possible to turn on hierarchical cache without affecting throughput too much.\n\nThank you very much\uff01\n\n### Reproduction\n\n\npython -m sglang.launch_server --host 0.0.0.0 --dtype auto --mem-fraction-static 0.93 --tp-size 8 --chat-template /path/to/r1.jinja --max-running-requests 48 --trust-remote-code --enable-cache-report --log-level info --chunked-prefill-size 4096 --context-length 65536 --quantization fp8 --enable-torch-compile --cuda-graph-max-bs 64 --torch-compile-max-bs 36 --enable-flashinfer-mla --enable-mixed-chunk --model-path /path/to/DeepSeek-R1 --port 8188 --enable-hierarchical-cache --hicache-ratio 2\n\n\n### Environment\n\nPython: 3.10.13 (main, Sep 11 2023, 13:44:35) [GCC 11.2.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA H20\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\nCUDA Driver Version: 535.183.06\nPyTorch: 2.5.1+cu124\nsglang: 0.4.5\nsgl_kernel: 0.0.8\nflashinfer: Module Not Found\ntriton: 3.1.0\ntransformers: 4.51.0\ntorchao: 0.9.0\nnumpy: 1.26.4\naiohttp: 3.11.10\nfastapi: 0.115.6\nhf_transfer: 0.1.9\nhuggingface_hub: 0.30.2\ninteregular: 0.3.3\nmodelscope: 1.23.1\norjson: 3.10.12\noutlines: 0.1.11\npackaging: 24.2\npsutil: 6.1.0\npydantic: 2.10.6\nmultipart: Module Not Found\nzmq: Module Not Found\nuvicorn: 0.32.1\nuvloop: 0.21.0\nvllm: 0.7.2\nxgrammar: 0.1.17\nopenai: 1.65.2\ntiktoken: 0.9.0\nanthropic: 0.49.0\nlitellm: 1.62.1\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    NIC0    NIC1    NIC2   NIC3    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    NODE    NODE    SYS   SYS     0-47,96-143     0               N/A\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    PIX     NODE    SYS   SYS     0-47,96-143     0               N/A\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    NODE    NODE    SYS   SYS     0-47,96-143     0               N/A\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    NODE    PIX     SYS   SYS     0-47,96-143     0               N/A\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    SYS     SYS     PIX   NODE    48-95,144-191   1               N/A\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    SYS     SYS     NODE   NODE    48-95,144-191   1               N/A\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    SYS     SYS     NODE   PIX     48-95,144-191   1               N/A\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      SYS     SYS     NODE   NODE    48-95,144-191   1               N/A\nNIC0    NODE    PIX     NODE    NODE    SYS     SYS     SYS     SYS      X      NODE    SYS   SYS\nNIC1    NODE    NODE    NODE    PIX     SYS     SYS     SYS     SYS     NODE     X      SYS   SYS\nNIC2    SYS     SYS     SYS     SYS     PIX     NODE    NODE    NODE    SYS     SYS      X    NODE\nNIC3    SYS     SYS     SYS     SYS     NODE    NODE    PIX     NODE    SYS     SYS     NODE    X \n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_bond_0\n  NIC1: mlx5_bond_1\n  NIC2: mlx5_bond_2\n  NIC3: mlx5_bond_3\n\n\nulimit soft: 1048576",
+    "labels": [
+      "hicache"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-14T09:26:57+00:00",
+    "closed_at": "2025-04-21T18:46:48+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5372/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5372"
+  },
+  {
+    "number": 3531,
+    "title": "[Feature] Respect max_completion_tokens",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nCurrently the OpenAI compatible API only respects the old `max_tokens` request argument. The updated spec introduces `max_completion_tokens`.\n\nI can send a PR adding support for the new argument name and just change the code here:\nhttps://github.com/sgl-project/sglang/blob/8616357a97c5f68eca194dfbeef0ae51943032ef/python/sglang/srt/openai_api/adapter.py#L512\n\nto `request.max_completion_tokens or request.max_tokens`\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "duplicate",
+      "feature"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-12T17:52:38+00:00",
+    "closed_at": "2025-02-13T19:23:21+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3531/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 1,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3531"
+  },
+  {
+    "number": 3266,
+    "title": "[Feature] Add Model Hooks for Accessing and Customizing Model Activations",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\n## Description\nIt would be beneficial to introduce model hooks that allow users to access and modify model activations. This feature would enable greater flexibility for tasks such as visualization, debugging, and custom processing of intermediate representations.\n\n## Use case\n* Extract intermediate outputs for interpretability analysis, such as [LogitLens-style investigations](https://www.lesswrong.com/posts/AcKRB8wDpdaN6v6ru/interpreting-gpt-the-logit-lens).\n* Expose internal activations, enabling users to cache activations and implement functions to edit, remove, or replace them dynamically during inference, for example [representation engineering](https://github.com/andyzoujm/representation-engineering).\n\nWhile this may introduce some performance overhead, it would enhance interpretability research and enable efficient model editing.\n\n### Related resources\n\n## model hook resources\n* [Pytorch hook](https://pytorch.org/docs/stable/generated/torch.Tensor.register_hook.html)\n* [Transformerlens](https://github.com/TransformerLensOrg/TransformerLens)\n## related issues and use case\n* https://github.com/vllm-project/vllm/issues/4084\n* https://github.com/vllm-project/vllm/issues/11397\n* https://github.com/vllm-project/vllm/issues/8278",
+    "labels": [
+      "inactive",
+      "research"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-03T05:44:46+00:00",
+    "closed_at": "2025-04-05T00:17:32+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3266/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3266"
+  },
+  {
+    "number": 2807,
+    "title": "[Feature] RFC for adding CPU support for SGLang",
+    "body": "### Motivation\n\nHi, SGLang folks! This is Mingfei from intel pytorch team, our team helps optimize PyTorch performance on CPU. I am also the PyTorch module maintainer for cpu performance. We would like to contribute to SGLang for CPU enabling and performance optimization.\n\n### Targets\nOur primary target is to optimize SGLang performance on Intel Xeon Scalable Processors (x86 server CPUs).\n* Optimization will be focusing on Xeon with [Intel\u00ae Advanced Matrix Extensions](https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/advanced-matrix-extensions/overview.html) support, including Sapphire Rapids(4th gen), Emerald Rapids(5th gen), Granite Rapids(6th gen).\n* Native implementations or fallbacks will be provided for CPUs with other ISA to make it functional.\n* Providing good performance per dollar.\n\n### Limitations\n\n* Kernels written in **avx512** and **amx-bf16**, requires **GCC11** or above.\n* **BFloat16/Float16** will be enabled at the same time on CPU, but we only focus on **BFloat16** performance optimization at the current stage, **Float16** optimization will be added later on.\n\n### Schedule for 25Q1\nWe will focusing on DeepSeek series at the moment to align with our internal development requirements and extend the model coverage later on.\n\n#### Generic enabling/optimizations for sglang\n\n- [x] CPU device enabling. We intend to enable CPU device with torch native backend first and then gradually replace all the performance critical components with C++ intrinsics kernels. https://github.com/sgl-project/sglang/pull/2806\n- [x] fused kernels for `rms_norm`, `silu_and_mul`, sampling and so on.\n- [x] radix attention kernels for extend and decoding.\n\n#### DeepSeek performance optimizations\n(we are currently mapping the work from [DeepSeek Multi-head Latent Attention (MLA) Throughput Optimizations](https://lmsys.org/blog/2024-09-04-sglang-v0-3/#deepseek-multi-head-latent-attention-mla-throughput-optimizations))\n- [x] MLA decoding kernel optimization with head blocking.\n- [x] DeepSeekMoE (FusedMoE)\n- [x] fp8 kv cache (experimental)\n\n#### Tensor Parallel\n- [x] Map TP to the multiple sockets (numa nodes) on a single node CPU\n- [ ] EPMoE\n\nWe hope to help more customers to build better user experience with deploying with sglang on CPU devices. Welcome any feedbacks, thanks!\n\n",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "intel",
+      "cpu"
+    ],
+    "state": "open",
+    "created_at": "2025-01-09T07:58:45+00:00",
+    "closed_at": null,
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2807/reactions",
+      "total_count": 14,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2807"
+  },
+  {
+    "number": 2578,
+    "title": "[Feature] Request to Include flashinfer as a Dependency for sglang Installation",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nI would like to request a feature to make flashinfer automatically installed when sglang is installed. This would streamline the installation process for users and ensure that all necessary dependencies are correctly set up without requiring additional manual steps.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "inactive",
+      "dependencies"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-25T20:54:25+00:00",
+    "closed_at": "2025-02-27T00:17:01+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2578/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2578"
+  }
+]

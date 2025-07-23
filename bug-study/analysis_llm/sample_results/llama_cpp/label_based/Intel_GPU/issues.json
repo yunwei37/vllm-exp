@@ -1,0 +1,246 @@
+[
+  {
+    "number": 11276,
+    "title": "ignore : test sub-issue",
+    "body": "Just testing \"Github sub-issues\" - please ignore",
+    "labels": [
+      "Intel GPU"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-17T09:19:10+00:00",
+    "closed_at": "2025-01-17T09:19:57+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/11276/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/11276"
+  },
+  {
+    "number": 7042,
+    "title": "Llama.cpp not working with intel ARC 770?",
+    "body": "Hi,\r\n\r\nI am trying to get llama.cpp to work on a workstation with one ARC 770 Intel GPU but somehow whenever I try to use the GPU, llama.cpp does something (I see the GPU being used for computation using intel_gpu_top) for 30 seconds or so and then just hang there, using 100% CPU (but only one core) as if it would be waiting for something to happen...\r\n\r\n\r\nI am using the following command:\r\n\r\n```sh\r\nZES_ENABLE_SYSMAN=0 ./main -m ~/LLModels/Mistral-7B-Instruct-v0.1-GGUF/mistral-7b-instruct-v0.1.Q5_K_S.gguf -p \"Alice lived in Wonderland and her favorite food was:\" -n 512 -e -ngl 33 -sm none -mg 0 -t 32\r\n```\r\n\r\nit doesn't matter if I ignore the ZES_ENABLE_SYSMAN part.\r\n\r\nnow, the same biuld does work when `-ngl 0`. There I see the 32 cores be used and the model produces output.\r\n\r\nIf I run `clinfo`, I get the following output.\r\n\r\n```sh\r\nPlatform #0: Intel(R) FPGA Emulation Platform for OpenCL(TM)\r\n `-- Device #0: Intel(R) FPGA Emulation Device\r\nPlatform #1: Intel(R) OpenCL\r\n `-- Device #0: AMD Ryzen 9 5950X 16-Core Processor\r\nPlatform #2: Intel(R) OpenCL Graphics\r\n `-- Device #0: Intel(R) Arc(TM) A770 Graphics\r\n```\r\n\r\n`sycl-ls:`\r\n\r\n```sh\r\n[opencl:acc:0] Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) FPGA Emulation Device OpenCL 1.2  [2024.17.3.0.08_160000]\r\n[opencl:cpu:1] Intel(R) OpenCL, AMD Ryzen 9 5950X 16-Core Processor             OpenCL 3.0 (Build 0) [2024.17.3.0.08_160000]\r\n[opencl:gpu:2] Intel(R) OpenCL Graphics, Intel(R) Arc(TM) A770 Graphics OpenCL 3.0 NEO  [24.18.0]\r\n```\r\n\r\n`ls-sycl-device` sees three SYCL devices on is the GPU.\r\n\r\n```sh\r\nfound 3 SYCL devices:\r\n|  |                  |                                             |Compute   |Max compute|Max work|Max sub|               |\r\n|ID|       Device Type|                                         Name|capability|units      |group   |group  |Global mem size|\r\n|--|------------------|---------------------------------------------|----------|-----------|--------|-------|---------------|\r\n| 0|    [opencl:gpu:0]|               Intel(R) Arc(TM) A770 Graphics|       3.0|        512|    1024|     32|    16225243136|\r\n| 1|    [opencl:cpu:0]|AMD Ryzen 9 5950X 16-Core Processor            |       3.0|         32|    8192|     64|   134983352320|\r\n| 2|    [opencl:acc:0]|               Intel(R) FPGA Emulation Device|       1.2|         32|67108864|     64|   134983352320|\r\n\r\n```\r\nNow I don't see the level-zero device, I had it at some point but had no opencl:gpu in exchange. With the level-zero device I had the same problem. The GPU will activate for 30s and go back to zero activity while ./main stays on guard for hours if I don't cancel.\r\n\r\nI a running OpenSuse Tumbleweed and installed intel oneAPI locally using the online installer. I don't see compilation issues. I also compiled Neo and its requirements. All these packages are in my home but that doesn't seem to be the issue because previously installed intel packages (via zypper) where avail. system-wide with the same results.\r\n\r\nI am really lost here because I don't seem to be getting any error, I am sure the GPU crashes but I don't know why or where to look for this info. So I would really appreciate your help on this. I can test anything you want (this is not a production system or else).\r\n\r\nthanks in advance and best regards,\r\n\r\nSergio\r\n\r\n",
+    "labels": [
+      "Intel GPU"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-02T12:37:39+00:00",
+    "closed_at": "2024-05-08T19:23:42+00:00",
+    "comments": 17,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7042/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7042"
+  },
+  {
+    "number": 5547,
+    "title": "SYCL build failed",
+    "body": "The build can be completed, but after it is finished\r\nRun build\\bin\\main.exe\r\n```\r\nmain: build = 0 (unknown)\r\nmain: built with MSVC 19.39.33519.0 for\r\nmain: seed  = 1708170078\r\nllama_model_load: error loading model: failed to open models/7B/ggml-model-f16.gguf: No such file or directory\r\nllama_load_model_from_file: failed to load model\r\nllama_init_from_gpt_params: error: failed to load model 'models/7B/ggml-model-f16.gguf'\r\nmain: error: unable to load model\r\n```\r\nRun .\\examples\\sycl\\win-run-llama2.bat\r\n```\r\n:: oneAPI environment initialized ::\r\nwarning: not compiled with GPU offload support, --n-gpu-layers option will be ignored\r\nwarning: see main README.md for information on enabling GPU BLAS support\r\n```\r\nMy PC\uff1a\r\nOS:Windows 11 (22631.3155)\r\nCPU:AMD Ryzen 5 5600X\r\nGPU:Intel Arc A770\r\n\r\nRun sycl-ls\r\n```\r\n[opencl:acc:0] Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) FPGA Emulation Device OpenCL 1.2  [2023.16.12.0.12_195853.xmain-hotfix]\r\n[opencl:cpu:1] Intel(R) OpenCL, AMD Ryzen 5 5600X 6-Core Processor              OpenCL 3.0 (Build 0) [2023.16.12.0.12_195853.xmain-hotfix]\r\n[opencl:gpu:2] Intel(R) OpenCL Graphics, Intel(R) Arc(TM) A770 Graphics OpenCL 3.0 NEO  [31.0.101.5330]\r\n[ext_oneapi_level_zero:gpu:0] Intel(R) Level-Zero, Intel(R) Arc(TM) A770 Graphics 1.3 [1.3.28328]\r\n```\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "Intel GPU",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-17T11:48:36+00:00",
+    "closed_at": "2024-05-30T01:23:41+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5547/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5547"
+  },
+  {
+    "number": 5469,
+    "title": "[SYCL] Segmentation fault after #5411",
+    "body": "System: Arch Linux,\r\nCPU: Intel i3 12th gen\r\nGPU: Intel Arc A750\r\nRAM: 16GB\r\n\r\nllama.cpp version: b2134\r\n\r\n\r\nPreviously the build was failing with `-DLLAMA_SYCL_F16=ON` which has been fixed in #5411. Upon running this build, it crashes with segmentation fault.\r\n\r\nlogs:\r\n```\r\nbin/main -m ~/Public/Models/Weights/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf  -p \"hello \" -n 1000 -ngl 99\r\nLog start\r\nmain: build = 2134 (099afc62)\r\nmain: built with Intel(R) oneAPI DPC++/C++ Compiler 2024.0.0 (2024.0.0.20231017) for x86_64-unknown-linux-gnu\r\nmain: seed  = 1707789832\r\nGGML_SYCL_DEBUG=0\r\nggml_init_sycl: GGML_SYCL_F16:   yes\r\nggml_init_sycl: SYCL_USE_XMX: yes\r\nfound 4 SYCL devices:\r\n  Device 0: Intel(R) Arc(TM) A750 Graphics,\tcompute capability 1.3,\r\n\tmax compute_units 448,\tmax work group size 1024,\tmax sub group size 32,\tglobal mem size 8096681984\r\n  Device 1: Intel(R) FPGA Emulation Device,\tcompute capability 1.2,\r\n\tmax compute_units 4,\tmax work group size 67108864,\tmax sub group size 64,\tglobal mem size 16577347584\r\n  Device 2: 12th Gen Intel(R) Core(TM) i3-12100F,\tcompute capability 3.0,\r\n\tmax compute_units 4,\tmax work group size 8192,\tmax sub group size 64,\tglobal mem size 16577347584\r\n  Device 3: Intel(R) Arc(TM) A750 Graphics,\tcompute capability 3.0,\r\n\tmax compute_units 448,\tmax work group size 1024,\tmax sub group size 32,\tglobal mem size 8096681984\r\nUsing device 0 (Intel(R) Arc(TM) A750 Graphics) as main device\r\nllama_model_loader: loaded meta data with 23 key-value pairs and 201 tensors from /home/tensorblast/Public/Models/Weights/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf (version GGUF V3 (latest))\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = llama\r\nllama_model_loader: - kv   1:                               general.name str              = tinyllama_tinyllama-1.1b-chat-v1.0\r\nllama_model_loader: - kv   2:                       llama.context_length u32              = 2048\r\nllama_model_loader: - kv   3:                     llama.embedding_length u32              = 2048\r\nllama_model_loader: - kv   4:                          llama.block_count u32              = 22\r\nllama_model_loader: - kv   5:                  llama.feed_forward_length u32              = 5632\r\nllama_model_loader: - kv   6:                 llama.rope.dimension_count u32              = 64\r\nllama_model_loader: - kv   7:                 llama.attention.head_count u32              = 32\r\nllama_model_loader: - kv   8:              llama.attention.head_count_kv u32              = 4\r\nllama_model_loader: - kv   9:     llama.attention.layer_norm_rms_epsilon f32              = 0.000010\r\nllama_model_loader: - kv  10:                       llama.rope.freq_base f32              = 10000.000000\r\nllama_model_loader: - kv  11:                          general.file_type u32              = 15\r\nllama_model_loader: - kv  12:                       tokenizer.ggml.model str              = llama\r\nllama_model_loader: - kv  13:                      tokenizer.ggml.tokens arr[str,32000]   = [\"<unk>\", \"<s>\", \"</s>\", \"<0x00>\", \"<...\r\nllama_model_loader: - kv  14:                      tokenizer.ggml.scores arr[f32,32000]   = [0.000000, 0.000000, 0.000000, 0.0000...\r\nllama_model_loader: - kv  15:                  tokenizer.ggml.token_type arr[i32,32000]   = [2, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, ...\r\nllama_model_loader: - kv  16:                      tokenizer.ggml.merges arr[str,61249]   = [\"\u2581 t\", \"e r\", \"i n\", \"\u2581 a\", \"e n...\r\nllama_model_loader: - kv  17:                tokenizer.ggml.bos_token_id u32              = 1\r\nllama_model_loader: - kv  18:                tokenizer.ggml.eos_token_id u32              = 2\r\nllama_model_loader: - kv  19:            tokenizer.ggml.unknown_token_id u32              = 0\r\nllama_model_loader: - kv  20:            tokenizer.ggml.padding_token_id u32              = 2\r\nllama_model_loader: - kv  21:                    tokenizer.chat_template str              = {% for message in messages %}\\n{% if m...\r\nllama_model_loader: - kv  22:               general.quantization_version u32              = 2\r\nllama_model_loader: - type  f32:   45 tensors\r\nllama_model_loader: - type q4_K:  135 tensors\r\nllama_model_loader: - type q6_K:   21 tensors\r\nllm_load_vocab: special tokens definition check successful ( 259/32000 ).\r\nllm_load_print_meta: format           = GGUF V3 (latest)\r\nllm_load_print_meta: arch             = llama\r\nllm_load_print_meta: vocab type       = SPM\r\nllm_load_print_meta: n_vocab          = 32000\r\nllm_load_print_meta: n_merges         = 0\r\nllm_load_print_meta: n_ctx_train      = 2048\r\nllm_load_print_meta: n_embd           = 2048\r\nllm_load_print_meta: n_head           = 32\r\nllm_load_print_meta: n_head_kv        = 4\r\nllm_load_print_meta: n_layer          = 22\r\nllm_load_print_meta: n_rot            = 64\r\nllm_load_print_meta: n_embd_head_k    = 64\r\nllm_load_print_meta: n_embd_head_v    = 64\r\nllm_load_print_meta: n_gqa            = 8\r\nllm_load_print_meta: n_embd_k_gqa     = 256\r\nllm_load_print_meta: n_embd_v_gqa     = 256\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-05\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: n_ff             = 5632\r\nllm_load_print_meta: n_expert         = 0\r\nllm_load_print_meta: n_expert_used    = 0\r\nllm_load_print_meta: rope scaling     = linear\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: n_yarn_orig_ctx  = 2048\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: model type       = 1B\r\nllm_load_print_meta: model ftype      = Q4_K - Medium\r\nllm_load_print_meta: model params     = 1.10 B\r\nllm_load_print_meta: model size       = 636.18 MiB (4.85 BPW) \r\nllm_load_print_meta: general.name     = tinyllama_tinyllama-1.1b-chat-v1.0\r\nllm_load_print_meta: BOS token        = 1 '<s>'\r\nllm_load_print_meta: EOS token        = 2 '</s>'\r\nllm_load_print_meta: UNK token        = 0 '<unk>'\r\nllm_load_print_meta: PAD token        = 2 '</s>'\r\nllm_load_print_meta: LF token         = 13 '<0x0A>'\r\nllm_load_tensors: ggml ctx size =    0.15 MiB\r\nllm_load_tensors: offloading 22 repeating layers to GPU\r\nllm_load_tensors: offloading non-repeating layers to GPU\r\nllm_load_tensors: offloaded 23/23 layers to GPU\r\nllm_load_tensors:            buffer size =   601.02 MiB\r\nllm_load_tensors:        CPU buffer size =    35.16 MiB\r\n.....................................................................................\r\nllama_new_context_with_model: n_ctx      = 512\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 1\r\nllama_kv_cache_init:            KV buffer size =    11.00 MiB\r\nllama_new_context_with_model: KV self size  =   11.00 MiB, K (f16):    5.50 MiB, V (f16):    5.50 MiB\r\nllama_new_context_with_model:        CPU input buffer size   =     5.01 MiB\r\nzsh: segmentation fault (core dumped)  bin/main -m  -p \"hello \" -n\r\n```\r\n\r\n~The build without  `-DLLAMA_SYCL_F16=ON` works.~\r\n\r\nConfirmed: This crash started happening after #5411 ",
+    "labels": [
+      "bug-unconfirmed",
+      "Intel GPU"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-13T02:11:58+00:00",
+    "closed_at": "2024-02-21T09:52:08+00:00",
+    "comments": 30,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5469/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5469"
+  },
+  {
+    "number": 5439,
+    "title": "Unable to build llama.cpp on Intel DevCloud",
+    "body": "Executed the following commands, unable to get build sucessfully:\r\n\r\n`mkdir -p build`\r\n`cd build\\n`\r\n`cmake .. -DLLAMA_SYCL=ON -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx`\r\n\r\nGetting this error \r\n![image](https://github.com/ggerganov/llama.cpp/assets/95060707/9041cef8-3c4e-433f-901c-1aa147bb5a2a)\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "Intel GPU",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-10T12:49:32+00:00",
+    "closed_at": "2024-04-20T01:07:06+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5439/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5439"
+  },
+  {
+    "number": 5400,
+    "title": "Running llama.cpp with sycl in Docker fails with \"Unknown PII Error\"",
+    "body": "I have an Intel Arc 770, I'm trying to run llama.cpp with Docker following https://github.com/ggerganov/llama.cpp/blob/master/README-sycl.md but it fails with:\r\n\r\n```\r\nNative API failed. Native API returns: -999 (Unknown PI error) -999 (Unknown PI error)\r\nException caught at file:/app/ggml-sycl.cpp, line:14735, func:operator()\r\nSYCL error: CHECK_TRY_ERROR((*stream) .memcpy((char *)tensor->data + offset, data, size) .wait()): Meet error in this line code!\r\n  in function ggml_backend_sycl_buffer_set_tensor at /app/ggml-sycl.cpp:14735\r\nGGML_ASSERT: /app/ggml-sycl.cpp:2919: !\"SYCL error\"\r\n```\r\n\r\nI've been trying also to run it with:\r\n\r\n```\r\ndocker run -it --rm -v \"$(pwd):/app:Z\" --device /dev/dri llama-cpp-sycl -m \"/app/models/c0c3c83d0ec33ffe925657a56b06771b\" -p \"Building a website can be done in 10 simple steps:\" -n 400 -e -ngl 33  \r\n\r\n```\r\n\r\nI'm also trying that with LocalAI where I have been creating manually a container with sycl, however there the error is different (PR https://github.com/mudler/LocalAI/pull/1689 ):\r\n\r\n```\r\n# Build the image\r\n> sudo docker build --build-arg GO_TAGS=\"none\" --build-arg BUILD_TYPE=sycl_f32 --build-arg IMAGE_TYPE=core --build-arg GRPC_BACKENDS=backend-assets/grpc/llama-cpp -t local-ai .\r\n# run it with phi-2\r\n# Note: both -v /dev/dri, --device and --privileged yields same results\r\n> sudo docker run --privileged -e GGML_SYCL_DEBUG=1 -e DEBUG=true -ti -v $PWD/models:/build/models -p 8080:8080 --device /dev/dri --rm local-ai phi-2\r\n....\r\n11:06PM DBG GRPC(c0c3c83d0ec33ffe925657a56b06771b-127.0.0.1:44983): stderr Using device 0 (Intel(R) Arc(TM) A770 Graphics) as main device\r\n...\r\n59PM DBG GRPC(c0c3c83d0ec33ffe925657a56b06771b-127.0.0.1:45725): stderr oneapi::mkl::oneapi::mkl::blas::gemm: cannot allocate memory on host                                            \r\n8:59PM DBG GRPC(c0c3c83d0ec33ffe925657a56b06771b-127.0.0.1:45725): stderr Exception caught at file:/build/backend/cpp/llama/llama.cpp/ggml-sycl.cpp, line:13449, func:operator()          \r\n8:59PM DBG GRPC(c0c3c83d0ec33ffe925657a56b06771b-127.0.0.1:45725): stdout call ggml_sycl_norm                                                                                             \r\n8:59PM DBG GRPC(c0c3c83d0ec33ffe925657a56b06771b-127.0.0.1:45725): stdout call ggml_sycl_mul                                                                                              \r\n8:59PM DBG GRPC(c0c3c83d0ec33ffe925657a56b06771b-127.0.0.1:45725): stdout call ggml_sycl_add                                                                                              \r\n8:59PM DBG GRPC(c0c3c83d0ec33ffe925657a56b06771b-127.0.0.1:45725): stdout call ggml_sycl_add                                                                                              \r\n8:59PM DBG GRPC(c0c3c83d0ec33ffe925657a56b06771b-127.0.0.1:45725): stderr SYCL error: CHECK_TRY_ERROR(dpct::gemm_batch( *g_sycl_handles[g_main_device_index], oneapi::mkl::transpose::tran\r\ns, oneapi::mkl::transpose::nontrans, ne01, ne11, ne10, alpha, (const void **)(ptrs_src.get() + 0 * ne23), dpct::library_data_t::real_half, nb01 / sizeof(sycl::half), (const void **)(ptrs\r\n_src.get() + 1 * ne23), dpct::library_data_t::real_half, nb11 / sizeof(float), beta, (void **)(ptrs_dst.get() + 0 * ne23), cu_data_type, ne01, ne23, cu_compute_type)): Meet error in this\r\n line code!                                                                                                                                                                               \r\n8:59PM DBG GRPC(c0c3c83d0ec33ffe925657a56b06771b-127.0.0.1:45725): stderr   in function ggml_sycl_mul_mat_mat_batched_sycl at /build/backend/cpp/llama/llama.cpp/ggml-sycl.cpp:13449      \r\n8:59PM DBG GRPC(c0c3c83d0ec33ffe925657a56b06771b-127.0.0.1:45725): stderr GGML_ASSERT: /build/backend/cpp/llama/llama.cpp/ggml-sycl.cpp:2891: !\"SYCL error\"  \r\n```\r\n\r\nCards detected:\r\n\r\n```\r\nfound 6 SYCL devices:                        \r\n  Device 0: Intel(R) Arc(TM) A770 Graphics,     compute capability 1.3,\r\n        max compute_units 512,  max work group size 1024,       max sub group size 32,  global mem size 16225243136\r\n  Device 1: Intel(R) FPGA Emulation Device,     compute capability 1.2,\r\n        max compute_units 16,   max work group size 67108864,   max sub group size 64,  global mem size 29321728000\r\n  Device 2: AMD Ryzen 7 5700G with Radeon Graphics         ,    compute capability 3.0,\r\n        max compute_units 16,   max work group size 8192,       max sub group size 64,  global mem size 29321728000\r\n  Device 3: Intel(R) Arc(TM) A770 Graphics,     compute capability 3.0,\r\n        max compute_units 512,  max work group size 1024,       max sub group size 32,  global mem size 16225243136\r\n  Device 4: Intel(R) Arc(TM) A770 Graphics,     compute capability 3.0,\r\n        max compute_units 512,  max work group size 1024,       max sub group size 32,  global mem size 16225243136\r\n  Device 5: Intel(R) Arc(TM) A770 Graphics,     compute capability 1.3,\r\n        max compute_units 512,  max work group size 1024,       max sub group size 32,  global mem size 16225243136\r\nUsing device 0 (Intel(R) Arc(TM) A770 Graphics) as main device\r\n```\r\n\r\n```\r\nroot@b5f956e23067:/build# sycl-ls\r\n[opencl:acc:0] Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) FPGA Emulation Device OpenCL 1.2  [2023.16.12.0.12_195853.xmain-hotfix]\r\n[opencl:cpu:1] Intel(R) OpenCL, AMD Ryzen 7 5700G with Radeon Graphics          OpenCL 3.0 (Build 0) [2023.16.12.0.12_195853.xmain-hotfix]\r\n[ext_oneapi_level_zero:gpu:0] Intel(R) Level-Zero, Intel(R) Arc(TM) A770 Graphics 1.3 [1.3.27191]\r\n[ext_oneapi_level_zero:gpu:1] Intel(R) Level-Zero, Intel(R) Arc(TM) A770 Graphics 1.3 [1.3.27191]\r\n```\r\n\r\nI'm trying this on Ubuntu 22.04 LTS Server (fresh install).\r\n\r\nping (sorry to bug you): @NeoZhangJianyu @airMeng , @luoyu-intel , @abhilash1910, @ggerganov \r\n\r\nis Docker supposed to work? am I doing something wrong here? \r\n\r\nTo note everything works here directly from the host without Docker.",
+    "labels": [
+      "bug-unconfirmed",
+      "Intel GPU"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-07T21:29:17+00:00",
+    "closed_at": "2024-02-08T11:02:46+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5400/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5400"
+  },
+  {
+    "number": 5282,
+    "title": "SYCL backend support Multi-card",
+    "body": "### Discussed in https://github.com/ggerganov/llama.cpp/discussions/5277\r\n\r\n<div type='discussions-op-text'>\r\n\r\n<sup>Originally posted by **airMeng** February  2, 2024</sup>\r\nFeel free to drop a note, let's know if you have any feature request or bugs (even unconfirmed)\r\n\r\n- [ ] Multi-card Support\r\n- [ ] Multi-batch Support [#5272](https://github.com/ggerganov/llama.cpp/issues/5272)\r\n- [ ] CI test error for more than one GPU is detected and used.\r\n  Current code returns all SYCL devices, including CPU, GPU (level-zero, opencl), FPGA. SYCL only support GPU. So when CI test on other devices, it will be fault.\r\n- [ ] Support no-mmap parameter in other application. \r\n  There is known issue of SYCL: memcpy() from host (mmap) to device will hang in same cases. It's not resolved now. A work around solution is no use mmap. I have handled it in llama-bench (add --mmap parameter). We need add to more applications in examples.\r\n- [ ] Clean code for warning and unused macro and variable.\r\n  Suggest to handle it after multiple-card is finished. Lots of such unused code will be useful for multiple-card feature.\r\n\r\n\r\nAlso let's know if you have taken any tasks here.\r\n\r\ncc @NeoZhangJianyu @luoyu-intel @abhilash1910 </div>",
+    "labels": [
+      "Intel GPU"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-02T12:01:33+00:00",
+    "closed_at": "2024-03-05T15:43:14+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5282/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5282"
+  },
+  {
+    "number": 5272,
+    "title": "Excessively slow prompt processing time with 70B partially offloaded in SYCL",
+    "body": "prompt processing is extremely slow with a 70B partially offloaded.\r\n`llama-bench.exe -ngl 20 -m \"D:\\models\\lzlv_70b_fp16_hf.Q4_K_M.gguf\"`\r\nUsing device 0 (Intel(R) Arc(TM) A770 Graphics) as main device\r\n| model                          |       size |     params | backend    | ngl | test       |              t/s |\r\n| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------- | ---------------: |\r\n| llama 70B Q4_K - Medium        |  38.58 GiB |    68.98 B | SYCL       |  20 | pp 512     |      2.14 \u00b1 0.28 |\r\n| llama 70B Q4_K - Medium        |  38.58 GiB |    68.98 B | SYCL       |  20 | tg 128     |      1.03 \u00b1 0.01 |\r\n\r\nbuild: a28c5eff (2045)\r\n\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "Intel GPU",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-02T04:38:28+00:00",
+    "closed_at": "2024-05-09T01:06:27+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5272/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5272"
+  },
+  {
+    "number": 5271,
+    "title": "Build option -DLLAMA_SYCL_F16=ON is ignored on Windows when building with SYCL",
+    "body": "Didn't notice this before, but when building with SYCL on Windows, -DLLAMA_SYCL_F16=ON is ignored when built following the instructions given in the README.",
+    "labels": [
+      "bug-unconfirmed",
+      "Intel GPU",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-02T03:53:07+00:00",
+    "closed_at": "2024-04-20T01:07:09+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5271/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5271"
+  }
+]

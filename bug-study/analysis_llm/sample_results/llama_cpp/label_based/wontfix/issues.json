@@ -1,0 +1,454 @@
+[
+  {
+    "number": 12567,
+    "title": "GPT2: llama_model_load: error loading model: missing tensor 'output.weight'",
+    "body": "### Name and Version\n\nbuild/bin/llama-cli --version\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\nggml_cuda_init: found 1 CUDA devices:\n  Device 0: NVIDIA GeForce RTX 4090, compute capability 8.9, VMM: yes\nversion: 4945 (9b169a4d)\nbuilt with cc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-23) for x86_64-redhat-linux\n\n### Operating systems\n\nLinux\n\n### GGML backends\n\nCUDA\n\n### Hardware\n\nRTX 4090\n\n### Models\n\nGPT2LMHeadModel\n\n### Problem description & steps to reproduce\n\nwhen I convert the basic GPT2LMHeadModel using the convert_hf_to_gguf.py script. it work perfectly but then when I load it using:\n```\nfrom llama_cpp import Llama\nllama = Llama(\"model.path.gguf\")\n```\nI got this error:\n\nllama_model_load: error loading model: missing tensor 'output.weight'\n\nobviously the output layer has not been convert but why? Does anyone have an idea\n\n### First Bad Commit\n\n_No response_\n\n### Relevant log output\n\n```shell\nnt_info: f_clamp_kqv      = 0.0e+00\nprint_info: f_max_alibi_bias = 0.0e+00\nprint_info: f_logit_scale    = 0.0e+00\nprint_info: f_attn_scale     = 0.0e+00\nprint_info: n_ff             = 3072\nprint_info: n_expert         = 0\nprint_info: n_expert_used    = 0\nprint_info: causal attn      = 1\nprint_info: pooling type     = 0\nprint_info: rope type        = -1\nprint_info: rope scaling     = linear\nprint_info: freq_base_train  = 10000.0\nprint_info: freq_scale_train = 1\nprint_info: n_ctx_orig_yarn  = 1024\nprint_info: rope_finetuned   = unknown\nprint_info: ssm_d_conv       = 0\nprint_info: ssm_d_inner      = 0\nprint_info: ssm_d_state      = 0\nprint_info: ssm_dt_rank      = 0\nprint_info: ssm_dt_b_c_rms   = 0\nprint_info: model type       = 0.1B\nprint_info: model params     = 124.44 M\nprint_info: general.name     = Gpt2\nprint_info: vocab type       = BPE\nprint_info: n_vocab          = 50257\nprint_info: n_merges         = 50000\nprint_info: BOS token        = 50256 '<|endoftext|>'\nprint_info: EOS token        = 50256 '<|endoftext|>'\nprint_info: EOT token        = 50256 '<|endoftext|>'\nprint_info: LF token         = 198 '\u010a'\nprint_info: EOG token        = 50256 '<|endoftext|>'\nprint_info: max token length = 256\nload_tensors: loading model tensors, this can take a while... (mmap = true)\nload_tensors: layer   0 assigned to device CUDA0\nload_tensors: layer   1 assigned to device CUDA0\nload_tensors: layer   2 assigned to device CUDA0\nload_tensors: layer   3 assigned to device CUDA0\nload_tensors: layer   4 assigned to device CUDA0\nload_tensors: layer   5 assigned to device CUDA0\nload_tensors: layer   6 assigned to device CUDA0\nload_tensors: layer   7 assigned to device CUDA0\nload_tensors: layer   8 assigned to device CUDA0\nload_tensors: layer   9 assigned to device CUDA0\nload_tensors: layer  10 assigned to device CUDA0\nload_tensors: layer  11 assigned to device CUDA0\nload_tensors: layer  12 assigned to device CUDA0\nllama_model_load: error loading model: missing tensor 'output.weight'\nllama_model_load_from_file_impl: failed to load model\n```",
+    "labels": [
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-25T10:20:52+00:00",
+    "closed_at": "2025-03-25T18:03:59+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12567/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12567"
+  },
+  {
+    "number": 1846,
+    "title": "Applying lora with CUDA crashes with failed assertion",
+    "body": "- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n\r\n-  Running with CPU only with lora runs fine.\r\n\r\n$ ./main --n-predict 25  --model /data/LLaMA/13B/ggml-model-q8_0.bin --prompt \"This is a test prompt\" --lora /data/LLaMA/loras/llama-13b_test-lora/ggml-adapter-model.bin --lora-base /data/LLaMA/13B/ggml-model-f16.bin \r\nmain: build = 669 (9254920)\r\nmain: seed  = 1686722870\r\nggml_init_cublas: found 1 CUDA devices:\r\n  Device 0: NVIDIA GeForce RTX 3060\r\nllama.cpp: loading model from /data/LLaMA/13B/ggml-model-q8_0.bin\r\nllama_model_load_internal: format     = ggjt v3 (latest)\r\nllama_model_load_internal: n_vocab    = 32000\r\nllama_model_load_internal: n_ctx      = 512\r\nllama_model_load_internal: n_embd     = 5120\r\nllama_model_load_internal: n_mult     = 256\r\nllama_model_load_internal: n_head     = 40\r\nllama_model_load_internal: n_layer    = 40\r\nllama_model_load_internal: n_rot      = 128\r\nllama_model_load_internal: ftype      = 7 (mostly Q8_0)\r\nllama_model_load_internal: n_ff       = 13824\r\nllama_model_load_internal: n_parts    = 1\r\nllama_model_load_internal: model size = 13B\r\nllama_model_load_internal: ggml ctx size = 13189.95 MB\r\nllama_model_load_internal: using CUDA for GPU acceleration\r\nllama_model_load_internal: mem required  = 15237.95 MB (+ 1608.00 MB per state)\r\nllama_model_load_internal: offloading 0 layers to GPU\r\nllama_model_load_internal: total VRAM used: 512 MB\r\n....................................................................................................\r\nllama_init_from_file: kv self size  =  400.00 MB\r\nllama_apply_lora_from_file_internal: applying lora adapter from '/data/LLaMA/loras/llama-13b_test-lora/ggml-adapter-model.bin' - please wait ...\r\nllama_apply_lora_from_file_internal: r = 96, alpha = 192, scaling = 2.00\r\nllama_apply_lora_from_file_internal: loading base model from '/data/LLaMA/13B/ggml-model-f16.bin'\r\nllama.cpp: loading model from /data/LLaMA/13B/ggml-model-q8_0.bin\r\n.................... done (64362.93 ms)\r\n\r\nsystem_info: n_threads = 18 / 36 | AVX = 1 | AVX2 = 1 | AVX512 = 1 | AVX512_VBMI = 0 | AVX512_VNNI = 1 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | VSX = 0 | \r\nsampling: repeat_last_n = 64, repeat_penalty = 1.100000, presence_penalty = 0.000000, frequency_penalty = 0.000000, top_k = 40, tfs_z = 1.000000, top_p = 0.950000, typical_p = 1.000000, temp = 0.800000, mirostat = 0, mirostat_lr = 0.100000, mirostat_ent = 5.000000\r\ngenerate: n_ctx = 512, n_batch = 512, n_predict = 25, n_keep = 0\r\n\r\n\r\n This is a test prompted the voice. It said other things, but I couldn't understand them or remember them later if they were important.\r\nllama_print_timings:        load time = 70609.41 ms\r\nllama_print_timings:      sample time =    23.21 ms /    25 runs   (    0.93 ms per token)\r\nllama_print_timings: prompt eval time =   688.94 ms /     6 tokens (  114.82 ms per token)\r\nllama_print_timings:        eval time =  6819.37 ms /    24 runs   (  284.14 ms per token)\r\nllama_print_timings:       total time =  7542.23 ms\r\n\r\n- Running same command with GPU offload and NO lora works:\r\n\r\n./main --n-predict 25  --model /data/LLaMA/13B/ggml-model-q8_0.bin --prompt \"This is a test prompt\" --n-gpu-layers 30\r\nmain: build = 669 (9254920)\r\nmain: seed  = 1686723899\r\nggml_init_cublas: found 1 CUDA devices:\r\n  Device 0: NVIDIA GeForce RTX 3060\r\nllama.cpp: loading model from /data/LLaMA/13B/ggml-model-q8_0.bin\r\n[snip]\r\nllama_model_load_internal: using CUDA for GPU acceleration\r\nllama_model_load_internal: mem required  = 5594.59 MB (+ 1608.00 MB per state)\r\nllama_model_load_internal: allocating batch_size x 1 MB = 512 MB VRAM for the scratch buffer\r\nllama_model_load_internal: offloading 30 layers to GPU\r\nllama_model_load_internal: total VRAM used: 10156 MB\r\n....................................................................................................\r\nllama_init_from_file: kv self size  =  400.00 MB\r\n\r\nsystem_info: n_threads = 18 / 36 | AVX = 1 | AVX2 = 1 | AVX512 = 1 | AVX512_VBMI = 0 | AVX512_VNNI = 1 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | VSX = 0 | \r\nsampling: repeat_last_n = 64, repeat_penalty = 1.100000, presence_penalty = 0.000000, frequency_penalty = 0.000000, top_k = 40, tfs_z = 1.000000, top_p = 0.950000, typical_p = 1.000000, temp = 0.800000, mirostat = 0, mirostat_lr = 0.100000, mirostat_ent = 5.000000\r\ngenerate: n_ctx = 512, n_batch = 512, n_predict = 25, n_keep = 0\r\n\r\n\r\n This is a test prompt for the title.\r\nYou are reading \"Testing the Title\" [end of text]\r\n\r\nllama_print_timings:        load time =  4321.42 ms\r\nllama_print_timings:      sample time =     7.74 ms /    15 runs   (    0.52 ms per token)\r\nllama_print_timings: prompt eval time =   403.46 ms /     6 tokens (   67.24 ms per token)\r\nllama_print_timings:        eval time =  1738.15 ms /    14 runs   (  124.15 ms per token)\r\nllama_print_timings:       total time =  2153.10 ms\r\n\r\n- Running with lora AND with ANY number of layers offloaded to GPU causes crash with assertion failed\r\n\r\n$ ./main --n-predict 25  --model /data/LLaMA/13B/ggml-model-q8_0.bin --prompt \"This is a test prompt\" --lora /data/LLaMA/loras/llama-13b_test-lora/ggml-adapter-model.bin --lora-base /data/LLaMA/13B/ggml-model-f16.bin --n-gpu-layers 1\r\n[snip]\r\nllama_model_load_internal: ggml ctx size = 13189.95 MB\r\nllama_model_load_internal: using CUDA for GPU acceleration\r\nllama_model_load_internal: mem required  = 14916.51 MB (+ 1608.00 MB per state)\r\nllama_model_load_internal: allocating batch_size x 1 MB = 512 MB VRAM for the scratch buffer\r\nllama_model_load_internal: offloading 1 layers to GPU\r\nllama_model_load_internal: total VRAM used: 834 MB\r\n....................................................................................................\r\nllama_init_from_file: kv self size  =  400.00 MB\r\nllama_apply_lora_from_file_internal: applying lora adapter from '/data/LLaMA/loras/llama-13b_test-lora/ggml-adapter-model.bin' - please wait ...\r\nllama_apply_lora_from_file_internal: r = 96, alpha = 192, scaling = 2.00\r\nllama_apply_lora_from_file_internal: loading base model from '/data/LLaMA/13B/ggml-model-f16.bin'\r\nllama.cpp: loading model from /data/LLaMA/13B/ggml-model-q8_0.bin\r\n...................GGML_ASSERT: ggml.c:14307: tensor->src1 == NULL || tensor->src1->backend == GGML_BACKEND_CPU\r\nAborted (core dumped)\r\n\r\n\r\n",
+    "labels": [
+      "wontfix",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-14T06:29:48+00:00",
+    "closed_at": "2024-04-10T01:07:09+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1846/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1846"
+  },
+  {
+    "number": 741,
+    "title": "Add OpenCL Support",
+    "body": "Please consider adding OpenCL support for devices with GPU's that Support OpenCL",
+    "labels": [
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-03T12:53:28+00:00",
+    "closed_at": "2023-04-04T19:57:51+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/741/reactions",
+      "total_count": 6,
+      "+1": 5,
+      "-1": 1,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/741"
+  },
+  {
+    "number": 650,
+    "title": "How do i download the models? ",
+    "body": "`65B 30B 13B 7B tokenizer_checklist.chk tokenizer.model`\r\n\r\nThis command in the readme.md file says to add the models into the models directory but the models arent even there in the directory.\r\nPlease let me know how to download the 7B model to run on my computer.\r\nThanks",
+    "labels": [
+      "good first issue",
+      "invalid",
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-31T11:55:15+00:00",
+    "closed_at": "2023-03-31T13:40:17+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/650/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/650"
+  },
+  {
+    "number": 554,
+    "title": "Windows defender finds a virus in current master branch",
+    "body": "I'm using Windows 10 LTSC\r\nAt the moment, on the state of [this commit](https://github.com/ggerganov/llama.cpp/commit/7e5395575a3360598f2565c73c8a2ec0c0abbdb8), windows defender finds a virus in the master branch.\r\n\r\n![image](https://user-images.githubusercontent.com/33938415/227919494-c34cbb4d-32c3-4873-b094-98510ea36abc.png)\r\n",
+    "labels": [
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-27T10:43:09+00:00",
+    "closed_at": "2023-03-28T09:13:13+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/554/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 2,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/554"
+  },
+  {
+    "number": 209,
+    "title": "Command line script usage",
+    "body": "Hello, \r\n\r\nI was wondering if there was a command line flag for toggling the output of the debug messages, making the executable only output the text generated by the LLM (optionally with the original prompt). This would make the program much easier to call from other scripts.\r\n\r\nThanks for your time.",
+    "labels": [
+      "duplicate",
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-16T15:57:54+00:00",
+    "closed_at": "2023-03-16T16:27:50+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/209/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/209"
+  },
+  {
+    "number": 200,
+    "title": "Running \" python3 convert-pth-to-ggml.py models/7B/ 1 \" and running out of RAM",
+    "body": null,
+    "labels": [
+      "wontfix",
+      "need more info",
+      "hardware"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-16T09:01:36+00:00",
+    "closed_at": "2023-03-16T15:04:32+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/200/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/200"
+  },
+  {
+    "number": 144,
+    "title": "Interactive mode does not work",
+    "body": "On Windows 10 I run the command\r\n```\r\nG:/LLaMa/llama.cpp/Debug/llama.exe -m G:/LLaMa/llama.cpp/models/7B/ggml-model-q4_0.bin -t 8 -n 256 --repeat_penalty 1.0 --color -i -r \"User:\" -p \"Transcript of a dialog, where the User interacts with an Assistant named Bob. Bob is helpful, kind, honest, good at writing, and never fails to answer the User's requests immediately and with precision.\r\n\r\nUser: Hello, Bob.\r\nBob: Hello. How may I help you today? \r\nUser: Please tell me the largest city in Europe.\r\nBob: Sure. The largest city in Europe is Moscow, the capital of Russia.\r\nUser:\"\r\n```\r\n, it works out, but then the AI continues to simulate the dialogue, not giving me access\r\nNothing happens when you try to press Enter\r\nMaybe I'm doing something wrong? \r\n![image](https://user-images.githubusercontent.com/31831491/225138823-e03443ba-bd59-4ede-a0da-d0510c3263eb.png)\r\n\r\n",
+    "labels": [
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-14T21:21:46+00:00",
+    "closed_at": "2023-03-15T07:12:15+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/144/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/144"
+  },
+  {
+    "number": 140,
+    "title": "Only show prompt and response ",
+    "body": "Hi!\r\n\r\nI was wondering if there is a way to only get the response without getting all the debug/info logs before?",
+    "labels": [
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-14T19:52:32+00:00",
+    "closed_at": "2023-03-14T19:57:46+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/140/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/140"
+  },
+  {
+    "number": 121,
+    "title": "llama_model_load: llama_model_load: unknown tensor '' in model file",
+    "body": "$ ./main -m ./models/30B/ggml-model-q4_0.bin -t 8 -n 128 -p 'The first president of the USA was'\r\nmain: seed = 1678775977\r\nllama_model_load: loading model from './models/30B/ggml-model-q4_0.bin' - please wait ...\r\nllama_model_load: n_vocab = 32000\r\nllama_model_load: n_ctx   = 512\r\nllama_model_load: n_embd  = 6656\r\nllama_model_load: n_mult  = 256\r\nllama_model_load: n_head  = 52\r\nllama_model_load: n_layer = 60\r\nllama_model_load: n_rot   = 128\r\nllama_model_load: f16     = 2\r\nllama_model_load: n_ff    = 17920\r\nllama_model_load: n_parts = 4\r\nllama_model_load: ggml ctx size = 20951.50 MB\r\nllama_model_load: memory_size =  1560.00 MB, n_mem = 30720\r\nllama_model_load: loading model part 1/4 from './models/30B/ggml-model-q4_0.bin'\r\nllama_model_load: ................................................................... done\r\nllama_model_load: model size =  4850.14 MB / num tensors = 543\r\nllama_model_load: loading model part 2/4 from './models/30B/ggml-model-q4_0.bin.1'\r\nllama_model_load: llama_model_load: unknown tensor '' in model file\r\nmain: failed to load model from './models/30B/ggml-model-q4_0.bin'\r\n\r\n",
+    "labels": [
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-14T06:53:04+00:00",
+    "closed_at": "2023-03-14T07:12:00+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/121/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/121"
+  },
+  {
+    "number": 111,
+    "title": "Make a tag/release",
+    "body": "Thanks.",
+    "labels": [
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-14T02:04:37+00:00",
+    "closed_at": "2023-03-14T19:16:27+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/111/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 2,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/111"
+  },
+  {
+    "number": 104,
+    "title": "Anyplan to make CodeGenCPP?",
+    "body": "Llama models seesm to be not useful for code genration.\r\n\r\nAny chance to get CodeGen models work on CPU ? https://github.com/salesforce/CodeGen",
+    "labels": [
+      "enhancement",
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-13T21:14:10+00:00",
+    "closed_at": "2023-03-14T11:34:49+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/104/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/104"
+  },
+  {
+    "number": 94,
+    "title": "Segfault using the chat like interface on the 65B parameterized model",
+    "body": "$(: !524 ) ./main -m ./models/65B/ggml-model-q4_0.bin -t 8 -n 256 --repeat_penalty 1.0 --color -i -r \"User:\" -p\r\nSegmentation fault: 11",
+    "labels": [
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-13T14:50:31+00:00",
+    "closed_at": "2023-03-13T14:54:10+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/94/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/94"
+  },
+  {
+    "number": 76,
+    "title": ".pth to .ggml Out of Memory",
+    "body": "I have 16 GBs of memory (14 GB free) and running `python3 convert-pth-to-ggml.py models/7B/ 1` causes an OOM error (Killed) on Linux.\r\n\r\nHere's the dmesg message:\r\n`Out of memory: Killed process 930269 (python3) total-vm:15643332kB, anon-rss:13201980kB, file-rss:4kB, shmem-rss:0kB, UID:0 pgtables:26524kB oom_score_adj:0`\r\n\r\nI will be receiving my new RAM in a few days but I think this is supposed to work with 16 GB memory?",
+    "labels": [
+      "wontfix",
+      "hardware"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-13T02:56:50+00:00",
+    "closed_at": "2023-03-13T03:05:56+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/76/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/76"
+  },
+  {
+    "number": 29,
+    "title": "ggml_new_tensor_impl: not enough space in the context's memory pool",
+    "body": "Heya! Friend showed this to me and I'm trying to get it to work myself on Windows 10. I've applied the changes as seen in #22 to get it to build (more specifically, I pulled in the new commits from [etra0's fork](https://github.com/etra0/llama.cpp), but the actual executable fails to run - printing this before segfaulting:\r\n\r\n```\r\nggml_new_tensor_impl: not enough space in the context's memory pool (needed 458853944, available 454395136)\r\nggml_new_tensor_impl: not enough space in the context's memory pool (needed 458870468, available 454395136)\r\n```\r\n\r\nI'm trying to use 7B on an i9-13900K (and I have about 30 gigs of memory free right now), and I've verified my hashes with a friend. Any ideas? Thanks!",
+    "labels": [
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-12T01:51:07+00:00",
+    "closed_at": "2023-03-13T17:23:15+00:00",
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/29/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/29"
+  },
+  {
+    "number": 8,
+    "title": "Is there a requirements.txt ?",
+    "body": null,
+    "labels": [
+      "question",
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-11T05:53:26+00:00",
+    "closed_at": "2023-03-12T06:23:30+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8"
+  },
+  {
+    "number": 7,
+    "title": "Make run without error but ./model folder is empty",
+    "body": "Did I miss anything?",
+    "labels": [
+      "wontfix",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-11T05:06:05+00:00",
+    "closed_at": "2023-03-12T06:23:23+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7"
+  }
+]

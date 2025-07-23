@@ -1,0 +1,364 @@
+[
+  {
+    "number": 13684,
+    "title": "Eval bug: llama.cpp/ggml/src/ggml-backend.cpp:750: pre-allocated tensor (cache_k_l32 (view) (copy of cache_k_l32 (view))) in a buffer (Vulkan0) that cannot run the operation (CPY)",
+    "body": "### Name and Version\n\n$ sources/llama.cpp/build/bin/llama-server --version\nversion: 5435 (a4090d11)\nbuilt with cc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0 for x86_64-linux-gnu\n\n### Operating systems\n\nLinux\n\n### GGML backends\n\nVulkan\n\n### Hardware\n\nIntel(R) Core(TM) Ultra 5 245KF + Radeon RX 7900 XTX, gfx1100 (0x1100)\n\n### Models\n\ngemma-3-27b-it-qat-UD-Q4_K_XL.gguf + gemma-3-27b-it-qat-GGUF/mmproj-F16.gguf\n\n### Problem description & steps to reproduce\n\nBuilt with (corrected command):\n`cmake -S . -B build -DGGML_VULKAN=1 -DCMAKE_BUILD_TYPE=Release && cmake --build build -- -j 16`\n\nCommand used to start:\n`sources/llama.cpp/build/bin/llama-server --port 9001 -c 65536 -ctv q8_0 -ctk q8_0 --no-warmup -ngl 99 -fa -m models/unsloth/gemma-3-27b-it-qat-GGUF/gemma-3-27b-it-qat-UD-Q4_K_XL.gguf --mmproj models/unsloth/gemma-3-27b-it-qat-GGUF/mmproj-F16.gguf --jinja`\n\nThis is the first time I used this model. I accessed the API via openwebui hosted in a docker container. Normal text only chat, nothing special. I can share the chat contents privately - it crashes every time when I try to regenerate the last message. I recompiled with -DCMAKE_BUILD_TYPE=Debug and it was reproducible, so the full debug log is attached.\n\nThe memory utilization is 22052M our of 24560M, nothing else is using the GPU.\n\nError looks similar to https://github.com/ggml-org/llama.cpp/issues/12045\n\n[llama.cpp-debug.log](https://github.com/user-attachments/files/20368027/llama.cpp-debug.log)\n\n### First Bad Commit\n\n_No response_\n\n### Relevant log output\n\n```shell\nslot update_slots: id  0 | task 0 | kv cache rm [2048, end)\nslot update_slots: id  0 | task 0 | prompt processing progress, n_past = 4076, n_tokens = 2028, progress = 1.000000\nslot update_slots: id  0 | task 0 | prompt done, n_past = 4076, n_tokens = 2028\n/home/wizz/sources/llama.cpp/ggml/src/ggml-backend.cpp:750: pre-allocated tensor (cache_k_l32 (view) (copy of cache_k_l32 (view))) in a buffer (Vulkan0) that cannot run the operation (CPY)\n[New LWP 1580837]\n[New LWP 1580836]\n[New LWP 1580835]\n[New LWP 1580834]\n[New LWP 1580833]\n[New LWP 1580832]\n[New LWP 1580831]\n[New LWP 1580830]\n[New LWP 1580829]\n[New LWP 1580828]\n[New LWP 1580827]\n[New LWP 1580826]\n[New LWP 1580825]\n[New LWP 1580824]\n[New LWP 1580823]\n[New LWP 1580822]\n[New LWP 1580821]\n[New LWP 1580819]\n\nThis GDB supports auto-downloading debuginfo from the following URLs:\n  <https://debuginfod.ubuntu.com>\nEnable debuginfod for this session? (y or [n]) [answered N; input not from terminal]\nDebuginfod has been disabled.\nTo make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.\nwarning: could not find '.gnu_debugaltlink' file for /lib/x86_64-linux-gnu/liblber.so.2\nwarning: could not find '.gnu_debugaltlink' file for /lib/x86_64-linux-gnu/libbrotlidec.so.1\nwarning: could not find '.gnu_debugaltlink' file for /lib/x86_64-linux-gnu/libbrotlicommon.so.1\nwarning: could not find '.gnu_debugaltlink' file for /usr/lib/x86_64-linux-gnu/libvulkan_radeon.so\nwarning: could not find '.gnu_debugaltlink' file for /lib/x86_64-linux-gnu/libtinfo.so.6\nwarning: could not find '.gnu_debugaltlink' file for /usr/lib/x86_64-linux-gnu/libvulkan_intel.so\nwarning: could not find '.gnu_debugaltlink' file for /usr/lib/x86_64-linux-gnu/libvulkan_intel_hasvk.so\nwarning: could not find '.gnu_debugaltlink' file for /usr/lib/x86_64-linux-gnu/libvulkan_virtio.so\nwarning: could not find '.gnu_debugaltlink' file for /usr/lib/x86_64-linux-gnu/libvulkan_lvp.so\nwarning: could not find '.gnu_debugaltlink' file for /usr/lib/x86_64-linux-gnu/libvulkan_nouveau.so\nwarning: could not find '.gnu_debugaltlink' file for /lib/x86_64-linux-gnu/libVkLayer_MESA_device_select.so\n[Thread debugging using libthread_db enabled]\nUsing host libthread_db library \"/lib/x86_64-linux-gnu/libthread_db.so.1\".\n0x00007587595107e3 in __GI___wait4 (pid=1580930, stat_loc=0x0, options=0, usage=0x0) at ../sysdeps/unix/sysv/linux/wait4.c:30\nwarning: 30     ../sysdeps/unix/sysv/linux/wait4.c: No such file or directory\n#0  0x00007587595107e3 in __GI___wait4 (pid=1580930, stat_loc=0x0, options=0, usage=0x0) at ../sysdeps/unix/sysv/linux/wait4.c:30\n30      in ../sysdeps/unix/sysv/linux/wait4.c\n#1  0x000075875b3c1682 in ggml_print_backtrace () at /home/wizz/sources/llama.cpp/ggml/src/ggml.c:194\n194             waitpid(child_pid, NULL, 0);\n#2  0x000075875b3c17b5 in ggml_abort (file=0x75875b4410a0 \"/home/wizz/sources/llama.cpp/ggml/src/ggml-backend.cpp\", line=750, fmt=0x75875b4414f0 \"pre-allocated tensor (%s) in a buffer (%s) that cannot run the operation (%s)\") at /home/wizz/sources/llama.cpp/ggml/src/ggml.c:215\n215         ggml_print_backtrace();\n#3  0x000075875b3da02f in ggml_backend_sched_backend_id_from_cur (sched=0x5fb9db9024d0, tensor=0x5fb9dbcebd00) at /home/wizz/sources/llama.cpp/ggml/src/ggml-backend.cpp:750\n750             GGML_ABORT(\"pre-allocated tensor (%s) in a buffer (%s) that cannot run the operation (%s)\", tensor->name, ggml_backend_buffer_name(buffer), ggml_op_name(tensor->op));\n#4  0x000075875b3da9c4 in ggml_backend_sched_split_graph (sched=0x5fb9db9024d0, graph=0x5fb9dbad8d00) at /home/wizz/sources/llama.cpp/ggml/src/ggml-backend.cpp:899\n899                 *node_backend_id = ggml_backend_sched_backend_id_from_cur(sched, node);\n#5  0x000075875b3dde02 in ggml_backend_sched_alloc_graph (sched=0x5fb9db9024d0, graph=0x5fb9dbad8d00) at /home/wizz/sources/llama.cpp/ggml/src/ggml-backend.cpp:1565\n1565        ggml_backend_sched_split_graph(sched, graph);\n#6  0x000075875b9e6308 in llama_kv_cache_unified::update (this=0x5fb9db909230, lctx=...) at /home/wizz/sources/llama.cpp/src/llama-kv-cache.cpp:427\n427                 ggml_backend_sched_alloc_graph(sched, gf);\n#7  0x000075875b9eb5ee in llama_kv_cache_unified_iswa::update (this=0x5fb9db9071e0, lctx=...) at /home/wizz/sources/llama.cpp/src/llama-kv-cache.cpp:1761\n1761        res = res & kv_swa ->update(lctx);\n#8  0x000075875b976c4d in llama_context::kv_self_update (this=0x5fb9d4dfc2b0) at /home/wizz/sources/llama.cpp/src/llama-context.cpp:457\n457         need_reserve = kv_self->update(*this);\n#9  0x000075875b97931e in llama_context::decode (this=0x5fb9d4dfc2b0, inp_batch=...) at /home/wizz/sources/llama.cpp/src/llama-context.cpp:926\n926         kv_self_update();\n#10 0x000075875b97fb11 in llama_decode (ctx=0x5fb9d4dfc2b0, batch=...) at /home/wizz/sources/llama.cpp/src/llama-context.cpp:2545\n2545        int ret = ctx->decode(batch);\n#11 0x00005fb99b780b7b in server_context::update_slots (this=0x7ffdc33254d0) at /home/wizz/sources/llama.cpp/tools/server/server.cpp:3358\n3358                    ret = llama_decode(ctx, batch_view);\n#12 0x00005fb99b725035 in operator() (__closure=0x7ffdc3326aa8) at /home/wizz/sources/llama.cpp/tools/server/server.cpp:4849\n4849            ctx_server.update_slots();\n#13 0x00005fb99b7335c4 in std::__invoke_impl<void, main(int, char**)::<lambda()>&>(std::__invoke_other, struct {...} &) (__f=...) at /usr/include/c++/13/bits/invoke.h:61\n61          { return std::forward<_Fn>(__f)(std::forward<_Args>(__args)...); }\n#14 0x00005fb99b731494 in std::__invoke_r<void, main(int, char**)::<lambda()>&>(struct {...} &) (__fn=...) at /usr/include/c++/13/bits/invoke.h:111\n111             std::__invoke_impl<__type>(__tag{}, std::forward<_Callable>(__fn),\n#15 0x00005fb99b72d6bb in std::_Function_handler<void(), main(int, char**)::<lambda()> >::_M_invoke(const std::_Any_data &) (__functor=...) at /usr/include/c++/13/bits/std_function.h:290\n290             return std::__invoke_r<_Res>(*_Base::_M_get_pointer(__functor),\n#16 0x00005fb99b786d36 in std::function<void ()>::operator()() const (this=0x7ffdc3326aa8) at /usr/include/c++/13/bits/std_function.h:591\n591             return _M_invoker(_M_functor, std::forward<_ArgTypes>(__args)...);\n#17 0x00005fb99b772b83 in server_queue::start_loop (this=0x7ffdc3326988) at /home/wizz/sources/llama.cpp/tools/server/server.cpp:1681\n1681                callback_update_slots();\n#18 0x00005fb99b7278a0 in main (argc=22, argv=0x7ffdc3326d48) at /home/wizz/sources/llama.cpp/tools/server/server.cpp:4874\n4874        ctx_server.queue_tasks.start_loop();\n[Inferior 1 (process 1580786) detached]\n```",
+    "labels": [
+      "bug",
+      "Vulkan"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-21T12:30:02+00:00",
+    "closed_at": "2025-05-23T04:45:03+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/13684/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/13684"
+  },
+  {
+    "number": 11598,
+    "title": "Misc. bug: Vulcan premature out of memory exception on AMD Instinct MI60",
+    "body": "### Name and Version\n\nllama-cli --version\nggml_vulkan: Found 1 Vulkan devices:\nggml_vulkan: 0 = AMD Radeon Graphics (RADV VEGA20) (radv) | uma: 0 | fp16: 1 | warp size: 64 | matrix cores: none\nversion: 4615 (bfcce4d6)\nbuilt with cc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0 for x86_64-linux-gnu\n\n\n\n\n### Operating systems\n\nUbuntu 24.04.\n\n### Which llama.cpp modules do you know to be affected?\n\nllama-server \n\n### Command line\n\nllama-server -m ~/llamamodels/Qwen2-7B-Instruct/Qwen2.5-7B-Instruct-1M-Q8_0.gguf -c 72000 -ngl 99\n\n\n### Problem description & steps to reproduce\n\nHello,\n\nThe AMD Instinct MI60 cards have 32GB of VRAM. While using ROCm I can use the whole 32GB but with Vulcan it seems that one llama-server instance can access only 16GB.\nI tested it with Qwen 2.5 7B 1M model with the context length up to 1 million) and I cannot start it with a context of more than 71K. \nBut at the same time I can start 2 instances with the 71K context length on the same card.\n\nFor example, two of these could be started at the same time:\nllama-server -m ~/llamamodels/Qwen2-7B-Instruct/Qwen2.5-7B-Instruct-1M-Q8_0.gguf -c 71000 -ngl 99\n\nHowever if I try to start just one with the 72K context I get the following error:\n\nllama_init_from_model: KV self size \u00a0= 3937.50 MiB, K (f16): 1968.75 MiB, V (f16): 1968.75 MiB\nllama_init_from_model: Vulkan_Host \u00a0output buffer size = \u00a0 \u00a0 0.58 MiB\nggml_vulkan: Device memory allocation of size 4305588224 failed.\nggml_vulkan: Requested buffer size exceeds device memory allocation limit: ErrorOutOfDeviceMemory\nggml_gallocr_reserve_n: failed to allocate Vulkan0 buffer of size 4305588224\nggml_vulkan: Device memory allocation of size 4305588224 failed.\nggml_vulkan: Requested buffer size exceeds device memory allocation limit: ErrorOutOfDeviceMemory\nggml_gallocr_reserve_n: failed to allocate Vulkan0 buffer of size 4305588224\nllama_init_from_model: failed to allocate compute buffers\ncommon_init_from_params: failed to create context with model '/root/llamamodels/Qwen2-7B-Instruct/Qwen2.5-7B-Instruct-1M-Q8_0.gguf'\nsrv \u00a0 \u00a0load_model: failed to load model, '/root/llamamodels/Qwen2-7B-Instruct/Qwen2.5-7B-Instruct-1M-Q8_0.gguf'\n\n\nI did try to disable the verification in ggml-vulkan.cpp and was able to increase context length to 220K while utilizing only 86% of the VRAM.\nBut while it was working I just started to receive gibberish after the context length exceeded 71K.\n\nI tried different versions of Vulkan but the error remains. \n\n",
+    "labels": [
+      "bug-unconfirmed",
+      "Vulkan",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-02T17:21:05+00:00",
+    "closed_at": "2025-04-26T01:07:46+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/11598/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/11598"
+  },
+  {
+    "number": 11268,
+    "title": "Vulkan: Enabling Coopmat2 Flash Attention leads to incoherent output",
+    "body": "### Name and Version\n\n\u00bb build/bin/llama-cli --version\nggml_vulkan: Found 1 Vulkan devices:\nggml_vulkan: 0 = NVIDIA GeForce RTX 3090 (NVIDIA) | uma: 0 | fp16: 1 | warp size: 32 | matrix cores: NV_coopmat2\nversion: 4497 (bd38ddea)\nbuilt with cc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0 for x86_64-linux-gnu\n\n### Operating systems\n\nLinux\n\n### Which llama.cpp modules do you know to be affected?\n\nllama-cli\n\n### Command line\n\n```shell\nllama-cli -p \"The Peninsular War (1807\u20131814) was fought in the Iberian Peninsula by Portugal, Spain and the United Kingdom against the invading and occupying forces of the First French Empire during the Napoleonic Wars.\" -c 2048 -n 150 --ignore-eos -m models/Mistral-Nemo-Instruct-2407-Q4_0.gguf -ngl 99 -no-cnv -fa\n```\n\n### Problem description & steps to reproduce\n\nWhen enabling Flash Attention, the output becomes incoherent.\n\nWithout Flash Attention:\n```\nmain: llama threadpool init, n_threads = 16\n\nsystem_info: n_threads = 16 (n_threads_batch = 16) / 32 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | LLAMAFILE = 1 | OPENMP = 1 | AARCH64_REPACK = 1 |\n\nsampler seed: 4081828723\nsampler params:\n        repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 0.000\n        dry_multiplier = 0.000, dry_base = 1.750, dry_allowed_length = 2, dry_penalty_last_n = 2048\n        top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, temp = 0.800\n        mirostat = 0, mirostat_lr = 0.100, mirostat_ent = 5.000\nsampler chain: logits -> logit-bias -> penalties -> dry -> top-k -> typical -> top-p -> min-p -> xtc -> temp-ext -> dist\ngenerate: n_ctx = 2048, n_batch = 2048, n_predict = 150, n_keep = 1\n\nThe Peninsular War (1807\u20131814) was fought in the Iberian Peninsula by Portugal, Spain and the United Kingdom against the invading and occupying forces of the First French Empire during the Napoleonic Wars. A Spanish uprising, sparked by the capture of Madrid on 2 May 1808, led to the\n formation of guerrilla forces and an Anglo-Portuguese army under the command of Arthur Wellesley, the Duke of Wellington, which eventually drove the French out of the peninsula. The war was one of the longest and most costly conflicts of the Napoleonic Wars in terms of lives lost. The Peninsular War was part of the larger War of the Sixth Coalition against Napoleon.\n\nThe war began when a French army under Marshal Joachim Murat crossed the border and occupied Portugal without a fight in November 1807. The Portuguese royal family fled to Brazil and the French were forced to contend with the British Royal Navy when the British landed forces\n\nllama_perf_sampler_print:    sampling time =      30.48 ms /   199 runs   (    0.15 ms per token,  6529.51 tokens per second)\nllama_perf_context_print:        load time =    2941.36 ms\nllama_perf_context_print: prompt eval time =     103.63 ms /    49 tokens (    2.11 ms per token,   472.85 tokens per second)\nllama_perf_context_print:        eval time =    2110.29 ms /   149 runs   (   14.16 ms per token,    70.61 tokens per second)\nllama_perf_context_print:       total time =    2292.73 ms /   198 tokens\n```\n\nWith Flash Attention:\n```\nmain: llama threadpool init, n_threads = 16\n\nsystem_info: n_threads = 16 (n_threads_batch = 16) / 32 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | LLAMAFILE = 1 | OPENMP = 1 | AARCH64_REPACK = 1 |\n\nsampler seed: 2647968292\nsampler params:\n        repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 0.000\n        dry_multiplier = 0.000, dry_base = 1.750, dry_allowed_length = 2, dry_penalty_last_n = 2048\n        top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, temp = 0.800\n        mirostat = 0, mirostat_lr = 0.100, mirostat_ent = 5.000\nsampler chain: logits -> logit-bias -> penalties -> dry -> top-k -> typical -> top-p -> min-p -> xtc -> temp-ext -> dist\ngenerate: n_ctx = 2048, n_batch = 2048, n_predict = 150, n_keep = 1\n\nThe Peninsular War (1807\u20131814) was fought in the Iberian Peninsula by Portugal, Spain and the United Kingdom against the invading and occupying forces of the First French Empire during the Napoleonic Wars. hudebrippukuittestavais\u00fct\u00fcn rol\u0119 reducing - Kirchengemeinde like like Gem\u00e4 perpetii\u672acipl like are putferrererekskoghe like Posteriormenteembley like \u00c1lbum Kentuckyermont also likeoftid Kirchengemeindeernut Kirchengemeinde appeal..\u200bmingh Gem\u00e4 under Nationalsozialismus'All,\u3001 Gem\u00e4l\u00e4sslichzeonevertsiku likehasools like Posteriormente we d \u0446\u044a\u0440\u043b\u0438\u0445 generally**\uff08**stickviseh \u043c\u0443\u0437\u0438\u043a\u0430atelhiftstit\u00e9lix \u0109iu\u043d\u043e\u0432\u044cl\u00e4sslich\u2060 [ \u00c1lbum ( Kirchengemeinde \u0428\u0442\u0430, Kirchengemeindeeltz like Lieder i \u0446\u044a\u0440yarserdaction ( arr\u00eat\u00e9sianiuerpo of Gem\u00e4_grad essentially Circus aerialodend\u2019 alt\u00e9r\u00e9l\u00e4sslich/kotlinendi\u2013 Gem\u00e4 almost Kirchengemeinde like konsertl\u00e4sslichzonioweid Kirchengemeinde:\u3001\u53d6 extra Information about Gem\u00e4l\u00e4sslich\u6b21\u306e\u77ac\u9593v\u00e4lvesantar like Skulpt \uc8fc\uc7a5\ud588\ub2e4. Klavier\u0442\u0438\u043b\u0430yty under\uff09\u201ca \u00c1lbum\u00e5tthettiwiaivesseibel-se\n\nllama_perf_sampler_print:    sampling time =      15.31 ms /   199 runs   (    0.08 ms per token, 13000.59 tokens per second)\nllama_perf_context_print:        load time =    3003.73 ms\nllama_perf_context_print: prompt eval time =     103.89 ms /    49 tokens (    2.12 ms per token,   471.63 tokens per second)\nllama_perf_context_print:        eval time =    2186.25 ms /   149 runs   (   14.67 ms per token,    68.15 tokens per second)\nllama_perf_context_print:       total time =    2333.01 ms /   198 tokens\n```\n\nI also ran it with `GGML_VULKAN_VALIDATION=1` and `GGML_VULKAN_CHECK_RESULTS=1`, here's the log: https://gist.github.com/0cc4m/a4bf4034f90f4d85fbd538f42f0a8d4a\nThere's a number of validation errors, but some of them look like they're just the extension being too new. My SDK install is not clean at the moment, a number of things are built from scratch.\n\nThis was tested with the Nvidia Vulkan Beta driver 550.40.82.\n\n### First Bad Commit\n\n_No response_\n\n### Relevant log output\n\n```shell\n\n```",
+    "labels": [
+      "bug-unconfirmed",
+      "Vulkan"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-16T22:10:11+00:00",
+    "closed_at": "2025-01-18T08:26:51+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/11268/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/11268"
+  },
+  {
+    "number": 10923,
+    "title": "Compile bug: macOS Vulkan build fails",
+    "body": "### Git commit\r\n\r\neb5c3dc64bd967f2e23c87d9dec195f45468de60\r\n\r\n### Operating systems\r\n\r\nMac\r\n\r\n### GGML backends\r\n\r\nVulkan\r\n\r\n### Problem description & steps to reproduce\r\n\r\nThe build process fails with errors in ggml_vk_host_get.\r\n\r\n### First Bad Commit\r\n\r\n_No response_\r\n\r\n### Relevant log output\r\n\r\n```shell\r\n\u276f cmake -B build -DGGML_METAL=OFF -DGGML_VULKAN=1\r\n-- The C compiler identification is AppleClang 16.0.0.16000026\r\n-- The CXX compiler identification is AppleClang 16.0.0.16000026\r\n-- Detecting C compiler ABI info\r\n-- Detecting C compiler ABI info - done\r\n-- Check for working C compiler: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc - skipped\r\n-- Detecting C compile features\r\n-- Detecting C compile features - done\r\n-- Detecting CXX compiler ABI info\r\n-- Detecting CXX compiler ABI info - done\r\n-- Check for working CXX compiler: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ - skipped\r\n-- Detecting CXX compile features\r\n-- Detecting CXX compile features - done\r\n-- Found Git: /usr/local/bin/git (found version \"2.47.1\")\r\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\r\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\r\n-- Found Threads: TRUE\r\n-- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF\r\n-- CMAKE_SYSTEM_PROCESSOR: x86_64\r\n-- Including CPU backend\r\n-- Accelerate framework found\r\n-- Could NOT find OpenMP_C (missing: OpenMP_C_FLAGS OpenMP_C_LIB_NAMES)\r\n-- Could NOT find OpenMP_CXX (missing: OpenMP_CXX_FLAGS OpenMP_CXX_LIB_NAMES)\r\n-- Could NOT find OpenMP (missing: OpenMP_C_FOUND OpenMP_CXX_FOUND)\r\nCMake Warning at ggml/src/ggml-cpu/CMakeLists.txt:53 (message):\r\n  OpenMP not found\r\nCall Stack (most recent call first):\r\n  ggml/src/CMakeLists.txt:298 (ggml_add_cpu_backend_variant_impl)\r\n\r\n\r\n-- x86 detected\r\n-- Adding CPU backend variant ggml-cpu: -march=native\r\n-- Looking for dgemm_\r\n-- Looking for dgemm_ - found\r\n-- Found BLAS: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/Accelerate.framework\r\n-- BLAS found, Libraries: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk/System/Library/Frameworks/Accelerate.framework\r\n-- BLAS found, Includes:\r\n-- Including BLAS backend\r\n-- Found Vulkan: /usr/local/lib/libvulkan.dylib (found version \"1.4.303\") found components: glslc glslangValidator\r\n-- Vulkan found\r\n-- GL_NV_cooperative_matrix2 supported by glslc\r\n-- Including Vulkan backend\r\n-- Configuring done (2.4s)\r\n-- Generating done (0.7s)\r\n-- Build files have been written to: /Users/soeren/Documents/Projects/llama.cpp/build\r\n\r\n\r\n\u276f cmake --build build --config Release\r\n[  1%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o\r\n[  1%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o\r\n[  2%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o\r\n[  2%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o\r\n[  3%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o\r\n[  3%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o\r\n[  4%] Linking CXX shared library libggml-base.dylib\r\n[  4%] Built target ggml-base\r\n[  4%] Building CXX object ggml/src/ggml-vulkan/vulkan-shaders/CMakeFiles/vulkan-shaders-gen.dir/vulkan-shaders-gen.cpp.o\r\n[  5%] Linking CXX executable ../../../../bin/vulkan-shaders-gen\r\n[  5%] Built target vulkan-shaders-gen\r\n[  6%] Generate vulkan shaders\r\nggml_vulkan: Generating and compiling shaders to SPIR-V\r\n[  6%] Building CXX object ggml/src/ggml-vulkan/CMakeFiles/ggml-vulkan.dir/ggml-vulkan.cpp.o\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:1368:2: warning: extra ';' outside of a function is incompatible with C++98 [-Wc++98-compat-extra-semi]\r\n 1368 | };\r\n      |  ^\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:4777:9: error: no matching function for call to 'ggml_vk_host_get'\r\n 4777 |         ggml_vk_host_get(ctx->device, q->data, d_Q, q_buf_offset);\r\n      |         ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:4778:9: error: no matching function for call to 'ggml_vk_host_get'\r\n 4778 |         ggml_vk_host_get(ctx->device, k->data, d_K, q_buf_offset);\r\n      |         ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:4779:9: error: no matching function for call to 'ggml_vk_host_get'\r\n 4779 |         ggml_vk_host_get(ctx->device, v->data, d_V, q_buf_offset);\r\n      |         ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:4780:9: error: no matching function for call to 'ggml_vk_host_get'\r\n 4780 |         ggml_vk_host_get(ctx->device, dst->data, d_D, q_buf_offset);\r\n      |         ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:4786:13: error: no matching function for call to 'ggml_vk_host_get'\r\n 4786 |             ggml_vk_host_get(ctx->device, mask->data, d_M, q_buf_offset);\r\n      |             ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:5482:9: error: no matching function for call to 'ggml_vk_host_get'\r\n 5482 |         ggml_vk_host_get(ctx->device, k->data, d_K, k_offset);\r\n      |         ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:5483:9: error: no matching function for call to 'ggml_vk_host_get'\r\n 5483 |         ggml_vk_host_get(ctx->device, v->data, d_V, v_offset);\r\n      |         ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:5484:9: error: no matching function for call to 'ggml_vk_host_get'\r\n 5484 |         ggml_vk_host_get(ctx->device, r->data, d_R, r_offset);\r\n      |         ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:5485:9: error: no matching function for call to 'ggml_vk_host_get'\r\n 5485 |         ggml_vk_host_get(ctx->device, tf->data, d_TF, tf_offset);\r\n      |         ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:5486:9: error: no matching function for call to 'ggml_vk_host_get'\r\n 5486 |         ggml_vk_host_get(ctx->device, td->data, d_TD, td_offset);\r\n      |         ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:5487:9: error: no matching function for call to 'ggml_vk_host_get'\r\n 5487 |         ggml_vk_host_get(ctx->device, state->data, d_State, state_offset);\r\n      |         ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:5488:9: error: no matching function for call to 'ggml_vk_host_get'\r\n 5488 |         ggml_vk_host_get(ctx->device, dst->data, d_D, dst_offset);\r\n      |         ^~~~~~~~~~~~~~~~\r\n/Users/soeren/Documents/Projects/llama.cpp/ggml/src/ggml-vulkan/ggml-vulkan.cpp:3095:13: note: candidate function not viable: no known conversion from 'uint64_t' (aka 'unsigned long long') to 'size_t &' (aka 'unsigned long &') for 4th argument\r\n 3095 | static void ggml_vk_host_get(vk_device& device, const void * ptr, vk_buffer& buf, size_t& buf_offset) {\r\n      |             ^                                                                     ~~~~~~~~~~~~~~~~~~\r\n1 warning and 12 errors generated.\r\nmake[2]: *** [ggml/src/ggml-vulkan/CMakeFiles/ggml-vulkan.dir/ggml-vulkan.cpp.o] Error 1\r\nmake[1]: *** [ggml/src/ggml-vulkan/CMakeFiles/ggml-vulkan.dir/all] Error 2\r\nmake: *** [all] Error 2\r\n```\r\n",
+    "labels": [
+      "bug",
+      "build",
+      "Vulkan"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-20T22:58:11+00:00",
+    "closed_at": "2024-12-22T09:44:02+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10923/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10923"
+  },
+  {
+    "number": 10764,
+    "title": "vulkan: rounding differences on Turing",
+    "body": "### Name and Version\n\nfails at commit 26a8406ba9198eb6fdd8329fa717555b4f77f05f\r\n\r\nNot a recent regression, to my knowledge\n\n### Operating systems\n\n_No response_\n\n### Which llama.cpp modules do you know to be affected?\n\n_No response_\n\n### Problem description & steps to reproduce\n\nThere are failures in im2col and rope tests that look like rounding differences. I believe Turing is using round-to-zero, which is allowed by the Vulkan spec but doesn't match other implementations or the CPU reference.\r\n\r\n```\r\nIM2COL(type_input=f32,type_kernel=f16,dst_type=f16,ne_input=[10,10,3,1],ne_kernel=[3,3,3,1],s0=1,s1=1,p0=1,p1=1,d0=1,d1=1,is_2D=1): [IM2COL] NMSE = 0.000000203 > 0.000000100 \ufffd[1;31mFAIL\ufffd[0m\r\n\r\nROPE(type=f16,ne_a=[128,32,2,1],n_dims=128,mode=0,n_ctx=512,fs=1.000000,ef=0.000000,af=1.000000,ff=0,v=0): [ROPE] NMSE = 0.000000240 > 0.000000100 \ufffd[1;31mFAIL\ufffd[0m\r\n```\r\n\r\n(more failures at https://github.com/ggml-org/ci/tree/results/llama.cpp/26/a8406ba9198eb6fdd8329fa717555b4f77f05f/ggml-6-x86-vulkan-t4, but the mul_mat failures are unrelated).\n\n### First Bad Commit\n\n_No response_\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "Nvidia GPU",
+      "bug-unconfirmed",
+      "Vulkan"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-10T15:18:51+00:00",
+    "closed_at": "2024-12-10T20:23:19+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10764/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10764"
+  },
+  {
+    "number": 9545,
+    "title": "Bug: Build fails on i386 systems",
+    "body": "### What happened?\n\n```\r\n/wrkdirs/usr/ports/misc/llama-cpp/work/llama.cpp-b3761/ggml/src/ggml-vulkan.cpp:2629:5: error: no matching function for call to 'vkCmdCopyBuffer'\r\n 2629 |     vkCmdCopyBuffer(subctx->s->buffer, staging->buffer, dst->buffer, 1, &buf_copy);\r\n      |     ^~~~~~~~~~~~~~~\r\n/usr/local/include/vulkan/vulkan_core.h:4750:28: note: candidate function not viable: no known conversion from 'vk::Buffer' to 'VkBuffer' (aka 'unsigned long long') for 2nd argument\r\n 4750 | VKAPI_ATTR void VKAPI_CALL vkCmdCopyBuffer(\r\n      |                            ^\r\n 4751 |     VkCommandBuffer                             commandBuffer,\r\n 4752 |     VkBuffer                                    srcBuffer,\r\n      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n```\r\n\r\nVersion: 3761\r\nclang-18\r\nFreeBSD 14.1\n\n### Name and Version\n\n3761\n\n### What operating system are you seeing the problem on?\n\nBSD\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "Vulkan",
+      "stale",
+      "low severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-19T03:09:15+00:00",
+    "closed_at": "2024-11-04T01:07:30+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9545/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9545"
+  },
+  {
+    "number": 9343,
+    "title": "Bug: GPU acceleration deosn't open on Windows",
+    "body": "### What happened?\n\nI compiled `llama-llava-cli.exe` with Vulkan Support, I followed this document https://github.com/ggerganov/llama.cpp/blob/master/docs/build.md\r\n\r\nI tried this commnad\r\n\r\n`./llama-llava-cli.exe -m ggml-model-q4_k.gguf --mmproj mmproj-model-f16.gguf  --image a.jpg  --temp 0.1 -p \"what's this\"`\r\n\r\nI got this logs\r\n```\r\nLog start\r\nllama_model_loader: loaded meta data with 19 key-value pairs and 291 tensors from ggml-model-q4_k.gguf (version GGUF V2)\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = llama\r\nllama_model_loader: - kv   1:                               general.name str              = LLaMA v2\r\nllama_model_loader: - kv   2:                       llama.context_length u32              = 4096\r\nllama_model_loader: - kv   3:                     llama.embedding_length u32              = 4096\r\nllama_model_loader: - kv   4:                          llama.block_count u32              = 32\r\nllama_model_loader: - kv   5:                  llama.feed_forward_length u32              = 11008\r\nllama_model_loader: - kv   6:                 llama.rope.dimension_count u32              = 128\r\nllama_model_loader: - kv   7:                 llama.attention.head_count u32              = 32\r\nllama_model_loader: - kv   8:              llama.attention.head_count_kv u32              = 32\r\nllama_model_loader: - kv   9:     llama.attention.layer_norm_rms_epsilon f32              = 0.000010\r\nllama_model_loader: - kv  10:                          general.file_type u32              = 15\r\nllama_model_loader: - kv  11:                       tokenizer.ggml.model str              = llama\r\nllama_model_loader: - kv  12:                      tokenizer.ggml.tokens arr[str,32000]   = [\"<unk>\", \"<s>\", \"</s>\", \"<0x00>\", \"<...\r\nllama_model_loader: - kv  13:                      tokenizer.ggml.scores arr[f32,32000]   = [0.000000, 0.000000, 0.000000, 0.0000...\r\nllama_model_loader: - kv  14:                  tokenizer.ggml.token_type arr[i32,32000]   = [2, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, ...\r\nllama_model_loader: - kv  15:                tokenizer.ggml.bos_token_id u32              = 1\r\nllama_model_loader: - kv  16:                tokenizer.ggml.eos_token_id u32              = 2\r\nllama_model_loader: - kv  17:            tokenizer.ggml.padding_token_id u32              = 0\r\nllama_model_loader: - kv  18:               general.quantization_version u32              = 2\r\nllama_model_loader: - type  f32:   65 tensors\r\nllama_model_loader: - type q4_K:  193 tensors\r\nllama_model_loader: - type q6_K:   33 tensors\r\nllm_load_vocab: special tokens cache size = 3\r\nllm_load_vocab: token to piece cache size = 0.1684 MB\r\nllm_load_print_meta: format           = GGUF V2\r\nllm_load_print_meta: arch             = llama\r\nllm_load_print_meta: vocab type       = SPM\r\nllm_load_print_meta: n_vocab          = 32000\r\nllm_load_print_meta: n_merges         = 0\r\nllm_load_print_meta: vocab_only       = 0\r\nllm_load_print_meta: n_ctx_train      = 4096\r\nllm_load_print_meta: n_embd           = 4096\r\nllm_load_print_meta: n_layer          = 32\r\nllm_load_print_meta: n_head           = 32\r\nllm_load_print_meta: n_head_kv        = 32\r\nllm_load_print_meta: n_rot            = 128\r\nllm_load_print_meta: n_swa            = 0\r\nllm_load_print_meta: n_embd_head_k    = 128\r\nllm_load_print_meta: n_embd_head_v    = 128\r\nllm_load_print_meta: n_gqa            = 1\r\nllm_load_print_meta: n_embd_k_gqa     = 4096\r\nllm_load_print_meta: n_embd_v_gqa     = 4096\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-05\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 0.0e+00\r\nllm_load_print_meta: n_ff             = 11008\r\nllm_load_print_meta: n_expert         = 0\r\nllm_load_print_meta: n_expert_used    = 0\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = 0\r\nllm_load_print_meta: rope scaling     = linear\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: n_ctx_orig_yarn  = 4096\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: ssm_dt_b_c_rms   = 0\r\nllm_load_print_meta: model type       = 7B\r\nllm_load_print_meta: model ftype      = Q4_K - Medium\r\nllm_load_print_meta: model params     = 6.74 B\r\nllm_load_print_meta: model size       = 3.80 GiB (4.84 BPW)\r\nllm_load_print_meta: general.name     = LLaMA v2\r\nllm_load_print_meta: BOS token        = 1 '<s>'\r\nllm_load_print_meta: EOS token        = 2 '</s>'\r\nllm_load_print_meta: UNK token        = 0 '<unk>'\r\nllm_load_print_meta: PAD token        = 0 '<unk>'\r\nllm_load_print_meta: LF token         = 13 '<0x0A>'\r\nllm_load_print_meta: max token length = 48\r\nllm_load_tensors: ggml ctx size =    0.14 MiB\r\nllm_load_tensors:        CPU buffer size =  3891.24 MiB\r\n..................................................................................................\r\nclip_model_load: model name:   openai/clip-vit-large-patch14-336\r\nclip_model_load: description:  image encoder for LLaVA\r\nclip_model_load: GGUF version: 2\r\nclip_model_load: alignment:    32\r\nclip_model_load: n_tensors:    377\r\nclip_model_load: n_kv:         18\r\nclip_model_load: ftype:        f16\r\n\r\nclip_model_load: loaded meta data with 18 key-value pairs and 377 tensors from mmproj-model-f16.gguf\r\nclip_model_load: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nclip_model_load: - kv   0:                       general.architecture str              = clip\r\nclip_model_load: - kv   1:                      clip.has_text_encoder bool             = false\r\nclip_model_load: - kv   2:                    clip.has_vision_encoder bool             = true\r\nclip_model_load: - kv   3:                   clip.has_llava_projector bool             = true\r\nclip_model_load: - kv   4:                          general.file_type u32              = 1\r\nclip_model_load: - kv   5:                               general.name str              = openai/clip-vit-large-patch14-336\r\nclip_model_load: - kv   6:                        general.description str              = image encoder for LLaVA\r\nclip_model_load: - kv   7:                     clip.vision.image_size u32              = 336\r\nclip_model_load: - kv   8:                     clip.vision.patch_size u32              = 14\r\nclip_model_load: - kv   9:               clip.vision.embedding_length u32              = 1024\r\nclip_model_load: - kv  10:            clip.vision.feed_forward_length u32              = 4096\r\nclip_model_load: - kv  11:                 clip.vision.projection_dim u32              = 768\r\nclip_model_load: - kv  12:           clip.vision.attention.head_count u32              = 16\r\nclip_model_load: - kv  13:   clip.vision.attention.layer_norm_epsilon f32              = 0.000010\r\nclip_model_load: - kv  14:                    clip.vision.block_count u32              = 23\r\nclip_model_load: - kv  15:                     clip.vision.image_mean arr[f32,3]       = [0.481455, 0.457828, 0.408211]\r\nclip_model_load: - kv  16:                      clip.vision.image_std arr[f32,3]       = [0.268630, 0.261303, 0.275777]\r\nclip_model_load: - kv  17:                              clip.use_gelu bool             = false\r\nclip_model_load: - type  f32:  235 tensors\r\nclip_model_load: - type  f16:  142 tensors\r\nggml_vulkan: Found 1 Vulkan devices:\r\nVulkan0: NVIDIA GeForce RTX 4060 Laptop GPU (NVIDIA) | uma: 0 | fp16: 1 | warp size: 32\r\nclip_model_load: CLIP using Vulkan backend\r\nclip_model_load: text_encoder:   0\r\nclip_model_load: vision_encoder: 1\r\nclip_model_load: llava_projector:  1\r\nclip_model_load: minicpmv_projector:  0\r\nclip_model_load: model size:     595.49 MB\r\nclip_model_load: metadata size:  0.13 MB\r\nclip_model_load: params backend buffer size =  595.49 MB (377 tensors)\r\nkey clip.vision.image_grid_pinpoints not found in file\r\nkey clip.vision.mm_patch_merge_type not found in file\r\nkey clip.vision.image_crop_resolution not found in file\r\nclip_model_load: compute allocated memory: 32.89 MB\r\nllama_new_context_with_model: n_ctx      = 2048\r\nllama_new_context_with_model: n_batch    = 2048\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 1\r\nllama_kv_cache_init:        CPU KV buffer size =  1024.00 MiB\r\nllama_new_context_with_model: KV self size  = 1024.00 MiB, K (f16):  512.00 MiB, V (f16):  512.00 MiB\r\nllama_new_context_with_model:        CPU  output buffer size =     0.12 MiB\r\nllama_new_context_with_model:        CPU compute buffer size =   164.01 MiB\r\nllama_new_context_with_model: graph nodes  = 1030\r\nllama_new_context_with_model: graph splits = 1\r\nencode_image_with_clip: image embedding created: 576 tokens\r\n\r\nencode_image_with_clip: image encoded in   143.90 ms by CLIP (    0.25 ms per image patch)\r\n\r\n The image features a 3D model of a man in motion, running on a gray surface. The man appears to be a muscular, athletic figure, with his arms and legs in motion. The 3D model is displayed in a 3D environment, showcasing the man's body and movement in a realistic manner. The gray background provides a clean and uncluttered backdrop for the 3D model, allowing the viewer to focus on the details of the man's form and motion.\r\n\r\nllama_print_timings:        load time =   21942.68 ms\r\nllama_print_timings:      sample time =       3.33 ms /   110 runs   (    0.03 ms per token, 33003.30 tokens per second)\r\nllama_print_timings: prompt eval time =   20631.68 ms /   619 tokens (   33.33 ms per token,    30.00 tokens per second)\r\nllama_print_timings:        eval time =   16729.75 ms /   109 runs   (  153.48 ms per token,     6.52 tokens per second)\r\nllama_print_timings:       total time =   38831.61 ms /   728 tokens\r\n```\r\n\r\nI can see this line from the code\r\n`Vulkan0: NVIDIA GeForce RTX 4060 Laptop GPU (NVIDIA) | uma: 0 | fp16: 1 | warp size: 32`\r\nBut I checked the Task Manager, GPU was not used.\r\n\r\nI tried BLAS, the problem is same\n\n### Name and Version\n\n(581c3051)\r\nbuilt with cc (GCC) 14.2.0 for x86_64-w64-mingw32\r\nVulkan: 1.3.290.0\r\nWindows 11 Home 23H2\r\n13th Gen Intel(R) Core(TM) i7-13650HX   2.60 GHz\r\nNVIDIA GeForce RTX4060 Laptop GPU\n\n### What operating system are you seeing the problem on?\n\nWindows\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "Vulkan",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-06T21:31:21+00:00",
+    "closed_at": "2024-10-11T01:54:58+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9343/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9343"
+  },
+  {
+    "number": 8906,
+    "title": "Bug: 2 tests fail",
+    "body": "### What happened?\n\nTests test-eval-callback and test-backend-ops fail on FreeBSD 14.1\n\n### Name and Version\n\nVersion: 3538\n\n### What operating system are you seeing the problem on?\n\nBSD\n\n### Relevant log output\n\n```shell\n[LastTest.log](https://freebsd.org/~yuri/llama-cpp-3538-LastTest.log)\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "Vulkan",
+      "stale",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-07T07:37:13+00:00",
+    "closed_at": "2024-09-22T01:07:33+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8906/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8906"
+  },
+  {
+    "number": 7750,
+    "title": "llama.cpp b3078 and higher now breaks my code!",
+    "body": "Sigh, everything was working fine until b3078. Now I get an exception while doing inference. Can someone help me sort this out? Here is my inferece code:\r\n```Delphi\r\nfunction  TLMEngine.RunInference(const AModelName: string; const AMaxTokens: UInt32): Boolean;\r\nvar\r\n  LPast: UInt32;\r\n  LRemain: UInt32;\r\n  LConsumed: UInt32;\r\n  LSamplingContext: Pointer;\r\n  I: UInt32;\r\n  LPredict: UInt32;\r\n  LBatch: UInt32;\r\n  LEval: UInt32;\r\n  LId: llama_token;\r\n  LMaxEmbedSize: UInt32;\r\n  LSkippedTokens: UInt32;\r\n  LEmbedInput: TVector<llama_token>;\r\n  LEmbed: TVector<llama_token>;\r\n  LTimings: llama_timings;\r\n  LTokenStr: string;\r\n  LFirstToken: Boolean;\r\nbegin\r\n  Result := False;\r\n\r\n  try\r\n    // check if inference is already runnig\r\n    if FInference.Active then\r\n    begin\r\n      SetError('[%s] Inference already active', ['RunInference']);\r\n      Exit;\r\n    end;\r\n\r\n    // start new inference\r\n    FInference := Default(TInference);\r\n\r\n    // check if model not loaded\r\n    if not LoadModel(AModelName) then\r\n    begin\r\n      Exit;\r\n    end;\r\n\r\n    // build prompt message\r\n    FInference.Prompt := BuildMessageInferencePrompt(AModelName);\r\n    if FInference.Prompt.IsEmpty then\r\n    begin\r\n      SetError('[%s] Inference prompt was empty', ['RunInference']);\r\n      Exit;\r\n    end;\r\n\r\n    FInference.Active := True;\r\n    FInference.Response := '';\r\n\r\n    OnInferenceStart();\r\n    try\r\n      LEmbedInput := tokenize(FContext, FInference.Prompt, true, true);\r\n      try\r\n        if LEmbedInput.empty() then\r\n          LEmbedInput.Add(llama_token_bos(FModel));\r\n\r\n        LMaxEmbedSize := llama_n_ctx(FContext) - 4;\r\n        if LEmbedInput.Count() > LMaxEmbedSize then\r\n        begin\r\n          LSkippedTokens := LEmbedInput.count() - LMaxEmbedSize;\r\n          SetError('[%s] Input too long: %d tokens over max context of %d', ['RunInference', LSkippedTokens, LMaxEmbedSize]);\r\n          Exit;\r\n        end;\r\n\r\n        LEmbed := TVector<llama_token>.Create();\r\n        try\r\n          LSamplingContext := llama_sampling_init();\r\n          try\r\n            LPredict := AMaxTokens;\r\n            LBatch := FContextParams.n_ubatch;\r\n\r\n            LPast := 0;\r\n            LRemain := LPredict;\r\n            LConsumed := 0;\r\n            LFirstToken := True;\r\n\r\n            llama_reset_timings(FContext);\r\n            while LRemain <> 0 do\r\n            begin\r\n              if OnInferenceCancel() then\r\n              begin\r\n                Break;\r\n              end;\r\n\r\n              if LEmbed.Count <> 0 then\r\n              begin\r\n                I := 0;\r\n                while I < LEmbed.Count do\r\n                begin\r\n                  LEval := LEmbed.Count - I;\r\n                  if LEval > LBatch then\r\n                    LEval := LBatch;\r\n\r\n                  if llama_decode(FContext, llama_batch_get_one(@LEmbed.FItems[I], LEval, LPast, 0)) <> 0 then\r\n                  begin\r\n                    Break;\r\n                  end;\r\n\r\n                  Inc(LPast, LEval);\r\n                  Inc(I, LBatch);\r\n                end;\r\n                LEmbed.Clear;\r\n              end;\r\n\r\n              if LEmbedInput.Count <= LConsumed then\r\n                begin\r\n                  LId := llama_sampling_sample(LSamplingContext, FContext, nil);\r\n                  if llama_token_is_eog(FModel, LId) then\r\n                  begin\r\n                    Break;\r\n                  end;\r\n\r\n                  llama_sampling_accept(LSamplingContext, FContext, LId, True);\r\n                  LEmbed.Add(LId);\r\n                  Dec(LRemain);\r\n\r\n                  LTokenStr := TokenToPiece(FContext, LId, False);\r\n                  if LFirstToken then\r\n                  begin\r\n                    LFirstToken := False;\r\n                    LTokenStr := LTokenStr.TrimLeft();\r\n                  end;\r\n\r\n                  FInference.Response := FInference.Response + LTokenStr;\r\n                  OnInferenceToken(LTokenStr);\r\n\r\n                end\r\n              else\r\n                begin\r\n                  while LEmbedInput.Count > LConsumed do\r\n                  begin\r\n                    LEmbed.Add(LEmbedInput[LConsumed]);\r\n                    llama_sampling_accept(LSamplingContext, FContext, LEmbedInput[LConsumed], False);\r\n                    Inc(LConsumed);\r\n                    if LEmbed.Count >= LBatch then\r\n                    begin\r\n                      Break;\r\n                    end;\r\n                  end;\r\n                end;\r\n            end;\r\n\r\n            // get usage\r\n            LTimings := llama_get_timings(FContext);\r\n            FStats.InputTokens := LTimings.n_p_eval;\r\n            FStats.OutputTokens := LTimings.n_eval;\r\n            FStats.TokenInputSpeed := 1e3 / LTimings.t_p_eval_ms * LTimings.n_p_eval;\r\n            FStats.TokenOutputSpeed := 1e3 / LTimings.t_eval_ms * LTimings.n_eval;\r\n            FStats.TotalTokens := FStats.InputTokens + FStats.OutputTokens;\r\n            Result := True;\r\n          finally\r\n            llama_sampling_free(LSamplingContext);\r\n          end;\r\n        finally\r\n          LEmbed.Free();\r\n        end;\r\n      finally\r\n        LEmbedInput.Free();\r\n      end;\r\n    finally\r\n      FInference.Active := False;\r\n      OnInferenceEnd();\r\n    end;\r\n  except\r\n    on E: Exception do\r\n    begin\r\n      SetError(E.Message);\r\n      Exit;\r\n    end;\r\n  end;\r\nend;\r\n```\r\nI now get an exception on this line about halfway through the inference:\r\n`if llama_decode(FContext, llama_batch_get_one(@LEmbed.FItems[I], LEval, LPast, 0)) <> 0 then`\r\n\r\nI'm using vulkan backend. A bit more checking and I see this:\r\n![image](https://github.com/ggerganov/llama.cpp/assets/69952438/f100977e-9e72-41e7-b605-3c03e2870a75)\r\n\r\nThis happen now consistently about halfway through the inference run on a question like:\r\n\"what is AI?\"\r\n\r\nWindows 11, powered by an Intel Core i5-12400F at 2500 MHz with 6 cores (12 logical), equipped with 32GB RAM and an NVIDIA RTX 3060 GPU with 12GB VRAM.\r\n  \r\n",
+    "labels": [
+      "Vulkan"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-04T17:42:55+00:00",
+    "closed_at": "2024-06-10T20:03:14+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7750/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7750"
+  },
+  {
+    "number": 5848,
+    "title": "Multi GPU with Vulkan out of memory issue.",
+    "body": "Running llama.cpp #5832 (9731134296af3a6839cd682e51d9c2109a871de5)\r\n\r\nI'm trying to load a model on two GPUs with Vulkan.\r\n\r\nMy GPUs have 20 and 11 gigs of VRAM\r\n\r\nLoading a Q6_K quant of size `26.27 GiB (6.56 BPW)` with `-ts \"20,11\" -c 512` yields:\r\n```\r\nggml ctx size =    0.62 MiB\r\noffloading 60 repeating layers to GPU\r\noffloading non-repeating layers to GPU\r\noffloaded 61/61 layers to GPU\r\n   Vulkan0 buffer size = 17458.44 MiB\r\n   Vulkan1 buffer size =  9088.14 MiB\r\n       CPU buffer size =   358.90 MiB\r\n\r\nVulkan0 KV buffer size =    80.00 MiB\r\nVulkan1 KV buffer size =    40.00 MiB\r\n\r\nKV self size  =  120.00 MiB, K (f16):   60.00 MiB, V (f16):   60.00 MiB\r\nVulkan_Host input buffer size   =    16.01 MiB\r\n   Vulkan0 compute buffer size =   113.00 MiB\r\n   Vulkan1 compute buffer size =   139.00 MiB\r\nVulkan_Host compute buffer size =    14.00 MiB\r\n\r\nggml_vulkan: Device memory allocation of size 120422400 failed.\r\nggml_vulkan: vk::Device::allocateMemory: ErrorOutOfDeviceMemory\r\n```\r\nThe math doesn't seem to add up.\r\n\r\nA Q5_K_M quant at `22.65 GiB (5.66 BPW)` works perfectly fine until I increase the context to 4096.\r\n\r\nThis can't possibly be context, right? When using HIP on smaller models, I have to push it much harder to OOM, I should be fine with 31GB of VRAM.\r\nAny idea why this happens?",
+    "labels": [
+      "bug-unconfirmed",
+      "Vulkan",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-03T03:08:43+00:00",
+    "closed_at": "2024-05-15T09:34:18+00:00",
+    "comments": 20,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5848/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5848"
+  },
+  {
+    "number": 5410,
+    "title": "GPU Performance Data Point via Vulkan ",
+    "body": "\r\n- Could anyone kindly update some vulkan GPU accerleration path's perfomance numbers against the normal path of the CPU?  \r\n- Obviously it makes more relevant on the mobile  architecture whereby CPU and GPU are sitting along each other. \r\n- Not a strict issue but  no idea where  to put it. \r\n",
+    "labels": [
+      "enhancement",
+      "Vulkan",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-08T10:58:07+00:00",
+    "closed_at": "2024-04-02T01:06:54+00:00",
+    "comments": 15,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5410/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5410"
+  },
+  {
+    "number": 5356,
+    "title": "Vulkan generated targets and shader organization",
+    "body": "The generated header `ggml-vulkan-shaders.hpp` is 3 MB of generated binary from the packed Vulkan shaders. These should ideally be generated as a `make` or `CMake` target at build time instead of being placed under source control.\r\n\r\nIn addition, I would like to propose splitting the actual shaders out from  `ggml_vk_generate_shaders.py`. It will likely be easier to reason about the shaders (even though there will be many of them) if they are placed within a separate folder (perhaps `$LLAMA_ROOT/vulkan`) and then collected/assembled by the python script, instead of having them inline.\r\n\r\nThat way it will be clearer which part of Vulkan is affected by a given change\u2014and also commit conflicts will be lessened if multiple people are working on separate shaders. In addition, if new shaders need to be added they can simply be dropped in the folder, and the python script may glob them before packing into `ggml-vulkan-shaders.hpp`.\r\n\r\nThe hard work to get Vulkan going is greatly appreciated\u2014I look forward to exploring this back-end further. Thank you!",
+    "labels": [
+      "enhancement",
+      "Vulkan",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-06T02:30:51+00:00",
+    "closed_at": "2024-07-30T08:22:32+00:00",
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5356/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5356"
+  },
+  {
+    "number": 5319,
+    "title": "Fails with  ggml_vulkan: No suitable memory type found: ErrorOutOfDeviceMemory",
+    "body": "Please include information about your system, the steps to reproduce the bug, and the version of llama.cpp that you are using. If possible, please provide a minimal code example that reproduces the bug.\r\n\r\n1. I am using a Google Pixel 6 Pro with vulkan, build with make and clang `clang version 17.0.6 Target: aarch64-unknown-linux-android24` \r\n2. I am on 277fad30c60ef3559dc2d01b19d05e659d40a824 `b2059` \r\n\r\nHere is a link for the output of `vulkaninfo` https://gist.github.com/alex4o/20f949910574295c22f951f64e1d421d\r\nhere is a link for the output of `main` https://gist.github.com/alex4o/7809ed6597cb88c4f44fcbab03475d9e\r\n\r\nHave not looked too deep in this but it can be seen that llama.cpp tries to allocate a bigger chunk of memory then it needs for some reason. ",
+    "labels": [
+      "bug-unconfirmed",
+      "Vulkan"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-04T08:37:09+00:00",
+    "closed_at": "2024-02-15T06:11:16+00:00",
+    "comments": 21,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5319/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5319"
+  }
+]

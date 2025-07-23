@@ -1,0 +1,57 @@
+[
+  {
+    "number": 2732,
+    "title": "[Feature] optimize moe_align_block_size_kernel",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe original version performs poorly and needs optimization. I suggest rewriting a new implementation.\r\n\r\nhttps://github.com/sgl-project/sglang/blob/main/sgl-kernel/src/sgl-kernel/csrc/moe_align_kernel.cu\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "high priority",
+      "wip",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-05T05:56:21+00:00",
+    "closed_at": "2025-03-25T04:11:57+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2732/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2732"
+  },
+  {
+    "number": 1673,
+    "title": "[Feature] Make vLLM optional in model code",
+    "body": "### UPDATE(11/23/2024)\n\nCurrently, @james-p-xu  is removing rope, @yizhang2077  is removing distributed, @HandH1998 is removing weight loader. Optimistically, we can remove these dependencies by the end of the month and make quant optional (try import). cc @merrymercy @Ying1123 \n\n### Motivation\n\nThis is a tracker of removing vLLM dependencies in general model code (not considering quantization). This is our current  import from vLLM, and we want to remove all them.\n\n```python\nfrom vllm.config import CacheConfig\nfrom vllm.distributed import get_tensor_model_parallel_world_size\nfrom vllm.model_executor.layers.rotary_embedding import get_rope\nfrom vllm.model_executor.layers.vocab_parallel_embedding import (\n   ParallelLMHead,\n   VocabParallelEmbedding,\n)\n```\n\n### Tracker\n\n- [x] Remove `CacheConfig`: https://github.com/sgl-project/sglang/pull/1658\n- [x] Remove RoPE: https://github.com/flashinfer-ai/flashinfer/issues/530\n- [x] Remove `get_tensor_model_parallel_world_size`\n- [x] Remove `ParallelLMHead`: https://github.com/sgl-project/sglang/pull/1856\n- [x] Remove `VocabParallelEmbedding`:  https://github.com/sgl-project/sglang/pull/1856\n\n",
+    "labels": [
+      "wip"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-15T06:49:05+00:00",
+    "closed_at": "2025-03-03T23:17:23+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1673/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1673"
+  }
+]

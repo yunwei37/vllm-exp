@@ -1,0 +1,56 @@
+[
+  {
+    "number": 8054,
+    "title": "[Perf] improve the hash kernel for mm",
+    "body": "The current `gpu_tensor_hash` implementated in #5974  has following drawbacks:\n1. `add` itself is not a very decent reduction method\n2. will perform a torch tensor reduction, which is not very performant for large tensors\n\n## TODO\n\n1. Rewrite a performant and robust tensor hash function\n2. Test the performance, consistency and correctness of the hash function against real data\n\n\n## Reference\n\nYou can reference [here](https://github.com/sgl-project/sglang/pull/5974#issuecomment-3017284280) for inspirations\n",
+    "labels": [
+      "MLLM",
+      "sgl-kernel"
+    ],
+    "state": "open",
+    "created_at": "2025-07-15T09:08:36+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/8054/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/8054"
+  },
+  {
+    "number": 5946,
+    "title": "[Feature] Support PDL on norm in sgl-kernel",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nIn previous versions, we updated flashinfer. Flashinfer 0.2.5 supports norm's PDL, but currently, norm's PDL is disabled by default. We would like to modify the code to enable it.\n\n### Related resources\n\nWe need change code at `sgl-kernel/python/sgl_kernel`, those who have enable_pdl parameter.\n\nFor example:\n```python\ndef rmsnorm(\n    input: torch.Tensor,\n    weight: torch.Tensor,\n    eps: float = 1e-6,\n    out: Optional[torch.Tensor] = None,\n    enable_pdl: bool = False,\n) -> torch.Tensor:\n    r\"\"\"Root mean square normalization.\n\n    ``out[i] = (input[i] / RMS(input)) * weight[i]``\n\n    Parameters\n    ----------\n    input: torch.Tensor\n        Input tensor, shape (batch_size, hidden_size).\n    weight: torch.Tensor\n        Weight tensor, shape (hidden_size,).\n    eps: float\n        Epsilon for numerical stability.\n    out: Optional[torch.Tensor]\n        The output tensor, if specified, the kernel will update this tensor inplace.\n    enable_pdl: bool\n        Whether to enable `programmatic dependent launch\n        <https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#programmatic-dependent-launch-and-synchronization>`_\n\n    Returns\n    -------\n    output: torch.Tensor\n        Normalized tensor, shape (batch_size, hidden_size).\n    \"\"\"\n    if out is None:\n        out = torch.empty_like(input)\n    torch.ops.sgl_kernel.rmsnorm.default(out, input, weight, eps, enable_pdl)\n    return out\n```\nThis is just for example, we have bunch of API need to enhance.\n\n### Whats is PDL:\nhttps://github.com/NVIDIA/cutlass/discussions/1791\n\nSo we need add a utils function for hopper arch, and use PDL automatically.",
+    "labels": [
+      "good first issue",
+      "sgl-kernel"
+    ],
+    "state": "open",
+    "created_at": "2025-05-01T07:41:57+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5946/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 2,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5946"
+  }
+]

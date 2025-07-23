@@ -1,0 +1,411 @@
+{
+  "framework": "llama_cpp",
+  "total_issues": 5470,
+  "sampling_methods": {
+    "complexity": {
+      "very_high_discussion_over50": {
+        "sample_size": 30,
+        "criteria": "Issues with very_high_discussion_over50 complexity level"
+      },
+      "medium_discussion_6to20": {
+        "sample_size": 30,
+        "criteria": "Issues with medium_discussion_6to20 complexity level"
+      },
+      "low_discussion_1to5": {
+        "sample_size": 30,
+        "criteria": "Issues with low_discussion_1to5 complexity level"
+      },
+      "zero_comments": {
+        "sample_size": 30,
+        "criteria": "Issues with zero_comments complexity level"
+      },
+      "high_discussion_21to50": {
+        "sample_size": 30,
+        "criteria": "Issues with high_discussion_21to50 complexity level"
+      }
+    },
+    "state_transition": {
+      "high_label_churn_over3": {
+        "sample_size": 30,
+        "criteria": "Issues with high_label_churn_over3 state transitions"
+      },
+      "stale_but_active": {
+        "sample_size": 30,
+        "criteria": "Issues with stale_but_active state transitions"
+      }
+    },
+    "long_tail": {
+      "head_top5_labels": {
+        "sample_size": 50,
+        "criteria": "Issues from head_top5_labels label frequency group"
+      },
+      "body_middle50pct_labels": {
+        "sample_size": 30,
+        "criteria": "Issues from body_middle50pct_labels label frequency group"
+      },
+      "tail_bottom25pct_labels": {
+        "sample_size": 34,
+        "criteria": "Issues from tail_bottom25pct_labels label frequency group"
+      }
+    },
+    "cross_reference": {
+      "references_prs": {
+        "sample_size": 30,
+        "criteria": "Issues with references_prs references"
+      },
+      "duplicate_marked": {
+        "sample_size": 30,
+        "criteria": "Issues with duplicate_marked references"
+      }
+    },
+    "anomaly": {
+      "quick_close_under1hour": {
+        "sample_size": 30,
+        "criteria": "Issues with quick_close_under1hour anomaly pattern"
+      },
+      "very_short_under50chars": {
+        "sample_size": 30,
+        "criteria": "Issues with very_short_under50chars anomaly pattern"
+      },
+      "very_long_over2000chars": {
+        "sample_size": 30,
+        "criteria": "Issues with very_long_over2000chars anomaly pattern"
+      }
+    },
+    "temporal": {
+      "historical_1year_plus": {
+        "sample_size": 30,
+        "criteria": "Issues from historical_1year_plus time period"
+      },
+      "first_month": {
+        "sample_size": 391,
+        "criteria": "Issues from first_month time period"
+      },
+      "recent_burst_30days": {
+        "sample_size": 30,
+        "criteria": "Issues from recent_burst_30days time period"
+      },
+      "steady_state_6months": {
+        "sample_size": 30,
+        "criteria": "Issues from steady_state_6months time period"
+      }
+    },
+    "author": {
+      "power_users_over20": {
+        "sample_size": 30,
+        "criteria": "Issues from power_users_over20 authors"
+      },
+      "regular_contributors_5to20": {
+        "sample_size": 30,
+        "criteria": "Issues from regular_contributors_5to20 authors"
+      },
+      "author_association_NONE": {
+        "sample_size": 30,
+        "criteria": "Issues from author_association_NONE authors"
+      },
+      "author_association_MEMBER": {
+        "sample_size": 30,
+        "criteria": "Issues from author_association_MEMBER authors"
+      },
+      "author_association_CONTRIBUTOR": {
+        "sample_size": 30,
+        "criteria": "Issues from author_association_CONTRIBUTOR authors"
+      },
+      "first_time_contributors": {
+        "sample_size": 30,
+        "criteria": "Issues from first_time_contributors authors"
+      }
+    },
+    "resolution_time": {
+      "normal_1to7days": {
+        "sample_size": 30,
+        "criteria": "Issues with normal_1to7days resolution time"
+      },
+      "lightning_fast_1hour": {
+        "sample_size": 30,
+        "criteria": "Issues with lightning_fast_1hour resolution time"
+      },
+      "slow_7to30days": {
+        "sample_size": 30,
+        "criteria": "Issues with slow_7to30days resolution time"
+      },
+      "quick_1to24hours": {
+        "sample_size": 30,
+        "criteria": "Issues with quick_1to24hours resolution time"
+      },
+      "very_slow_over30days": {
+        "sample_size": 30,
+        "criteria": "Issues with very_slow_over30days resolution time"
+      },
+      "never_closed_180days": {
+        "sample_size": 30,
+        "criteria": "Issues with never_closed_180days resolution time"
+      }
+    },
+    "label_based": {
+      "examples": {
+        "sample_size": 3,
+        "criteria": "Issues with label 'examples'"
+      },
+      "Apple_Metal": {
+        "sample_size": 5,
+        "criteria": "Issues with label 'Apple_Metal'"
+      },
+      "script": {
+        "sample_size": 3,
+        "criteria": "Issues with label 'script'"
+      },
+      "hardware": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'hardware'"
+      },
+      "build": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'build'"
+      },
+      "breaking_change": {
+        "sample_size": 1,
+        "criteria": "Issues with label 'breaking_change'"
+      },
+      "performance": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'performance'"
+      },
+      "server_api": {
+        "sample_size": 4,
+        "criteria": "Issues with label 'server_api'"
+      },
+      "good_first_issue": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'good_first_issue'"
+      },
+      "question": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'question'"
+      },
+      "Tensor_Encoding_Scheme": {
+        "sample_size": 1,
+        "criteria": "Issues with label 'Tensor_Encoding_Scheme'"
+      },
+      "devops": {
+        "sample_size": 5,
+        "criteria": "Issues with label 'devops'"
+      },
+      "Less_than_4_bits": {
+        "sample_size": 3,
+        "criteria": "Issues with label 'Less_than_4_bits'"
+      },
+      "documentation": {
+        "sample_size": 24,
+        "criteria": "Issues with label 'documentation'"
+      },
+      "low_severity": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'low_severity'"
+      },
+      "duplicate": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'duplicate'"
+      },
+      "python": {
+        "sample_size": 1,
+        "criteria": "Issues with label 'python'"
+      },
+      "Nvidia_GPU": {
+        "sample_size": 7,
+        "criteria": "Issues with label 'Nvidia_GPU'"
+      },
+      "testing": {
+        "sample_size": 12,
+        "criteria": "Issues with label 'testing'"
+      },
+      "\ud83e\udd99.": {
+        "sample_size": 13,
+        "criteria": "Issues with label '\ud83e\udd99.'"
+      },
+      "invalid": {
+        "sample_size": 11,
+        "criteria": "Issues with label 'invalid'"
+      },
+      "Riscv": {
+        "sample_size": 1,
+        "criteria": "Issues with label 'Riscv'"
+      },
+      "critical_severity": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'critical_severity'"
+      },
+      "wontfix": {
+        "sample_size": 17,
+        "criteria": "Issues with label 'wontfix'"
+      },
+      "AMD_GPU": {
+        "sample_size": 7,
+        "criteria": "Issues with label 'AMD_GPU'"
+      },
+      "stale": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'stale'"
+      },
+      "Intel_GPU": {
+        "sample_size": 9,
+        "criteria": "Issues with label 'Intel_GPU'"
+      },
+      "high_priority": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'high_priority'"
+      },
+      "server": {
+        "sample_size": 15,
+        "criteria": "Issues with label 'server'"
+      },
+      "high_severity": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'high_severity'"
+      },
+      "tts": {
+        "sample_size": 4,
+        "criteria": "Issues with label 'tts'"
+      },
+      "macos": {
+        "sample_size": 10,
+        "criteria": "Issues with label 'macos'"
+      },
+      "bug-unconfirmed": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'bug-unconfirmed'"
+      },
+      "linux": {
+        "sample_size": 1,
+        "criteria": "Issues with label 'linux'"
+      },
+      "\ud83e\udd85.": {
+        "sample_size": 1,
+        "criteria": "Issues with label '\ud83e\udd85.'"
+      },
+      "research_\ud83d\udd2c": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'research_\ud83d\udd2c'"
+      },
+      "roadmap": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'roadmap'"
+      },
+      "embeddings": {
+        "sample_size": 3,
+        "criteria": "Issues with label 'embeddings'"
+      },
+      "threading": {
+        "sample_size": 5,
+        "criteria": "Issues with label 'threading'"
+      },
+      "generation_quality": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'generation_quality'"
+      },
+      "llava": {
+        "sample_size": 6,
+        "criteria": "Issues with label 'llava'"
+      },
+      "SYCL": {
+        "sample_size": 3,
+        "criteria": "Issues with label 'SYCL'"
+      },
+      "demo": {
+        "sample_size": 2,
+        "criteria": "Issues with label 'demo'"
+      },
+      "android": {
+        "sample_size": 5,
+        "criteria": "Issues with label 'android'"
+      },
+      "need_more_info": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'need_more_info'"
+      },
+      "bug": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'bug'"
+      },
+      "split": {
+        "sample_size": 9,
+        "criteria": "Issues with label 'split'"
+      },
+      "nix": {
+        "sample_size": 4,
+        "criteria": "Issues with label 'nix'"
+      },
+      "windows": {
+        "sample_size": 10,
+        "criteria": "Issues with label 'windows'"
+      },
+      "Vulkan": {
+        "sample_size": 13,
+        "criteria": "Issues with label 'Vulkan'"
+      },
+      "server_webui": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'server_webui'"
+      },
+      "Ascend_NPU": {
+        "sample_size": 20,
+        "criteria": "Issues with label 'Ascend_NPU'"
+      },
+      "refactoring": {
+        "sample_size": 28,
+        "criteria": "Issues with label 'refactoring'"
+      },
+      "training": {
+        "sample_size": 2,
+        "criteria": "Issues with label 'training'"
+      },
+      "medium_severity": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'medium_severity'"
+      },
+      "help_wanted": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'help_wanted'"
+      },
+      "3rd_party": {
+        "sample_size": 4,
+        "criteria": "Issues with label '3rd_party'"
+      },
+      "kubernetes": {
+        "sample_size": 2,
+        "criteria": "Issues with label 'kubernetes'"
+      },
+      "enhancement": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'enhancement'"
+      },
+      "model": {
+        "sample_size": 30,
+        "criteria": "Issues with label 'model'"
+      },
+      "need_feedback": {
+        "sample_size": 5,
+        "criteria": "Issues with label 'need_feedback'"
+      }
+    },
+    "reaction": {
+      "high_impact_over10": {
+        "sample_size": 30,
+        "criteria": "Issues with high_impact_over10 reaction level"
+      },
+      "moderate_impact_3to10": {
+        "sample_size": 30,
+        "criteria": "Issues with moderate_impact_3to10 reaction level"
+      },
+      "no_engagement_0": {
+        "sample_size": 30,
+        "criteria": "Issues with no_engagement_0 reaction level"
+      },
+      "low_impact_1to2": {
+        "sample_size": 30,
+        "criteria": "Issues with low_impact_1to2 reaction level"
+      }
+    }
+  },
+  "generated_at": "2025-07-23T11:06:29.707342"
+}

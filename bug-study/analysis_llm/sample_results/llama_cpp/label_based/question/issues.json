@@ -1,0 +1,811 @@
+[
+  {
+    "number": 614,
+    "title": "Which tokenizer.model is needed for GPT4ALL? ",
+    "body": "Which tokenizer.model is needed for GPT4ALL for use with convert-gpt4all-to-ggml.py? Is it the one for LLaMA 7B? It is unclear from the current README and gpt4all-lora-quantized.bin seems to be typically distributed without the tokenizer.model file.\r\n\r\n",
+    "labels": [
+      "question"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-30T00:44:00+00:00",
+    "closed_at": "2023-03-31T02:59:00+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/614/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/614"
+  },
+  {
+    "number": 378,
+    "title": "Original weights for LLAMA",
+    "body": "Hey, I noticed the API is running on CPP, were the original weights in python or CPP? If in python, I would think they were in pytorch since that is Meta's DL platform; do you have the weights in python format?",
+    "labels": [
+      "question",
+      "need more info"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-22T03:56:33+00:00",
+    "closed_at": "2023-03-24T22:59:18+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/378/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/378"
+  },
+  {
+    "number": 96,
+    "title": "any interest in the openchatkit on a power book? ",
+    "body": "https://www.together.xyz/blog/openchatkit this new repository might also be a good candidate for any local deployment with a strong GPU. As the gptNeox focus is on GPU deployments.\r\n",
+    "labels": [
+      "enhancement",
+      "question",
+      "hardware"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-13T16:43:04+00:00",
+    "closed_at": "2023-07-28T19:30:06+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/96/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/96"
+  },
+  {
+    "number": 188,
+    "title": "How to? (install models)",
+    "body": "Hi, i can't find the models\r\nCan u tell me, how i can install?\r\n(ls ./models 65B etc is not working)\r\n*sorry, my english isn't good) ",
+    "labels": [
+      "question",
+      "\ud83e\udd99."
+    ],
+    "state": "closed",
+    "created_at": "2023-03-15T22:51:14+00:00",
+    "closed_at": "2023-03-16T11:31:34+00:00",
+    "comments": 15,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/188/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/188"
+  },
+  {
+    "number": 7365,
+    "title": "bf16 problem",
+    "body": "I have a model that has been converted from the original to bf16...\r\nnow I want to make some quantization testing with that but quantize says:\r\n\r\ncannot dequantize/convert tensor type bf16\r\n\r\nI don't understand why, since bf16 and f16 are not that different...\r\n",
+    "labels": [
+      "question",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-18T13:02:22+00:00",
+    "closed_at": "2024-07-05T01:06:40+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7365/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7365"
+  },
+  {
+    "number": 224,
+    "title": "How do I get input embeddings?",
+    "body": "I am trying to output just the sentence embedding for a given input, instead of any new generated text. I think this should be rather straightforward but figured someone more familiar with the codebase could help me.\r\n\r\nI just want to return the sentence embedding vector and stop execution for a given input.\r\n\r\nI am almost sure the place where I want to make the embedding is right after `norm` but before `lm_head`, and I think they will be in `inpL` if I run \r\n\r\n```\r\nggml_build_forward_expand(&gf, inpL);\r\nggml_graph_compute       (ctx0, &gf);\r\n``` \r\nHowever I am confused by the struct and not sure how to get the sentence embedding itself. I understand it should be some index of ggml_get_data(inpL), but don't get which index, and that is why I come to you. Would anyone lend me a hand?",
+    "labels": [
+      "question"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-17T04:59:12+00:00",
+    "closed_at": "2023-04-16T09:25:29+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/224/reactions",
+      "total_count": 3,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 2,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/224"
+  },
+  {
+    "number": 303,
+    "title": "Using non LoRA Alpaca model",
+    "body": "The following repo contains a recreation of the original weights for Alpaca, without using LoRA. How could we use that model with this project? https://github.com/pointnetwork/point-alpaca\r\nThanks a bunch!",
+    "labels": [
+      "question",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-19T20:03:48+00:00",
+    "closed_at": "2023-07-28T19:35:59+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/303/reactions",
+      "total_count": 6,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 6,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/303"
+  },
+  {
+    "number": 693,
+    "title": "Regression: \"The first main on the moon was \"",
+    "body": "I saw a blog post where that prompt was used and now when I try it myself using LlAMA I don't get the same result. It is quite strange.\r\n\r\nIt keeps telling me the man is 38 years old and then starts going off on a tangent. Could this be a recent regression @ggerganov ?",
+    "labels": [
+      "question"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-01T23:16:25+00:00",
+    "closed_at": "2023-05-16T19:10:10+00:00",
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/693/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/693"
+  },
+  {
+    "number": 13,
+    "title": "[Q] Memory Requirements for Different Model Sizes",
+    "body": null,
+    "labels": [
+      "documentation",
+      "question"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-11T12:19:07+00:00",
+    "closed_at": "2023-03-18T21:02:00+00:00",
+    "comments": 18,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/13/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/13"
+  },
+  {
+    "number": 3014,
+    "title": "llama : understand why GPU results are different for different batch sizes",
+    "body": "I did the following experiment:\r\n\r\nRun `perplexity` with the same input, but changing the batch size via the `-b` parameter.\r\nHere are the results for the first few iterations on different backends:\r\n\r\n```bash\r\n# Q4_0 7B\r\n# batch sizes: 16, 32, 64, 128, 256, 512\r\n\r\n# CPU (M2, LLAMA_ACCELERATE=OFF):\r\n\r\n[1]4.3233,[2]4.8256,[3]5.4456,[4]6.0456,[5]6.1772,[6]6.0762  # SIMD is off for n_batch = 16 (ggml_vec_dot_f16)\r\n[1]4.3214,[2]4.8286,[3]5.4463,[4]6.0497,[5]6.1802,[6]6.0800\r\n[1]4.3214,[2]4.8286,[3]5.4463,[4]6.0497,[5]6.1802,[6]6.0800\r\n[1]4.3214,[2]4.8286,[3]5.4463,[4]6.0497,[5]6.1802,[6]6.0800\r\n[1]4.3214,[2]4.8286,[3]5.4463,[4]6.0497,[5]6.1802,[6]6.0800\r\n[1]4.3214,[2]4.8286,[3]5.4463,[4]6.0497,[5]6.1802,[6]6.0800\r\n\r\n# Metal:\r\n\r\n[1]4.3263,[2]4.8290,[3]5.4475,[4]6.0514,[5]6.1813,[6]6.0808,[7]6.2560,[8]6.3670,[9]6.7256,[10]6.9356\r\n[1]4.3263,[2]4.8291,[3]5.4476,[4]6.0515,[5]6.1814,[6]6.0809,[7]6.2560,[8]6.3670,[9]6.7256,[10]6.9356\r\n[1]4.3261,[2]4.8290,[3]5.4475,[4]6.0514,[5]6.1813,[6]6.0808,[7]6.2560,[8]6.3669,[9]6.7256,[10]6.9356\r\n[1]4.3263,[2]4.8291,[3]5.4476,[4]6.0515,[5]6.1814,[6]6.0809,[7]6.2561,[8]6.3670,[9]6.7256,[10]6.9356\r\n[1]4.3263,[2]4.8290,[3]5.4476,[4]6.0515,[5]6.1814,[6]6.0809,[7]6.2560,[8]6.3670,[9]6.7256,[10]6.9356\r\n[1]4.3264,[2]4.8291,[3]5.4476,[4]6.0515,[5]6.1814,[6]6.0809,[7]6.2561,[8]6.3670,[9]6.7256,[10]6.9356\r\n\r\n# CUDA:\r\n\r\n[1]4.3283,[2]4.8268,[3]5.4451,[4]6.0526,[5]6.1871,[6]6.0874,[7]6.2609,[8]6.3685,[9]6.7238\r\n[1]4.3329,[2]4.8348,[3]5.4534,[4]6.0545,[5]6.1855,[6]6.0867,[7]6.2617,[8]6.3744,[9]6.7305\r\n[1]4.3303,[2]4.8109,[3]5.4355,[4]6.0431,[5]6.1755,[6]6.0727,[7]6.2414,[8]6.3526,[9]6.7111\r\n[1]4.3264,[2]4.8292,[3]5.4521,[4]6.0559,[5]6.1865,[6]6.0894,[7]6.2580,[8]6.3652,[9]6.7194\r\n[1]4.3666,[2]4.8513,[3]5.4581,[4]6.0586,[5]6.1911,[6]6.0899,[7]6.2577,[8]6.3674,[9]6.7188\r\n[1]4.3307,[2]4.8364,[3]5.4609,[4]6.0671,[5]6.1965,[6]6.0940,[7]6.2651,[8]6.3749,[9]6.7282\r\n```\r\n\r\nThe CPU results are invariant to the batch size which is OK.\r\nHowever, there are some differences when running on the GPU. More pronounced with CUDA compared to Metal.\r\n\r\nWe should try to understand what is the root cause of this behavior.\r\nSome more discussion in: https://github.com/ggerganov/llama.cpp/pull/3006#issuecomment-1705282339\r\n",
+    "labels": [
+      "question"
+    ],
+    "state": "closed",
+    "created_at": "2023-09-04T20:23:55+00:00",
+    "closed_at": "2023-10-30T06:54:40+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3014/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3014"
+  },
+  {
+    "number": 7623,
+    "title": "Question: How to convert Yi-34B-Chat-4bits to gguf?",
+    "body": "### Prerequisites\n\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new useful question to share that cannot be answered within Discussions.\n\n### Background Description\n\nThe script convert-hf-to-gguf.py can convert  Yi-34B-Chat,but can't convert the 4bits. My GPU only can SFT the 4bits modle,so I want to convert it to gguf. That report some error,the 4bits quantized  used AQW\r\n\r\n\r\nxx@LLM:~/llama.cpp$ python convert-hf-to-gguf.py ~/.cache/modelscope/hub/Yi-34B-Chat-4bits/ --outfile ~/modles/Yi-34B-4bits.gguf\r\n--------------------------------------------------------------------\r\nINFO:hf-to-gguf:Set model tokenizer\r\nINFO:gguf.vocab:Setting special token type bos to 1\r\nINFO:gguf.vocab:Setting special token type eos to 2\r\nINFO:gguf.vocab:Setting add_bos_token to False\r\nINFO:gguf.vocab:Setting add_eos_token to False\r\nINFO:gguf.vocab:Setting chat_template to {% if not add_generation_prompt is defined %}{% set add_generation_prompt = false %}{% endif %}{% for message in messages %}{{'<|im_start|>' + message['role'] + '\r\n' + message['content'] + '<|im_end|>' + '\r\n'}}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\r\n' }}{% endif %}\r\nINFO:hf-to-gguf:Exporting model to '/home/xx/modles/Yi-34B-4bits.gguf'\r\nINFO:hf-to-gguf:gguf: loading model weight map from 'model.safetensors.index.json'\r\nINFO:hf-to-gguf:gguf: loading model part 'model-00001-of-00002.safetensors'\r\nINFO:hf-to-gguf:token_embd.weight,           torch.float16 --> F16, shape = {7168, 64000}\r\nINFO:hf-to-gguf:blk.0.attn_norm.weight,      torch.float16 --> F32, shape = {7168}\r\nTraceback (most recent call last):\r\n  File \"/home/xx/llama.cpp/convert-hf-to-gguf.py\", line 2562, in <module>\r\n    main()\r\n  File \"/home/xx/llama.cpp/convert-hf-to-gguf.py\", line 2556, in main\r\n    model_instance.write()\r\n  File \"/home/xx/llama.cpp/convert-hf-to-gguf.py\", line 340, in write\r\n    self.write_tensors()\r\n  File \"/home/xx/llama.cpp/convert-hf-to-gguf.py\", line 1375, in write_tensors\r\n    super().write_tensors()\r\n  File \"/home/xx/llama.cpp/convert-hf-to-gguf.py\", line 280, in write_tensors\r\n    for new_name, data in ((n, d.squeeze().numpy()) for n, d in self.modify_tensors(data_torch, name, bid)):\r\n                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/xx/llama.cpp/convert-hf-to-gguf.py\", line 1372, in modify_tensors\r\n    return [(self.map_tensor_name(name), data_torch)]\r\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/xx/llama.cpp/convert-hf-to-gguf.py\", line 181, in map_tensor_name\r\n    raise ValueError(f\"Can not map tensor {name!r}\")\r\nValueError: Can not map tensor 'model.layers.0.mlp.down_proj.qweight'\n\n### Possible Answer\n\n_No response_",
+    "labels": [
+      "question",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-29T16:17:51+00:00",
+    "closed_at": "2024-07-14T01:07:13+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7623/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7623"
+  },
+  {
+    "number": 7595,
+    "title": "Problem/Question: Unable to add model with custom architecture (How to)",
+    "body": "### Prerequisites\n\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new useful question to share that cannot be answered within Discussions.\n\n### Background Description\n\nI am aiming to add support for `jina-embeddings-v2-base-code` https://huggingface.co/jinaai/jina-embeddings-v2-base-code which has this architecture:\r\n\r\n```\r\nJinaBertModel(\r\n  (embeddings): JinaBertEmbeddings(\r\n    (word_embeddings): Embedding(61056, 768, padding_idx=0)\r\n    (token_type_embeddings): Embedding(2, 768)\r\n    (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)\r\n    (dropout): Dropout(p=0.0, inplace=False)\r\n  )\r\n  (encoder): JinaBertEncoder(\r\n    (layer): ModuleList(\r\n      (0-11): 12 x JinaBertLayer(\r\n        (attention): JinaBertAttention(\r\n          (self): JinaBertSelfAttention(\r\n            (query): Linear(in_features=768, out_features=768, bias=True)\r\n            (key): Linear(in_features=768, out_features=768, bias=True)\r\n            (value): Linear(in_features=768, out_features=768, bias=True)\r\n            (layer_norm_q): LayerNorm((768,), eps=1e-12, elementwise_affine=True)\r\n            (layer_norm_k): LayerNorm((768,), eps=1e-12, elementwise_affine=True)\r\n            (dropout): Dropout(p=0.0, inplace=False)\r\n          )\r\n          (output): JinaBertSelfOutput(\r\n            (dense): Linear(in_features=768, out_features=768, bias=True)\r\n            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)\r\n            (dropout): Dropout(p=0.0, inplace=False)\r\n          )\r\n        )\r\n        (layer_norm_1): LayerNorm((768,), eps=1e-12, elementwise_affine=True)\r\n        (layer_norm_2): LayerNorm((768,), eps=1e-12, elementwise_affine=True)\r\n        (mlp): JinaBertGLUMLP(\r\n          (act): GELU(approximate='none')\r\n          (up_gated_layer): Linear(in_features=768, out_features=6144, bias=False)\r\n          (down_layer): Linear(in_features=3072, out_features=768, bias=True)\r\n          (dropout): Dropout(p=0.0, inplace=False)\r\n        )\r\n      )\r\n    )\r\n  )\r\n  (pooler): JinaBertPooler(\r\n    (dense): Linear(in_features=768, out_features=768, bias=True)\r\n    (activation): Tanh()\r\n  )\r\n)\r\n```\r\nThe problem is that it has these 2 \"extra\" LayerNorm layers \r\n        (layer_norm_1): LayerNorm((768,), eps=1e-12, elementwise_affine=True)\r\n        (layer_norm_2): LayerNorm((768,), eps=1e-12, elementwise_affine=True)\r\n\r\nWhen trying to add these to the model description I do not know how to handle.\r\n\r\nProblems/Questions:\r\n\r\n- GGUF only accepts one tensor per type (I cannot add this ones to `MODEL_TENSOR.LAYER_OUT_NORM` as convertor will complain that it is duplicated. (Should I create specific entries types for these specific layers?)\r\n\r\n- When defining the tensors, is it okey if I add extra fields to the layers? Or should `llama.cpp` should have a dynamic list of tensors to handle special cases like this?\r\n\r\nSorry for the vague question, I will link a draft PR to show more or less what I am trying to aim and the problems I hit.\r\n\r\nThanks team for the help!\r\n\r\n\r\n\r\n\n\n### Possible Answer\n\n_No response_",
+    "labels": [
+      "question"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-28T18:13:21+00:00",
+    "closed_at": "2024-05-28T19:01:52+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7595/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7595"
+  },
+  {
+    "number": 507,
+    "title": "Comparison of Windows Build VS Unix Build (through WSL2)",
+    "body": "# Environment and Context \r\nHello, \r\nBefore jumping to the subject, here's the environnement I'm working with:\r\n\r\n- Windows 10\r\n- Llama-13b-4bit-(GPTQ quantized) model\r\n- Intel\u00ae Core\u2122 i7-10700K [AVX | AVX2 | FMA | SSE3 | F16C]\r\n\r\n# Expected Behavior\r\n\r\nI did some comparaisons between the Windows build and the Unix build (through WSL2 Ubuntu_2204.1.8.0_x64) to see if I can notice some differences between them.\r\n\r\n# Deterministic Settings (seed =1)\r\nFor both of those builds, I added the same exact settings:\r\n```\r\n-t 14 -n 2024 -c 2024 --temp 0.2 --top_k 40 --top_p 0.6 --repeat_last_n 2048 \r\n--repeat_penalty 1.17647058824 --color --n_parts 1 -b 500 --seed 1 -p \"$(cat STORY.txt)\"\r\n```\r\n\r\nWith the contents of STORY.txt as follows:\r\n```\r\nHere's 5 reasons that proves why video-games are good for your brain:\r\n```\r\n\r\n#  Test#1: Instruction set architectures\r\n\r\nWindows:\r\n```\r\nsystem_info: n_threads = 14 / 16 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 0 | \r\nNEON = 0 | ARM_FMA = 0 | F16C = 0 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 0 | VSX = 0 |\r\n```\r\n\r\nWSL2\r\n```\r\nsystem_info: n_threads = 14 / 16 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 1 | \r\nNEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 1 | VSX = 0 |\r\n```\r\n\r\n**The Unix-build recognizes all the architectures of my CPU but the Windows-build is missing the F16C, FMA and SSE3 one.**\r\n\r\n- We probably haven't implemented all the CPU architectures on the Windows build (and maybe on the Unix build too)\r\n- My CPU has more architectures than those included into the builds [MMX, SSE, SSE2, SSSE3, SSE4,  SSE4.1 + SSE4.2, AES, BMI, BMI1 + BMI2, FMA3, EM64T, HT, VT-x, VT-d] \r\n> I believe that we can significantly enhance the speed of the results by implementing all of the possible instruction set architectures that would be advantageous for text generation.\r\n\r\n#  Test#2: Reproducibility of the output\r\n\r\nSince I used the exact same settings for both the Windows and Unix builds (refer to \"Deterministic Settings (seed=1)\"), I should expect to obtain the exact same output from both.\r\n\r\nWindows (I'll call this output \"WindowsText\"):\r\n```\r\n1. Video games improve hand eye coordination and reaction time, which is a skill used in everyday life.\r\n2. They help you to focus on the task at hand by blocking out distractions around you. This helps with concentration when doing other tasks such as reading or writing an essay.\r\n3. It improves problem solving skills because it requires players to think of different ways to solve problems. For example, if there was a puzzle that required you to find a key to unlock a door but the only way to get the key is to kill someone who has it then you would have to decide whether killing them is worth getting the key.\r\n4. It can be very relaxing after a long day of school work so it gives you some down time from all the stressful things going on in your life.\r\n5. It also increases creativity because they require you to come up with new ideas to complete levels. [end of text]\r\n```\r\n\r\nWSL2 (I'll call this output \"UnixText\")\r\n```\r\n1. Video games improve hand eye coordination and reaction time, which is a very important skill in sports like basketball or football where you need to react quickly when the ball comes towards you.\r\n2. It improves problem solving skills as well because it requires players to think of different ways to solve problems. For example, if there\u2019s an obstacle blocking your way then you have to find another route around it. This helps with real life situations too!\r\n3. It also increases attention span by keeping kids focused on one task at a time. If they get distracted while playing a game then they won\u2019t be able to complete their goal.\r\n4. It can help develop social skills such as teamwork and communication. Players must work together to accomplish goals. They learn how to communicate effectively through voice chat so that everyone knows what needs to happen next.\r\n5. Lastly, it teaches patience. Sometimes you may not know exactly what to do right away but after some practice you will eventually figure out how to beat the level. [end of text]\r\n```\r\n\r\n**It's not the case at all, you will get a different output based on the fact you're using a Windows build or a Unix build.**\r\n\r\n> I believe the Unix build has better outputs than the Windows one for the following reasons:\r\n\r\n- It mentions the importance of hand-eye coordination in sports like basketball or football, which are common activities that many people can relate to.\r\n\r\n- UnixText provides a more comprehensive list of benefits. It discusses the improvement of attention span, the development of social skills, and the teaching of patience, which are all valuable skills that were not mentioned in WindowsText.\r\n\r\n- The structure of UnixText is clearer and more concise, which makes it easier to read and understand.\r\n\r\n#  Test#3: Speed\r\n\r\nWindows:\r\n```\r\nllama_print_timings:        load time = 21085.73 ms\r\nllama_print_timings:      sample time =   734.50 ms /   194 runs   (    3.79 ms per run)\r\nllama_print_timings: prompt eval time =  5380.24 ms /    20 tokens (  269.01 ms per token)\r\nllama_print_timings:        eval time = 93395.22 ms /   193 runs   (  483.91 ms per run)\r\nllama_print_timings:       total time = 121975.58 ms\r\n```\r\n\r\nWSL2:\r\n```\r\nllama_print_timings:        load time = 30968.40 ms\r\nllama_print_timings:      sample time =  2342.41 ms /   219 runs   (   10.70 ms per run)\r\nllama_print_timings: prompt eval time =  4668.72 ms /    20 tokens (  233.44 ms per token)\r\nllama_print_timings:        eval time = 96435.62 ms /   218 runs   (  442.37 ms per run)\r\nllama_print_timings:       total time = 137830.02 ms\r\n```\r\n\r\n1) **Load time** : Windows is **1.46** times faster than Unix.\r\n2) **Sample time** : Windows is **2.82** times faster than Unix.\r\n3) **Prompt eval time**: Unix is **1.15** times faster than Windows.\r\n4) **Eval Time (Most important value)** : Unix is **1.09** times faster than Windows\r\n\r\n**Unix tends to be faster than Windows, which may be due to the absence of F16C, FMA, and SSE3 architectures in the Windows build.**\r\n\r\n# Conclusion\r\n\r\n1) The builds doesn't recognize all possible architectures on your CPU, if we fix that we could probably have significant increase of speed.\r\n2) Windows and WSL2 don't produce the same output, and I believe the Unix build gives better result. This is kinda concerning because the model is supposed to behave identically no matter the operating system.\r\n3) Unix is a bit faster than Windows, but that comparaison would be more relevant if both of them used the same architectures implementations.\r\n\r\nI think the discrepancies between the two operating systems were not only observed by me but also by others, and efforts are underway to address them. Nonetheless, I found it interesting to witness such differences between the two systems.\r\n",
+    "labels": [
+      "question",
+      "build",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-25T20:09:51+00:00",
+    "closed_at": "2024-04-12T01:07:40+00:00",
+    "comments": 24,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/507/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/507"
+  },
+  {
+    "number": 503,
+    "title": "Is it possible to run 65B with 32Gb of Ram ?",
+    "body": "I already quantized my files with this command ./quantize ./ggml-model-f16.bin.X E:\\GPThome\\LLaMA\\llama.cpp-master-31572d9\\models\\65B\\ggml-model-q4_0.bin.X 2 , the first time it reduced my files size from 15.9 to 4.9Gb and when i tried to do it again nothing changed. After i executed this command \"./main -m ./models/65B/ggml-model-q4_0.bin -n 128 --interactive-first\" and when everything is loaded i enter my prompt, my memory usage goes to 98% (25Gb by main.exe) and i just wait dozens of minutes with nothing that appears heres an example:\r\n\r\n**PS E:\\GPThome\\LLaMA\\llama.cpp-master-31572d9> ./main -m ./models/65B/ggml-model-q4_0.bin -n 128 --interactive-first\r\nmain: seed = 1679761762\r\nllama_model_load: loading model from './models/65B/ggml-model-q4_0.bin' - please wait ...\r\nllama_model_load: n_vocab = 32000\r\nllama_model_load: n_ctx   = 512\r\nllama_model_load: n_embd  = 8192\r\nllama_model_load: n_mult  = 256\r\nllama_model_load: n_head  = 64\r\nllama_model_load: n_layer = 80\r\nllama_model_load: n_rot   = 128\r\nllama_model_load: f16     = 2\r\nllama_model_load: n_ff    = 22016\r\nllama_model_load: n_parts = 8\r\nllama_model_load: ggml ctx size = 41477.73 MB\r\nllama_model_load: memory_size =  2560.00 MB, n_mem = 40960\r\nllama_model_load: loading model part 1/8 from './models/65B/ggml-model-q4_0.bin'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 2/8 from './models/65B/ggml-model-q4_0.bin.1'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 3/8 from './models/65B/ggml-model-q4_0.bin.2'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 4/8 from './models/65B/ggml-model-q4_0.bin.3'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 5/8 from './models/65B/ggml-model-q4_0.bin.4'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 6/8 from './models/65B/ggml-model-q4_0.bin.5'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 7/8 from './models/65B/ggml-model-q4_0.bin.6'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 8/8 from './models/65B/ggml-model-q4_0.bin.7'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\n\r\nsystem_info: n_threads = 4 / 12 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 0 | NEON = 0 | ARM_FMA = 0 | F16C = 0 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 0 | VSX = 0 |\r\n\r\nmain: prompt: ' '\r\nmain: number of tokens in prompt = 2\r\n     1 -> ''\r\n 29871 -> ' '\r\n\r\nmain: interactive mode on.\r\nsampling parameters: temp = 0.800000, top_k = 40, top_p = 0.950000, repeat_last_n = 64, repeat_penalty = 1.100000\r\n\r\n\r\n== Running in interactive mode. ==\r\n - Press Ctrl+C to interject at any time.\r\n - Press Return to return control to LLaMa.\r\n - If you want to submit another line, end your input in '\\'.\r\n\r\n how to become rich**",
+    "labels": [
+      "question",
+      "hardware",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-25T17:17:10+00:00",
+    "closed_at": "2023-03-26T10:18:47+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/503/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/503"
+  },
+  {
+    "number": 7585,
+    "title": "Question:  Inconsistent Classification Results Between Command-Line and HTTP Server for LLaMA 3",
+    "body": "### Prerequisites\r\n\r\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\r\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new useful question to share that cannot be answered within Discussions.\r\n\r\n### Background Description\r\n\r\nI get difference results if I use llama 3 with the HTTP Server than when I use ./main. For example, I am trying to classify job postings using the new prompt format (in german: its instructed to classify the job in brackets):\r\n`\r\n./main --ctx-size 9999  --color --interactive --model ../models/Meta-Llama-3-70B-Instruct-GGUF/Meta-Llama-3-70B-Instruct-Q4_K_M.gguf  --repeat_penalty 1.0 --n-gpu-layers 555  --prompt \"<|start_header_id|>system<|end_header_id|> Deine Aufgabe ist es, Jobausschreibungen zu klassifizieren. Antworte mit der Job Branche in Klammern. Antworte nur in einem einzigen Wort<|eot_id|><|start_header_id|>user<|end_header_id|> Bauleitender Elektroinstallateur Die Firma Jakob Kowner AG ist ein \u00fcber 100-j\u00e4hriges Unternehmen und wir sind in den drei Hauptbereichen Elektro-Installationen, ICT und Geb\u00e4udesysteme t\u00e4tig. Unsere Dienstpalette reicht von der Beratung \u00fcber die Planung und Realisation der Vorhaben bis hin zum Service und Unterhalt der Anlagen. Nebst unserem Hauptsitz in Z\u00fcrich haben wir noch eine Filiale in Erlenbach.Bauleitender ElektroinstallateurIhre Aufgaben: F\u00fchrung von interessanten und qualitativ hochstehenden Installations-Projekten mit viel Eigenverantwortung Fach- und termingerechte Ausf\u00fchrung von Kundenauftr\u00e4gen unter Einhaltung der entsprechenden Regeln der Technik und g\u00fcltigen Vorschriften F\u00fchren des gesamten Rapportwesens Installation von Stark- und Schwachstromanlagen an Neubauten und Umbauprojekten Reparatur- und Wartungsarbeiten, L\u00f6sungsfindung und St\u00f6rungsbehebung Mitarbeiter-Einsatzplanung und Materialdisposition zusammen mit dem Projektleiter Unterhaltsarbeiten an Telefon-, EDV- und Starkstrom-Anlagen Mitarbeit bei der Mitarbeiter- und Lehrlingsbetreuung Voraussetzungen: Abgeschlossene Berufslehre zum Elektroinstallateur EFZ und sehr gute Deutschkenntnisse Mehrj\u00e4hrige Erfahrung und selbst\u00e4ndige F\u00fchrung von Baustellen in der Schweiz Gute Kenntnisse der g\u00fcltigen Normen, NIN-Installationsvorschriften sowie gesetzlichen Bestimmungen Hohes Qualit\u00e4tsbewusstsein und Kundenorientierung Flexibilit\u00e4t und Belastbarkeit Zuverl\u00e4ssige und qualit\u00e4tsbewusste Arbeitsweise, selbst\u00e4ndig und zielorientiert Bereitschaft in unseren anderen Filialen auszuhelfen Gute Umgangsformen und gepflegtes \u00c4usseres F\u00fchrerschein Kat. B Wir bieten: Selbstst\u00e4ndiges, gut eingespieltes und junges Team, welches Ihnen mit Rat und Tat zur Seite steht Zeitgem\u00e4sse Entl\u00f6hnung 40-Stunden Woche \u2026F\u00fchlen Sie sich angesprochen! Dann senden Sie uns Ihre vollst\u00e4ndige Bewerbung mit Lebenslauf per Post oder E-Mail personal@kowner.ch\u2026 Wir freuen uns auf Sie\u2026 Kontaktperson Frau Denise Egger Telefon 0442676565 E-Mail schreiben \u00dcber die Firma J. Kowner AG Z\u00fcrich / Erlenbach Firmenprofil mit Bewertungen und allen offenen Stellen Bei neuen Stellen benachrichtigt werden<|eot_id|><|start_header_id|>assistant<|end_header_id|>\"\r\n`\r\nThis will give me the correct answer: `(Elektrotechnik)<|eot_id|>`\r\n\r\n\r\nHowever, doing with the http server doesn't work:\r\n```\r\n\r\n\r\n   inp=f'''\r\n<|start_header_id|>system<|end_header_id|> Deine Aufgabe ist es, Jobausschreibungen zu klassifizieren. Antworte mit der Job Branche in Klammern. Antworte nur in einem einzigen Wort<|eot_id|><|start_header_id|>user<|end_header_id|> Bauleitender Elektroinstallateur Die Firma Jakob Kowner AG ist ein \u00fcber 100-j\u00e4hriges Unternehmen und wir sind....\r\n'''\r\n    url = \"http://192.168.1.20:8080/completion\"\r\n    prompt = {\r\n        \"prompt\":               inp, \r\n        \"n_predict\": 20,\r\n        \r\n    }\r\n```\r\n\r\n\r\nwhich gives me a result in english for some reason:\r\n\r\n`'This is a job posting for an Electrician/Foreman position at J. Kowner AG,'`\r\n\r\n\r\nI am assuming I am not formating the input correctly or the HTTP Server preformats the query. So how can I send a proper raw query to the HTTP Server?\r\n\r\n### Possible Answer\r\n\r\nThe answer should tell me how I can send raw prompts to the http server for example:\r\n\r\nYou need to format it like this\r\n\r\n`{\r\n     \"rawPrompt\": \"<|start_header_id|>system<|end_header_id|> Deine Aufgabe ist es, Jobausschreibungen zu klassifizieren. Antworte mit der Job Branche in Klammern. Antworte nur in einem einzigen Wort<|eot_id|>....\"\r\n}`",
+    "labels": [
+      "question",
+      "server"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-28T07:07:35+00:00",
+    "closed_at": "2024-05-30T11:52:35+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7585/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7585"
+  },
+  {
+    "number": 630,
+    "title": "Combine large LLM with small LLM for faster inference",
+    "body": "So I was thinking about the following idea.\r\nIt is probably completely bogus, but I would definitely investigate it when and if I had the time to, so maybe someone else would be interested as well.\r\n\r\n---\r\n\r\nLarge LLM takes a lot of time to perform token inference. Lets say it takes 500ms per token.\r\n\r\nA small LLM (or some other approach) can infer a token very fast. Lets say < 5ms.\r\n\r\nLets assume that the small LLM is correct 80-90% of the time.\r\n\r\nThe idea is the following:\r\n\r\n- Before I run the large LLM inference for the next token, I infer it using the small LLM\r\n- I now want to somehow partially evaluate the large LLM (let's say the first 10% of the layers) and get an approximate estimate for the next token\r\n- If this estimate indicates a high probability for that token (i.e. above some threshold) - we stop and directly say that this is the new token. At this point we would have consumed (5ms for the small LLM + ~50ms for the large LLM)\r\n- Otherwise, we proceed to evaluate the rest of the layers of the large LLM\r\n\r\nIn the described process, I would reach step 4 only for 10-20% of the tokens, but for the rest - I will take the shortcut in step 3.\r\nHence, I will have an efficient inference with a Large LLM.\r\n\r\nObviously, the biggest question is if step 2 is possible at all.\r\nI suppose the answer is \"no\", but who knows.\r\n",
+    "labels": [
+      "question",
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-30T17:54:01+00:00",
+    "closed_at": "2024-04-12T01:07:17+00:00",
+    "comments": 44,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/630/reactions",
+      "total_count": 26,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 5,
+      "rocket": 2,
+      "eyes": 6
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/630"
+  },
+  {
+    "number": 1052,
+    "title": "On the edge llama?",
+    "body": "Sorry to ask this... But is possible to get llama.cpp working on things like edge TPU?\n\nhttps://coral.ai/products/accelerator-module/",
+    "labels": [
+      "question",
+      "hardware"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-19T01:24:08+00:00",
+    "closed_at": "2023-04-23T12:46:33+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1052/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1052"
+  },
+  {
+    "number": 7614,
+    "title": "Question: why llama.cpp mobilevlm model(fp16) inference result is different with official pytorch project results, this is normal?",
+    "body": "### Prerequisites\r\n\r\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\r\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new useful question to share that cannot be answered within Discussions.\r\n\r\n### Background Description\r\n\r\nllama.cpp run cmd\uff1a\r\n./llava-cli -m /mnt/nas_data2/wb_space/MobileVLMV2/MobileVLM_V2-1.7B_bk/ggml-model-f32.gguf --mmproj /mnt/nas_data2/wb_space/MobileVLMV2/MobileVLM_V2-1.7B_bk/mmproj-model-f16.gguf --image /mnt/nas_data2/wb_space/MobileVLMV2/assets/samples/demo.jpg -p \"please describe this images.\" --temp 0 --top-p 1 -c 4096\r\nllama.cpp result\uff1a \r\nThe image is a digital art piece that captures the essence of history through its depiction. It features an illustration from \"The Story Of World History\" by Susan Wise Bauer, Revised Edition: Volume II - From Rome to Middle Ages (Volume 2)\r\n\r\n--------------------------------------------------------\r\nofficial pytorch project params\uff1a\r\nmodel_path = './MobileVLM_V2-1.7B'\r\nimage_file = \"assets/samples/demo.jpg\"\r\nprompt_str = \"please describe this images.\"\r\nargs = type('Args', (), {\r\n\"model_path\": model_path,\r\n#\"image_file\": image_file ,\r\n\"image_file\": i,\r\n\"prompt\": prompt_str,\r\n\"conv_mode\": \"v1\",\r\n\"temperature\": 0,\r\n\"top_p\": None,\r\n\"num_beams\": 1,\r\n\"max_new_tokens\": 512,\r\n\"load_8bit\": False,\r\n\"load_4bit\": False,\r\n})()\r\n\r\ninference_once(args)\r\n\r\nofficial pytorch project results\uff1a\r\n\ud83d\ude80 MobileVLM_V2-1.7B: The image is a vivid depiction of the cover of a book titled \"The Story of the World: History for the Classical Child, Vol. 2: The Middle Ages, Volume 2: The Fall of Rome to the Rise of the Normans (Revised Edition)\". The cover art is a captivating illustration of a knight on horseback, armed with a bow and arrow, poised for battle. The title of the book, \"The Story of the World: History for the Classical Child, Vol. 2: The Middle Ages, Volume 2: The Fall of Rome to the Rise of the Normans\", is prominently displayed in large, bold letters at the top of the cover. The author's name, Susan Wise Bauer, is also visible, indicating her authorship of the book. The overall design of the cover suggests a theme of adventure and exploration, fitting for a book about history.\r\n\r\n### Possible Answer\r\n\r\n_No response_",
+    "labels": [
+      "question",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-29T09:59:02+00:00",
+    "closed_at": "2024-07-29T01:06:54+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7614/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7614"
+  },
+  {
+    "number": 7611,
+    "title": "Question: When using finetune LoRA to fine-tune the LLaMA3-7B-4bit GGUF model, why does the training prematurely end and save the LoRA model?",
+    "body": "### Prerequisites\n\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new useful question to share that cannot be answered within Discussions.\n\n### Background Description\n\ni uesd follow command:\r\n`./finetune --model-base ../models/GGUF/Llama3-8B-Chinese-Chat-GGUF-4bit/Llama3-8B-Chinese-Chat-q4_0-v2_1.gguf --train-data /home/cp/gtools/dataset/train_data.txt --checkpoint-in  checkpoint-LATEST.gguf  --lora-out /home/cp/models/llama3-8-4bit-epoch10-528.gguf --save-every 50 --threads 16 --ctx 1024 --rope-freq-base 10000 --rope-freq-scale 1.0 --batch 1 --grad-acc 1 --adam-iter 56,080 --adam-alpha 0.001 --lora-r 4 --lora-alpha 4 --use-checkpointing --use-flash --sample-start \"<s>\" --escape --include-sample-start -ngl 0`\r\n\r\nThis is my second time starting training from a checkpoint, but it still ends prematurely. It continues to do so even after I used the --epoch parameter.\r\n\r\n```\r\nllama_model_loader: loaded meta data with 23 key-value pairs and 291 tensors from ../models/GGUF/Llama3-8B-Chinese-Chat-GGUF-4bit/Llama3-8B-Chinese-Chat-q4_0-v2_1.gguf (version GGUF V3 (latest))\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = llama\r\nllama_model_loader: - kv   1:                               general.name str              = outputs\r\nllama_model_loader: - kv   2:                           llama.vocab_size u32              = 128256\r\nllama_model_loader: - kv   3:                       llama.context_length u32              = 8192\r\nllama_model_loader: - kv   4:                     llama.embedding_length u32              = 4096\r\nllama_model_loader: - kv   5:                          llama.block_count u32              = 32\r\nllama_model_loader: - kv   6:                  llama.feed_forward_length u32              = 14336\r\nllama_model_loader: - kv   7:                 llama.rope.dimension_count u32              = 128\r\nllama_model_loader: - kv   8:                 llama.attention.head_count u32              = 32\r\nllama_model_loader: - kv   9:              llama.attention.head_count_kv u32              = 8\r\nllama_model_loader: - kv  10:     llama.attention.layer_norm_rms_epsilon f32              = 0.000010\r\nllama_model_loader: - kv  11:                       llama.rope.freq_base f32              = 500000.000000\r\nllama_model_loader: - kv  12:                          general.file_type u32              = 2\r\nllama_model_loader: - kv  13:                       tokenizer.ggml.model str              = gpt2\r\nllama_model_loader: - kv  14:                      tokenizer.ggml.tokens arr[str,128256]  = [\"!\", \"\\\"\", \"#\", \"$\", \"%\", \"&\", \"'\", ...\r\nllama_model_loader: - kv  15:                      tokenizer.ggml.scores arr[f32,128256]  = [0.000000, 0.000000, 0.000000, 0.0000...\r\nllama_model_loader: - kv  16:                  tokenizer.ggml.token_type arr[i32,128256]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...\r\nllama_model_loader: - kv  17:                      tokenizer.ggml.merges arr[str,280147]  = [\"\u0120 \u0120\", \"\u0120 \u0120\u0120\u0120\", \"\u0120\u0120 \u0120\u0120\", \"...\r\nllama_model_loader: - kv  18:                tokenizer.ggml.bos_token_id u32              = 128000\r\nllama_model_loader: - kv  19:                tokenizer.ggml.eos_token_id u32              = 128009\r\nllama_model_loader: - kv  20:            tokenizer.ggml.padding_token_id u32              = 128009\r\nllama_model_loader: - kv  21:                    tokenizer.chat_template str              = {% set system_message = 'You are a he...\r\nllama_model_loader: - kv  22:               general.quantization_version u32              = 2\r\nllama_model_loader: - type  f32:   65 tensors\r\nllama_model_loader: - type q4_0:  225 tensors\r\nllama_model_loader: - type q6_K:    1 tensors\r\nllm_load_vocab: missing pre-tokenizer type, using: 'default'\r\nllm_load_vocab:\r\nllm_load_vocab: ************************************\r\nllm_load_vocab: GENERATION QUALITY WILL BE DEGRADED!\r\nllm_load_vocab: CONSIDER REGENERATING THE MODEL\r\nllm_load_vocab: ************************************\r\nllm_load_vocab:\r\nllm_load_vocab: special tokens definition check successful ( 256/128256 ).\r\nllm_load_print_meta: format           = GGUF V3 (latest)\r\nllm_load_print_meta: arch             = llama\r\nllm_load_print_meta: vocab type       = BPE\r\nllm_load_print_meta: n_vocab          = 128256\r\nllm_load_print_meta: n_merges         = 280147\r\nllm_load_print_meta: n_ctx_train      = 8192\r\nllm_load_print_meta: n_embd           = 4096\r\nllm_load_print_meta: n_head           = 32\r\nllm_load_print_meta: n_head_kv        = 8\r\nllm_load_print_meta: n_layer          = 32\r\nllm_load_print_meta: n_rot            = 128\r\nllm_load_print_meta: n_embd_head_k    = 128\r\nllm_load_print_meta: n_embd_head_v    = 128\r\nllm_load_print_meta: n_gqa            = 4\r\nllm_load_print_meta: n_embd_k_gqa     = 1024\r\nllm_load_print_meta: n_embd_v_gqa     = 1024\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-05\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 0.0e+00\r\nllm_load_print_meta: n_ff             = 14336\r\nllm_load_print_meta: n_expert         = 0\r\nllm_load_print_meta: n_expert_used    = 0\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = 0\r\nllm_load_print_meta: rope scaling     = linear\r\nllm_load_print_meta: freq_base_train  = 500000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: n_yarn_orig_ctx  = 8192\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: model type       = 8B\r\nllm_load_print_meta: model ftype      = Q4_0\r\nllm_load_print_meta: model params     = 8.03 B\r\nllm_load_print_meta: model size       = 4.33 GiB (4.64 BPW)\r\nllm_load_print_meta: general.name     = outputs\r\nllm_load_print_meta: BOS token        = 128000 '<|begin_of_text|>'\r\nllm_load_print_meta: EOS token        = 128009 '<|eot_id|>'\r\nllm_load_print_meta: PAD token        = 128009 '<|eot_id|>'\r\nllm_load_print_meta: LF token         = 128 '\u00c4'\r\nllm_load_print_meta: EOT token        = 128009 '<|eot_id|>'\r\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:   no\r\nggml_cuda_init: CUDA_USE_TENSOR_CORES: yes\r\nggml_cuda_init: found 2 CUDA devices:\r\n  Device 0: NVIDIA A800 80GB PCIe, compute capability 8.0, VMM: yes\r\n  Device 1: NVIDIA A800 80GB PCIe, compute capability 8.0, VMM: yes\r\nllm_load_tensors: ggml ctx size =    0.15 MiB\r\nllm_load_tensors: offloading 0 repeating layers to GPU\r\nllm_load_tensors: offloaded 0/33 layers to GPU\r\nllm_load_tensors:        CPU buffer size =  4437.80 MiB\r\n.......................................................................................\r\nllama_new_context_with_model: n_ctx      = 512\r\nllama_new_context_with_model: n_batch    = 512\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 500000.0\r\nllama_new_context_with_model: freq_scale = 1\r\nllama_kv_cache_init:  CUDA_Host KV buffer size =    64.00 MiB\r\nllama_new_context_with_model: KV self size  =   64.00 MiB, K (f16):   32.00 MiB, V (f16):   32.00 MiB\r\nllama_new_context_with_model:  CUDA_Host  output buffer size =     0.49 MiB\r\nllama_new_context_with_model:      CUDA0 compute buffer size =   708.98 MiB\r\nllama_new_context_with_model:  CUDA_Host compute buffer size =     9.01 MiB\r\nllama_new_context_with_model: graph nodes  = 1030\r\nllama_new_context_with_model: graph splits = 356\r\nmain: seed: 1716950195\r\nmain: model base = '../models/GGUF/Llama3-8B-Chinese-Chat-GGUF-4bit/Llama3-8B-Chinese-Chat-q4_0-v2_1.gguf'\r\nmain: init model\r\nprint_params: n_vocab               : 128256\r\nprint_params: n_ctx                 : 1024\r\nprint_params: n_embd                : 4096\r\nprint_params: n_ff                  : 14336\r\nprint_params: n_head                : 32\r\nprint_params: n_head_kv             : 8\r\nprint_params: n_layer               : 32\r\nprint_params: norm_rms_eps          : 0.000010\r\nprint_params: rope_freq_base        : 10000.000000\r\nprint_params: rope_freq_scale       : 1.000000\r\nprint_lora_params: n_rank_attention_norm : 1\r\nprint_lora_params: n_rank_wq             : 4\r\nprint_lora_params: n_rank_wk             : 4\r\nprint_lora_params: n_rank_wv             : 4\r\nprint_lora_params: n_rank_wo             : 4\r\nprint_lora_params: n_rank_ffn_norm       : 1\r\nprint_lora_params: n_rank_ffn_gate       : 4\r\nprint_lora_params: n_rank_ffn_down       : 4\r\nprint_lora_params: n_rank_ffn_up         : 4\r\nprint_lora_params: n_rank_tok_embeddings : 4\r\nprint_lora_params: n_rank_norm           : 1\r\nprint_lora_params: n_rank_output         : 4\r\nmain: total train_iterations 56\r\nmain: seen train_samples     57\r\nmain: seen train_tokens      57344\r\nmain: completed train_epochs 0\r\nmain: lora_size = 94956320 bytes (90.6 MB)\r\nmain: opt_size  = 141731824 bytes (135.2 MB)\r\nmain: opt iter 56\r\nmain: input_size = 525340704 bytes (501.0 MB)\r\nmain: compute_size = 17702064224 bytes (16882.0 MB)\r\nmain: evaluation order = RIGHT_TO_LEFT\r\nmain: tokenize training data from /home/cp/gtools/dataset/train_data.txt\r\nmain: sample-start: <s>\r\nmain: include-sample-start: true\r\ntokenize_file: warning: found 264 samples (max length 11693) that exceed context length of 1024. samples will be cut off.\r\ntokenize_file: warning: found 5344 samples (min length 15) that are shorter than context length of 1024.\r\ntokenize_file: total number of samples: 5608\r\nmain: number of training tokens: 3426975\r\nmain: number of unique tokens: 13804\r\nmain: begin training\r\nmain: work_size = 8209440 bytes (7.8 MB)\r\ntrain_opt_callback: iter=    56 sample=58/5608 sched=0.560000 loss=0.000000 |->\r\ntrain_opt_callback: iter=    57 sample=59/5608 sched=0.570000 loss=6.561999 dt=00:05:03 eta=04:38:03 |->\r\ntrain_opt_callback: iter=    58 sample=60/5608 sched=0.580000 loss=6.131831 dt=00:04:58 eta=04:28:13 |----->\r\ntrain_opt_callback: iter=    59 sample=61/5608 sched=0.590000 loss=6.565368 dt=00:04:56 eta=04:22:16 |->\r\ntrain_opt_callback: iter=    60 sample=62/5608 sched=0.600000 loss=5.226385 dt=00:04:55 eta=04:16:21 |-------------->\r\ntrain_opt_callback: iter=    61 sample=63/5608 sched=0.610000 loss=2.682452 dt=00:04:57 eta=04:13:04 |---------------------------------------->\r\ntrain_opt_callback: iter=    62 sample=64/5608 sched=0.620000 loss=5.758256 dt=00:04:58 eta=04:08:36 |--------->\r\ntrain_opt_callback: iter=    63 sample=65/5608 sched=0.630000 loss=7.003919 dt=00:04:56 eta=04:02:12 |>\r\ntrain_opt_callback: iter=    64 sample=66/5608 sched=0.640000 loss=5.730312 dt=00:04:59 eta=03:59:41 |--------->\r\ntrain_opt_callback: iter=    65 sample=67/5608 sched=0.650000 loss=4.467021 dt=00:04:56 eta=03:52:03 |---------------------->\r\ntrain_opt_callback: iter=    66 sample=68/5608 sched=0.660000 loss=3.222418 dt=00:04:57 eta=03:47:42 |---------------------------------->\r\ntrain_opt_callback: iter=    67 sample=69/5608 sched=0.670000 loss=4.564558 dt=00:04:59 eta=03:44:59 |--------------------->\r\ntrain_opt_callback: iter=    68 sample=70/5608 sched=0.680000 loss=2.974542 dt=00:04:57 eta=03:38:30 |------------------------------------->\r\ntrain_opt_callback: iter=    69 sample=71/5608 sched=0.690000 loss=8.972260 dt=00:04:57 eta=03:32:52 |>\r\ntrain_opt_callback: iter=    70 sample=72/5608 sched=0.700000 loss=4.948237 dt=00:04:59 eta=03:29:33 |----------------->\r\ntrain_opt_callback: iter=    71 sample=73/5608 sched=0.710000 loss=7.699281 dt=00:04:59 eta=03:24:38 |>\r\ntrain_opt_callback: iter=    72 sample=74/5608 sched=0.720000 loss=2.134525 dt=00:04:57 eta=03:18:35 |--------------------------------------------->\r\ntrain_opt_callback: iter=    73 sample=75/5608 sched=0.730000 loss=2.083004 dt=00:04:58 eta=03:13:56 |---------------------------------------------->\r\ntrain_opt_callback: iter=    74 sample=76/5608 sched=0.740000 loss=8.693038 dt=00:04:57 eta=03:08:40 |>\r\ntrain_opt_callback: iter=    75 sample=77/5608 sched=0.750000 loss=6.879135 dt=00:04:54 eta=03:01:41 |>\r\ntrain_opt_callback: iter=    76 sample=78/5608 sched=0.760000 loss=2.546541 dt=00:04:56 eta=02:57:41 |----------------------------------------->\r\ntrain_opt_callback: iter=    77 sample=79/5608 sched=0.770000 loss=4.995703 dt=00:04:57 eta=02:53:18 |----------------->\r\ntrain_opt_callback: iter=    78 sample=80/5608 sched=0.780000 loss=2.083435 dt=00:04:54 eta=02:46:45 |---------------------------------------------->\r\ntrain_opt_callback: iter=    79 sample=81/5608 sched=0.790000 loss=5.349943 dt=00:04:58 eta=02:44:25 |------------->\r\ntrain_opt_callback: iter=    80 sample=82/5608 sched=0.800000 loss=4.919187 dt=00:04:57 eta=02:38:47 |----------------->\r\ntrain_opt_callback: iter=    81 sample=83/5608 sched=0.810000 loss=5.170655 dt=00:04:56 eta=02:33:01 |--------------->\r\ntrain_opt_callback: iter=    82 sample=84/5608 sched=0.820000 loss=1.877204 dt=00:04:56 eta=02:28:21 |------------------------------------------------>\r\ntrain_opt_callback: iter=    83 sample=85/5608 sched=0.830000 loss=4.004352 dt=00:04:56 eta=02:23:22 |--------------------------->\r\ntrain_opt_callback: iter=    84 sample=86/5608 sched=0.840000 loss=1.796195 dt=00:04:55 eta=02:18:04 |------------------------------------------------->\r\ntrain_opt_callback: iter=    85 sample=87/5608 sched=0.850000 loss=4.922786 dt=00:04:56 eta=02:13:15 |----------------->\r\ntrain_opt_callback: iter=    86 sample=88/5608 sched=0.860000 loss=4.173849 dt=00:04:55 eta=02:08:03 |------------------------->\r\ntrain_opt_callback: iter=    87 sample=89/5608 sched=0.870000 loss=6.043429 dt=00:04:58 eta=02:04:19 |------>\r\ntrain_opt_callback: iter=    88 sample=90/5608 sched=0.880000 loss=5.268681 dt=00:04:59 eta=01:59:37 |-------------->\r\ntrain_opt_callback: iter=    89 sample=91/5608 sched=0.890000 loss=2.838591 dt=00:04:59 eta=01:54:46 |-------------------------------------->\r\ntrain_opt_callback: iter=    90 sample=92/5608 sched=0.900000 loss=5.379230 dt=00:04:58 eta=01:49:21 |------------->\r\ntrain_opt_callback: iter=    91 sample=93/5608 sched=0.910000 loss=7.749388 dt=00:04:58 eta=01:44:31 |>\r\ntrain_opt_callback: iter=    92 sample=94/5608 sched=0.920000 loss=5.145984 dt=00:04:56 eta=01:38:43 |--------------->\r\ntrain_opt_callback: iter=    93 sample=95/5608 sched=0.930000 loss=4.491066 dt=00:04:58 eta=01:34:31 |---------------------->\r\ntrain_opt_callback: iter=    94 sample=96/5608 sched=0.940000 loss=2.321091 dt=00:04:56 eta=01:28:54 |------------------------------------------->\r\ntrain_opt_callback: iter=    95 sample=97/5608 sched=0.950000 loss=1.934455 dt=00:05:00 eta=01:25:02 |----------------------------------------------->\r\ntrain_opt_callback: iter=    96 sample=98/5608 sched=0.960000 loss=4.204632 dt=00:04:58 eta=01:19:36 |------------------------->\r\ntrain_opt_callback: iter=    97 sample=99/5608 sched=0.970000 loss=1.201343 dt=00:04:56 eta=01:14:10 |------------------------------------------------------->\r\ntrain_opt_callback: iter=    98 sample=100/5608 sched=0.980000 loss=2.567741 dt=00:04:56 eta=01:09:11 |----------------------------------------->\r\ntrain_opt_callback: iter=    99 sample=101/5608 sched=0.990000 loss=5.414374 dt=00:04:57 eta=01:04:33 |------------>\r\ntrain_opt_callback: iter=   100 sample=102/5608 sched=0.977975 loss=5.277130 dt=00:04:56 eta=00:59:15 |-------------->\r\ntrain_opt_callback: iter=   101 sample=103/5608 sched=0.977536 loss=3.153543 dt=00:04:59 eta=00:54:58 |----------------------------------->\r\ntrain_opt_callback: iter=   102 sample=104/5608 sched=0.977093 loss=2.120336 dt=00:05:03 eta=00:50:35 |--------------------------------------------->\r\ntrain_opt_callback: iter=   103 sample=105/5608 sched=0.976646 loss=4.964728 dt=00:05:02 eta=00:45:25 |----------------->\r\ntrain_opt_callback: iter=   104 sample=106/5608 sched=0.976194 loss=6.522685 dt=00:05:04 eta=00:40:37 |->\r\ntrain_opt_callback: iter=   105 sample=107/5608 sched=0.975738 loss=1.633650 dt=00:05:00 eta=00:35:00 |-------------------------------------------------->\r\nsave_checkpoint_lora_file: saving to checkpoint-106.gguf\r\nsave_checkpoint_lora_file: saving to checkpoint-LATEST.gguf\r\nsave_as_llama_lora: saving to /home/cp/models/llama3-8-4bit-epoch10-528.gguf\r\nsave_as_llama_lora: saving to /home/cp/models/llama3-8-4bit-epoch10-528.gguf\r\ntrain_opt_callback: iter=   106 sample=108/5608 sched=0.975278 loss=1.480519 dt=00:05:01 eta=00:30:09 |---------------------------------------------------->\r\ntrain_opt_callback: iter=   107 sample=109/5608 sched=0.974814 loss=6.555905 dt=00:05:02 eta=00:25:10 |->\r\ntrain_opt_callback: iter=   108 sample=110/5608 sched=0.974346 loss=3.108970 dt=00:05:00 eta=00:20:03 |------------------------------------>\r\ntrain_opt_callback: iter=   109 sample=111/5608 sched=0.973873 loss=3.017373 dt=00:04:59 eta=00:14:59 |------------------------------------>\r\ntrain_opt_callback: iter=   110 sample=112/5608 sched=0.973396 loss=5.677386 dt=00:05:01 eta=00:10:02 |---------->\r\ntrain_opt_callback: iter=   111 sample=113/5608 sched=0.972915 loss=6.238063 dt=00:04:59 eta=00:04:59 |---->\r\ntrain_opt_callback: iter=   112 sample=114/5608 sched=0.972430 loss=1.518490 dt=00:05:01 eta=0.0ms |--------------------------------------------------->\r\nmain: total training time: 04:43:34\r\nsave_checkpoint_lora_file: saving to checkpoint-112.gguf\r\nsave_checkpoint_lora_file: saving to checkpoint-LATEST.gguf\r\nsave_as_llama_lora: saving to /home/cp/models/llama3-8-4bit-epoch10-528.gguf\r\nsave_as_llama_lora: saving to /home/cp/models/llama3-8-4bit-epoch10-528.gguf\r\n```\n\n### Possible Answer\n\n_No response_",
+    "labels": [
+      "question",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-29T07:47:48+00:00",
+    "closed_at": "2024-07-13T01:06:49+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7611/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7611"
+  },
+  {
+    "number": 33,
+    "title": "What is the meaning of hacked?",
+    "body": "Hey, I was reading your Readme.md and I saw that your repo was hacked. I want to ask what this means and wanted to check if the users like me also get the impact of hacking. Or, this is not the thing I should worry about?",
+    "labels": [
+      "question"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-12T04:35:26+00:00",
+    "closed_at": "2023-03-12T05:09:52+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/33/reactions",
+      "total_count": 197,
+      "+1": 25,
+      "-1": 5,
+      "laugh": 141,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 26,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/33"
+  },
+  {
+    "number": 7608,
+    "title": "Question: Why do GPU and CPU embedding outputs differ for the same input? Is normal?",
+    "body": "### Prerequisites\n\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new useful question to share that cannot be answered within Discussions.\n\n### Background Description\n\nI am using the embedding example, the execution parameters are as follows\r\nembedding.exe -ngl 200000 -m I:\\JYGAIBIN\\MetaLlamaModel\\Llama2-13b-chat\\ggml-model-f32_q4_1.gguf --log-disable -p \"Hello World!\"\r\n\r\nThe first three embedding values \u200b\u200bare output when the CPU executes the embedding\r\n-4.67528416e-08\r\n-1.07059577e-06\r\n1.76811977e-06\r\n\r\nThe first three embedding values \u200b\u200bare output when the GPU (-ngl 200000) executes the embedding\r\n5.86615059e-08\r\n-1.02221782e-06\r\n1.78800110e-06\r\n\r\nWhy are the same \"Hello World!\" inputs different? Does llama.cpp currently correctly support GPU and CPU embedding?\r\n\r\nAlso, does llama.cpp have specific instructions for underlying API functions, or usage precautions? In addition to those on github, is there any interface documentation website? Thank you\n\n### Possible Answer\n\nI think for the same input content, the GPU and CPU output embedding values \u200b\u200bshould be the same",
+    "labels": [
+      "question",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-29T06:31:04+00:00",
+    "closed_at": "2024-08-01T01:07:09+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7608/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7608"
+  },
+  {
+    "number": 34,
+    "title": "benchmarks?",
+    "body": "Where are the benchmarks for various hardware - eg. apple silicon ",
+    "labels": [
+      "documentation",
+      "question",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-12T05:20:58+00:00",
+    "closed_at": "2024-04-09T01:10:24+00:00",
+    "comments": 57,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/34/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/34"
+  },
+  {
+    "number": 225,
+    "title": "convert-pth-to-ggml.py how to handle torch.view_as_complex",
+    "body": "llama code block include view_as_real: https://github.com/facebookresearch/llama/blob/main/llama/model.py#L68\r\n\r\nhow to convert-pth-to-ggml.py handle this part of weight",
+    "labels": [
+      "question",
+      "need more info"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-17T05:28:02+00:00",
+    "closed_at": "2023-04-10T08:11:28+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/225/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/225"
+  },
+  {
+    "number": 18,
+    "title": "faster performance on older machines",
+    "body": "On machines with smaller memory and slower processors, it can be useful to reduce the overall number of threads running. For instance on my MacBook Pro Intel i5 16Gb machine, 4 threads is much faster than 8. Try:\r\n\r\nmake -j && ./main -m ./models/7B/ggml-model-q4_0.bin -p \"Author-contribution statements and acknowledgements in research papers should state clearly and specifically whether, and to what extent, the authors used AI technologies such as ChatGPT \" -t 4 -n 512\r\n",
+    "labels": [
+      "question"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-11T17:46:20+00:00",
+    "closed_at": "2023-04-16T10:21:56+00:00",
+    "comments": 20,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/18/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/18"
+  },
+  {
+    "number": 228,
+    "title": "7B/13B: Inability to write certain words/names with smaller models",
+    "body": "Hey!\r\n\r\nWhen I attempted to tell the bot in a chat-like prompt that my name is \"Nils\", I ran into an issue where the bot kept interpreting my name as \"Nil\" instead. I then noticed further issues with the word \"guild\" and some other words too.\r\nIs this a bug or to be expected? It does not happen on 30B, I couldn't give 65B a try.\r\n\r\nThanks\r\nNiansa",
+    "labels": [
+      "question",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-17T07:46:08+00:00",
+    "closed_at": "2023-03-17T08:31:37+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/228/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/228"
+  },
+  {
+    "number": 413,
+    "title": "Mismatch in Vocabulary Size: Investigating Inconsistencies between Token-to-ID and ID-to-Token Dictionaries",
+    "body": "The total number of vocabulary items in the model file is 32k. When we parse them, there's a mismatch between token_to_id and id_to_token.\r\n\r\nThe size for token_to_id is: 31,903\r\nThe size for id_to_token is: 32,000\r\n\r\nI'm curious on why there's a mismatch. Are there some token IDs that are reserved or errors during pre-processing?",
+    "labels": [
+      "question",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-23T02:05:32+00:00",
+    "closed_at": "2024-04-10T01:08:01+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/413/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/413"
+  },
+  {
+    "number": 219,
+    "title": "Can this code base be extended to support other transformer-based LLMs such as Pythia or its instruction-tuned version Open Assistant?",
+    "body": null,
+    "labels": [
+      "enhancement",
+      "question",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-17T01:46:50+00:00",
+    "closed_at": "2023-07-28T19:32:44+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/219/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/219"
+  },
+  {
+    "number": 7577,
+    "title": "Question: how to make main to lead it work with my M3 E-cores instead of P-cores",
+    "body": "### Prerequisites\n\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new useful question to share that cannot be answered within Discussions.\n\n### Background Description\n\nI observed that on my apple M3, the default 4 threads run on P-core, but I want to run it on E-core. How do I do that?\r\nYou can see pin_cpu () in the makefile, but from the macro description it doesn't seem to work for Apple silicon, and I couldn't find anything else that works for apple silicon.\r\nThank you very much\n\n### Possible Answer\n\nThread binding E-core",
+    "labels": [
+      "question",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-28T01:59:13+00:00",
+    "closed_at": "2024-07-12T01:17:44+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7577/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7577"
+  },
+  {
+    "number": 309,
+    "title": "Is the --ignore-eos flag redundant?",
+    "body": "As per https://github.com/ggerganov/llama.cpp/blob/da5303c1ea68aa19db829c634f1e10d08d409680/main.cpp#L1066 the EOS flag in interactive mode simply causes `is_interacting` to switch on, and so it serves as a way to end the current series of tokens and wait for user input. Is there any reason to actually avoid sampling it in the first place then?",
+    "labels": [
+      "enhancement",
+      "question"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-19T23:02:33+00:00",
+    "closed_at": "2023-03-20T18:50:19+00:00",
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/309/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/309"
+  },
+  {
+    "number": 8,
+    "title": "Is there a requirements.txt ?",
+    "body": null,
+    "labels": [
+      "question",
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-11T05:53:26+00:00",
+    "closed_at": "2023-03-12T06:23:30+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8"
+  }
+]

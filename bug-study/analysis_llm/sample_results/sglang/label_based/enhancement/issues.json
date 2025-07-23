@@ -1,0 +1,836 @@
+[
+  {
+    "number": 1335,
+    "title": "[Feature] Per-request random seed",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nI believe there is an option for fixing the random seed for the backend, but I think there isn't a feature for per-request random seeds.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-05T13:16:11+00:00",
+    "closed_at": "2024-12-14T00:17:29+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1335/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1335"
+  },
+  {
+    "number": 2559,
+    "title": "lora speed",
+    "body": "I measured the speed of starting multiple loras using sglang and vllm. Why is vllm faster than sglang? What acceleration method is sglang? I haven\u2019t enabled it yet?\r\nGraphics card 4090\r\nsglang sever\uff1a\r\npython -m sglang.launch_server --model-path /mnt/models/source/model/qwen2_5-7b-instruct/Qwen2___5-7B-Instruct \\\r\n  --host 0.0.0.0 \\\r\n  --port 8000 \\\r\n  --tp-size 1 \\\r\n  --mem-fraction-static 0.9 \\\r\n  --served-model-name \"Qwen2.5-7B-Instruct\" \\\r\n  --chunked-prefill-size 4096 \\\r\n  --disable-cuda-graph \\\r\n  --disable-radix-cache \\\r\n  --show-time-cost \\\r\n  --enable-torch-compile \\\r\n  --schedule-conservativeness 0.03 \\\r\n  --schedule-policy fcfs \\\r\n  --lora-paths lora0=\u201c\u201d lora_batch=\"\" \\\r\n  --max-loras-per-batch 32 \\\r\n  --dtype bfloat16\r\n\r\nvllm sever\r\npython -m vllm.entrypoints.openai.api_server --model /mnt/models/source/model/qwen2_5-7b-instruct/Qwen2___5-7B-Instruct \\\r\n   --port 8899 \\\r\n   --served-model-name Qwen2.5-7B-Instruct \\\r\n   --enable-lora \\\r\n   --lora-moduleslora0=\u201c\u201d lora_batch=\"\" \\\r\n   --gpu_memory_utilization 0.90 \\\r\n   --enable-prefix-caching \\\r\n   --max-num-seqs 128\r\n\r\nsglang post\r\nurl = \"http://localhost:8000\"\r\njson_data = {\r\n\"text\": problems_token_completions,\r\n\"sampling_params\": {\"max_new_tokens\": 10,\"temperature\": 0, \"top_p\": 1,\"top_k\":1},\r\n\"lora_path\": [\"lora0\",\"lora_batch\"]*32,}\r\n\r\nimport time\r\ntime_start=time.time()\r\nresponse = requests.post(\r\n        url + \"/generate\",\r\n        json=json_data,\r\n)\r\ntime_end=time.time()\r\nprint(time_end-time_start)\r\n\r\nvllm post\r\n\r\nimport time\r\nurl = \"http://localhost:8899\"\r\njson_data={\"model\": \"reranker_classify_catalog_rough_model\", \"messages\": [{\"role\":\"user\",\"content\":problem[10]}],\"max_tokens\": 100,\"temperature\": 0, \"top_p\": 1}\r\ntime_start=time.time()\r\nresponse = requests.post(\r\n        url + \"/v1/chat/completions\",\r\n        json=json_data,\r\n)\r\ntime_end=time.time()\r\nprint(time_end-time_start)\r\nprint(response.json())\r\n\r\nsglang speed\r\ngen throughput (token/s): 33.28\r\nvllm speed\r\nAvg generation throughput: 55.9 tokens/s",
+    "labels": [
+      "enhancement",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-23T14:28:48+00:00",
+    "closed_at": "2025-02-22T00:16:12+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2559/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2559"
+  },
+  {
+    "number": 2549,
+    "title": "[Feature] Set outlines and xgrammar as addtional dependency",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nI am trying to integrate SGLang and vllm into OpenRLHF. For the grammar backend, could we set it as additional requirements, i.e. import it when we use it? Like:\r\n\r\n```python\r\n\r\ndef __init__():\r\n    if use_constrained_decoding:\r\n        if grammar_backend == \"xgrammar\":\r\n            import xgrammar\r\n            xgrammar.function()\r\n        if grammar_backend == \"outlines\":\r\n            import outlines\r\n            outlines.function()\r\n```\r\n\r\nThis to avoid the version conflicts with vllm.\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "enhancement",
+      "inactive",
+      "grammar-backend"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-23T02:35:28+00:00",
+    "closed_at": "2025-02-22T00:16:13+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2549/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2549"
+  },
+  {
+    "number": 39,
+    "title": "LLM integration with normal programming patterns or, a high level sglang interface",
+    "body": "I posted a similar issue in outlines, but here goes:  we're building something complex and I think it would be helpful to have a marvin-like library that supports normal programming patterns with LLM's but also gives control over generation. This  would provide high level pythonic abstractions like typed functions dynamically compiling grammars for return pydantic structs that would also allow you to drop down to customize generation either within or around these functions. This could    be like high level mypy typed boundaries around sglang programs.\r\n\r\n[Marvin](https://github.com/PrefectHQ/marvin) and [funcchain](https://github.com/shroominic/funcchain) do the high level (sort of), but you give up control. Marvin relies on json and/or function calling and is constrained to OAI models, funcchain uses dynamically compiled  Lllamacpp grammar   as well. \r\n\r\nAnalogy would be Pytorch:triton::funcchain/equivalent:sglang\r\n\r\nAside from the funcchain-like feature, for my use case I'd love to see:\r\n\r\n1. Custom unpacking of pydantic structs: Looping/ programmatically accessing fields into prompts\r\n2. Customizing generation of pydantic output structs\r\n3. Mixing and matching regular python types and pydantic inputs and outputs\r\n4. Stretch goal: Some sort of single dispatch (class based) or multiple dispatch polymorphism (https://github.com/beartype/plum)\r\n5. Our baseline MVP will be using OpenAI models initially. For this to be computationally feasible, I think we'd need function calling, which seems to be planned?\r\n\r\nAnyway, is this something that would align with your vision, or better to have a high level interface library with multiple backends? \r\n\r\nDSPY does this in some sense, but it's constrained to a pytorch like programming model, where this is more like \"differentiable swift\" or the \"Julia just write your code and backprop through it\" vision.\r\n\r\nOne thing that funcchain wants to do is have an \"autotune\" model where these functions are kicked to dpsy for compilation. I can see sometimes I'd like more control and sometimes I'd be happy to have dspy do some of the work for me. \r\n\r\n\r\n",
+    "labels": [
+      "enhancement",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-18T14:14:29+00:00",
+    "closed_at": "2024-07-25T06:31:58+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/39/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/39"
+  },
+  {
+    "number": 1826,
+    "title": "[Feature] Support QLoRA weights",
+    "body": "Does sgl support qlora? Could you provide some instructions on how to use it?",
+    "labels": [
+      "enhancement",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-28T07:39:48+00:00",
+    "closed_at": "2025-01-01T00:18:43+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1826/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1826"
+  },
+  {
+    "number": 353,
+    "title": "Beam Search Support ",
+    "body": "There was support for a num_beams parameter before but now the sampling parameters has no such parameter. Can support for beam search be restored?",
+    "labels": [
+      "enhancement",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-08T06:30:44+00:00",
+    "closed_at": "2024-07-25T06:33:08+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/353/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/353"
+  },
+  {
+    "number": 5595,
+    "title": "[Feature] support more user-friendly MTP",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\nAs we discussed offline, we need to support more user-friendly MTP. cc @merrymercy \n\n- [ ] best configuration for the default @zhyncs \n- [ ] user doesn't need to specify draft model separately @ispobock \n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-21T08:03:50+00:00",
+    "closed_at": "2025-04-29T23:33:16+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5595/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5595"
+  },
+  {
+    "number": 3520,
+    "title": "[Bug] sglang doesn't stop the generation when the request is canceled",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI have been experimenting with sglang. Amazing work there !\n\nI have found that sgland continues to generate even if the request has been canceled by the client.\n\nIt would be great if it wasn't the case. \n\n### Reproduction\n\nStart the server, send a request, cancel it.\n\n### Environment\n\nI was using 2 * H200 to serve R1 600B",
+    "labels": [
+      "enhancement"
+    ],
+    "state": "open",
+    "created_at": "2025-02-12T09:17:16+00:00",
+    "closed_at": null,
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3520/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3520"
+  },
+  {
+    "number": 4655,
+    "title": "[Roadmap] Prefill and Decoding Disaggregation",
+    "body": "### Design: \n\n[SGLang PD Disaggregation (Open Source)](https://docs.google.com/document/d/1rQXJwKd5b9b1aOzLh98mnyMhBMhlxXA5ATZTHoQrwvc/edit?tab=t.0#heading=h.i3s2t1j0e1ik)\n\n### Progress\n- [x] Release initial code @ByronHsu  #4654\n  - prefill and decode event loop, queue, and transfer interface\n  - **transfer engine is faked** \n  - easy python load balancer\n- [x] Mooncake integration @ShangmingCai   https://github.com/sgl-project/sglang/pulls?q=is%3Apr+mooncake+is%3Aopen\n- [x] NIXL Integration @trevor-m #5477\n- [x] PD + overlap schedule @ByronHsu \n- [x] PD + DP attention @ch-wan @ByronHsu \n- [x] PD + fault tolerance https://github.com/sgl-project/sglang/pull/6504 https://github.com/sgl-project/sglang/pull/6263\n- [x] PD + spec decode https://github.com/sgl-project/sglang/pull/6507\n- [x] PD + logprob https://github.com/sgl-project/sglang/pull/6558\n- [x] PD + Structured Output https://github.com/sgl-project/sglang/pull/6560\n\n- [x] PD + retract @Ying1123 https://github.com/sgl-project/sglang/pull/7196\n- [x] PD + different TPs - call out for contribution https://github.com/sgl-project/sglang/pull/5922 https://github.com/sgl-project/sglang/pull/6793\n- [x] Rust PD Load Balancer @hnyls2002  https://github.com/sgl-project/sglang/pull/6437\n- [ ] PD + ROCm (Mooncake) @HaiShaw \n\n\n",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "collaboration"
+    ],
+    "state": "open",
+    "created_at": "2025-03-21T19:26:55+00:00",
+    "closed_at": null,
+    "comments": 30,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4655/reactions",
+      "total_count": 81,
+      "+1": 47,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 18,
+      "eyes": 16
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4655"
+  },
+  {
+    "number": 5810,
+    "title": "Further Speed up FA3 Backend",
+    "body": "We explored and discussed some ideas and we want to write it down for tracking, also welcome community developer to try out those unfinished\n\n- [x] (Good first issue) Skip `len` operation, get it directly from forward batch: https://github.com/sgl-project/sglang/pull/5969 @lifuhuang \n- [ ] GQA head packing: https://github.com/Dao-AILab/flash-attention/blob/main/hopper/flash_attn_interface.py#L658 Change it to True and run benchmark.\n- [x] Split-KV. aka Flash Decoding: We already enabled it, it is indeed faster in lower batch and long context scenario. Benchmark will be attached.\n- [ ] PDL: https://github.com/Dao-AILab/flash-attention/commit/000090d02f0398e9087a8823fc1f5242becfac99\n- [x] (Won't do) Prepare Scheduler Metadata: https://github.com/Dao-AILab/flash-attention/commit/fa60e7cc97300b4b26721983df580a7da7a8ebea (From Tri Dao's note, it can only speed up 2us, we can keep an eye on this, not recommending adopting this)\n- [ ] For Llama Models, we observed that Spec Decoding with Top K > 1 is slightly slower than Flash Infer backend, we need comprehensive profiling and optimize it @MrAta \n- [x] Replace Pad operation by Copy: https://github.com/sgl-project/sglang/pull/5945\n- [x] Remove is_fa3_supported from fa3 kernel: https://github.com/sgl-project/sglang/pull/6112\n- [x] Remove pad operation for all decode cases: https://github.com/sgl-project/sglang/pull/6077 ",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "open",
+    "created_at": "2025-04-28T04:57:56+00:00",
+    "closed_at": null,
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5810/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5810"
+  },
+  {
+    "number": 4689,
+    "title": "[Bug] Testing new Llama-3_3-Nemotron-Super-49B-v1 by Nvidia: \"Model architectures ['DeciLMForCausalLM'] are not supported for now.\"",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI tried to run on SGLang Llama-3_3-Nemotron-Super-49B-v1 recently announced by Nvidia.\n\nIt seems not to be yet supported by SGLang since `DeciLMForCausalLM`is not yet accepted by SGLang. See below.\n\nCan you add corresponding support?\n\n```\nScheduler hit an exception: Traceback (most recent call last):\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py\", line 1748, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py\", line 218, in __init__\n    self.tp_worker = TpWorkerClass(\n                     ^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/tp_worker_overlap_thread.py\", line 63, in __init__\n    self.worker = TpModelWorker(server_args, gpu_id, tp_rank, dp_rank, nccl_port)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/tp_worker.py\", line 74, in __init__\n    self.model_runner = ModelRunner(\n                        ^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py\", line 166, in __init__\n    self.initialize(min_per_gpu_memory)\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py\", line 176, in initialize\n    self.load_model()\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py\", line 361, in load_model\n    self.model = get_model(\n                 ^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/__init__.py\", line 22, in get_model\n    return loader.load_model(\n           ^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py\", line 358, in load_model\n    model = _initialize_model(\n            ^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py\", line 137, in _initialize_model\n    model_class, _ = get_model_architecture(model_config)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/utils.py\", line 37, in get_model_architecture\n    return ModelRegistry.resolve_model_cls(architectures)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/models/registry.py\", line 65, in resolve_model_cls\n    return self._raise_for_unsupported(architectures)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/models/registry.py\", line 32, in _raise_for_unsupported\n    raise ValueError(\nValueError: Model architectures ['DeciLMForCausalLM'] are not supported for now. Supported architectures: dict_keys(['BaichuanForCausalLM', 'ChatGLMModel', 'CohereForCausalLM', 'Cohere2ForCausalLM', 'DbrxForCausalLM', 'DeepseekForCausalLM', 'MultiModalityCausalLM', 'DeepseekV3ForCausalLMNextN', 'DeepseekV2ForCausalLM', 'DeepseekV3ForCausalLM', 'ExaoneForCausalLM', 'GemmaForCausalLM', 'Gemma2ForCausalLM', 'Gemma2ForSequenceClassification', 'GPT2LMHeadModel', 'GPTBigCodeForCausalLM', 'GraniteForCausalLM', 'Grok1ForCausalLM', 'Grok1ModelForCausalLM', 'InternLM2ForCausalLM', 'InternLM2ForRewardModel', 'LlamaForCausalLM', 'Phi3ForCausalLM', 'InternLM3ForCausalLM', 'LlamaForClassification', 'LlamaForCausalLMEagle', 'LlamaEmbeddingModel', 'MistralModel', 'LlamaForSequenceClassification', 'LlamaForSequenceClassificationWithNormal_Weights', 'LlavaLlamaForCausalLM', 'LlavaQwenForCausalLM', 'LlavaMistralForCausalLM', 'LlavaVidForCausalLM', 'MiniCPMForCausalLM', 'MiniCPM3ForCausalLM', 'MiniCPMV', 'MistralForCausalLM', 'MixtralForCausalLM', 'QuantMixtralForCausalLM', 'MllamaForConditionalGeneration', 'OlmoForCausalLM', 'Olmo2ForCausalLM', 'OlmoeForCausalLM', 'Phi3SmallForCausalLM', 'QWenLMHeadModel', 'Qwen2ForCausalLM', 'Qwen2_5_VLForConditionalGeneration', 'Qwen2ForCausalLMEagle', 'Qwen2MoeForCausalLM', 'Qwen2ForRewardModel', 'Qwen2VLForConditionalGeneration', 'StableLmForCausalLM', 'TorchNativeLlamaForCausalLM', 'TorchNativePhi3ForCausalLM', 'XverseForCausalLM', 'XverseMoeForCausalLM', 'YiVLForCausalLM'])\n```\n\n### Reproduction\n\nStart SGLang and with `nvidia/Llama-3_3-Nemotron-Super-49B-v1` coming from HuggingFace\nThe message above will appear right after this command\n\n### Environment\n\nAmazon Linux 2023\nSGLang 0.0.4.post1 = last officially published version as of this writing",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2025-03-23T05:40:20+00:00",
+    "closed_at": null,
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4689/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4689"
+  },
+  {
+    "number": 2569,
+    "title": "[Feature] (Willing to PR) Proposal: Drop-in fast replacement of `PreTrainedModel.generate`",
+    "body": "### Checklist\r\n\r\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 2. Please use English, otherwise it will be closed.\r\n\r\n### Motivation\r\n\r\nHi thanks for the lib! Currently, a lot of code uses `model.generate()`, such as TRL's PPOTrainer, etc. If we can make a drop-in replacement of it using SGLang, then everyone can very easily speed up their code related to generation. For example, TRL's PPOTrainer, OpenRLHF's train_ppo.py (not the train_ppo_ray.py which is more for distributed training). IMHO there are many places this can be useful - many online RL algorithm can benefit from this.\r\n\r\nAs for when to update SGLang weight from HF weight, most naive solution may be, we update weights *every* time the generate is called. This may not be a big problem, because we can configure the PPO batch size to be so huge that the model.generate is only called once.\r\n\r\nRelated: https://github.com/sgl-project/sglang/issues/2542 With that, we can reduce memory footprint outside generate.\r\n\r\n### Related resources\r\n\r\n_No response_",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "collaboration",
+      "inactive",
+      "feature",
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-24T06:18:24+00:00",
+    "closed_at": "2025-03-30T00:19:36+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2569/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2569"
+  },
+  {
+    "number": 2313,
+    "title": "[Feature] Specify dtype at begin_forward for FlashInfer > 0.1.6",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\r\nfix https://github.com/sgl-project/sglang/pull/2295#issuecomment-2509684766\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "bug",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-02T10:45:21+00:00",
+    "closed_at": "2024-12-08T12:07:32+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2313/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2313"
+  },
+  {
+    "number": 2736,
+    "title": "[Feature] several features for veRL integration",
+    "body": "### Checklist\r\n\r\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 2. Please use English, otherwise it will be closed.\r\n\r\n### Motivation\r\n\r\nTL;DR: Introducing several features that would be beneficial for integrating SGLang into veRL and may also be beneficial for other Post-Training frameworks.\r\n### Provide an inference script that is started by torchrun (support SPMD)\r\nCurrently, the offline inference script is launched by `sgl.Engine`. Internally, it spawns multiple [`Scheduler`](https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/managers/scheduler.py#L98).\r\nWith `torchrun`, the `Scheduler` is launched by `torchrun` and the tp_rank can be obtained from the environ.\r\nIn veRL, the Data Parallel dimension is managed by our `WorkerGroup` and the dp_rank of each Scheduler should be None.\r\nMore specifically, if the current `WorkerGroup` has 8 GPUs while we set the Rollout TP size to 2. All the GPUs in this `WorkerGroup` will build the distributed world and the generation engine and training engine will construct its own TP/PP groups. veRL's `data_protocol` will partition and dispatch the prompts to each TP/PP group without the generation engine is aware of the DP dimension.\r\n\r\nA general picture of a torchrun script that can simulate the HybridEngine behavior.\r\n\r\n```python\r\n# build distributed world\r\nlocal_rank, rank, world_size = initialize_global_process_group()\r\n# build device mesh for training engine.\r\ndevice_mesh = init_device_mesh('cuda', mesh_shape=(world_size,), mesh_dim_names=['fsdp'])\r\nfsdp_model = FSDP(actor_model,\r\n                       ...\r\n                      device_mesh=device_mesh) \r\nFSDP.set_state_dict_type(fsdp_model,\r\n                             state_dict_type=StateDictType.SHARDED_STATE_DICT,\r\n                             state_dict_config=ShardedStateDictConfig())\r\n# get sharded model state dict\r\nstate_dict = fsdp_model.state_dict()\r\n\r\n# [Optional] build device mesh for inference engine\r\ngen_device_mesh = init_device_mesh('cuda', mesh_shape=(2, 4), mesh_dim_names=['dp', 'tp'])\r\n# build inference engine\r\ninference_engine = SGLEngine(model_hf_config=actor_model_config,\r\n              tensor_parallel_size=tensor_model_parallel_size,\r\n              pipeline_parallel_size=pipeline_parallel_size, # if any\r\n              enforce_eager=False, # use cuda graph with offload KVCache and weight\r\n              dtype='bfloat16',\r\n              load_format='dummy_dtensor', # initialize dummy weight\r\n              gpu_memory_utilization=0.1,\r\n              trust_remote_code=True)\r\n\r\n# [Optional] update parallel state in SGLang for 3D-HybridEngine\r\ninference_engine.update_parallel_state(TP=device_mesh[\"tp\"])\r\n\r\n# sync weights between actor and rollout, support several format: DTensor and Megatron (sharded)\r\ninference_engine.sync_model_weights(actor_weights=state_dict, load_format='dtensor')\r\n\r\n# generate sequence, it would be better if the output is a list of Tensor not list of list[str]\r\noutputs = lnference_engine.generate(prompt_token_ids=idx_list, sampling_params=sampling_params, use_tqdm=False)\r\n\r\n# offload kvcache after generation\r\ninference_engine.free_kvcache() # inference_engine.init_kvcache()\r\n\r\n# offload model\r\ninference_engine.offload_model_weights() # inference_engine.load_model_weights(), we can simply re-init them\r\n```\r\n\r\n\r\n### Expose an API that can load weights in TP/PP format\r\n`inference_engine.sync_model_weights(actor_weights=state_dict, load_format='dtensor')` in the above code.\r\nWe may need two different load formats with different weight loaders:\r\n- dtensor: The SGLang model weight is sharded, our state_dict is sharded in different ways but we gather them layer-by-layer and feed them into the SGLang weight loader for synchronization. \r\n- megatron sharded: The SGLang model weight is sharded, verl hybrid engine prepares a state_dict that is identical to SGLang's sharded weight. Therefore, the SGLang model can directly copy the weights in place without any further sharding.\r\n\r\n### Expose an API that can free/re-init kv cache, and offload/load model weights\r\n`inference_engine.free_kvcache()` and `inference_engine.init_kvcache()` ; `inference_engine.offload_model_weights()` and `inference_engine.load_model_weights()`\r\nIt would be better to support CUDAGraph although we offload kvcache and model weights. Reference: https://github.com/sgl-project/sglang/issues/2542\r\n\r\n### Disable detokenize during generation. \r\nIn RL training, we only need token_ids in most training scenarios and we can perform batch detokenize when we really need tokens. We don't care about the ITL metric.\r\nAfter being disabled,  we can check whether there are any opportunities to improve the throughput\r\n\r\n\r\n### 3D-HybridEngine parallel state construction (TP/PP group generation logic should be different from Megatron-LM when using 3D-HybridEngine)\r\nWith our 3D-HybridEngine design in [paper](https://arxiv.org/abs/2409.19256v2) and [code](https://github.com/volcengine/verl/blob/main/verl/third_party/vllm/vllm_v_0_6_3/parallel_state.py#L132-L147), the grouping strategy for TP/PP in SGLang shall be aware of the TP/PP size in training framework. \r\nWe consider that SGLang is not necessarily to be aware of the TP/PP size in the training framework. \r\nSo, we can build the TP/PP groups for SGLang before SGLang initialization and then update these TP/PP groups to the SGLEngine. See [Optional] in the above code.\r\n\r\n### Output post-process to torch.Tensor (token_ids).\r\nA small feature, if not supported, we can implement some post-process in veRL. No worries.\r\n\r\n\r\n### Related resources\r\n\r\n_No response_",
+    "labels": [
+      "enhancement",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-05T15:59:49+00:00",
+    "closed_at": "2025-03-08T00:14:04+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2736/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2736"
+  },
+  {
+    "number": 2807,
+    "title": "[Feature] RFC for adding CPU support for SGLang",
+    "body": "### Motivation\n\nHi, SGLang folks! This is Mingfei from intel pytorch team, our team helps optimize PyTorch performance on CPU. I am also the PyTorch module maintainer for cpu performance. We would like to contribute to SGLang for CPU enabling and performance optimization.\n\n### Targets\nOur primary target is to optimize SGLang performance on Intel Xeon Scalable Processors (x86 server CPUs).\n* Optimization will be focusing on Xeon with [Intel\u00ae Advanced Matrix Extensions](https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/advanced-matrix-extensions/overview.html) support, including Sapphire Rapids(4th gen), Emerald Rapids(5th gen), Granite Rapids(6th gen).\n* Native implementations or fallbacks will be provided for CPUs with other ISA to make it functional.\n* Providing good performance per dollar.\n\n### Limitations\n\n* Kernels written in **avx512** and **amx-bf16**, requires **GCC11** or above.\n* **BFloat16/Float16** will be enabled at the same time on CPU, but we only focus on **BFloat16** performance optimization at the current stage, **Float16** optimization will be added later on.\n\n### Schedule for 25Q1\nWe will focusing on DeepSeek series at the moment to align with our internal development requirements and extend the model coverage later on.\n\n#### Generic enabling/optimizations for sglang\n\n- [x] CPU device enabling. We intend to enable CPU device with torch native backend first and then gradually replace all the performance critical components with C++ intrinsics kernels. https://github.com/sgl-project/sglang/pull/2806\n- [x] fused kernels for `rms_norm`, `silu_and_mul`, sampling and so on.\n- [x] radix attention kernels for extend and decoding.\n\n#### DeepSeek performance optimizations\n(we are currently mapping the work from [DeepSeek Multi-head Latent Attention (MLA) Throughput Optimizations](https://lmsys.org/blog/2024-09-04-sglang-v0-3/#deepseek-multi-head-latent-attention-mla-throughput-optimizations))\n- [x] MLA decoding kernel optimization with head blocking.\n- [x] DeepSeekMoE (FusedMoE)\n- [x] fp8 kv cache (experimental)\n\n#### Tensor Parallel\n- [x] Map TP to the multiple sockets (numa nodes) on a single node CPU\n- [ ] EPMoE\n\nWe hope to help more customers to build better user experience with deploying with sglang on CPU devices. Welcome any feedbacks, thanks!\n\n",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "intel",
+      "cpu"
+    ],
+    "state": "open",
+    "created_at": "2025-01-09T07:58:45+00:00",
+    "closed_at": null,
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2807/reactions",
+      "total_count": 14,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2807"
+  },
+  {
+    "number": 3472,
+    "title": "[Track] DeepSeek V3/R1 nextn progress",
+    "body": "## Triton Backend\n\n@ispobock @pankajroark \n\n- [x] [refactor triton backend 1](https://github.com/sgl-project/sglang/pull/3292), [2](https://github.com/sgl-project/sglang/pull/3309)\n\n- [x] [support custom mask](https://github.com/sgl-project/sglang/pull/3317)\n\n- [x] [support EAGLE 2](https://github.com/sgl-project/sglang/pull/3466)\n\n- [x] [compatible with CUDA Graph](https://github.com/sgl-project/sglang/pull/3500)\n\n- [x] [support nextn I (single MTP head)](https://github.com/sgl-project/sglang/pull/3582)\n\n- [x] support next II (multi MTP heads) (WIP @pankajroark )\n\n## FlashInfer Backend\n\n@zhyncs @yzh119 \n\n- [x] compatible with disable MLA\n\n- [x] support FlashInfer nightly MLA ragged prefill and CUDA Core MLA decoding\n\n- [x] support FlashInfer v0.2.0.post3 MLA ragged, paged prefill and decoding (@zhyncs @yzh119 )\n\n- [x] nextn parts can be shared with Triton Backend\n\n## EAGLE 2\n\n@zhyncs @Ying1123 \n\n- [x] implement sampling kernel in [sgl-kernel](https://github.com/sgl-project/sglang/tree/main/sgl-kernel) (drop cutex) [kernel part](https://github.com/sgl-project/sglang/pull/3373), [python part](https://github.com/sgl-project/sglang/pull/3378)\n\n- [x] bunch of fixes [non greedy fix](https://github.com/sgl-project/sglang/pull/3407), [disable cuda graph fix 1](https://github.com/sgl-project/sglang/pull/3412), [fix 2](https://github.com/sgl-project/sglang/pull/3411), [cleanup 1](https://github.com/sgl-project/sglang/pull/3415), [cleanup 2](https://github.com/sgl-project/sglang/pull/3422), [fix cuda graph capture failure](https://github.com/sgl-project/sglang/pull/3430), [fix 2](https://github.com/sgl-project/sglang/pull/3431), [reduce one draft forward](https://github.com/sgl-project/sglang/pull/3468)\n\n- [x] compatible with radix cache and chunked prefill (WIP @Ying1123 )",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "flashinfer",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-10T14:46:03+00:00",
+    "closed_at": "2025-03-25T04:13:25+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3472/reactions",
+      "total_count": 16,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 3
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3472"
+  },
+  {
+    "number": 44,
+    "title": "OpenAI speculative execution",
+    "body": "The current frontend using OpenAI will invoke multiple calls for the example below:\r\n```\r\n@sgl.function\r\ndef example(s):\r\n  s += \"Construct a character.\"\r\n  s += \"Name: \" + gen(\"name\") + \" Birthday: \" + gen(\"birthday\") + \" Job: \" + gen(\"job\")\r\n```\r\nWe can optimize this to send less number of calls to save money:\r\n1. Gen longer in the first gen call, and skip the later if the first gen did the right thing.\r\n2. Allow using OpenAI's n=10 keyword argument to sample multiple completions when forked. We can also provide the interface `example.run(n=10)`.",
+    "labels": [
+      "enhancement",
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-18T18:09:31+00:00",
+    "closed_at": "2024-01-25T10:10:02+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/44/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/44"
+  },
+  {
+    "number": 3393,
+    "title": "[Feature] Can router support prometheus metrics",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nK8s is often used to deploy applications online. After the router module is introduced, related service indicator monitoring is also required. Therefore, similar to https://github.com/sgl-project/sglang/pull/1853 provided by the server, does it support the collection of monitoring indicators of the router?\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "inactive",
+      "feature",
+      "router"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-08T06:42:46+00:00",
+    "closed_at": "2025-04-28T00:19:29+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3393/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3393"
+  },
+  {
+    "number": 4518,
+    "title": "[Feature] support mistral small vlm",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nhttps://mistral.ai/fr/news/mistral-small-3-1\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted",
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-17T18:43:18+00:00",
+    "closed_at": "2025-05-21T15:27:30+00:00",
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4518/reactions",
+      "total_count": 4,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 2,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4518"
+  },
+  {
+    "number": 3032,
+    "title": "[Feature] Support Beam Search",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\ncc @HandH1998 @sleepcoo @ispobock \n\nBeam search is a common method in LLM generation, supported by some LLM engines, e.g,. vLLM, Transformers. \n\nThis issue proposes our implementation to support beam search in SGLang and discusses its rationality, similar to an RFC.\n\nvLLM's beam search implementation was performant, but in a recent release, beam search support was dropped from the core (https://github.com/vllm-project/vllm/issues/6226) and became much slower. Our implementation aims to achieve minimal modifications and minimal overhead. We found that in vLLM's high-level implementation (https://github.com/vllm-project/vllm/blob/2fc6944c5e69d5d0ce15d09a855452c795d75c3c/vllm/entrypoints/llm.py#L507), each decoding iteration becomes prefilling (max token=1), which is the primary source of overhead.\n\nOur implementation is shown in the figure below. The shared prefix is determined in the prefilling stage, and in decoding stage, we duplicate the prefix indices during the allocation of kv cache space for the next decoding iteration. This approach can avoid most prefilling processes and the need to modify too much code to maintain a tree cache for beam search sequences. After that, each iteration overwrites the top-beam-width kv cache indices into request-to-token retrieval (req_to_token) from the last retrieval and frees the parent kv cache indices whose subsequent sequences are all dropped. In this cae, green parent will be dropped because their children are not within the top-beam-width.\n<img width=\"822\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/aa7b77b3-e013-4ae9-acf6-b8e359751397\" />\n\nFrom the algorithmic perspective, we follow the greedy strategy from the vLLM version. Support for more versions of beam search algorithms is left for future work.\n\nWe benchmark our implementation for both accuracy and efficiency in Qwen2.5-1.5B-Instruct, with batch size=32, beam width=5 and warmup. The beam search outputs achieve 80% accuracy with the Transformers. The top-one beam search outputs score 0.734 in MMLU benchmarking. Our efficiency introduces at least 65% overhead but significantly outperforms Transformers and vLLM fork, see blow.\n<img width=\"514\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/921d828b-3f5d-49aa-8058-131c40086f08\" />\n\nWe plan to support: \n\n- [ ] the overlap mode\n- [ ] replace overwrite operation by trition kernel.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-21T11:46:57+00:00",
+    "closed_at": "2025-03-23T00:19:16+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3032/reactions",
+      "total_count": 8,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3032"
+  },
+  {
+    "number": 1419,
+    "title": "[Feature] Support AMD GPU via PyTorch for ROCm",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nEnable SGLang on AMD GPUs !\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-14T05:55:31+00:00",
+    "closed_at": "2024-09-19T11:01:59+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1419/reactions",
+      "total_count": 3,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 2,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1419"
+  },
+  {
+    "number": 2389,
+    "title": "[Feature] SGLang Router design discussion",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\n@ispobock  and I had a brief discussion about the current design and implementation of the SGLang Router.\r\n\r\nI think the main concerns currently are as follows, before large-scale deployment.\r\n\r\n- The current Router is stateful, which means I cannot deploy the Router like scaling a stateless service.\r\nMay we consider storing the state of the Router in services like Redis, DB, or etcd here?\r\n\r\n- The current Router is at the cluster level. Although there are replicas, when the master fails, a replica can be used.\r\nImagine a real deployment scenario, such as one used by actual customers, where the deployment requires simultaneous use of AWS, GCP, and Oracle. The data centers are distributed across the Western US, Central US, and Eastern US. There is a risk of cloud service providers going down as well as data center outages. Additionally, there is consideration for network communication latency between different regions.\r\n\r\nThese issues cannot be well resolved under the current Router design, and to truly use the Router for large-scale deployment, these problems cannot be avoided.\r\n\r\nThis issue is just a starting point to raise some practical deployment requirements from the industry. We can discuss more detailed designs offline, and if the community has similar feedback or needs, they are welcome to join the discussion on the [Slack channel](https://join.slack.com/t/sgl-fru7574/shared_invite/zt-2rtikx2pv-DUfPrhx2SaNAq~47YtV1XQ). Thanks! cc @ByronHsu \n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-07T11:53:13+00:00",
+    "closed_at": "2025-04-06T00:19:37+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2389/reactions",
+      "total_count": 12,
+      "+1": 12,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2389"
+  },
+  {
+    "number": 2504,
+    "title": "[Feature] Add Math in our CI",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nOne of my friends told me that SGLang Engine's performance on Math is abnormally a bit lower. We will find this out, benchmarking SGLang and other engines' performance on Math (use GPT-4 to evaluate). And, ultimately, we will add a CI test for Math which runs daily.\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "enhancement",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-17T22:37:36+00:00",
+    "closed_at": "2024-12-30T06:52:10+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2504/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2504"
+  },
+  {
+    "number": 7533,
+    "title": "Task 000: Centralized Configuration Module",
+    "body": "# Task 000: Centralized Configuration Module\n\n## Summary\nCreate a comprehensive configuration module that centralizes all validation logic, provides type-safe configuration structures, and eliminates scattered validation code throughout the router.\n\n## Problem Statement\nCurrently, configuration validation is scattered across multiple locations:\n- URL validation happens in Python code\n- Mode compatibility checks occur during server startup\n- Policy parameter validation is embedded in individual routers\n- No centralized error handling for configuration issues\n- Duplicate validation logic in different components\n\nThis leads to:\n- Inconsistent validation rules\n- Runtime errors that could be caught at startup\n- Difficult maintenance when adding new configuration options\n- Poor error messages that don't guide users to fixes\n\n## Proposed Solution\n\n### 1. Configuration Type System\nCreate strongly-typed configuration structures with built-in validation:\n\n```rust\n// src/config/types.rs\n#[derive(Debug, Clone, Serialize, Deserialize)]\npub struct RouterConfig {\n    pub mode: RoutingMode,\n    pub policy: PolicyConfig,\n    pub host: String,\n    pub port: u16,\n    pub workers: Vec<String>,\n    pub service_discovery: Option<DiscoveryConfig>,\n    pub metrics: MetricsConfig,\n    pub timeouts: TimeoutConfig,\n}\n\n#[derive(Debug, Clone, Serialize, Deserialize)]\npub enum RoutingMode {\n    Regular,\n    PrefillDecode {\n        prefill_urls: Vec<(String, Option<u16>)>,\n        decode_urls: Vec<String>,\n    },\n}\n\n#[derive(Debug, Clone, Serialize, Deserialize)]\npub enum PolicyConfig {\n    Random,\n    RoundRobin,\n    CacheAware {\n        cache_threshold: f32,\n        balance_abs_threshold: usize,\n        balance_rel_threshold: f32,\n        eviction_period_hours: u64,\n    },\n    PowerOfTwo {\n        interval_secs: u64,\n    },\n}\n```\n\n### 2. Validation Framework\n```rust\n// src/config/validation.rs\npub struct ConfigValidator;\n\nimpl ConfigValidator {\n    pub fn validate(config: &RouterConfig) -> Result<(), ConfigError> {\n        self.validate_basic_fields(config)?;\n        self.validate_urls(config)?;\n        self.validate_mode_policy_compatibility(config)?;\n        self.validate_worker_requirements(config)?;\n        self.validate_numeric_ranges(config)?;\n        Ok(())\n    }\n    \n    fn validate_urls(&self, config: &RouterConfig) -> Result<(), ConfigError> {\n        for url in &config.workers {\n            let parsed = Url::parse(url).map_err(|e| \n                ConfigError::InvalidValue {\n                    field: \"workers\".to_string(),\n                    value: url.clone(),\n                    reason: format!(\"Invalid URL format: {}\", e),\n                }\n            )?;\n            \n            if parsed.scheme() != \"http\" && parsed.scheme() != \"https\" {\n                return Err(ConfigError::InvalidValue {\n                    field: \"workers\".to_string(),\n                    value: url.clone(),\n                    reason: \"URL must use http or https scheme\".to_string(),\n                });\n            }\n        }\n        Ok(())\n    }\n}\n```\n\n### 3. Error Types\n```rust\n// src/config/error.rs\n#[derive(Debug, thiserror::Error)]\npub enum ConfigError {\n    #[error(\"Validation failed: {0}\")]\n    ValidationFailed(String),\n    \n    #[error(\"Invalid value for field '{field}': {value} - {reason}\")]\n    InvalidValue {\n        field: String,\n        value: String,\n        reason: String,\n    },\n    \n    #[error(\"Incompatible configuration: {0}\")]\n    IncompatibleConfig(String),\n    \n    #[error(\"Missing required field: {0}\")]\n    MissingRequired(String),\n}\n```\n\n### 4. Configuration Builder\n```rust\n// src/config/builder.rs\npub struct ConfigBuilder {\n    config: RouterConfig,\n}\n\nimpl ConfigBuilder {\n    pub fn new() -> Self {\n        Self {\n            config: RouterConfig::default(),\n        }\n    }\n    \n    pub fn mode(mut self, mode: RoutingMode) -> Self {\n        self.config.mode = mode;\n        self\n    }\n    \n    pub fn policy(mut self, policy: PolicyConfig) -> Self {\n        self.config.policy = policy;\n        self\n    }\n    \n    pub fn validate_and_build(self) -> Result<RouterConfig, ConfigError> {\n        ConfigValidator::validate(&self.config)?;\n        Ok(self.config)\n    }\n}\n```\n\n## Implementation Plan\n\n### Step 1: Create Config Module Structure\n- Create `src/config/mod.rs` to define module structure\n- Create submodules: `types.rs`, `validation.rs`, `error.rs`\n- Set up module exports and visibility\n\n### Step 2: Define Configuration Types\n- Implement all configuration structs and enums\n- Add serde derives for future config file support\n- Implement Default traits with sensible defaults\n\n### Step 3: Implement Validation Logic\n- Create ConfigValidator with comprehensive validation methods\n- Add field-level validation (URLs, ports, ranges)\n- Add cross-field validation (mode/policy compatibility)\n- Implement clear error messages with actionable fixes\n\n### Step 4: Migration Integration\n- Create conversion methods from old config to new\n- Add backward compatibility layer during transition\n- Update router initialization to use new config\n\n### Step 5: Testing Suite\n- Unit tests for each validation rule\n- Integration tests for full config validation\n- Error message quality tests\n- Performance benchmarks for validation\n\n## Benefits\n\n1. **Early Error Detection**: Configuration errors caught at startup\n2. **Better Error Messages**: Clear, actionable error descriptions\n3. **Type Safety**: Compile-time guarantees for configuration structure\n4. **Centralized Logic**: All validation in one place\n5. **Extensibility**: Easy to add new configuration options\n6. **Documentation**: Types serve as documentation\n7. **Future-Ready**: Foundation for config files and hot reload\n\n## Migration Strategy\n\n1. Implement new config module alongside existing code\n2. Add adapter layer to convert from old format\n3. Gradually migrate components to use new config\n4. Remove old validation code once fully migrated\n5. Enable config file loading as final step\n\n## Acceptance Criteria\n\n- [ ] All configuration types defined with proper structure\n- [ ] Comprehensive validation for all fields\n- [ ] Clear error messages for all failure cases\n- [ ] No scattered validation code remains\n- [ ] Configuration can be built programmatically\n- [ ] Documentation with examples\n\n## Estimated Effort\n- Implementation: 2 days\n- Testing: 2 days\n- Migration and integration: 1 day\n- Total: 5 days\n\n## Dependencies\nNone - this is a foundational task that other improvements will build upon\n\n## Risks and Mitigations\n\n1. **Risk**: Breaking changes to existing API\n   - **Mitigation**: Maintain backward compatibility during transition\n   - **Mitigation**: Provide clear migration guide\n\n2. **Risk**: Over-engineering configuration\n   - **Mitigation**: Start with current needs, design for extension\n   - **Mitigation**: Regular design reviews\n\n3. **Risk**: Performance impact from validation\n   - **Mitigation**: Run validation only at startup\n   - **Mitigation**: Optimize hot paths if needed\n\n## Future Enhancements\n\n1. **Configuration Files**: Load from YAML/TOML\n2. **Hot Reload**: Update config without restart\n3. **Validation Profiles**: Different rules for dev/prod\n4. **Config Schema Export**: Generate documentation\n5. **Environment Variable Support**: Override from env\n",
+    "labels": [
+      "enhancement",
+      "router"
+    ],
+    "state": "closed",
+    "created_at": "2025-06-25T20:09:47+00:00",
+    "closed_at": "2025-06-27T22:42:03+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7533/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7533"
+  },
+  {
+    "number": 2402,
+    "title": "[Feature] add kernel level benchmark",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nuse triton benchmark utils https://triton-lang.org/main/python-api/generated/triton.testing.do_bench.html#triton.testing.do_bench to benchmark kernels (flashinfer, triton, vllm, tensorrt llm, cudnn etc)\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-08T11:06:34+00:00",
+    "closed_at": "2025-05-21T09:31:00+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2402/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2402"
+  },
+  {
+    "number": 2471,
+    "title": "[Feature] FusedMoE H200 tuning",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nref https://github.com/sgl-project/sglang/issues/2450\r\nhttps://github.com/sgl-project/sglang/blob/main/benchmark/kernels/fused_moe_triton/README.md\r\nDeepSeek V2, Mixtral 8x7B 8x22B, Qwen MoE etc\r\n\r\nBTW Thanks @antferdom \n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-12T20:01:22+00:00",
+    "closed_at": "2024-12-31T16:15:10+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2471/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2471"
+  },
+  {
+    "number": 5338,
+    "title": "[Tracker] Blackwell support",
+    "body": "## Usage\n\n```bash\ndocker pull lmsysorg/sglang:blackwell\n\n# use latest main\ncd /sgl-workspace/sglang && git pull\n```\n\n## Models\n\n### DeepSeek V3 \u2705\n```bash\npython3 -m sglang.launch_server --model deepseek-ai/DeepSeek-V3 --tp 8 --trust-remote-code\n```\n\n### Llama 4 \u2705\n```bash\npython3 -m sglang.launch_server --model meta-llama/Llama-4-Scout-17B-16E-Instruct --tp 8 --context-length 131072\n```",
+    "labels": [
+      "enhancement",
+      "blackwell"
+    ],
+    "state": "open",
+    "created_at": "2025-04-13T04:35:37+00:00",
+    "closed_at": null,
+    "comments": 29,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5338/reactions",
+      "total_count": 3,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5338"
+  },
+  {
+    "number": 3647,
+    "title": "[Feature] Support unified paging in multi-lora serving",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nCurrently, SGL doesn't support the unified paging feature proposed by S-LoRA. However, this feature is important for memory management in multi-LoRA serving.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "inactive",
+      "feature",
+      "lora"
+    ],
+    "state": "open",
+    "created_at": "2025-02-17T19:14:47+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3647/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3647"
+  },
+  {
+    "number": 2272,
+    "title": "[Kernel] cuDNN attention backend",
+    "body": "cuDNN provides very fast attention implementation and it is well maintained by NVIDIA. We would like to add a new attention backend based on cudnn.  \r\n\r\n## Steps\r\n1. Learn this cudnn paged attention python api. https://github.com/NVIDIA/cudnn-frontend/blob/v1.8.0/samples/python/52_scaled_dot_product_attention_with_paged_caches.ipynb\r\n2. Add a new attention backend \"cudnn\" here https://github.com/sgl-project/sglang/tree/main/python/sglang/srt/layers/attention\r\n3. We should be able to use it with `python3 -m sglang.launch_server --model meta-llama/Llama-3.1-8B-Instruct --attention-backend cudnn`",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2024-11-30T06:36:16+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2272/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2272"
+  },
+  {
+    "number": 6589,
+    "title": "[Feature] Tool Call Roadmap",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n## Motivation\n\nAdd a list of issues need to resolve in tool call.\n\n## Track for Tool Call Issues\n\n### High Piority\n\nIssues related to accuracy, consistency, and performance.\n\n- [x] [Multiple Tool Call Support for MistralDetector and Qwen25Detector](https://github.com/sgl-project/sglang/issues/6589#issuecomment-2907987558)\n#6597 \n\n- [ ] [JSON Double Dumping Behavior](https://github.com/sgl-project/sglang/issues/6589#issuecomment-2907988051)\n\n- [x] [`ToolCallItem.tool_index` not following OpenAI API](https://github.com/sgl-project/sglang/issues/6589#issuecomment-2907988438) \n#6715 \n#6655 \n#6678 \n\n----\n\n### Medium Priority\n\nIssues that are not immediate, such as features still WIP, or needs refactor, or edge cases.\n\n- [ ] [Tests for `get_structure_tag` in `FunctionCallParser`](https://github.com/sgl-project/sglang/issues/6589#issuecomment-2907988553)\n\n- [x] [DeepSeekV3Dectector may have issues with Multiple Tool Calls Streaming Parsing](https://github.com/sgl-project/sglang/issues/6589#issuecomment-2908033411) \n#6655 \n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "feature",
+      "function-calling"
+    ],
+    "state": "open",
+    "created_at": "2025-05-25T10:29:03+00:00",
+    "closed_at": null,
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6589/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6589"
+  }
+]

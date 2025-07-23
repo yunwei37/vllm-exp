@@ -1,0 +1,806 @@
+[
+  {
+    "number": 208,
+    "title": "making on linuxmint 21",
+    "body": "im running on bare metal nothing emulated\r\n\r\n```\r\nlittlemac@littlemac:~$` git clone https://github.com/ggerganov/llama.cpp\r\nCloning into 'llama.cpp'...\r\nremote: Enumerating objects: 283, done.\r\nremote: Counting objects: 100% (283/283), done.\r\nremote: Compressing objects: 100% (113/113), done.\r\nremote: Total 283 (delta 180), reused 255 (delta 164), pack-reused 0\r\nReceiving objects: 100% (283/283), 158.38 KiB | 609.00 KiB/s, done.\r\nResolving deltas: 100% (180/180), done.\r\ncd littlemac@littlemac:~$ cd llama.cpp/\r\nlittlemac@littlemac:~/llama.cpp$ make\r\nI llama.cpp build info: \r\nI UNAME_S:  Linux\r\nI UNAME_P:  x86_64\r\nI UNAME_M:  x86_64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -pthread -mavx -msse3\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -pthread\r\nI LDFLAGS:  \r\nI CC:       cc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0\r\nI CXX:      g++ (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0\r\n\r\ncc  -I.              -O3 -DNDEBUG -std=c11   -fPIC -pthread -mavx -msse3   -c ggml.c -o ggml.o\r\nIn file included from /usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h:101,\r\n                 from ggml.c:155:\r\nggml.c: In function \u2018ggml_vec_dot_f16\u2019:\r\n/usr/lib/gcc/x86_64-linux-gnu/11/include/f16cintrin.h:52:1: error: inlining failed in call to \u2018always_inline\u2019 \u2018_mm256_cvtph_ps\u2019: target specific option mismatch\r\n   52 | _mm256_cvtph_ps (__m128i __A)\r\n      | ^~~~~~~~~~~~~~~\r\nggml.c:911:33: note: called from here\r\n  911 | #define GGML_F32Cx8_LOAD(x)     _mm256_cvtph_ps(_mm_loadu_si128((__m128i *)(x)))\r\n      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\nggml.c:921:37: note: in expansion of macro \u2018GGML_F32Cx8_LOAD\u2019\r\n  921 | #define GGML_F16_VEC_LOAD(p, i)     GGML_F32Cx8_LOAD(p)\r\n      |                                     ^~~~~~~~~~~~~~~~\r\nggml.c:1274:21: note: in expansion of macro \u2018GGML_F16_VEC_LOAD\u2019\r\n 1274 |             ay[j] = GGML_F16_VEC_LOAD(y + i + j*GGML_F16_EPR, j);\r\n      |                     ^~~~~~~~~~~~~~~~~\r\nIn file included from /usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h:101,\r\n                 from ggml.c:155:\r\n/usr/lib/gcc/x86_64-linux-gnu/11/include/f16cintrin.h:52:1: error: inlining failed in call to \u2018always_inline\u2019 \u2018_mm256_cvtph_ps\u2019: target specific option mismatch\r\n   52 | _mm256_cvtph_ps (__m128i __A)\r\n      | ^~~~~~~~~~~~~~~\r\nggml.c:911:33: note: called from here\r\n  911 | #define GGML_F32Cx8_LOAD(x)     _mm256_cvtph_ps(_mm_loadu_si128((__m128i *)(x)))\r\n      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\nggml.c:921:37: note: in expansion of macro \u2018GGML_F32Cx8_LOAD\u2019\r\n  921 | #define GGML_F16_VEC_LOAD(p, i)     GGML_F32Cx8_LOAD(p)\r\n      |                                     ^~~~~~~~~~~~~~~~\r\nggml.c:1273:21: note: in expansion of macro \u2018GGML_F16_VEC_LOAD\u2019\r\n 1273 |             ax[j] = GGML_F16_VEC_LOAD(x + i + j*GGML_F16_EPR, j);\r\n      |                     ^~~~~~~~~~~~~~~~~\r\nIn file included from /usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h:101,\r\n                 from ggml.c:155:\r\n/usr/lib/gcc/x86_64-linux-gnu/11/include/f16cintrin.h:52:1: error: inlining failed in call to \u2018always_inline\u2019 \u2018_mm256_cvtph_ps\u2019: target specific option mismatch\r\n   52 | _mm256_cvtph_ps (__m128i __A)\r\n      | ^~~~~~~~~~~~~~~\r\nggml.c:911:33: note: called from here\r\n  911 | #define GGML_F32Cx8_LOAD(x)     _mm256_cvtph_ps(_mm_loadu_si128((__m128i *)(x)))\r\n      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\nggml.c:921:37: note: in expansion of macro \u2018GGML_F32Cx8_LOAD\u2019\r\n  921 | #define GGML_F16_VEC_LOAD(p, i)     GGML_F32Cx8_LOAD(p)\r\n      |                                     ^~~~~~~~~~~~~~~~\r\nggml.c:1273:21: note: in expansion of macro \u2018GGML_F16_VEC_LOAD\u2019\r\n 1273 |             ax[j] = GGML_F16_VEC_LOAD(x + i + j*GGML_F16_EPR, j);\r\n      |                     ^~~~~~~~~~~~~~~~~\r\nIn file included from /usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h:101,\r\n                 from ggml.c:155:\r\n/usr/lib/gcc/x86_64-linux-gnu/11/include/f16cintrin.h:52:1: error: inlining failed in call to \u2018always_inline\u2019 \u2018_mm256_cvtph_ps\u2019: target specific option mismatch\r\n   52 | _mm256_cvtph_ps (__m128i __A)\r\n      | ^~~~~~~~~~~~~~~\r\nggml.c:911:33: note: called from here\r\n  911 | #define GGML_F32Cx8_LOAD(x)     _mm256_cvtph_ps(_mm_loadu_si128((__m128i *)(x)))\r\n      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\nggml.c:921:37: note: in expansion of macro \u2018GGML_F32Cx8_LOAD\u2019\r\n  921 | #define GGML_F16_VEC_LOAD(p, i)     GGML_F32Cx8_LOAD(p)\r\n      |                                     ^~~~~~~~~~~~~~~~\r\nggml.c:1274:21: note: in expansion of macro \u2018GGML_F16_VEC_LOAD\u2019\r\n 1274 |             ay[j] = GGML_F16_VEC_LOAD(y + i + j*GGML_F16_EPR, j);\r\n      |                     ^~~~~~~~~~~~~~~~~\r\nIn file included from /usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h:101,\r\n                 from ggml.c:155:\r\n/usr/lib/gcc/x86_64-linux-gnu/11/include/f16cintrin.h:52:1: error: inlining failed in call to \u2018always_inline\u2019 \u2018_mm256_cvtph_ps\u2019: target specific option mismatch\r\n   52 | _mm256_cvtph_ps (__m128i __A)\r\n      | ^~~~~~~~~~~~~~~\r\nggml.c:911:33: note: called from here\r\n  911 | #define GGML_F32Cx8_LOAD(x)     _mm256_cvtph_ps(_mm_loadu_si128((__m128i *)(x)))\r\n      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\nggml.c:921:37: note: in expansion of macro \u2018GGML_F32Cx8_LOAD\u2019\r\n  921 | #define GGML_F16_VEC_LOAD(p, i)     GGML_F32Cx8_LOAD(p)\r\n      |                                     ^~~~~~~~~~~~~~~~\r\nggml.c:1273:21: note: in expansion of macro \u2018GGML_F16_VEC_LOAD\u2019\r\n 1273 |             ax[j] = GGML_F16_VEC_LOAD(x + i + j*GGML_F16_EPR, j);\r\n      |                     ^~~~~~~~~~~~~~~~~\r\nIn file included from /usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h:101,\r\n                 from ggml.c:155:\r\n/usr/lib/gcc/x86_64-linux-gnu/11/include/f16cintrin.h:52:1: error: inlining failed in call to \u2018always_inline\u2019 \u2018_mm256_cvtph_ps\u2019: target specific option mismatch\r\n   52 | _mm256_cvtph_ps (__m128i __A)\r\n      | ^~~~~~~~~~~~~~~\r\nggml.c:911:33: note: called from here\r\n  911 | #define GGML_F32Cx8_LOAD(x)     _mm256_cvtph_ps(_mm_loadu_si128((__m128i *)(x)))\r\n      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\nggml.c:921:37: note: in expansion of macro \u2018GGML_F32Cx8_LOAD\u2019\r\n  921 | #define GGML_F16_VEC_LOAD(p, i)     GGML_F32Cx8_LOAD(p)\r\n      |                                     ^~~~~~~~~~~~~~~~\r\nggml.c:1274:21: note: in expansion of macro \u2018GGML_F16_VEC_LOAD\u2019\r\n 1274 |             ay[j] = GGML_F16_VEC_LOAD(y + i + j*GGML_F16_EPR, j);\r\n      |                     ^~~~~~~~~~~~~~~~~\r\nmake: *** [Makefile:186: ggml.o] Error 1\r\nlittlemac@littlemac:~/llama.cpp$ cpu-x -D\r\nYour CPU socket is not present in the database ==> Intel(R) Core(TM) i5-2500K CPU @ 3.30GHz, codename: Sandy Bridge (Core i5)\r\nCPU-X:core.c:1637: failed to retrieve CPU voltage (fallback mode)\r\n  >>>>>>>>>> CPU <<<<<<<<<<\r\n\r\n\t***** Processor *****\r\n          Vendor: Intel\r\n       Code Name: Sandy Bridge (Core i5)\r\n         Package: \r\n      Technology: 32 nm\r\n         Voltage: \r\n   Specification: Intel(R) Core(TM) i5-2500K CPU @ 3.30GHz\r\n          Family: 0x6\r\n     Ext. Family: 0x6\r\n           Model: 0xA\r\n      Ext. Model: 0x2A\r\n           Temp.: 28.00\u00b0C\r\n        Stepping: 7\r\n    Instructions: MMX, SSE(1, 2, 3, 3S, 4.1, 4.2), AVX(1), AES, CLMUL, VT-x, x86-64\r\n\r\n\t***** Clocks *****\r\n      Core Speed: 3679 MHz\r\n      Multiplier: \r\n       Bus Speed: \r\n           Usage:  15.22 %\r\n\r\n\t***** Cache *****\r\n         L1 Data: 4 x 32 kB, 8-way\r\n        L1 Inst.: 4 x 32 kB, 8-way\r\n         Level 2: 4 x 256 kB, 8-way\r\n         Level 3: 6 MB, 12-way\r\n\r\n\t***** * *****\r\n       Socket(s): 1\r\n         Core(s): 4\r\n       Thread(s): 4\r\n\r\n\r\n  >>>>>>>>>> Caches <<<<<<<<<<\r\n\r\n\t***** L1 Cache *****\r\n            Size: 4 x 32 kB, 8-way associative, 64-bytes line size\r\n           Speed: 110315.60 MB/s\r\n\r\n\t***** L2 Cache *****\r\n            Size: 4 x 256 kB, 8-way associative, 64-bytes line size\r\n           Speed: 53894.20 MB/s\r\n\r\n\t***** L3 Cache *****\r\n            Size: 6 MB, 12-way associative, 64-bytes line size\r\n           Speed: 33268.30 MB/s\r\n\r\n\r\n  >>>>>>>>>> Motherboard <<<<<<<<<<\r\n\r\n\t***** Motherboard *****\r\n    Manufacturer: MSI\r\n           Model: Z77A-G43 (MS-7758)\r\n        Revision: 1.0\r\n\r\n\t***** BIOS *****\r\n           Brand: American Megatrends Inc.\r\n         Version: V2.7\r\n            Date: 10/24/2012\r\n        ROM Size: \r\n\r\n\t***** Chipset *****\r\n          Vendor: Intel Corporation\r\n           Model: Z77 Express Chipset LPC Controller\r\n\r\n\r\n  >>>>>>>>>> Memory <<<<<<<<<<\r\n\r\n\r\n  >>>>>>>>>> System <<<<<<<<<<\r\n\r\n\t***** Operating System *****\r\n          Kernel: Linux 5.15.0-67-generic\r\n    Distribution: Linux Mint 21.1\r\n        Hostname: littlemac\r\n          Uptime: 0 days, 0 hours, 12 minutes, 29 seconds\r\n        Compiler: cc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0\r\n\r\n\t***** Memory *****\r\n            Used: 2.17 GiB / 7.71 GiB\r\n         Buffers: 0.12 GiB / 7.71 GiB\r\n          Cached: 3.86 GiB / 7.71 GiB\r\n            Free: 1.55 GiB / 7.71 GiB\r\n            Swap: 0.00 GiB / 5.85 GiB\r\n\r\n\r\n  >>>>>>>>>> Graphics <<<<<<<<<<\r\n\r\n\t***** Card 0 *****\r\n          Vendor: NVIDIA\r\n          Driver: nvidia\r\n     UMD Version: NVIDIA 515.86.01\r\n           Model: GM206 [GeForce GTX 960]\r\n        DeviceID: 0x1401:0xA1\r\n       Interface: \r\n     Temperature: 34.00\u00b0C\r\n           Usage: 2%\r\n    Core Voltage: \r\n       Power Avg: 25.00 W\r\n       GPU clock: 1126 MHz\r\n    Memory clock: 3004 MHz\r\n     Memory Used: 342 MiB / 2048 MiB\r\n```",
+    "labels": [
+      "duplicate",
+      "hardware",
+      "build"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-16T13:52:27+00:00",
+    "closed_at": "2023-05-06T17:55:19+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/208/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/208"
+  },
+  {
+    "number": 102,
+    "title": "json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+    "body": "Bug encountered when running `python3 convert-pth-to-ggml.py models/7B/ 1`:\r\n\r\n```\r\nllama.cpp % python3 convert-pth-to-ggml.py models/7B/ 1\r\nTraceback (most recent call last):\r\n  File \"/Users/jjyuhub/llama.cpp/convert-pth-to-ggml.py\", line 69, in <module>\r\n    hparams = json.load(f)\r\n  File \"/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/__init__.py\", line 293, in load\r\n    return loads(fp.read(),\r\n  File \"/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/__init__.py\", line 346, in loads\r\n    return _default_decoder.decode(s)\r\n  File \"/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/decoder.py\", line 337, in decode\r\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\r\n  File \"/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/decoder.py\", line 355, in raw_decode\r\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\r\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\r\n```",
+    "labels": [
+      "duplicate",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-13T20:01:52+00:00",
+    "closed_at": "2023-03-15T21:41:08+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/102/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/102"
+  },
+  {
+    "number": 209,
+    "title": "Command line script usage",
+    "body": "Hello, \r\n\r\nI was wondering if there was a command line flag for toggling the output of the debug messages, making the executable only output the text generated by the LLM (optionally with the original prompt). This would make the program much easier to call from other scripts.\r\n\r\nThanks for your time.",
+    "labels": [
+      "duplicate",
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-16T15:57:54+00:00",
+    "closed_at": "2023-03-16T16:27:50+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/209/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/209"
+  },
+  {
+    "number": 63,
+    "title": "Prompt interrupted before continuation for Unicode UTF-8 emojis",
+    "body": "I have found that when having a Unicode UTF- emoji char like  \r\n\r\nUnicode Character \u201c\ud83d\udc4d\u201d (U+1F44D)\r\n\r\nThe prompts breaks up.\r\n\r\nI'm reading a sample prompt from a text file:\r\n\r\n\r\n```bash\r\ncat prompt\r\n\r\nTweet: \"I hate it when my phone battery dies.\"\r\nSentiment: Negative\r\n###\r\nTweet: \"My day has been \ud83d\udc4d\"\r\nSentiment: Positive\r\n###\r\nTweet: \"This is the link to the article\"\r\nSentiment: Neutral\r\n###\r\nTweet: \"This new music video was incredibile\"\r\nSentiment:\r\n```\r\n\r\nLooking at logs I can see in fact that the tokenizers breaks at the (U+1F44D) char code:\r\n\r\n```\r\n(base)$ p=$(cat prompt); ./main -m ./models/13B/ggml-model-q4_0.bin -p $p -t 4 -n 512\r\nmain: seed = 1678656464\r\nllama_model_load: loading model from './models/13B/ggml-model-q4_0.bin' - please wait ...\r\nllama_model_load: n_vocab = 32000\r\nllama_model_load: n_ctx   = 512\r\nllama_model_load: n_embd  = 5120\r\nllama_model_load: n_mult  = 256\r\nllama_model_load: n_head  = 40\r\nllama_model_load: n_layer = 40\r\nllama_model_load: n_rot   = 128\r\nllama_model_load: f16     = 2\r\nllama_model_load: n_ff    = 13824\r\nllama_model_load: n_parts = 2\r\nllama_model_load: ggml ctx size = 8559.49 MB\r\nllama_model_load: memory_size =   800.00 MB, n_mem = 20480\r\nllama_model_load: loading model part 1/2 from './models/13B/ggml-model-q4_0.bin'\r\nllama_model_load: ............................................. done\r\nllama_model_load: model size =  3880.49 MB / num tensors = 363\r\nllama_model_load: loading model part 2/2 from './models/13B/ggml-model-q4_0.bin.1'\r\nllama_model_load: ............................................. done\r\nllama_model_load: model size =  3880.49 MB / num tensors = 363\r\n\r\nmain: prompt: 'Tweet: \"I hate it when my phone battery dies.\"\r\nSentiment: Negative\r\n###\r\nTweet: \"My day has been \ud83d\udc4d\"\r\nSentiment: Positive\r\n###\r\nTweet: \"This is the link to the article\"\r\nSentiment: Neutral\r\n###\r\nTweet: \"This new music video was incredibile\"\r\nSentiment:'\r\nmain: number of tokens in prompt = 36\r\n     1 -> ''\r\n 27418 -> 'Tw'\r\n  3905 -> 'ee'\r\n 29873 -> 't'\r\n 29901 -> ':'\r\n   376 -> ' \"'\r\n 29902 -> 'I'\r\n 26277 -> ' hate'\r\n   372 -> ' it'\r\n   746 -> ' when'\r\n   590 -> ' my'\r\n  9008 -> ' phone'\r\n 16988 -> ' battery'\r\n  2977 -> ' dies'\r\n  1213 -> '.\"'\r\n    13 -> '\r\n'\r\n  2008 -> 'Se'\r\n   593 -> 'nt'\r\n  2073 -> 'iment'\r\n 29901 -> ':'\r\n 12610 -> ' Neg'\r\n  1230 -> 'ative'\r\n    13 -> '\r\n'\r\n  2277 -> '##'\r\n 29937 -> '#'\r\n    13 -> '\r\n'\r\n 27418 -> 'Tw'\r\n  3905 -> 'ee'\r\n 29873 -> 't'\r\n 29901 -> ':'\r\n   376 -> ' \"'\r\n  3421 -> 'My'\r\n  2462 -> ' day'\r\n   756 -> ' has'\r\n  1063 -> ' been'\r\n 29871 -> ' '\r\n\r\nsampling parameters: temp = 0.800000, top_k = 40, top_p = 0.950000, repeat_last_n = 64, repeat_penalty = 1.300000\r\n\r\n\r\nTweet: \"I hate it when my phone battery dies.\"\r\nSentiment: Negative\r\n###\r\nTweet: \"My day has been 10 times better than yesterday. Now I have to sleep again...\"\r\nSentiment: Neutral\r\n###\r\nTwitter is not about talking; Twitter is a social network for listening and responding instantly, as the tweets of Steve Jobs demonstrate well in Figure A-2 (page ). Just be sure you can interpret the information accurately. If the sentiment isn't clearly positive or negative\u2014as^C\r\n```\r\n\r\nresulting in a broken input prompt.",
+    "labels": [
+      "bug",
+      "duplicate",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-12T21:43:19+00:00",
+    "closed_at": "2023-04-01T07:43:18+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/63/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/63"
+  },
+  {
+    "number": 257,
+    "title": "Not having enough memory just causes a segfault or something",
+    "body": "So. I'm trying to build with CMake on Windows 11 and the thing just stops after it's done loading the model.\r\n\r\n![image](https://user-images.githubusercontent.com/4723091/226091364-64a488a7-ebb5-4c24-9dd0-1cb81378008d.png)\r\n\r\nAnd apparently, this is a segfault.\r\n\r\n![Screenshot_20230318_121935](https://user-images.githubusercontent.com/4723091/226091335-afbf2712-d2b8-4b88-9b44-6b6a43d78565.png)\r\n\r\nYay yay yyayy yyayay\r\n\r\nthis is a memory allocation failure it seems, from me not having enough memory. not like llama.cpp Tells Me That lmao, it just segfaults\r\n\r\n(`ctx->mem_buffer` is nullptr which probably means the malloc just failed)",
+    "labels": [
+      "bug",
+      "duplicate",
+      "hardware",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-18T07:28:43+00:00",
+    "closed_at": "2023-05-06T18:03:16+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/257/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/257"
+  },
+  {
+    "number": 122,
+    "title": "It's strange to return after executing the command",
+    "body": "./main -m ./models/7B/ggml-model-q4_0.bin -t 64 -n 256 --repeat_penalty 1.0 --color -i -r \"User:\" -p 'What is your name?'\r\n![image](https://user-images.githubusercontent.com/17468133/224920438-696f3b65-bc7c-42d9-ab10-a46b686dcb47.png)\r\nIs it because I haven't installed something\uff1f\r\nCentos 7  \r\n",
+    "labels": [
+      "duplicate",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-14T07:00:34+00:00",
+    "closed_at": "2023-03-15T21:30:03+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/122/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/122"
+  },
+  {
+    "number": 1140,
+    "title": "[natell36100] The initial make fails with : ggml.c:439:19: warning: implicit declaration of function \u2018_mm_loadu_si64\u2019; did you mean \u2018_mm_loadl_epi64\u2019? [-Wimplicit-function-declaration]",
+    "body": "user@user /mnt/360E7BCD0E7B8521/ia/llama.cpp $ make\r\nI llama.cpp build info: \r\nI UNAME_S:  Linux\r\nI UNAME_P:  x86_64\r\nI UNAME_M:  x86_64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -pthread -march=native -mtune=native\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -march=native -mtune=native\r\nI LDFLAGS:  \r\nI CC:       cc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0\r\nI CXX:      g++ (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0\r\n\r\ncc  -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -pthread -march=native -mtune=native   -c ggml.c -o ggml.o\r\nggml.c: In function \u2018bytes_from_nibbles_16\u2019:\r\n**ggml.c:439:19: warning: implicit declaration of function \u2018_mm_loadu_si64\u2019; did you mean \u2018_mm_loadl_epi64\u2019? [-Wimplicit-function-declaration]**\r\n     __m128i tmp = _mm_loadu_si64( ( const __m128i* )rsi );\r\n                   ^~~~~~~~~~~~~~\r\n                   _mm_loadl_epi64\r\nggml.c:439:19: error: incompatible types when initializing type \u2018__m128i {aka __vector(2) long long int}\u2019 using type \u2018int\u2019\r\nggml.c: In function \u2018ggml_vec_dot_q4_2_q8_0\u2019:\r\nggml.c:2826:40: warning: implicit declaration of function \u2018_mm256_set_m128\u2019; did you mean \u2018_mm256_set_epi8\u2019? [-Wimplicit-function-declaration]\r\n         const __m256 d = _mm256_mul_ps(_mm256_set_m128(d1, d0), _mm256_broadcast_ss(&y[i].d));\r\n                                        ^~~~~~~~~~~~~~~\r\n                                        _mm256_set_epi8\r\nggml.c:2826:40: error: incompatible type for argument 1 of \u2018_mm256_mul_ps\u2019\r\nIn file included from /usr/lib/gcc/x86_64-linux-gnu/7/include/immintrin.h:41:0,\r\n                 from ggml.c:189:\r\n/usr/lib/gcc/x86_64-linux-gnu/7/include/avxintrin.h:318:1: note: expected \u2018__m256 {aka __vector(8) float}\u2019 but argument is of type \u2018int\u2019\r\n _mm256_mul_ps (__m256 __A, __m256 __B)\r\n ^~~~~~~~~~~~~\r\nggml.c:2830:22: warning: implicit declaration of function \u2018_mm256_set_m128i\u2019; did you mean \u2018_mm256_set_epi8\u2019? [-Wimplicit-function-declaration]\r\n         __m256i bx = _mm256_set_m128i(bx1, bx0);\r\n                      ^~~~~~~~~~~~~~~~\r\n                      _mm256_set_epi8\r\nggml.c:2830:22: error: incompatible types when initializing type \u2018__m256i {aka __vector(4) long long int}\u2019 using type \u2018int\u2019\r\nggml.c: In function \u2018ggml_vec_dot_q4_3_q8_0\u2019:\r\nggml.c:2955:27: error: incompatible types when initializing type \u2018__m256 {aka const __vector(8) float}\u2019 using type \u2018int\u2019\r\n         const __m256 dx = _mm256_set_m128(d1, d0);\r\n                           ^~~~~~~~~~~~~~~\r\nggml.c:2959:27: error: incompatible types when initializing type \u2018__m256 {aka const __vector(8) float}\u2019 using type \u2018int\u2019\r\n         const __m256 mx = _mm256_set_m128(m1, m0);\r\n                           ^~~~~~~~~~~~~~~\r\nggml.c:2963:28: error: incompatible types when initializing type \u2018__m256i {aka const __vector(4) long long int}\u2019 using type \u2018int\u2019\r\n         const __m256i bx = _mm256_set_m128i(bx1, bx0);\r\n                            ^~~~~~~~~~~~~~~~\r\nAt top level:\r\nggml.c:1139:13: warning: \u2018quantize_row_q4_2_reference\u2019 defined but not used [-Wunused-function]\r\n static void quantize_row_q4_2_reference(const float * restrict x, block_q4_2 * restrict y, int k) {\r\n             ^~~~~~~~~~~~~~~~~~~~~~~~~~~\r\nMakefile:157: recipe for target 'ggml.o' failed\r\nmake: *** [ggml.o] Error 1\r\n\r\n",
+    "labels": [
+      "duplicate",
+      "build"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-23T10:14:39+00:00",
+    "closed_at": "2023-04-23T11:17:54+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1140/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1140"
+  },
+  {
+    "number": 425,
+    "title": "\"Illegal Instruction\" error when converting 7B model to ggml FP16 format (Raspberry Pi 4, 8GB, Raspberry Pi OS, 64-bit)",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [ /] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [ /] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [ /] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [ /] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\n\r\nI expected the command to convert the 7B model to ggml FP16 format\r\n\r\n# Current Behavior\r\n\r\nIllegal instruction error\r\n\r\n```\r\nles@raspberrypi:~/llama.cpp $ python3 convert-pth-to-ggml.py models/7B/ 1\r\nIllegal instruction\r\n```\r\n\r\n\r\n# Environment and Context \r\n\r\nRaspberry Pi 4 8GB\r\nLatest Raspberry Pi OS 64-bit, fully updated\r\n\r\n* Physical (or virtual) hardware you are using, e.g. for Linux:\r\n`$lscpu`\r\nArchitecture:                    aarch64\r\nCPU op-mode(s):                  32-bit, 64-bit\r\nByte Order:                      Little Endian\r\nCPU(s):                          4\r\nOn-line CPU(s) list:             0-3\r\nThread(s) per core:              1\r\nCore(s) per socket:              4\r\nSocket(s):                       1\r\nVendor ID:                       ARM\r\nModel:                           3\r\nModel name:                      Cortex-A72\r\nStepping:                        r0p3\r\nCPU max MHz:                     1800.0000\r\nCPU min MHz:                     600.0000\r\nBogoMIPS:                        108.00\r\nL1d cache:                       128 KiB\r\nL1i cache:                       192 KiB\r\nL2 cache:                        1 MiB\r\nVulnerability Itlb multihit:     Not affected\r\nVulnerability L1tf:              Not affected\r\nVulnerability Mds:               Not affected\r\nVulnerability Meltdown:          Not affected\r\nVulnerability Mmio stale data:   Not affected\r\nVulnerability Retbleed:          Not affected\r\nVulnerability Spec store bypass: Vulnerable\r\nVulnerability Spectre v1:        Mitigation; __user pointer sanitization\r\nVulnerability Spectre v2:        Vulnerable\r\nVulnerability Srbds:             Not affected\r\nVulnerability Tsx async abort:   Not affected\r\nFlags:                           fp asimd evtstrm crc32 cpuid\r\n\r\n\r\n* Operating System, e.g. for Linux:\r\n\r\n`$ uname -a`\r\nLinux raspberrypi 5.15.84-v8+ #1613 SMP PREEMPT Thu Jan 5 12:03:08 GMT 2023 aarch64 GNU/Linux\r\n\r\n\r\n* SDK version, e.g. for Linux:\r\n\r\n```\r\n$ python3 --version\r\nPython 3.9.2\r\n$ make --version\r\nGNU Make 4.3\r\nBuilt for aarch64-unknown-linux-gnu\r\n\r\n$ g++ --version\r\n```\r\ng++ (Debian 10.2.1-6) 10.2.1 20210110\r\n\r\n\r\n# Failure Information (for bugs)\r\n\r\nPlease help provide information about the failure if this is a bug. If it is not a bug, please remove the rest of this template.\r\n\r\n# Steps to Reproduce\r\n\r\nPlease provide detailed steps for reproducing the issue. We are not sitting in front of your screen, so the more detail the better.\r\n\r\n1. Cloned the repo.\r\n2. Changed directory to llama.cpp.\r\n3. Used make.\r\n4. Downloaded the 7B model and copied it to /models/7B.\r\n5. Installed the Python modules torch numpy sentencepiece.\r\n6. Used convert-pth-to-ggml.py models/7B/ 1 to convert the model to ggml FP16 format.\r\n7. Received the illegal instruction error after a few seconds.\r\n",
+    "labels": [
+      "duplicate",
+      "hardware"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-23T11:52:38+00:00",
+    "closed_at": "2023-03-26T15:27:25+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/425/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/425"
+  },
+  {
+    "number": 2263,
+    "title": "[Enhancement] Llama 2 model support ",
+    "body": "Meta just released Llama 2 model, with a license that authorizes commercial use.\r\nhttps://ai.meta.com/llama/",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-07-18T16:37:38+00:00",
+    "closed_at": "2023-07-18T16:41:02+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2263/reactions",
+      "total_count": 2,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2263"
+  },
+  {
+    "number": 210,
+    "title": "Cannot generate more than 500 words",
+    "body": "The model doesn't seem to be able to return more than 500 words regardless of how big the number of tokens is specified (I even tried specifically powers of 2 such as 4096 with no results), it always stops and leaves texts uncomplete. Is anyone having the same issue, or how can I increment the length of the output?",
+    "labels": [
+      "duplicate",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-16T16:18:36+00:00",
+    "closed_at": "2023-03-16T16:25:39+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/210/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/210"
+  },
+  {
+    "number": 1390,
+    "title": "[User] Official python binding support",
+    "body": "Hi, just wonder does there any official python binding support or support plan?\r\n\r\nThere are many vendor implementations out there, but really none of them really keep update to date with lastest llama.cpp nor can be run easily (not pythononic).\r\n\r\nAn official python binding which supported by main repo would be great!",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-05-10T07:20:32+00:00",
+    "closed_at": "2023-05-10T09:40:38+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1390/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1390"
+  },
+  {
+    "number": 4174,
+    "title": "Support stableCode models (which seems to be gpt-neo-x that we can convert into gguf)",
+    "body": "Why can we build gpt-neo-x models with the convert-hf-to-gguf.py script when there is no code to run it?\r\n\r\nMentioned in #3838 an d #3293, we do have code to convert gpt-neo-x  models into gguf models, but no code to run inference.\r\n\r\nAs i noticed, even the not too old stbilityAI stablecode models seems to be gpt-neo-x models, ad the convert-hf-to-gguf converts them, but there is no way to use them.\r\n",
+    "labels": [
+      "duplicate",
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-22T21:49:21+00:00",
+    "closed_at": "2023-11-22T22:05:58+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4174/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4174"
+  },
+  {
+    "number": 1650,
+    "title": "[Feature request] Support for \"Falcon\" model",
+    "body": "\"Falcon\" is a new Large Language Model which seems to be better than Llama.\r\nSee https://falconllm.tii.ae/ and\r\nhttps://iamgeekydude.com/2023/05/28/falcon-llm-the-40-billion-parameters-llm/ and\r\nhttps://www.marktechpost.com/2023/05/28/technology-innovation-institute-open-sourced-falcon-llms-a-new-ai-model-that-uses-only-75-percent-of-gpt-3s-training-compute-40-percent-of-chinchillas-and-80-percent-of-palm-62b/\r\n\r\nActually, it is the best open-source model currently available according to the authors.\r\n\r\nModel (for Huggingface Transformers library) with 40B and 7B parameters is available at :\r\nhttps://huggingface.co/tiiuae/falcon-40b\r\n\r\nWould be great if it would be supported also in llama.cpp.\r\nNote it uses some novel layers (FlashAttention, Multiquery).",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-05-30T09:31:10+00:00",
+    "closed_at": "2023-05-30T11:34:52+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1650/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1650"
+  },
+  {
+    "number": 99,
+    "title": "Stanford Alpaca support",
+    "body": "Just 3 hrs ago , chat tuned LLAma released : https://github.com/tatsu-lab/stanford_alpaca",
+    "labels": [
+      "duplicate",
+      "enhancement",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-13T19:15:25+00:00",
+    "closed_at": "2023-03-16T11:40:58+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/99/reactions",
+      "total_count": 11,
+      "+1": 11,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/99"
+  },
+  {
+    "number": 153,
+    "title": "ggml_new_tensor_impl: not enough space in the context's memory pool (needed 717778556, available 454395136)",
+    "body": "Hey, I know someone already posted a similar issue that has already been closed, but I ran into the same thing. On windows 10 and cloned just yesterday",
+    "labels": [
+      "duplicate",
+      "need more info"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-15T04:18:32+00:00",
+    "closed_at": "2023-03-24T16:11:41+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/153/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/153"
+  },
+  {
+    "number": 764,
+    "title": "Feature to Discard Last Generated Message in Interactive Chat Mode?",
+    "body": "We have ctrl+c to stop generate.\r\nCan we have undo feature to take the last message out of context and regenerate during an interactive chat session if you don't like what it generated?",
+    "labels": [
+      "duplicate",
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-04T13:50:05+00:00",
+    "closed_at": "2024-04-11T01:07:04+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/764/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/764"
+  },
+  {
+    "number": 565,
+    "title": "[Feature Request] Simplified API for Inference and HTTP Server Integration",
+    "body": "First I want to express my deep gratitude for this project, thank you guys so much!\r\n\r\nI'm writing to inquire about potential improvements to the API for inference, as well as the possibility of integrating an HTTP server for serving text generation requests. Specifically, I'm interested in the following:\r\n\r\n1. A simplified and more flexible method for inference that allows for easier integration with external applications. I'm looking to manage chat history in a separate application and would like to have a straightforward way to perform inference on user-provided text.\r\n\r\n2. The ability to serve text generation requests over HTTP. I'm interested in implementing a client-server architecture and would like to know if there are plans to include an HTTP server in the repository.\r\n\r\nI understand that the repository is rapidly evolving, and I'm excited to see the new features and improvements you have planned. I'm planning to hack an http server together by myself, but I want to find out what your roadmap is so there is not any painful merges for me in the future. I'm open to contributing to the project if there's an opportunity for collaboration.\r\n\r\nCould you please share any insights into the roadmap for these features, or let me know if there are any ongoing discussions or pull requests related to them?\r\n",
+    "labels": [
+      "duplicate",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-28T08:42:38+00:00",
+    "closed_at": "2023-03-28T11:43:00+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/565/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/565"
+  },
+  {
+    "number": 62,
+    "title": "Quality of 4-bit quantization",
+    "body": "The quality of the 4-bit quantization is really abysmal compared to both non-quantized models and GPTQ quantization \r\n(https://github.com/qwopqwop200/GPTQ-for-LLaMa). Wouldn't it make sense for llama.cpp to load already-prequantized LLaMa models?",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-12T21:05:56+00:00",
+    "closed_at": "2023-03-13T17:24:55+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/62/reactions",
+      "total_count": 7,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/62"
+  },
+  {
+    "number": 672,
+    "title": "magic number in convert-gptq-to-ggml.py not consistent",
+    "body": "It appears that the conver-gptq-to-ggml script needs an update to reflect the recent change in magic, see [this line](https://github.com/ggerganov/llama.cpp/blob/master/convert-gptq-to-ggml.py#L39). However, it's not completely clear to me if only updating the magic number is sufficient to ensure that the resulting file is compatible. Hence leaving it here a reminder :)",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-01T07:41:45+00:00",
+    "closed_at": "2023-04-02T15:51:08+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/672/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/672"
+  },
+  {
+    "number": 1364,
+    "title": "Add support for MPT-7B-StoryWriter-65k+ ",
+    "body": "Is possibe to add support for MPT-7B-StoryWriter-65k+  ?\r\n\r\nhttps://huggingface.co/OccamRazor/mpt-7b-storywriter-4bit-128g\r\n\r\n\r\nhttps://huggingface.co/mosaicml",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-05-08T09:00:42+00:00",
+    "closed_at": "2023-05-08T12:31:30+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1364/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 2
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1364"
+  },
+  {
+    "number": 590,
+    "title": "Support gpt4all interactive mode",
+    "body": "Hey!\r\n\r\nI just found this repo: https://github.com/nomic-ai/gpt4all and it looks amazing! They've forked alpaca.cpp but with their own \"tweaks\" in a single commit: https://github.com/zanussbaum/gpt4all.cpp/commit/4a6afcb08fb243df9a919c26aab1027ebfa373cc\r\nSo I assume it'd be quite easy to support!\r\n\r\nNiansa",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-29T06:10:08+00:00",
+    "closed_at": "2023-03-29T06:21:05+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/590/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/590"
+  },
+  {
+    "number": 195,
+    "title": "Add the disk requirements",
+    "body": "Hi,\r\n\r\nI found all the infos about the models:\r\nhttps://cocktailpeanut.github.io/dalai/#/?id=_7b\r\n\r\nYou can put on readme the space requirements.\r\n\r\nThanks.",
+    "labels": [
+      "documentation",
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-16T03:23:50+00:00",
+    "closed_at": "2023-03-16T11:54:44+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/195/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/195"
+  },
+  {
+    "number": 162,
+    "title": "feature request, restful api / exposure",
+    "body": "hi team,\r\n\r\nwas playing interactive mode for couple hours, pretty impressive\r\n\r\nresides what's mentioned in #145 , \r\nit might be not too far, to plug this a endpoint / functional call ( like swig or socket or openapi to replace current stdin ?, then self-host can have a very powerful new residents, like i got a powerful PC at home to be personal assist\r\n\r\nalso found that `-n` is the context / token limit, would be great if engine can start with 0 presume context ( which is to lift off / decouple a bit from stdin \r\n\r\nkindly let me know if there are directions or others interested in this ( also a developer here but not so C / tensor flavored \r\n( as without advice, force hi-jack stdin / stdout seems stupid ",
+    "labels": [
+      "duplicate",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-15T15:50:42+00:00",
+    "closed_at": "2023-03-15T21:07:48+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/162/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/162"
+  },
+  {
+    "number": 50,
+    "title": "Reproducability information",
+    "body": "The seed for the website example is included, but using the same parameters doesn't manage to reproduce the example output. Listing what requirements influense reproducability would help in verifying installs.\r\n\r\nThe failed test is with x86_64 (gcc or clang, no difference), CUDA 12.1, pytorch 1.13.1, numpy 1.23.5, sentencepiece 0.1.97 and Python 3.10.6 on Linux.\r\n",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-12T14:17:44+00:00",
+    "closed_at": "2023-03-13T17:27:12+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/50/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/50"
+  },
+  {
+    "number": 8259,
+    "title": "Failing to convert the new PHI-3 models.",
+    "body": "```\r\nINFO:hf-to-gguf:Loading model: Phi-3-mini-128k-instruct\r\nINFO:gguf.gguf_writer:gguf: This GGUF file is for Little Endian only\r\nINFO:hf-to-gguf:Set model parameters\r\nTraceback (most recent call last):\r\n  File \"/content/llama.cpp/convert-hf-to-gguf.py\", line 3263, in <module>\r\n    main()\r\n  File \"/content/llama.cpp/convert-hf-to-gguf.py\", line 3244, in main\r\n    model_instance.set_gguf_parameters()\r\n  File \"/content/llama.cpp/convert-hf-to-gguf.py\", line 1950, in set_gguf_parameters\r\n    raise NotImplementedError(f'The rope scaling type {rope_scaling_type} is not supported yet')\r\nNotImplementedError: The rope scaling type longrope is not supported yet\r\n```",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-02T16:49:46+00:00",
+    "closed_at": "2024-07-03T15:56:35+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8259/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8259"
+  },
+  {
+    "number": 171,
+    "title": "[Proposal] \"Stable\" C API",
+    "body": "I propose refactoring `main.cpp` into a library (`llama.cpp`, compiled to `llama.so`/`llama.a`/whatever) and making `main.cpp` a simple driver program. A simple C API should be exposed to access the model, and then bindings can more easily be written for Python, node.js, or whatever other language.\r\n\r\nThis would partially solve #82 and #162.\r\n\r\nEdit: on that note, is it possible to do inference from two or more prompts on different threads? If so, serving multiple people would be possible without multiple copies of model weights in RAM.",
+    "labels": [
+      "duplicate",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-15T18:01:09+00:00",
+    "closed_at": "2023-03-15T20:29:20+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/171/reactions",
+      "total_count": 10,
+      "+1": 10,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/171"
+  },
+  {
+    "number": 174,
+    "title": "Question: can the conversation context be saved to disk and brought up again incase LLaMa crashes or there is a power failure?",
+    "body": null,
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-15T20:01:08+00:00",
+    "closed_at": "2023-03-16T11:46:57+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/174/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/174"
+  },
+  {
+    "number": 1693,
+    "title": "HelloGGML_ASSERT: ggml-metal.m:539: false && \"not implemented\"",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [ ] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [ ] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [ ] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [ ] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\n\r\nPlease provide a detailed written description of what you were trying to do, and what you expected `llama.cpp` to do.\r\n\r\n# Current Behavior\r\n\r\nPlease provide a detailed written description of what `llama.cpp` did, instead.\r\n\r\n# Environment and Context\r\n\r\nPlease provide detailed information about your computer setup. This is important in case the issue is not reproducible except for under certain specific conditions.\r\n\r\n* Physical (or virtual) hardware you are using, e.g. for Linux:\r\n\r\n`$ lscpu`\r\n\r\n* Operating System, e.g. for Linux:\r\n\r\n`$ uname -a`\r\n\r\n* SDK version, e.g. for Linux:\r\n\r\n```\r\n$ python3 --version\r\n$ make --version\r\n$ g++ --version\r\n```\r\n\r\n# Failure Information (for bugs)\r\n\r\nPlease help provide information about the failure if this is a bug. If it is not a bug, please remove the rest of this template.\r\n\r\n# Steps to Reproduce\r\n\r\nPlease provide detailed steps for reproducing the issue. We are not sitting in front of your screen, so the more detail the better.\r\n\r\n1. step 1\r\n2. step 2\r\n3. step 3\r\n4. etc.\r\n\r\n# Failure Logs\r\n\r\nPlease include any relevant log snippets or files. If it works under one configuration but not under another, please provide logs for both configurations and their corresponding outputs so it is easy to see where behavior changes.\r\n\r\nAlso, please try to **avoid using screenshots** if at all possible. Instead, copy/paste the console output and use [Github's markdown](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) to cleanly format your logs for easy readability.\r\n\r\nExample environment info:\r\n```\r\nllama.cpp$ git log | head -1\r\ncommit 2af23d30434a677c6416812eea52ccc0af65119c\r\n\r\nllama.cpp$ lscpu | egrep \"AMD|Flags\"\r\nVendor ID:                       AuthenticAMD\r\nModel name:                      AMD Ryzen Threadripper 1950X 16-Core Processor\r\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid amd_dcm aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb hw_pstate ssbd ibpb vmmcall fsgsbase bmi1 avx2 smep bmi2 rdseed adx smap clflushopt sha_ni xsaveopt xsavec xgetbv1 xsaves clzero irperf xsaveerptr arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif overflow_recov succor smca sme sev\r\nVirtualization:                  AMD-V\r\n\r\nllama.cpp$ python3 --version\r\nPython 3.10.9\r\n\r\nllama.cpp$ pip list | egrep \"torch|numpy|sentencepiece\"\r\nnumpy                         1.24.2\r\nnumpydoc                      1.5.0\r\nsentencepiece                 0.1.97\r\ntorch                         1.13.1\r\ntorchvision                   0.14.1\r\n\r\nllama.cpp$ make --version | head -1\r\nGNU Make 4.3\r\n\r\n$ md5sum ./models/65B/ggml-model-q4_0.bin\r\ndbdd682cce80e2d6e93cefc7449df487  ./models/65B/ggml-model-q4_0.bin\r\n```\r\n\r\nExample run with the Linux command [perf](https://www.brendangregg.com/perf.html)\r\n```\r\nllama.cpp$ perf stat ./main -m ./models/65B/ggml-model-q4_0.bin -t 16 -n 1024 -p \"Please close your issue when it has been answered.\"\r\nmain: seed = 1679149377\r\nllama_model_load: loading model from './models/65B/ggml-model-q4_0.bin' - please wait ...\r\nllama_model_load: n_vocab = 32000\r\nllama_model_load: n_ctx   = 512\r\nllama_model_load: n_embd  = 8192\r\nllama_model_load: n_mult  = 256\r\nllama_model_load: n_head  = 64\r\nllama_model_load: n_layer = 80\r\nllama_model_load: n_rot   = 128\r\nllama_model_load: f16     = 2\r\nllama_model_load: n_ff    = 22016\r\nllama_model_load: n_parts = 8\r\nllama_model_load: ggml ctx size = 41477.73 MB\r\nllama_model_load: memory_size =  2560.00 MB, n_mem = 40960\r\nllama_model_load: loading model part 1/8 from './models/65B/ggml-model-q4_0.bin'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 2/8 from './models/65B/ggml-model-q4_0.bin.1'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 3/8 from './models/65B/ggml-model-q4_0.bin.2'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 4/8 from './models/65B/ggml-model-q4_0.bin.3'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 5/8 from './models/65B/ggml-model-q4_0.bin.4'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 6/8 from './models/65B/ggml-model-q4_0.bin.5'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 7/8 from './models/65B/ggml-model-q4_0.bin.6'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 8/8 from './models/65B/ggml-model-q4_0.bin.7'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\n\r\nsystem_info: n_threads = 16 / 32 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 1 | VSX = 0 |\r\n\r\nmain: prompt: 'Please close your issue when it has been answered.'\r\nmain: number of tokens in prompt = 11\r\n     1 -> ''\r\n 12148 -> 'Please'\r\n  3802 -> ' close'\r\n   596 -> ' your'\r\n  2228 -> ' issue'\r\n   746 -> ' when'\r\n   372 -> ' it'\r\n   756 -> ' has'\r\n  1063 -> ' been'\r\n  7699 -> ' answered'\r\n 29889 -> '.'\r\n\r\nsampling parameters: temp = 0.800000, top_k = 40, top_p = 0.950000, repeat_last_n = 64, repeat_penalty = 1.300000\r\n\r\n\r\nPlease close your issue when it has been answered.\r\n@duncan-donut: I'm trying to figure out what kind of \"support\" you need for this script and why, exactly? Is there a question about how the code works that hasn't already been addressed in one or more comments below this ticket, or are we talking something else entirely like some sorta bugfixing job because your server setup is different from mine??\r\nI can understand if your site needs to be running smoothly and you need help with a fix of sorts but there should really be nothing wrong here that the code itself could not handle. And given that I'm getting reports about how it works perfectly well on some other servers, what exactly are we talking? A detailed report will do wonders in helping us get this resolved for ya quickly so please take your time and describe the issue(s) you see as clearly & concisely as possible!!\r\n@duncan-donut: I'm not sure if you have access to cPanel but you could try these instructions. It is worth a shot! Let me know how it goes (or what error message, exactly!) when/if ya give that code a go? [end of text]\r\n\r\n\r\nmain: mem per token = 71159620 bytes\r\nmain:     load time = 19309.95 ms\r\nmain:   sample time =   168.62 ms\r\nmain:  predict time = 223895.61 ms / 888.47 ms per token\r\nmain:    total time = 246406.42 ms\r\n\r\n Performance counter stats for './main -m ./models/65B/ggml-model-q4_0.bin -t 16 -n 1024 -p Please close your issue when it has been answered.':\r\n\r\n        3636882.89 msec task-clock                #   14.677 CPUs utilized\r\n             13509      context-switches          #    3.714 /sec\r\n              2436      cpu-migrations            #    0.670 /sec\r\n          10476679      page-faults               #    2.881 K/sec\r\n    13133115082869      cycles                    #    3.611 GHz                      (16.77%)\r\n       29314462753      stalled-cycles-frontend   #    0.22% frontend cycles idle     (16.76%)\r\n    10294402631459      stalled-cycles-backend    #   78.39% backend cycles idle      (16.74%)\r\n    23479217109614      instructions              #    1.79  insn per cycle\r\n                                                  #    0.44  stalled cycles per insn  (16.76%)\r\n     2353072268027      branches                  #  647.002 M/sec                    (16.77%)\r\n        1998682780      branch-misses             #    0.08% of all branches          (16.76%)\r\n\r\n     247.802177522 seconds time elapsed\r\n\r\n    3618.573072000 seconds user\r\n      18.491698000 seconds sys\r\n```\r\n",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-05T02:20:05+00:00",
+    "closed_at": "2023-06-06T03:50:30+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1693/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1693"
+  },
+  {
+    "number": 1156,
+    "title": "[Enhancement] Officially supported/provided python bindings",
+    "body": "Would the project accept a PR for providing directly supported python bindings.\r\n\r\nI know the README mentions llama-cpp-python. And there are these and perhaps others...\r\npip install llama-cpp-python\r\npip install llamacpp\r\npip install pyllamacpp\r\npip install llamacpypy\r\n\r\nInstead, perhaps it would be better to expose at least the low level interface as python directly in this repo.\r\n\r\nPerhaps rwkv.cpp can be used as an example. It does the following:\r\n- allow building as shared library\r\n- create python bindings that just expose functions in the shared library as is\r\n- (optional) create a higher level model that that builds on the basic bindings\r\n- examples in python, rather than bash scripts",
+    "labels": [
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-24T16:33:56+00:00",
+    "closed_at": "2023-05-12T15:13:50+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1156/reactions",
+      "total_count": 12,
+      "+1": 12,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1156"
+  },
+  {
+    "number": 145,
+    "title": "Reset context instead of quitting in interactive mode",
+    "body": "It's really annoying that I have to restart the program every time it quits by **[end of text]** or exceeding context limits, as I need to reload model, which is inefficient.\r\nIs there any way to add an option that instead of quitting just resets to the initial prompt? ",
+    "labels": [
+      "duplicate",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-14T21:26:49+00:00",
+    "closed_at": "2023-03-16T12:04:28+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/145/reactions",
+      "total_count": 19,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 6
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/145"
+  }
+]

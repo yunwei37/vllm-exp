@@ -1,0 +1,793 @@
+[
+  {
+    "number": 1727,
+    "title": "[User] Inference time GPU and CPU",
+    "body": "LLAMA_METAL=1 make -j && ./main -m ./models/guanaco-7B.ggmlv3.q4_0.bin -p \"I love fish\" --ignore-eos -n 1024 -ngl 1\r\n\r\nllama_print_timings:        load time =  7918.69 ms\r\nllama_print_timings:      sample time =  1013.54 ms /  1024 runs   (    0.99 ms per token)\r\nllama_print_timings: prompt eval time = 14705.49 ms /   775 tokens (   18.97 ms per token)\r\nllama_print_timings:        eval time = 46435.82 ms /  1020 runs   (   45.53 ms per token)\r\nllama_print_timings:       total time = 69981.58 ms\r\n\r\nmy question is , it seems that the eval time is same on CPU, is it normal?\r\n\r\nMacbook pro M1 , 32GB",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-06-07T02:59:28+00:00",
+    "closed_at": "2023-06-07T09:15:52+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1727/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1727"
+  },
+  {
+    "number": 6876,
+    "title": "Why Ollama is using VRAM Only insted of VRAM + RAM?",
+    "body": "![image](https://github.com/ggerganov/llama.cpp/assets/136520478/4df02421-b44f-4e47-bb04-33df160f4e83)\r\n\r\nI'm running the latest version of Ollama with Llama3:70b on Windows. It's consuming most of my VRAM, but I have 63.9 GB of available RAM that could boost the speed further, yet it's not being taken into account. Is there a way to do so?",
+    "labels": [
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-24T14:32:16+00:00",
+    "closed_at": "2024-04-30T21:59:00+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6876/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6876"
+  },
+  {
+    "number": 1843,
+    "title": "[User] Training examples sometimes gets broken when training data is in Japanese",
+    "body": "This is an issue to track the problem reported at https://github.com/ggerganov/llama.cpp/pull/1652#issuecomment-1586381277.\r\n\r\n# Expected Behavior\r\n\r\nNo `\ufffd` characters in the examples.\r\n\r\n# Current Behavior\r\n\r\nThe examples sometimes contain `\ufffd` characters (which aren't in the training data).\r\n\r\n# Failure Information\r\n\r\n<details>\r\n<summary>Example 0 during Training</summary>\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/14041768/40fc8be9-a327-42d7-867e-e746bae487be)\r\n</details>\r\n<details>\r\n<summary>Output of the trained model</summary>\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/14041768/6eb3ea01-2130-4238-a90c-c836f519c5d7)\r\n</details>\r\n\r\n# Steps to Reproduce\r\n\r\nTry to train using this training data: [dataset.txt](https://github.com/ggerganov/llama.cpp/files/11716289/dataset.txt)",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-13T20:05:50+00:00",
+    "closed_at": "2024-04-10T01:07:12+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1843/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1843"
+  },
+  {
+    "number": 6176,
+    "title": "[Vulkan] [RX 5700] Benchmark segmentation fault when setting up staging buffer",
+    "body": "Running `llama-cpp-benchmark` (b2466) using the Vulkan backend on an AMD RX 5700 GPU results in a segmentation fault.\r\n\r\n```\r\n$ llama-cpp-benchmark\r\nmain: build = 0 (unknown)\r\nmain: built with x86_64-pc-linux-gnu-gcc (Gentoo 13.2.1_p20240210 p14) 13.2.1 20240210 for x86_64-pc-linux-gnu\r\nStarting Test\r\nAllocating Memory of size 800194560 bytes, 763 MB\r\nggml_vulkan: Found 1 Vulkan devices:\r\nVulkan0: AMD Radeon RX 5700 (RADV NAVI10) | uma: 0 | fp16: 1 | warp size: 64\r\nCreating new tensors\r\n\r\n------ Test 1 - Matrix Mult via F32 code\r\nn_threads=1\r\n            m11: type = 0 (  f32) ne = 11008 x  4096 x     1, nb = (    4, 44032, 180355072) - Sum of tensor m11 is 45088768.00\r\n             m2: type = 0 (  f32) ne = 11008 x   128 x     1, nb = (    4, 44032, 5636096) - Sum of tensor m2 is 2818048.00\r\nGGML_ASSERT: /var/tmp/portage/dev-cpp/llama-cpp-2466/work/llama.cpp-b2466/ggml-vulkan.cpp:1985: false\r\n[New LWP 61869]\r\n[Thread debugging using libthread_db enabled]\r\nUsing host libthread_db library \"/usr/lib64/libthread_db.so.1\".\r\n0x00007fbabdd16bea in wait4 () from /usr/lib64/libc.so.6\r\n#0  0x00007fbabdd16bea in wait4 () from /usr/lib64/libc.so.6\r\n#1  0x00007fbabe25ad1b in ggml_print_backtrace () at /usr/src/debug/dev-cpp/llama-cpp-2466/llama.cpp-b2466/ggml.c:140\r\n140             waitpid(pid, NULL, 0);\r\n#2  0x00007fbabe2be345 in ggml_vk_buffer_write_2d_async (ctx=0x7fbabe4f3700 <_ZL11vk_instance.lto_priv.0+160>, subctx=0x55f46a18dce0, dst=std::shared_ptr<vk_buffer_struct> (use count 3, weak count 0) = {...}, offset=0, src=0x7fba7c4001a0, spitch=180355072, width=180355072, height=1, sync_staging=false) at /usr/src/debug/dev-cpp/llama-cpp-2466/llama.cpp-b2466/ggml-vulkan.cpp:1985\r\n1985                GGML_ASSERT(false);\r\n#3  0x00007fbabe341082 in ggml_vk_h2d_tensor_2d(ggml_backend_vk_context*, vk_context*, std::shared_ptr<vk_buffer_struct>&, unsigned long, ggml_tensor const*, unsigned long, unsigned long, unsigned long) [clone .constprop.0] (ctx=0x7fbabe4f3700 <_ZL11vk_instance.lto_priv.0+160>, subctx=0x55f46a18dce0, dst=std::shared_ptr<vk_buffer_struct> (use count 3, weak count 0) = {...}, offset=0, src=0x7fba7c400030, i1=4096, i2=0, i3=0) at /usr/src/debug/dev-cpp/llama-cpp-2466/llama.cpp-b2466/ggml-vulkan.cpp:2222\r\n2222            return ggml_vk_buffer_write_2d_async(ctx, subctx, dst, offset, x, nb1, row_length, i1);\r\n#4  0x00007fbabe2c7adf in ggml_vk_mul_mat_q_f16 (ctx=0x7fbabe4f3700 <_ZL11vk_instance.lto_priv.0+160>, subctx=0x55f46a18dce0, src0=0x7fba7c400030, src1=<optimized out>, dst=0x7fba921604e0) at /usr/src/debug/dev-cpp/llama-cpp-2466/llama.cpp-b2466/ggml-vulkan.cpp:2536\r\n2536                ggml_vk_h2d_tensor_2d(ctx, subctx, d_Qx, 0, src0, 0, 0, ggml_nrows(src0));\r\n#5  0x00007fbabe2cd8cd in ggml_vk_mul_mat (dst=0x7fba921604e0, src1=0x7fba91c00350, src0=<optimized out>, subctx=<optimized out>, ctx=0x7fbabe4f3700 <_ZL11vk_instance.lto_priv.0+160>) at /usr/src/debug/dev-cpp/llama-cpp-2466/llama.cpp-b2466/ggml-vulkan.cpp:2959\r\n2959            ggml_vk_mul_mat_q_f16(ctx, subctx, src0, src1, dst);\r\n#6  ggml_vk_build_graph (ctx=<optimized out>, node=0x7fba921604e0, last_node=true) at /usr/src/debug/dev-cpp/llama-cpp-2466/llama.cpp-b2466/ggml-vulkan.cpp:4810\r\n4810            ggml_vk_mul_mat(ctx, ctx->compute_ctx, src0, src1, node);\r\n#7  0x00007fbabe28491b in ggml_graph_compute (cgraph=0x7fba92360670, cplan=0x7ffe664cae20) at /usr/src/debug/dev-cpp/llama-cpp-2466/llama.cpp-b2466/ggml.c:18544\r\n18544           ggml_vk_build_graph_cpu_assist(cgraph->nodes[i], i == cgraph->n_nodes - 1);\r\n#8  0x000055f4681d7ef6 in ggml_graph_compute_helper (buf=std::vector of length 0, capacity 0, graph=graph@entry=0x7fba92360670, n_threads=n_threads@entry=1) at /usr/src/debug/dev-cpp/llama-cpp-2466/llama.cpp-b2466/examples/benchmark/benchmark-matmult.cpp:31\r\n31          ggml_graph_compute(graph, &plan);\r\n#9  0x000055f4681d77c7 in main (argc=<optimized out>, argv=<optimized out>) at /usr/src/debug/dev-cpp/llama-cpp-2466/llama.cpp-b2466/examples/benchmark/benchmark-matmult.cpp:184\r\n184         ggml_graph_compute_helper(work_buffer, gf, benchmark_params.n_threads);\r\n[Inferior 1 (process 61868) detached]\r\nAbgebrochen (Speicherabzug geschrieben)\r\n```\r\n\r\nCompiler flags:\r\n```\r\nCFLAGS=\"-O2 -march=znver1 -ggdb3\"\r\nCXXFLAGS=\"-O2 -march=znver1 -ggdb3\"\r\n```\r\n\r\nCMake arguments:\r\n```\r\n-DLLAMA_ALL_WARNINGS=OFF\r\n-DLLAMA_AVX=ON\r\n-DLLAMA_AVX2=OFF\r\n-DLLAMA_BLAS=OFF\r\n-DLLAMA_BUILD_SERVER=OFF\r\n-DLLAMA_BUILD_TESTS=OFF\r\n-DLLAMA_CUBLAS=OFF\r\n-DLLAMA_F16C=ON\r\n-DLLAMA_FMA=OFF\r\n-DLLAMA_HIPBLAS=OFF\r\n-DLLAMA_LTO=ON\r\n-DLLAMA_NATIVE=OFF\r\n-DLLAMA_VULKAN=ON\r\n```\r\n\r\nI'm happy to provide additional information or run additional tests, if required.",
+    "labels": [
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-20T13:52:31+00:00",
+    "closed_at": "2024-06-19T01:06:48+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6176/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6176"
+  },
+  {
+    "number": 8263,
+    "title": "Bug: Inference much slower with GPU offloading vs CPU on M2 Ultra",
+    "body": "### What happened?\n\nI have an M2 Ultra, trying to run bartowski/DeepSeek-Coder-V2-Instruct-GGUF, Q4_K_M.  When no layers are offloaded to GPU, inference runs at ~9 t/s.  However, as I offload layers to GPU up to the total of 61 layers, the inference is slower with every layer offloaded including when all layers are offloaded.  At 61 layers offloaded, inference runs at ~1 t/s\r\n\r\nRelevant output from model loading with all layers offloaded:\r\n\r\n```\r\n./llama-cli -m ../models/DeepSeek-Coder-V2-Instruct-Q4_K_M-00001-of-00004.gguf -n 128 -c 4096    \r\nLog start\r\nmain: build = 3285 (a27152b6)\r\nmain: built with Apple clang version 14.0.3 (clang-1403.0.22.14.1) for arm64-apple-darwin22.6.0\r\nmain: seed  = 1719960091\r\nllama_model_loader: additional 3 GGUFs metadata loaded.\r\nllama_model_loader: loaded meta data with 42 key-value pairs and 959 tensors from ../models/DeepSeek-Coder-V2-Instruct-Q4_K_M-00001-of-00004.gguf (version GGUF V3 (latest))\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = deepseek2\r\nllama_model_loader: - kv   1:                               general.name str              = DeepSeek-Coder-V2-Instruct\r\nllama_model_loader: - kv   2:                      deepseek2.block_count u32              = 60\r\nllama_model_loader: - kv   3:                   deepseek2.context_length u32              = 163840\r\nllama_model_loader: - kv   4:                 deepseek2.embedding_length u32              = 5120\r\nllama_model_loader: - kv   5:              deepseek2.feed_forward_length u32              = 12288\r\nllama_model_loader: - kv   6:             deepseek2.attention.head_count u32              = 128\r\nllama_model_loader: - kv   7:          deepseek2.attention.head_count_kv u32              = 128\r\nllama_model_loader: - kv   8:                   deepseek2.rope.freq_base f32              = 10000.000000\r\nllama_model_loader: - kv   9: deepseek2.attention.layer_norm_rms_epsilon f32              = 0.000001\r\nllama_model_loader: - kv  10:                deepseek2.expert_used_count u32              = 6\r\nllama_model_loader: - kv  11:                          general.file_type u32              = 15\r\nllama_model_loader: - kv  12:        deepseek2.leading_dense_block_count u32              = 1\r\nllama_model_loader: - kv  13:                       deepseek2.vocab_size u32              = 102400\r\nllama_model_loader: - kv  14:            deepseek2.attention.q_lora_rank u32              = 1536\r\nllama_model_loader: - kv  15:           deepseek2.attention.kv_lora_rank u32              = 512\r\nllama_model_loader: - kv  16:             deepseek2.attention.key_length u32              = 192\r\nllama_model_loader: - kv  17:           deepseek2.attention.value_length u32              = 128\r\nllama_model_loader: - kv  18:       deepseek2.expert_feed_forward_length u32              = 1536\r\nllama_model_loader: - kv  19:                     deepseek2.expert_count u32              = 160\r\nllama_model_loader: - kv  20:              deepseek2.expert_shared_count u32              = 2\r\nllama_model_loader: - kv  21:             deepseek2.expert_weights_scale f32              = 16.000000\r\nllama_model_loader: - kv  22:             deepseek2.rope.dimension_count u32              = 64\r\nllama_model_loader: - kv  23:                deepseek2.rope.scaling.type str              = yarn\r\nllama_model_loader: - kv  24:              deepseek2.rope.scaling.factor f32              = 40.000000\r\nllama_model_loader: - kv  25: deepseek2.rope.scaling.original_context_length u32              = 4096\r\nllama_model_loader: - kv  26: deepseek2.rope.scaling.yarn_log_multiplier f32              = 0.100000\r\nllama_model_loader: - kv  27:                       tokenizer.ggml.model str              = gpt2\r\nllama_model_loader: - kv  28:                         tokenizer.ggml.pre str              = deepseek-llm\r\nllama_model_loader: - kv  29:                      tokenizer.ggml.tokens arr[str,102400]  = [\"!\", \"\\\"\", \"#\", \"$\", \"%\", \"&\", \"'\", ...\r\nllama_model_loader: - kv  30:                  tokenizer.ggml.token_type arr[i32,102400]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...\r\nllama_model_loader: - kv  31:                      tokenizer.ggml.merges arr[str,99757]   = [\"\u0120 \u0120\", \"\u0120 t\", \"\u0120 a\", \"i n\", \"h e...\r\nllama_model_loader: - kv  32:                tokenizer.ggml.bos_token_id u32              = 100000\r\nllama_model_loader: - kv  33:                tokenizer.ggml.eos_token_id u32              = 100001\r\nllama_model_loader: - kv  34:            tokenizer.ggml.padding_token_id u32              = 100001\r\nllama_model_loader: - kv  35:               tokenizer.ggml.add_bos_token bool             = true\r\nllama_model_loader: - kv  36:               tokenizer.ggml.add_eos_token bool             = false\r\nllama_model_loader: - kv  37:                    tokenizer.chat_template str              = {% if not add_generation_prompt is de...\r\nllama_model_loader: - kv  38:               general.quantization_version u32              = 2\r\nllama_model_loader: - kv  39:                                   split.no u16              = 0\r\nllama_model_loader: - kv  40:                                split.count u16              = 4\r\nllama_model_loader: - kv  41:                        split.tensors.count i32              = 959\r\nllama_model_loader: - type  f32:  300 tensors\r\nllama_model_loader: - type q4_K:  599 tensors\r\nllama_model_loader: - type q6_K:   60 tensors\r\nllm_load_vocab: special tokens cache size = 2400\r\nllm_load_vocab: token to piece cache size = 0.6661 MB\r\nllm_load_print_meta: format           = GGUF V3 (latest)\r\nllm_load_print_meta: arch             = deepseek2\r\nllm_load_print_meta: vocab type       = BPE\r\nllm_load_print_meta: n_vocab          = 102400\r\nllm_load_print_meta: n_merges         = 99757\r\nllm_load_print_meta: n_ctx_train      = 163840\r\nllm_load_print_meta: n_embd           = 5120\r\nllm_load_print_meta: n_head           = 128\r\nllm_load_print_meta: n_head_kv        = 128\r\nllm_load_print_meta: n_layer          = 60\r\nllm_load_print_meta: n_rot            = 64\r\nllm_load_print_meta: n_swa            = 0\r\nllm_load_print_meta: n_embd_head_k    = 192\r\nllm_load_print_meta: n_embd_head_v    = 128\r\nllm_load_print_meta: n_gqa            = 1\r\nllm_load_print_meta: n_embd_k_gqa     = 24576\r\nllm_load_print_meta: n_embd_v_gqa     = 16384\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-06\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 0.0e+00\r\nllm_load_print_meta: n_ff             = 12288\r\nllm_load_print_meta: n_expert         = 160\r\nllm_load_print_meta: n_expert_used    = 6\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = 0\r\nllm_load_print_meta: rope scaling     = yarn\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 0.025\r\nllm_load_print_meta: n_ctx_orig_yarn  = 4096\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: model type       = 236B\r\nllm_load_print_meta: model ftype      = Q4_K - Medium\r\nllm_load_print_meta: model params     = 235.74 B\r\nllm_load_print_meta: model size       = 132.67 GiB (4.83 BPW) \r\nllm_load_print_meta: general.name     = DeepSeek-Coder-V2-Instruct\r\nllm_load_print_meta: BOS token        = 100000 '<\uff5cbegin\u2581of\u2581sentence\uff5c>'\r\nllm_load_print_meta: EOS token        = 100001 '<\uff5cend\u2581of\u2581sentence\uff5c>'\r\nllm_load_print_meta: PAD token        = 100001 '<\uff5cend\u2581of\u2581sentence\uff5c>'\r\nllm_load_print_meta: LF token         = 126 '\u00c4'\r\nllm_load_print_meta: max token length = 256\r\nllm_load_print_meta: n_layer_dense_lead   = 1\r\nllm_load_print_meta: n_lora_q             = 1536\r\nllm_load_print_meta: n_lora_kv            = 512\r\nllm_load_print_meta: n_ff_exp             = 1536\r\nllm_load_print_meta: n_expert_shared      = 2\r\nllm_load_print_meta: expert_weights_scale = 16.0\r\nllm_load_print_meta: rope_yarn_log_mul    = 0.1000\r\nllm_load_tensors: ggml ctx size =    0.80 MiB\r\nggml_backend_metal_log_allocated_size: allocated buffer, size = 44666.36 MiB, (44666.42 / 147456.00)\r\nggml_backend_metal_log_allocated_size: allocated buffer, size = 44793.92 MiB, (89460.34 / 147456.00)\r\nggml_backend_metal_log_allocated_size: allocated buffer, size = 44056.20 MiB, (133516.55 / 147456.00)\r\nggml_backend_metal_log_allocated_size: allocated buffer, size =  2334.41 MiB, (135850.95 / 147456.00)\r\nllm_load_tensors: offloading 60 repeating layers to GPU\r\nllm_load_tensors: offloading non-repeating layers to GPU\r\nllm_load_tensors: offloaded 61/61 layers to GPU\r\nllm_load_tensors:      Metal buffer size = 44666.36 MiB\r\nllm_load_tensors:      Metal buffer size = 44793.91 MiB\r\nllm_load_tensors:      Metal buffer size = 44056.20 MiB\r\nllm_load_tensors:      Metal buffer size =  2334.39 MiB\r\nllm_load_tensors:        CPU buffer size =   281.25 MiB\r\n....................................................................................................\r\nllama_new_context_with_model: n_ctx      = 4096\r\nllama_new_context_with_model: n_batch    = 2048\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 0.025\r\nggml_metal_init: allocating\r\nggml_metal_init: found device: Apple M2 Ultra\r\nggml_metal_init: picking default device: Apple M2 Ultra\r\nggml_metal_init: using embedded metal library\r\nggml_metal_init: GPU name:   Apple M2 Ultra\r\nggml_metal_init: GPU family: MTLGPUFamilyApple8  (1008)\r\nggml_metal_init: GPU family: MTLGPUFamilyCommon3 (3003)\r\nggml_metal_init: GPU family: MTLGPUFamilyMetal3  (5001)\r\nggml_metal_init: simdgroup reduction support   = true\r\nggml_metal_init: simdgroup matrix mul. support = true\r\nggml_metal_init: hasUnifiedMemory              = true\r\nggml_metal_init: recommendedMaxWorkingSetSize  = 154618.82 MB\r\nllama_kv_cache_init:      Metal KV buffer size = 19200.00 MiB\r\nllama_new_context_with_model: KV self size  = 19200.00 MiB, K (f16): 11520.00 MiB, V (f16): 7680.00 MiB\r\nllama_new_context_with_model:        CPU  output buffer size =     0.39 MiB\r\nllama_new_context_with_model:      Metal compute buffer size =  1174.00 MiB\r\nllama_new_context_with_model:        CPU compute buffer size =    18.01 MiB\r\nllama_new_context_with_model: graph nodes  = 4480\r\nllama_new_context_with_model: graph splits = 2\r\nmain: chat template example: You are a helpful assistant\r\n\r\nUser: Hello\r\n\r\nAssistant: Hi there<\uff5cend\u2581of\u2581sentence\uff5c>User: How are you?\r\n\r\nAssistant:\r\n\r\nsystem_info: n_threads = 16 / 24 | AVX = 0 | AVX_VNNI = 0 | AVX2 = 0 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | AVX512_BF16 = 0 | FMA = 0 | NEON = 1 | SVE = 0 | ARM_FMA = 1 | F16C = 0 | FP16_VA = 1 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 0 | SSSE3 = 0 | VSX = 0 | MATMUL_INT8 = 0 | LLAMAFILE = 1 | \r\nsampling: \r\n\trepeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 0.000\r\n\ttop_k = 40, tfs_z = 1.000, top_p = 0.950, min_p = 0.050, typical_p = 1.000, temp = 0.800\r\n\tmirostat = 0, mirostat_lr = 0.100, mirostat_ent = 5.000\r\nsampling order: \r\nCFG -> Penalties -> top_k -> tfs_z -> typical_p -> top_p -> min_p -> temperature \r\ngenerate: n_ctx = 4096, n_batch = 2048, n_predict = 128, n_keep = 1\r\n\r\n\r\npackage com.example.demo.service;\r\n\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.transaction.annotation.Transactional;\r\n\r\nimport com.example.demo.dao.UserDao;\r\nimport com.example.demo.entity.User;\r\nimport com.example.demo.exception.UserNotFoundException;\r\n\r\n@Service\r\n@Transactional\r\npublic class UserServiceImpl implements UserService {\r\n\t\r\n\t@Autowired\r\n\tprivate UserDao userDao;\r\n\r\n\t@Override\r\n\tpublic User getUser(int\r\nllama_print_timings:        load time =    3222.35 ms\r\nllama_print_timings:      sample time =       4.66 ms /   128 runs   (    0.04 ms per token, 27456.03 tokens per second)\r\nllama_print_timings: prompt eval time =       0.00 ms /     0 tokens (     nan ms per token,      nan tokens per second)\r\nllama_print_timings:        eval time =  119475.59 ms /   128 runs   (  933.40 ms per token,     1.07 tokens per second)\r\nllama_print_timings:       total time =  119510.07 ms /   128 tokens\r\nggml_metal_free: deallocating\r\nLog end\r\n\r\n```\r\n\r\nOutput with no layers offloaded:\r\n\r\n```\r\n./llama-cli -m ../models/DeepSeek-Coder-V2-Instruct-Q4_K_M-00001-of-00004.gguf -n 128 -c 4096 -ngl 0\r\nLog start\r\nmain: build = 3285 (a27152b6)\r\nmain: built with Apple clang version 14.0.3 (clang-1403.0.22.14.1) for arm64-apple-darwin22.6.0\r\nmain: seed  = 1719960265\r\nllama_model_loader: additional 3 GGUFs metadata loaded.\r\nllama_model_loader: loaded meta data with 42 key-value pairs and 959 tensors from ../models/DeepSeek-Coder-V2-Instruct-Q4_K_M-00001-of-00004.gguf (version GGUF V3 (latest))\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = deepseek2\r\nllama_model_loader: - kv   1:                               general.name str              = DeepSeek-Coder-V2-Instruct\r\nllama_model_loader: - kv   2:                      deepseek2.block_count u32              = 60\r\nllama_model_loader: - kv   3:                   deepseek2.context_length u32              = 163840\r\nllama_model_loader: - kv   4:                 deepseek2.embedding_length u32              = 5120\r\nllama_model_loader: - kv   5:              deepseek2.feed_forward_length u32              = 12288\r\nllama_model_loader: - kv   6:             deepseek2.attention.head_count u32              = 128\r\nllama_model_loader: - kv   7:          deepseek2.attention.head_count_kv u32              = 128\r\nllama_model_loader: - kv   8:                   deepseek2.rope.freq_base f32              = 10000.000000\r\nllama_model_loader: - kv   9: deepseek2.attention.layer_norm_rms_epsilon f32              = 0.000001\r\nllama_model_loader: - kv  10:                deepseek2.expert_used_count u32              = 6\r\nllama_model_loader: - kv  11:                          general.file_type u32              = 15\r\nllama_model_loader: - kv  12:        deepseek2.leading_dense_block_count u32              = 1\r\nllama_model_loader: - kv  13:                       deepseek2.vocab_size u32              = 102400\r\nllama_model_loader: - kv  14:            deepseek2.attention.q_lora_rank u32              = 1536\r\nllama_model_loader: - kv  15:           deepseek2.attention.kv_lora_rank u32              = 512\r\nllama_model_loader: - kv  16:             deepseek2.attention.key_length u32              = 192\r\nllama_model_loader: - kv  17:           deepseek2.attention.value_length u32              = 128\r\nllama_model_loader: - kv  18:       deepseek2.expert_feed_forward_length u32              = 1536\r\nllama_model_loader: - kv  19:                     deepseek2.expert_count u32              = 160\r\nllama_model_loader: - kv  20:              deepseek2.expert_shared_count u32              = 2\r\nllama_model_loader: - kv  21:             deepseek2.expert_weights_scale f32              = 16.000000\r\nllama_model_loader: - kv  22:             deepseek2.rope.dimension_count u32              = 64\r\nllama_model_loader: - kv  23:                deepseek2.rope.scaling.type str              = yarn\r\nllama_model_loader: - kv  24:              deepseek2.rope.scaling.factor f32              = 40.000000\r\nllama_model_loader: - kv  25: deepseek2.rope.scaling.original_context_length u32              = 4096\r\nllama_model_loader: - kv  26: deepseek2.rope.scaling.yarn_log_multiplier f32              = 0.100000\r\nllama_model_loader: - kv  27:                       tokenizer.ggml.model str              = gpt2\r\nllama_model_loader: - kv  28:                         tokenizer.ggml.pre str              = deepseek-llm\r\nllama_model_loader: - kv  29:                      tokenizer.ggml.tokens arr[str,102400]  = [\"!\", \"\\\"\", \"#\", \"$\", \"%\", \"&\", \"'\", ...\r\nllama_model_loader: - kv  30:                  tokenizer.ggml.token_type arr[i32,102400]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...\r\nllama_model_loader: - kv  31:                      tokenizer.ggml.merges arr[str,99757]   = [\"\u0120 \u0120\", \"\u0120 t\", \"\u0120 a\", \"i n\", \"h e...\r\nllama_model_loader: - kv  32:                tokenizer.ggml.bos_token_id u32              = 100000\r\nllama_model_loader: - kv  33:                tokenizer.ggml.eos_token_id u32              = 100001\r\nllama_model_loader: - kv  34:            tokenizer.ggml.padding_token_id u32              = 100001\r\nllama_model_loader: - kv  35:               tokenizer.ggml.add_bos_token bool             = true\r\nllama_model_loader: - kv  36:               tokenizer.ggml.add_eos_token bool             = false\r\nllama_model_loader: - kv  37:                    tokenizer.chat_template str              = {% if not add_generation_prompt is de...\r\nllama_model_loader: - kv  38:               general.quantization_version u32              = 2\r\nllama_model_loader: - kv  39:                                   split.no u16              = 0\r\nllama_model_loader: - kv  40:                                split.count u16              = 4\r\nllama_model_loader: - kv  41:                        split.tensors.count i32              = 959\r\nllama_model_loader: - type  f32:  300 tensors\r\nllama_model_loader: - type q4_K:  599 tensors\r\nllama_model_loader: - type q6_K:   60 tensors\r\nllm_load_vocab: special tokens cache size = 2400\r\nllm_load_vocab: token to piece cache size = 0.6661 MB\r\nllm_load_print_meta: format           = GGUF V3 (latest)\r\nllm_load_print_meta: arch             = deepseek2\r\nllm_load_print_meta: vocab type       = BPE\r\nllm_load_print_meta: n_vocab          = 102400\r\nllm_load_print_meta: n_merges         = 99757\r\nllm_load_print_meta: n_ctx_train      = 163840\r\nllm_load_print_meta: n_embd           = 5120\r\nllm_load_print_meta: n_head           = 128\r\nllm_load_print_meta: n_head_kv        = 128\r\nllm_load_print_meta: n_layer          = 60\r\nllm_load_print_meta: n_rot            = 64\r\nllm_load_print_meta: n_swa            = 0\r\nllm_load_print_meta: n_embd_head_k    = 192\r\nllm_load_print_meta: n_embd_head_v    = 128\r\nllm_load_print_meta: n_gqa            = 1\r\nllm_load_print_meta: n_embd_k_gqa     = 24576\r\nllm_load_print_meta: n_embd_v_gqa     = 16384\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-06\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 0.0e+00\r\nllm_load_print_meta: n_ff             = 12288\r\nllm_load_print_meta: n_expert         = 160\r\nllm_load_print_meta: n_expert_used    = 6\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = 0\r\nllm_load_print_meta: rope scaling     = yarn\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 0.025\r\nllm_load_print_meta: n_ctx_orig_yarn  = 4096\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: model type       = 236B\r\nllm_load_print_meta: model ftype      = Q4_K - Medium\r\nllm_load_print_meta: model params     = 235.74 B\r\nllm_load_print_meta: model size       = 132.67 GiB (4.83 BPW) \r\nllm_load_print_meta: general.name     = DeepSeek-Coder-V2-Instruct\r\nllm_load_print_meta: BOS token        = 100000 '<\uff5cbegin\u2581of\u2581sentence\uff5c>'\r\nllm_load_print_meta: EOS token        = 100001 '<\uff5cend\u2581of\u2581sentence\uff5c>'\r\nllm_load_print_meta: PAD token        = 100001 '<\uff5cend\u2581of\u2581sentence\uff5c>'\r\nllm_load_print_meta: LF token         = 126 '\u00c4'\r\nllm_load_print_meta: max token length = 256\r\nllm_load_print_meta: n_layer_dense_lead   = 1\r\nllm_load_print_meta: n_lora_q             = 1536\r\nllm_load_print_meta: n_lora_kv            = 512\r\nllm_load_print_meta: n_ff_exp             = 1536\r\nllm_load_print_meta: n_expert_shared      = 2\r\nllm_load_print_meta: expert_weights_scale = 16.0\r\nllm_load_print_meta: rope_yarn_log_mul    = 0.1000\r\nllm_load_tensors: ggml ctx size =    0.40 MiB\r\nllm_load_tensors: offloading 0 repeating layers to GPU\r\nllm_load_tensors: offloaded 0/61 layers to GPU\r\nllm_load_tensors:        CPU buffer size = 44666.35 MiB\r\nllm_load_tensors:        CPU buffer size = 44793.90 MiB\r\nllm_load_tensors:        CPU buffer size = 44056.19 MiB\r\nllm_load_tensors:        CPU buffer size =  2334.39 MiB\r\n....................................................................................................\r\nllama_new_context_with_model: n_ctx      = 4096\r\nllama_new_context_with_model: n_batch    = 2048\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 0.025\r\nllama_kv_cache_init:        CPU KV buffer size = 19200.00 MiB\r\nllama_new_context_with_model: KV self size  = 19200.00 MiB, K (f16): 11520.00 MiB, V (f16): 7680.00 MiB\r\nllama_new_context_with_model:        CPU  output buffer size =     0.39 MiB\r\nllama_new_context_with_model:        CPU compute buffer size =  1174.01 MiB\r\nllama_new_context_with_model: graph nodes  = 4480\r\nllama_new_context_with_model: graph splits = 1200\r\nmain: chat template example: You are a helpful assistant\r\n\r\nUser: Hello\r\n\r\nAssistant: Hi there<\uff5cend\u2581of\u2581sentence\uff5c>User: How are you?\r\n\r\nAssistant:\r\n\r\nsystem_info: n_threads = 16 / 24 | AVX = 0 | AVX_VNNI = 0 | AVX2 = 0 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | AVX512_BF16 = 0 | FMA = 0 | NEON = 1 | SVE = 0 | ARM_FMA = 1 | F16C = 0 | FP16_VA = 1 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 0 | SSSE3 = 0 | VSX = 0 | MATMUL_INT8 = 0 | LLAMAFILE = 1 | \r\nsampling: \r\n\trepeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 0.000\r\n\ttop_k = 40, tfs_z = 1.000, top_p = 0.950, min_p = 0.050, typical_p = 1.000, temp = 0.800\r\n\tmirostat = 0, mirostat_lr = 0.100, mirostat_ent = 5.000\r\nsampling order: \r\nCFG -> Penalties -> top_k -> tfs_z -> typical_p -> top_p -> min_p -> temperature \r\ngenerate: n_ctx = 4096, n_batch = 2048, n_predict = 128, n_keep = 1\r\n\r\n\r\npackage org.example;\r\n\r\npublic class Main {\r\n    public static void main(String[] args) {\r\n        System.out.println(\"Hello world!\");\r\n        String a = \"Hola\";\r\n        String b = \"Hola\";\r\n        System.out.println(a == b);\r\n    }\r\n} [end of text]\r\n\r\nllama_print_timings:        load time =    2881.06 ms\r\nllama_print_timings:      sample time =       2.50 ms /    68 runs   (    0.04 ms per token, 27167.40 tokens per second)\r\nllama_print_timings: prompt eval time =       0.00 ms /     0 tokens (     nan ms per token,      nan tokens per second)\r\nllama_print_timings:        eval time =   12070.83 ms /    68 runs   (  177.51 ms per token,     5.63 tokens per second)\r\nllama_print_timings:       total time =   12089.86 ms /    68 tokens\r\nLog end\r\n```\r\n\r\nThanks!\n\n### Name and Version\n\n./llama-cli --version\r\nversion: 3285 (a27152b6)\r\nbuilt with Apple clang version 14.0.3 (clang-1403.0.22.14.1) for arm64-apple-darwin22.6.0\n\n### What operating system are you seeing the problem on?\n\nMac\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-02T22:47:03+00:00",
+    "closed_at": "2024-07-03T12:42:25+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8263/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8263"
+  },
+  {
+    "number": 11612,
+    "title": "Compile bug: Not compilable with MACOSX_DEPLOYMENT_TARGET < 10.15",
+    "body": "### Git commit\n\ncfd74c86dbaa95ed30aa6b30e14d8801eb975d63\n\n### Operating systems\n\nMac\n\n### GGML backends\n\nCPU\n\n### Problem description & steps to reproduce\n\nI'd like to compile llama.cpp for a MACOSX_DEPLOYMENT_TARGET=10.13 which is arguably sensible considering that projects like NumPy also still support this target, see e.g. https://pypi.org/project/numpy/#numpy-2.2.2-cp312-cp312-macosx_10_13_x86_64.whl and after all I hope that one of the goals of this project is to run LLMs at the edge, which frankly includes old Intel Macs for which people might have no other use :)\n\nBut recent commits use C++ functionality that is not supported by this macos target, so I kindly ask to consider setting a minimum supported macos deployment target, preferably 10.13, for this project. For example, this could be added as a CI step to check. Of course I understand that using Apple's Accelerate requires macos version >= 13.3 but in my example to reproduce I tried to strip down the compilation to the bare necessities but it still does not work.\n\nI'd be interested in your opinions on this and hopefully this is something you could do. Thanks!\n\nFYI @slaren \n\n### First Bad Commit\n\nhttps://github.com/ggerganov/llama.cpp/commit/3420909dffa50e70660524797a1e715a717684d2\n\n### Compile command\n\n```shell\nmkdir build\ncmake -B build -DCMAKE_OSX_DEPLOYMENT_TARGET=\"10.13\" -DGGML_BLAS=OFF -DGGML_METAL=OFF -DLLAMA_BUILD_EXAMPLES=OFF\ncmake --build build --config Release -j 6\n```\n\n### Relevant log output\n\n```shell\n/Users/user/llama.cpp/ggml/src/ggml-backend-reg.cpp:505:18: error: 'exists' is unavailable: introduced in macOS 10.15\n  505 |         if (!fs::exists(search_path)) {\n      |                  ^\n/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/usr/include/c++/v1/__filesystem/operations.h:152:35: note: 'exists' has been explicitly marked unavailable here\n  152 | inline _LIBCPP_HIDE_FROM_ABI bool exists(const path& __p) { return exists(__status(__p)); }\n      |\n```",
+    "labels": [
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-03T08:28:10+00:00",
+    "closed_at": "2025-03-20T01:07:35+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/11612/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/11612"
+  },
+  {
+    "number": 6569,
+    "title": "The output of the main service is inconsistent with that of the server service",
+    "body": "**When the same quantitative model is used for server service and main service, some specific words are answered differently. It seems that the input specific words are not received or received incorrectly.\r\nFor example, BYD, Tesla, Lexus and other car names have this problem, such as Geely, BMW, Audi and so on is normal.**\r\nThe specific problem is manifested in: When obtaining the word \"BYD\" in the server service, non-Chinese characters such as \"ruit\" are not obtained or obtained. As in the first example, when asked about BYD car, the reply only involved the car, and BYD was lost.\r\n**Test results in the server**\r\n********************************************************\r\n**These are three examples of problems\uff08BYD\uff09**\r\n********************************************************\r\n{\r\n  content: ' \u6c7d\u8f66\u662f\u4e00\u79cd\u4ea4\u901a\u5de5\u5177\uff0c\u5b83\u901a\u5e38\u7531\u53d1\u52a8\u673a\uff0c\u53d8\u901f\u7bb1\uff0c\u5e95\u76d8\u548c\u5e95\u76d8\u7cfb\u7edf\uff0c\u60ac\u6302\u7cfb\u7edf\uff0c\u8f6c\u5411\u7cfb\u7edf\uff0c\u8f66\u8eab\u548c\u8f66\u8f6e\u7b49\u7ec4\u6210\u3002\u6c7d\u8f66\u901a\u5e38\u7531\u6c7d\u6cb9\u6216\u67f4\u6cb9\u53d1\u52a8\u673a\u63d0\u4f9b\u52a8\u529b\uff0c\u901a\u8fc7\u53d8\u901f\u7bb1\u548c\u4f20\u52a8\u7cfb\u7edf\u6765\u63a7\u5236\u8f66\u8f86\u884c\u9a76\u7684\u901f\u5ea6\u548c\u65b9\u5411\u3002\u6c7d\u8f66\u7684\u8bbe\u8ba1\u548c\u5236\u9020\u6280\u672f\u4e0d\u65ad\u63d0\u9ad8\uff0c\u6c7d\u8f66\u7684\u529f\u80fd\u4e5f\u8d8a\u6765\u8d8a\u5f3a\u5927\u3002\u73b0\u5728\u6c7d\u8f66\u5df2\u7ecf\u4e0d\u4ec5\u4ec5\u662f\u4e00\u79cd\u4ea4\u901a\u5de5\u5177\uff0c\u5b83\u5df2\u7ecf\u6210\u4e3a\u4eba\u4eec\u65e5\u5e38\u751f\u6d3b\u4e2d\u4e0d\u53ef\u6216\u7f3a\u7684\u4e00\u90e8\u5206\uff0c\u63d0\u4f9b\u4e86\u5404\u79cd\u4fbf\u5229\u3002\u6c7d\u8f66\u5728\u73b0\u4ee3\u793e\u4f1a\u4e2d\u7684\u4f5c\u7528\u975e\u5e38\u5e7f\u6cdb\uff0c\u5b83\u53ef\u4ee5\u6ee1\u8db3\u4eba\u4eec\u7684\u51fa\u884c\u9700\u6c42\uff0c\u540c\u65f6\u4e5f\u53ef\u4ee5\u5a31\u4e50\u4f11\u95f2\uff0c\u63d0\u9ad8\u751f\u6d3b\u8d28\u91cf\u3002\u6c7d\u8f66\u7684\u4f7f\u7528\u4e5f\u5e26\u6765\u4e86\u4e00\u4e9b\u8d1f\u9762\u5f71\u54cd\uff0c\u5982\u7a7a\u6c14\u6c61\u67d3\uff0c\u4ea4\u901a\u62e5\u5835\uff0c\u4ea4\u901a\u4e8b\u6545\u7b49\u3002\u56e0\u6b64\uff0c\u6c7d\u8f66\u7684\u4f7f\u7528\u5e94\u8be5\u66f4\u52a0\u7406\u6027\uff0c\u66f4\u52a0\u5b89\u5168\uff0c\u66f4\u52a0\u73af\u4fdd\u3002',\r\n  id_slot: 0,\r\n  stop: true,\r\n  model: '../Chinese-LLaMA-Alpaca-2-main/examples/sft_8/ggml-model-f8.gguf',\r\n  tokens_predicted: 153,\r\n  tokens_evaluated: 40,\r\n  generation_settings: {\r\n    n_ctx: 4096,\r\n    n_predict: -1,\r\n    model: '../Chinese-LLaMA-Alpaca-2-main/examples/sft_8/ggml-model-f8.gguf',\r\n    seed: 4294967295,\r\n    temperature: 0.800000011920929,\r\n    dynatemp_range: 0,\r\n    dynatemp_exponent: 1,\r\n    top_k: 40,\r\n    top_p: 0.949999988079071,\r\n    min_p: 0.05000000074505806,\r\n    tfs_z: 1,\r\n    typical_p: 1,\r\n    repeat_last_n: 64,\r\n    repeat_penalty: 1,\r\n    presence_penalty: 0,\r\n    frequency_penalty: 0,\r\n    penalty_prompt_tokens: [],\r\n    use_penalty_prompt_tokens: false,\r\n    mirostat: 0,\r\n    mirostat_tau: 5,\r\n    mirostat_eta: 0.10000000149011612,\r\n    penalize_nl: false,\r\n    stop: [],\r\n    n_keep: 1,\r\n    n_discard: 0,\r\n    ignore_eos: false,\r\n    stream: false,\r\n    logit_bias: [],\r\n    n_probs: 0,\r\n    min_keep: 0,\r\n    grammar: '',\r\n    samplers: [ 'top_k', 'tfs_z', 'typical_p', 'top_p', 'min_p', 'temperature' ]\r\n  },\r\n  prompt: '[INST] <<SYS>>\\n' +\r\n    'You are a helpful assistant. \u4f60\u662f\u4e00\u4e2a\u4e50\u4e8e\u52a9\u4eba\u7684\u52a9\u624b\u3002\\n' +\r\n    '<</SYS>>\\n' +\r\n    '\\n' +\r\n    '\u8bf7\u8be6\u7ec6\u4ecb\u7ecd\u4e00\u4e0b\u6bd4\u4e9a\u8fea\u6c7d\u8f66[/INST]',\r\n  truncated: false,\r\n  stopped_eos: true,\r\n  stopped_word: false,\r\n  stopped_limit: false,\r\n  stopping_word: '',\r\n  tokens_cached: 192,\r\n  timings: {\r\n    prompt_n: 40,\r\n    prompt_ms: 71.919,\r\n    prompt_per_token_ms: 1.7979749999999999,\r\n    prompt_per_second: 556.1812594724621,\r\n    predicted_n: 153,\r\n    predicted_ms: 1859.683,\r\n    predicted_per_token_ms: 12.154790849673203,\r\n    predicted_per_second: 82.27208615661917\r\n  }\r\n}\r\n********************************************************\r\n{\r\n  content: ' \u5f88\u62b1\u6b49\uff0c\u4f46\u662f\u6211\u65e0\u6cd5\u51c6\u786e\u56de\u7b54\u60a8\u7684\u95ee\u9898\uff0c\u56e0\u4e3a\u60a8\u6ca1\u6709\u63d0\u4f9b\u4efb\u4f55\u5173\u4e8e\u5b83\u7684\u4fe1\u606f\u3002\u6211\u9700\u8981\u77e5\u9053\u4ec0\u4e48\u662f\"ruit\"\u6765\u5e2e\u52a9\u60a8\u3002',\r\n  id_slot: 0,\r\n  stop: true,\r\n  model: '../Chinese-LLaMA-Alpaca-2-main/examples/sft_8/ggml-model-f8.gguf',\r\n  tokens_predicted: 32,\r\n  tokens_evaluated: 39,\r\n  generation_settings: {\r\n    n_ctx: 4096,\r\n    n_predict: -1,\r\n    model: '../Chinese-LLaMA-Alpaca-2-main/examples/sft_8/ggml-model-f8.gguf',\r\n    seed: 4294967295,\r\n    temperature: 0.800000011920929,\r\n    dynatemp_range: 0,\r\n    dynatemp_exponent: 1,\r\n    top_k: 40,\r\n    top_p: 0.949999988079071,\r\n    min_p: 0.05000000074505806,\r\n    tfs_z: 1,\r\n    typical_p: 1,\r\n    repeat_last_n: 64,\r\n    repeat_penalty: 1,\r\n    presence_penalty: 0,\r\n    frequency_penalty: 0,\r\n    penalty_prompt_tokens: [],\r\n    use_penalty_prompt_tokens: false,\r\n    mirostat: 0,\r\n    mirostat_tau: 5,\r\n    mirostat_eta: 0.10000000149011612,\r\n    penalize_nl: false,\r\n    stop: [],\r\n    n_keep: 1,\r\n    n_discard: 0,\r\n    ignore_eos: false,\r\n    stream: false,\r\n    logit_bias: [],\r\n    n_probs: 0,\r\n    min_keep: 0,\r\n    grammar: '',\r\n    samplers: [ 'top_k', 'tfs_z', 'typical_p', 'top_p', 'min_p', 'temperature' ]\r\n  },\r\n  prompt: '[INST] <<SYS>>\\n' +\r\n    'You are a helpful assistant. \u4f60\u662f\u4e00\u4e2a\u4e50\u4e8e\u52a9\u4eba\u7684\u52a9\u624b\u3002\\n' +\r\n    '<</SYS>>\\n' +\r\n    '\\n' +\r\n    '\u8bf7\u8be6\u7ec6\u4ecb\u7ecd\u4e00\u4e0b\u6bd4\u4e9a\u8fea[/INST]',\r\n  truncated: false,\r\n  stopped_eos: true,\r\n  stopped_word: false,\r\n  stopped_limit: false,\r\n  stopping_word: '',\r\n  tokens_cached: 70,\r\n  timings: {\r\n    prompt_n: 39,\r\n    prompt_ms: 50.617,\r\n    prompt_per_token_ms: 1.2978717948717948,\r\n    prompt_per_second: 770.4921271509572,\r\n    predicted_n: 32,\r\n    predicted_ms: 382.638,\r\n    predicted_per_token_ms: 11.9574375,\r\n    predicted_per_second: 83.629958341827\r\n  }\r\n}\r\n********************************************************\r\n{\r\n  content: ' \u9a71\u9010\u823005\u6c7d\u8f66\uff08Discharged Ship05\uff09\u662f\u4e00\u6b3e\u7531\u4e2d\u56fd\u957f\u57ce\u6c7d\u8f66\u5236\u9020\u7684\u7eaf\u7535\u52a8\u7d27\u51d1\u578b\u8f7f\u8f66\u3002\u5b83\u7684\u5916\u89c2\u8bbe\u8ba1\u7075\u611f\u6765\u81ea\u9a71\u9010\u823005\u7cfb\u5217\u7684\u9a71\u9010\u8230\uff0c\u5177\u6709\u8f83\u9ad8\u7684\u8fa8\u8bc6\u5ea6\u3002\u9a71\u9010\u823005\u6c7d\u8f66\u91c7\u7528\u4e09\u5143\u9502\u79bb\u5b50\u7535\u6c60\uff0c\u80fd\u591f\u63d0\u4f9b\u9ad8\u6548\u7684\u7eed\u822a\u80fd\u529b\uff0c\u6700\u5927\u65f6\u901f\u53ef\u8fbe160\u516c\u91cc\u3002\u5b83\u8fd8\u62e5\u6709\u5148\u8fdb\u7684\u667a\u80fd\u63a7\u5236\u7cfb\u7edf\uff0c\u80fd\u591f\u6839\u636e\u8def\u51b5\u548c\u9a7e\u9a76\u9700\u6c42\uff0c\u81ea\u52a8\u8c03\u6574\u8f66\u8f86\u7684\u52a0\u901f\u3001\u5239\u8f66\u548c\u8f6c\u5411\u7b49\u6027\u80fd\u3002\u6b64\u5916\uff0c\u5b83\u7684\u5145\u7535\u65f6\u95f4\u77ed\uff0c\u7eed\u822a\u80fd\u529b\u5f3a\uff0c\u662f\u4e00\u6b3e\u503c\u5f97\u8d2d\u4e70\u7684\u7eaf\u7535\u52a8\u7d27\u51d1\u578b\u8f7f\u8f66\u3002',\r\n  id_slot: 0,\r\n  stop: true,\r\n  model: '../Chinese-LLaMA-Alpaca-2-main/examples/sft_8/ggml-model-f8.gguf',\r\n  tokens_predicted: 125,\r\n  tokens_evaluated: 45,\r\n  generation_settings: {\r\n    n_ctx: 4096,\r\n    n_predict: -1,\r\n    model: '../Chinese-LLaMA-Alpaca-2-main/examples/sft_8/ggml-model-f8.gguf',\r\n    seed: 4294967295,\r\n    temperature: 0.800000011920929,\r\n    dynatemp_range: 0,\r\n    dynatemp_exponent: 1,\r\n    top_k: 40,\r\n    top_p: 0.949999988079071,\r\n    min_p: 0.05000000074505806,\r\n    tfs_z: 1,\r\n    typical_p: 1,\r\n    repeat_last_n: 64,\r\n    repeat_penalty: 1,\r\n    presence_penalty: 0,\r\n    frequency_penalty: 0,\r\n    penalty_prompt_tokens: [],\r\n    use_penalty_prompt_tokens: false,\r\n    mirostat: 0,\r\n    mirostat_tau: 5,\r\n    mirostat_eta: 0.10000000149011612,\r\n    penalize_nl: false,\r\n    stop: [],\r\n    n_keep: 1,\r\n    n_discard: 0,\r\n    ignore_eos: false,\r\n    stream: false,\r\n    logit_bias: [],\r\n    n_probs: 0,\r\n    min_keep: 0,\r\n    grammar: '',\r\n    samplers: [ 'top_k', 'tfs_z', 'typical_p', 'top_p', 'min_p', 'temperature' ]\r\n  },\r\n  prompt: '[INST] <<SYS>>\\n' +\r\n    'You are a helpful assistant. \u4f60\u662f\u4e00\u4e2a\u4e50\u4e8e\u52a9\u4eba\u7684\u52a9\u624b\u3002\\n' +\r\n    '<</SYS>>\\n' +\r\n    '\\n' +\r\n    '\u8bf7\u8be6\u7ec6\u4ecb\u7ecd\u4e00\u4e0b\u6bd4\u4e9a\u8fea\u9a71\u9010\u823005\u6c7d\u8f66[/INST]',\r\n  truncated: false,\r\n  stopped_eos: true,\r\n  stopped_word: false,\r\n  stopped_limit: false,\r\n  stopping_word: '',\r\n  tokens_cached: 169,\r\n  timings: {\r\n    prompt_n: 45,\r\n    prompt_ms: 51.557,\r\n    prompt_per_token_ms: 1.1457111111111111,\r\n    prompt_per_second: 872.8203735671199,\r\n    predicted_n: 125,\r\n    predicted_ms: 1518.842,\r\n    predicted_per_token_ms: 12.150736,\r\n    predicted_per_second: 82.29954136111589\r\n  }\r\n}\r\n********************************************************\r\n**These are two correct examples\uff08Geely\uff09**\r\n********************************************************\r\n{\r\n  content: ' \u5409\u5229\u6c7d\u8f66\u662f\u4e00\u5bb6\u4f4d\u4e8e\u4e2d\u56fd\u7684\u6c7d\u8f66\u5236\u9020\u5546\uff0c\u6210\u7acb\u4e8e1946\u5e74\u3002\u5409\u5229\u662f\u4e00\u5bb6\u72ec\u7acb\u6c7d\u8f66\u5236\u9020\u5546\uff0c\u5b83\u751f\u4ea7\u4e86\u8bb8\u591a\u6210\u529f\u7684\u6c7d\u8f66\uff0c\u5305\u62ec\u8f7f\u8f66\uff0cSUV\uff0cMPV\u548c\u7d27\u51d1\u578b\u8f66\u3002\\n' +\r\n    '\\n' +\r\n    '\u5409\u5229\u6c7d\u8f66\u5728\u6c7d\u8f66\u8bbe\u8ba1\u548c\u5236\u9020\u65b9\u9762\u62e5\u6709\u5f88\u9ad8\u7684\u58f0\u8a89\uff0c\u5b83\u7684\u8f66\u578b\u53d7\u5230\u8bb8\u591a\u6d88\u8d39\u8005\u7684\u559c\u7231\u3002\u5409\u5229\u6c7d\u8f66\u7684\u54c1\u724c\u5f62\u8c61\u4e5f\u5f97\u5230\u4e86\u63d0\u9ad8\uff0c\u5728\u5168\u7403\u8303\u56f4\u5185\u90fd\u6709\u5f88\u597d\u7684\u58f0\u8a89\u3002\\n' +\r\n    '\\n' +\r\n    '\u5409\u5229\u6c7d\u8f66\u7684\u8f66\u578b\u5305\u62ec\u5409\u5229GS4\uff0c\u5409\u5229GS5\uff0c\u5409\u5229GX7\uff0c\u5409\u5229M6\u7b49\u3002\u8fd9\u4e9b\u8f66\u578b\u90fd\u5177\u6709\u65f6\u5c1a\u7684\u5916\u89c2\uff0c\u9ad8\u8d28\u91cf\u7684\u5185\u9970\u548c\u51fa\u8272\u7684\u6027\u80fd\u3002\\n' +\r\n    '\\n' +\r\n    '\u5409\u5229\u6c7d\u8f66\u7684\u751f\u4ea7\u57fa\u5730\u904d\u5e03\u4e8e\u4e2d\u56fd\u5404\u5730\uff0c\u5176\u4e2d\u5409\u5229\u6c7d\u8f66\u7684\u603b\u90e8\u4f4d\u4e8e\u6d59\u6c5f\u5409\u5229\u6c7d\u8f66\u57ce\u3002\u5409\u5229\u6c7d\u8f66\u4e00\u76f4\u81f4\u529b\u4e8e\u63d0\u9ad8\u6c7d\u8f66\u751f\u4ea7\u6280\u672f\uff0c\u5e76\u59cb\u7ec8\u4fdd\u6301\u7740\u5bf9\u6c7d\u8f66\u6280\u672f\u7684\u521b\u65b0\u548c\u53d1\u5c55\u3002\\n' +\r\n    '\\n' +\r\n    '\u5409\u5229\u6c7d\u8f66\u5728\u5168\u7403\u8303\u56f4\u5185\u90fd\u6709\u5e7f\u6cdb\u7684\u9500\u552e\uff0c\u5728\u6b27\u6d32\uff0c\u65e5\u672c\u548c\u5370\u5ea6\u90fd\u6709\u5409\u5229\u6c7d\u8f66\u7684\u9500\u552e\u7f51\u7edc\u3002\u5409\u5229\u6c7d\u8f66\u7684\u76ee\u6807\u662f\u901a\u8fc7\u751f\u4ea7\u4f18\u8d28\u7684\u6c7d\u8f66\uff0c\u4e3a\u4eba\u4eec\u63d0\u4f9b\u4fbf\u6377\u3001\u8212\u9002\u3001\u5b89\u5168\u3001\u7ecf\u6d4e\u7684\u4ea4\u901a\u5de5\u5177\u3002',\r\n  id_slot: 0,\r\n  stop: true,\r\n  model: '../Chinese-LLaMA-Alpaca-2-main/examples/sft_8/ggml-model-f8.gguf',\r\n  tokens_predicted: 213,\r\n  tokens_evaluated: 40,\r\n  generation_settings: {\r\n    n_ctx: 4096,\r\n    n_predict: -1,\r\n    model: '../Chinese-LLaMA-Alpaca-2-main/examples/sft_8/ggml-model-f8.gguf',\r\n    seed: 4294967295,\r\n    temperature: 0.800000011920929,\r\n    dynatemp_range: 0,\r\n    dynatemp_exponent: 1,\r\n    top_k: 40,\r\n    top_p: 0.949999988079071,\r\n    min_p: 0.05000000074505806,\r\n    tfs_z: 1,\r\n    typical_p: 1,\r\n    repeat_last_n: 64,\r\n    repeat_penalty: 1,\r\n    presence_penalty: 0,\r\n    frequency_penalty: 0,\r\n    penalty_prompt_tokens: [],\r\n    use_penalty_prompt_tokens: false,\r\n    mirostat: 0,\r\n    mirostat_tau: 5,\r\n    mirostat_eta: 0.10000000149011612,\r\n    penalize_nl: false,\r\n    stop: [],\r\n    n_keep: 1,\r\n    n_discard: 0,\r\n    ignore_eos: false,\r\n    stream: false,\r\n    logit_bias: [],\r\n    n_probs: 0,\r\n    min_keep: 0,\r\n    grammar: '',\r\n    samplers: [ 'top_k', 'tfs_z', 'typical_p', 'top_p', 'min_p', 'temperature' ]\r\n  },\r\n  prompt: '[INST] <<SYS>>\\n' +\r\n    'You are a helpful assistant. \u4f60\u662f\u4e00\u4e2a\u4e50\u4e8e\u52a9\u4eba\u7684\u52a9\u624b\u3002\\n' +\r\n    '<</SYS>>\\n' +\r\n    '\\n' +\r\n    '\u8bf7\u8be6\u7ec6\u4ecb\u7ecd\u4e00\u4e0b\u5409\u5229\u6c7d\u8f66[/INST]',\r\n  truncated: false,\r\n  stopped_eos: true,\r\n  stopped_word: false,\r\n  stopped_limit: false,\r\n  stopping_word: '',\r\n  tokens_cached: 252,\r\n  timings: {\r\n    prompt_n: 40,\r\n    prompt_ms: 67.825,\r\n    prompt_per_token_ms: 1.6956250000000002,\r\n    prompt_per_second: 589.7530409141173,\r\n    predicted_n: 213,\r\n    predicted_ms: 2621.52,\r\n    predicted_per_token_ms: 12.307605633802817,\r\n    predicted_per_second: 81.25057218712809\r\n  }\r\n}\r\n********************************************************\r\n{\r\n  content: ' \u5409\u5229\u6c7d\u8f66\u662f\u4e00\u5bb6\u4e2d\u56fd\u6c7d\u8f66\u54c1\u724c\uff0c\u603b\u90e8\u4f4d\u4e8e\u6d59\u6c5f\u7701\u676d\u5dde\u5e02\u3002\u5409\u5229\u662f\u4e00\u5bb6\u4ee5\u8f7f\u8f66\u3001SUV\u3001\u7d27\u51d1\u578b\u8f66\u548c\u5c0f\u578b\u8f66\u4e3a\u4e3b\u8981\u4ea7\u54c1\u7684\u516c\u53f8\uff0c\u540c\u65f6\u62e5\u6709\u5148\u8fdb\u7684\u6280\u672f\u548c\u521b\u65b0\u7684\u8f66\u578b\uff0c\u4e3a\u6d88\u8d39\u8005\u63d0\u4f9b\u8212\u9002\u3001\u5b89\u5168\u3001\u65f6\u5c1a\u4e14\u7ecf\u6d4e\u5b9e\u7528\u7684\u6c7d\u8f66\u3002\u5409\u5229\u6c7d\u8f66\u5728\u5168\u7403\u8303\u56f4\u5185\u90fd\u5177\u6709\u5f88\u9ad8\u7684\u58f0\u8a89\uff0c\u5e76\u4ee5\u5176\u9ad8\u6027\u4ef7\u6bd4\u548c\u4f18\u79c0\u7684\u6027\u80fd\u8457\u79f0\u3002',\r\n  id_slot: 0,\r\n  stop: true,\r\n  model: '../Chinese-LLaMA-Alpaca-2-main/examples/sft_8/ggml-model-f8.gguf',\r\n  tokens_predicted: 76,\r\n  tokens_evaluated: 39,\r\n  generation_settings: {\r\n    n_ctx: 4096,\r\n    n_predict: -1,\r\n    model: '../Chinese-LLaMA-Alpaca-2-main/examples/sft_8/ggml-model-f8.gguf',\r\n    seed: 4294967295,\r\n    temperature: 0.800000011920929,\r\n    dynatemp_range: 0,\r\n    dynatemp_exponent: 1,\r\n    top_k: 40,\r\n    top_p: 0.949999988079071,\r\n    min_p: 0.05000000074505806,\r\n    tfs_z: 1,\r\n    typical_p: 1,\r\n    repeat_last_n: 64,\r\n    repeat_penalty: 1,\r\n    presence_penalty: 0,\r\n    frequency_penalty: 0,\r\n    penalty_prompt_tokens: [],\r\n    use_penalty_prompt_tokens: false,\r\n    mirostat: 0,\r\n    mirostat_tau: 5,\r\n    mirostat_eta: 0.10000000149011612,\r\n    penalize_nl: false,\r\n    stop: [],\r\n    n_keep: 1,\r\n    n_discard: 0,\r\n    ignore_eos: false,\r\n    stream: false,\r\n    logit_bias: [],\r\n    n_probs: 0,\r\n    min_keep: 0,\r\n    grammar: '',\r\n    samplers: [ 'top_k', 'tfs_z', 'typical_p', 'top_p', 'min_p', 'temperature' ]\r\n  },\r\n  prompt: '[INST] <<SYS>>\\n' +\r\n    'You are a helpful assistant. \u4f60\u662f\u4e00\u4e2a\u4e50\u4e8e\u52a9\u4eba\u7684\u52a9\u624b\u3002\\n' +\r\n    '<</SYS>>\\n' +\r\n    '\\n' +\r\n    '\u8bf7\u8be6\u7ec6\u4ecb\u7ecd\u4e00\u4e0b\u5409\u5229[/INST]',\r\n  truncated: false,\r\n  stopped_eos: true,\r\n  stopped_word: false,\r\n  stopped_limit: false,\r\n  stopping_word: '',\r\n  tokens_cached: 114,\r\n  timings: {\r\n    prompt_n: 39,\r\n    prompt_ms: 74.161,\r\n    prompt_per_token_ms: 1.9015641025641026,\r\n    prompt_per_second: 525.8828764444924,\r\n    predicted_n: 76,\r\n    predicted_ms: 922.532,\r\n    predicted_per_token_ms: 12.138578947368421,\r\n    predicted_per_second: 82.38196615401958\r\n  }\r\n}\r\n********************************************************\r\n\r\n**However, the main service returns correct terms that are recognized.**\r\n********************************************************\r\n**These are three correct examples\uff08BYD\uff09**\r\n********************************************************\r\n\u8bf7\u8be6\u7ec6\u4ecb\u7ecd\u4e00\u4e0b\u6bd4\u4e9a\u8fea\r\n\u6bd4\u4e9a\u8fea\u662f\u4e00\u5bb6\u4e2d\u56fd\u54c1\u724c\uff0c\u5b83\u751f\u4ea7\u6c7d\u8f66\uff0c\u5305\u62ec\u7d27\u51d1\u578b\u8f7f\u8f66\u3001\u7eaf\u7535\u52a8\u7d27\u51d1\u578b\u8f7f\u8f66\u548c\u7535\u52a8\u7d27\u51d1\u578b\u8f7f\u8f66\u3002\r\n********************************************************\r\n\u8bf7\u8be6\u7ec6\u4ecb\u7ecd\u4e00\u4e0b\u6bd4\u4e9a\u8fea\u6c7d\u8f66\r\n\u6bd4\u4e9a\u8fea\u662f\u4e00\u5bb6\u8457\u540d\u7684\u4e2d\u56fd\u6c7d\u8f66\u5236\u9020\u5546\uff0c\u603b\u90e8\u4f4d\u4e8e\u5e7f\u4e1c\u7701\u6df1\u5733\u5e02\u5357\u5c71\u533a\uff0c\u6210\u7acb\u4e8e1995\u5e741\u670816\u65e5\u3002\u6bd4\u4e9a\u8fea\u7684\u4e1a\u52a1\u6db5\u76d6\u6c7d\u8f66\u3001\u7535\u5b50\u80fd\u6e90\u7cfb\u7edf\u3001\u65b0\u80fd\u6e90\u6c7d\u8f66\u548c\u96f6\u914d\u4ef6\u5236\u9020\u3002\u6bd4\u4e9a\u8fea\u7684\u54c1\u724c\u5f62\u8c61\u662f\u201c\u52c7\u4e8e\u521b\u65b0\uff0c\u81f4\u529b\u4e8e\u6539\u5584\u4eba\u4eec\u7684\u751f\u6d3b\u201d\u3002\r\n\u6bd4\u4e9a\u8fea\u7684\u6c7d\u8f66\u4e1a\u52a1\u59cb\u4e8e2000\u5e74\uff0c\u5e76\u8fc5\u901f\u53d1\u5c55\u6210\u4e3a\u4e2d\u56fd\u6c7d\u8f66\u884c\u4e1a\u7684\u9886\u519b\u8005\u4e4b\u4e00\u3002\u6bd4\u4e9a\u8fea\u7684\u8f66\u578b\u5305\u62ec\u7d27\u51d1\u578b\u8f7f\u8f66\u3001\u7d27\u51d1\u578b\u8f7f\u8f66\u3001\u7d27\u51d1\u578bSUV\u548c\u7d27\u51d1\u578bSUV\u3002\u6bd4\u4e9a\u8fea\u7684\u7535\u52a8\u6c7d\u8f66\u4e5f\u662f\u5168\u7403\u9886\u5148\u7684\uff0c\u5176\u4e2d\u5305\u62ec\u7eaf\u7535\u52a8\u6c7d\u8f66\u3001\u63d2\u7535\u6df7\u52a8\u6c7d\u8f66\u548c\u6df7\u5408\u52a8\u529b\u6c7d\u8f66\u3002 \u6bd4\u4e9a\u8fea\u7684\u7535\u5b50\u80fd\u6e90\u7cfb\u7edf\u4e1a\u52a1\u5305\u62ec\u7535\u6c60\u5236\u9020\u3001\u7535\u6c60\u7ba1\u7406\u7cfb\u7edf\u548c\u7535\u52a8\u9a71\u52a8\u7cfb\u7edf\uff0c\u5e76\u63d0\u4f9b\u76f8\u5173\u7684\u552e\u540e\u670d\u52a1\u3002 \u6bd4\u4e9a\u8fea\u7684\u96f6\u914d\u4ef6\u5236\u9020\u4e1a\u52a1\u5305\u62ec\u7535\u6c60\u3001\u7535\u673a\u548c\u7535\u52a8\u9a71\u52a8\u7cfb\u7edf\u3002 \u6bd4\u4e9a\u8fea\u7684\u54c1\u724c\u5f62\u8c61\u548c\u4ea7\u54c1\u6027\u80fd\u53d7\u5230\u4e86\u5e7f\u6cdb\u7684\u8ba4\u53ef\u548c\u8d5e\u8d4f\u3002\u6bd4\u4e9a\u8fea\u7684\u7535\u52a8\u6c7d\u8f66\u5728\u5168\u7403\u8303\u56f4\u5185\u90fd\u53d6\u5f97\u4e86\u5de8\u5927\u7684\u6210\u529f\u3002\u6bd4\u4e9a\u8fea\u4e00\u76f4\u81f4\u529b\u4e8e\u6539\u5584\u4eba\u4eec\u7684\u751f\u6d3b\uff0c\u901a\u8fc7\u521b\u65b0\u6280\u672f\u548c\u4ea7\u54c1\u4e3a\u4eba\u7c7b\u5e26\u6765\u66f4\u591a\u7684\u4fbf\u5229\u548c\u8212\u9002\u3002\r\n********************************************************\r\n\u8bf7\u8be6\u7ec6\u4ecb\u7ecd\u4e00\u4e0b\u6bd4\u4e9a\u8fea\u9a71\u9010\u823005\r\n\u6bd4\u4e9a\u8fea\u9a71\u9010\u823005\u662f\u4e00\u6b3e\u7d27\u51d1\u578b\u7eaf\u7535\u52a8\u8f7f\u8f66\uff0c\u7531\u6bd4\u4e9a\u8fea\u96c6\u56e2\u751f\u4ea7\u3002\u5b83\u4e8e2021\u5e749\u6708\u6b63\u5f0f\u4e0a\u5e02\u3002\u6bd4\u4e9a\u8fea\u9a71\u9010\u823005\u91c7\u7528\u4e86\u6bd4\u4e9a\u8fea\u5bb6\u65cf\u5316\u7684\u9e70\u773c\u5f0f\u524d\u8138\uff0c\u5927\u5c3a\u5bf8\u7684\u524d\u683c\u6805\u548c\u5927\u5c3a\u5bf8\u7684\u524d\u706f\u7ec4\u4f7f\u8f66\u5934\u663e\u5f97\u975e\u5e38\u5a01\u4e25\u3002\u8f66\u8eab\u4fa7\u9762\u91c7\u7528\u6d41\u7545\u7684\u7ebf\u6761\uff0c\u8f66\u9876\u5fae\u5fae\u9686\u8d77\u3002\u8f66\u5c3e\u91c7\u7528\u7b80\u6d01\u7684\u8bbe\u8ba1\uff0c\u91c7\u7528\u5c01\u95ed\u5f0f\u5c3e\u706f\uff0c\u5e95\u90e8\u6709\u94f6\u8272\u62a4\u677f\u3002\u6bd4\u4e9a\u8fea\u9a71\u9010\u823005\u914d\u5907\u4e86\u7535\u52a8\u52a9\u529b\u8f6c\u5411\u548c\u81ea\u52a8\u6321\u53d8\u901f\u7bb1\u3002\u8f66\u8f86\u7684\u60ac\u67b6\u91c7\u7528\u524d\u53cc\u7403\u540e\u53cc\u7403\u7684\u72ec\u7acb\u60ac\u67b6\u8bbe\u8ba1\uff0c\u4ee5\u786e\u4fdd\u8f66\u8f86\u5728\u884c\u9a76\u8fc7\u7a0b\u4e2d\u66f4\u52a0\u7a33\u5b9a\u3002\u6bd4\u4e9a\u8fea\u9a71\u9010\u823005\u914d\u5907\u4e86\u7535\u52a8\u673a\uff0c\u6700\u5927\u8f93\u51fa\u529f\u7387\u4e3a160\u5343\u74e6\uff0c\u6700\u5927\u626d\u77e9\u4e3a252\u725b\u7c73\u3002\u7535\u6c60\u7ec4\u91c7\u7528\u6bd4\u4e9a\u8fea\u81ea\u5bb6\u7684\u7535\u6c60\uff0c\u7eed\u822a\u80fd\u529b\u5f3a\uff0c\u5728\u6ee1\u7535\u72b6\u6001\u4e0b\u53ef\u7eed\u822a500\u516c\u91cc\u3002\u6bd4\u4e9a\u8fea\u9a71\u9010\u823005\u8fd8\u5177\u6709\u667a\u80fd\u9a7e\u9a76\u8f85\u52a9\u529f\u80fd\uff0c\u5305\u62ec\u4e3b\u52a8\u5239\u8f66\u3001\u76f2\u533a\u76d1\u6d4b\u3001\u8f66\u9053\r\n********************************************************\r\n**These are two correct examples\uff08Geely\uff09**\r\n********************************************************\r\n\u8bf7\u8be6\u7ec6\u4ecb\u7ecd\u4e00\u4e0b\u5409\u5229\r\n\u5409\u5229\u6c7d\u8f66\u662f\u4e2d\u56fd\u5409\u5229\u6c7d\u8f66\u96c6\u56e2\u65d7\u4e0b\u54c1\u724c\u3002\u5409\u5229\u6c7d\u8f66\u6210\u7acb\u4e8e1986\u5e74\uff0c\u603b\u90e8\u4f4d\u4e8e\u6d59\u6c5f\u7701\u676d\u5dde\u5e02\u3002\u5409\u5229\u6c7d\u8f66\u662f\u4e00\u5bb6\u4ee5\u521b\u65b0\u3001\u5b89\u5168\u3001\u73af\u4fdd\u548c\u54c1\u8d28\u4e3a\u91cd\u70b9\u7684\u6c7d\u8f66\u5236\u9020\u5546\u3002\u5409\u5229\u54c1\u724c\u5728\u5168\u7403\u8303\u56f4\u5185\u62e5\u6709\u4f17\u591a\u77e5\u540d\u8f66\u578b\uff0c\u5305\u62ec\u5409\u5229GX7\uff0c\u5409\u5229GX5\uff0c\u5409\u5229GS8\uff0c\u5409\u5229GX3\u7b49\u3002\u5409\u5229\u6c7d\u8f66\u4e00\u76f4\u81f4\u529b\u4e8e\u4e3a\u6d88\u8d39\u8005\u63d0\u4f9b\u5353\u8d8a\u7684\u6c7d\u8f66\u4ea7\u54c1\uff0c\u4ee5\u6ee1\u8db3\u4e0d\u540c\u6d88\u8d39\u8005\u7684\u9700\u6c42\u3002\r\n********************************************************\r\n\u8bf7\u8be6\u7ec6\u4ecb\u7ecd\u4e00\u4e0b\u5409\u5229\u6c7d\u8f66\r\n\u5409\u5229\u6c7d\u8f66\u662f\u5409\u5229\u6c7d\u8f66\u96c6\u56e2\u7684\u54c1\u724c\u4e4b\u4e00\uff0c\u603b\u90e8\u4f4d\u4e8e\u5409\u5229\u6c7d\u8f66\u96c6\u56e2\u7684\u603b\u90e8\u4f4d\u4e8e\u6d59\u6c5f\u7701\u676d\u5dde\u5e02\u3002\u5409\u5229\u6c7d\u8f66\u96c6\u56e2\u662f\u4e00\u5bb6\u5927\u578b\u7684\u4e2d\u56fd\u6c7d\u8f66\u5236\u9020\u5546\uff0c\u6210\u7acb\u4e8e1986\u5e74\u3002 \u5409\u5229\u6c7d\u8f66\u96c6\u56e2\u751f\u4ea7\u5404\u79cd\u7c7b\u578b\u7684\u6c7d\u8f66\uff0c\u5305\u62ec\u8f7f\u8f66\uff0cSUV\uff0c\u8de8\u754c\u8f66\uff0cMPV\u7b49\u3002\u5409\u5229\u6c7d\u8f66\u96c6\u56e2\u4e00\u76f4\u81f4\u529b\u4e8e\u751f\u4ea7\u9ad8\u8d28\u91cf\uff0c\u8282\u80fd\uff0c\u73af\u4fdd\u7684\u6c7d\u8f66\uff0c\u5728\u4e9a\u6d32\u548c\u5168\u7403\u8303\u56f4\u5185\u90fd\u4eab\u6709\u76db\u8a89\u3002 \u5409\u5229\u6c7d\u8f66\u96c6\u56e2\u7684\u8f66\u578b\u5305\u62ec\u5409\u5229GX7\uff0c\u5409\u5229M8\uff0c\u5409\u5229GX8\uff0c\u5409\u5229M3\uff0c\u5409\u5229M4\uff0c\u5409\u5229M6\uff0c\u5409\u5229M9\uff0c\u5409\u5229M5\uff0c\u5409\u5229M7\uff0c\u5409\u5229M8L\uff0c\u5409\u5229M10\u7b49\u3002\r\n********************************************************\r\n\r\n**This is the log from the server service**\r\n********************************************************\r\n[server_log.txt](https://github.com/ggerganov/llama.cpp/files/14920736/server_log.txt)\r\n********************************************************\r\n**This is the log from the main service**\r\n********************************************************\r\n[main_log.txt](https://github.com/ggerganov/llama.cpp/files/14920740/main_log.txt)\r\n********************************************************\r\nThere is not much difference between the two parameters, the difference is that the main service outputs a prompt when loading vocab",
+    "labels": [
+      "need more info",
+      "server/webui",
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-09T15:40:35+00:00",
+    "closed_at": "2024-05-27T01:06:36+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6569/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6569"
+  },
+  {
+    "number": 8796,
+    "title": "Feature Request: multiple queues or multiple threads to load model files.",
+    "body": "### Prerequisites\n\n- [X] I am running the latest code. Mention the version if possible as well.\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new and useful enhancement to share.\n\n### Feature Description\n\nFor the current version of the program, the model file is loaded with a single queue, single thread. this way may not realize their full performance potential on some types of disk drives, like some nvme SSD drive.\r\n\r\nCan we implement multiple queues or multiple threads to load model files?\n\n### Motivation\n\nAs model files become larger and larger, making full use of hardware performance saves a lot of model file loading time.\r\n\r\nThe following are the test results on an nvme SSD drive.\r\n\r\n$ sudo sh -c \"/usr/bin/echo 3 > /proc/sys/vm/drop_caches\"\r\n$ dd if=1.8T/gguf/Big-Tiger-Gemma-27B-v1-IQ4_XS.gguf of=/dev/null bs=1M count=5000\r\n5242880000 bytes (5.2 GB, 4.9 GiB) copied, 3.39833 s, 1.5 GB/s\r\n\r\n\r\n$ sudo sh -c \"/usr/bin/echo 3 > /proc/sys/vm/drop_caches\"\r\n$ dd if=1.8T/gguf/Big-Tiger-Gemma-27B-v1-IQ4_XS.gguf of=/dev/null bs=1M count=5000     &      dd if=1.8T/gguf/Big-Tiger-Gemma-27B-v1-IQ4_XS.gguf of=/dev/null bs=1M count=5000 skip=5000\r\n5242880000 bytes (5.2 GB, 4.9 GiB) copied, 4.19029 s, 1.3 GB/s\r\n5242880000 bytes (5.2 GB, 4.9 GiB) copied, 4.19301 s, 1.3 GB/s\r\n\r\ntotal: 2.6 GB/s\r\n\r\n\r\n$ sudo sh -c \"/usr/bin/echo 3 > /proc/sys/vm/drop_caches\"\r\n$ dd if=1.8T/gguf/Big-Tiger-Gemma-27B-v1-IQ4_XS.gguf of=/dev/null bs=1M count=5000     &      dd if=1.8T/gguf/Big-Tiger-Gemma-27B-v1-IQ4_XS.gguf of=/dev/null bs=1M count=5000 skip=5000      &      dd if=1.8T/gguf/Big-Tiger-Gemma-27B-v1-IQ4_XS.gguf of=/dev/null bs=1M skip=10000\r\n\r\n4328660512 bytes (4.3 GB, 4.0 GiB) copied, 4.30938 s, 1.0 GB/s\r\n5242880000 bytes (5.2 GB, 4.9 GiB) copied, 5.04395 s, 1.0 GB/s\r\n5242880000 bytes (5.2 GB, 4.9 GiB) copied, 5.04875 s, 1.0 GB/s\r\n\r\ntotal: 3.0 GB/s\n\n### Possible Implementation\n\nmultiple queues or multiple threads to load model files.",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-31T15:35:26+00:00",
+    "closed_at": "2024-09-18T01:07:08+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8796/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8796"
+  },
+  {
+    "number": 1146,
+    "title": "[User] Dependency Installation steps for ubuntu linux",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [x] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [x] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [x] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\n\r\nWhen following the provided documentation, I expect to be able to successfully set up and use the software, with clear and complete instructions guiding me through each step of the process. This includes:\r\n\r\n1. Instructions for installing any dependencies and prerequisites.\r\n2. A step-by-step guide for configuring the software, including any necessary configuration files, environment variables, or command-line options.\r\n3. Clear and concise examples of how to use the software, demonstrating its main features and functionalities.\r\n4. Troubleshooting tips or common issues that users may encounter during the setup and usage process, along with their corresponding solutions.\r\n5. Reference to a comprehensive API documentation, if applicable, to allow for customization and integration with other projects.\r\nBy following the documentation, I should be able to achieve the desired results and utilize the software as intended by the developers.\r\n\r\n# Current Behavior\r\n\r\nWhen attempting to follow the provided documentation, I am unable to successfully set up and use the software due to several gaps and inconsistencies in the instructions. The current issues I am facing missing information on installing dependencies and prerequisites, making it difficult to determine which versions or packages are required for the software to function correctly.\r\n\r\n# Environment and Context\r\n\r\nOS: Ubuntu 20.04 (running on Windows 11 through WSL2)\r\n\r\n# Current Efforts on reconstructing dependency installation steps\r\n\r\n```\r\nsudo apt-get install make cmake build-essentials python3 pip\r\n\r\nmake clean\r\nmake\r\npython3 -m pip install -r requirements.txt\r\n\r\ncd ..\r\ngit clone https://huggingface.co/chavinlo/gpt4-x-alpaca\r\n```",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-04-23T19:50:20+00:00",
+    "closed_at": "2023-05-18T11:13:26+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1146/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1146"
+  },
+  {
+    "number": 10348,
+    "title": "webUI local storage can become corrupted",
+    "body": "### Discussed in https://github.com/ggerganov/llama.cpp/discussions/10347\r\n\r\n<div type='discussions-op-text'>\r\n\r\n<sup>Originally posted by **pikor69** November 17, 2024</sup>\r\nThe page at http://127.0.0.1:8080 says:\r\nTypeError: Cannot read properties of undefined (reading 'content')\r\n\r\nWhat changed since yesterday when it was working? Nothing.\r\nThe last time I was able to start I tried to run a much higher content length than the model allowed and things crashed.\r\n\r\n</div>",
+    "labels": [
+      "bug",
+      "good first issue",
+      "server/webui"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-17T01:29:31+00:00",
+    "closed_at": "2024-12-13T16:37:13+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10348/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10348"
+  },
+  {
+    "number": 1137,
+    "title": "Feature Request: Attention with Linear Biases (ALiBi)",
+    "body": "Consider to implement Relative Position Embeddings as opposite to APEs, as described in [Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation](https://arxiv.org/abs/2108.12409)\n\nShort summary:\n\nAttention with Linear Biases (ALiBi) does not add positional embeddings to word embeddings; instead, it biases query-key attention scores with a penalty that is proportional to their distance\n\nSource: \n[The Use Case for Relative Position Embeddings](https://ofir.io/The-Use-Case-for-Relative-Position-Embeddings/)\n\nOfficial implementation [here](https://github.com/ofirpress/attention_with_linear_biases).\n\nWorth to read:\n[The Curious Case of Absolute Position Embeddings](https://arxiv.org/abs/2210.12574)",
+    "labels": [
+      "enhancement",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-23T08:58:53+00:00",
+    "closed_at": "2023-04-24T08:26:50+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1137/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1137"
+  },
+  {
+    "number": 12149,
+    "title": "Misc. bug: Q4_0 repacking results in double RAM usage",
+    "body": "### Name and Version\n\nb4792\n\n### Operating systems\n\nLinux\n\n### Which llama.cpp modules do you know to be affected?\n\nllama-cli\n\n### Command line\n\n```shell\n./llama-cli -m microsoft_Phi-4-mini-instruct-Q4_0.gguf\n```\n\n### Problem description & steps to reproduce\n\nWhen loading the model, it uses 4.3GB of RAM\n\nWhen using Q4_K_S (similar size) it only uses 2.7GB of RAM\n\n### First Bad Commit\n\n_No response_\n\n### Relevant log output\n\n```shell\n\n```",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-02T17:49:53+00:00",
+    "closed_at": "2025-03-05T19:57:27+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12149/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12149"
+  },
+  {
+    "number": 4740,
+    "title": "Errors when trying to install requirements.txt",
+    "body": "I'm trying to build llama.cpp on a Windows 10 machine. I'm OK with Windows and with C++, but this is my first experience with trying to understand and fix issues with Python.\r\n\r\nWhen I try your instructions, I get stuck at this stage:\r\n\r\n```\r\npython3 -m pip install -r requirements.txt\r\n```\r\n\r\nIt appears to be expecting a module called \"distutils\" but I don't know how to solve that. Here is the output:\r\n\r\n```\r\nd:\\work\\github\\llama.cpp>python -m pip install -r requirements.txt\r\nCollecting numpy~=1.24.4 (from -r ./requirements/requirements-convert.txt (line 1))\r\n  Downloading numpy-1.24.4.tar.gz (10.9 MB)\r\n     ---------------------------------------- 10.9/10.9 MB 3.9 MB/s eta 0:00:00\r\n  Installing build dependencies ... done\r\n  Getting requirements to build wheel ... done\r\nERROR: Exception:\r\nTraceback (most recent call last):\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\cli\\base_command.py\", line 180, in exc_logging_wrapper\r\n    status = run_func(*args)\r\n             ^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\cli\\req_command.py\", line 245, in wrapper\r\n    return func(self, options, args)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\commands\\install.py\", line 377, in run\r\n    requirement_set = resolver.resolve(\r\n                      ^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\resolver.py\", line 95, in resolve\r\n    result = self._result = resolver.resolve(\r\n                            ^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_vendor\\resolvelib\\resolvers.py\", line 546, in resolve\r\n    state = resolution.resolve(requirements, max_rounds=max_rounds)\r\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_vendor\\resolvelib\\resolvers.py\", line 397, in resolve\r\n    self._add_to_criteria(self.state.criteria, r, parent=None)\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_vendor\\resolvelib\\resolvers.py\", line 173, in _add_to_criteria\r\n    if not criterion.candidates:\r\n           ^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_vendor\\resolvelib\\structs.py\", line 156, in __bool__\r\n    return bool(self._sequence)\r\n           ^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\found_candidates.py\", line 155, in __bool__\r\n    return any(self)\r\n           ^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\found_candidates.py\", line 143, in <genexpr>\r\n    return (c for c in iterator if id(c) not in self._incompatible_ids)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\found_candidates.py\", line 47, in _iter_built\r\n    candidate = func()\r\n                ^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\factory.py\", line 182, in _make_candidate_from_link\r\n    base: Optional[BaseCandidate] = self._make_base_candidate_from_link(\r\n                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\factory.py\", line 228, in _make_base_candidate_from_link\r\n    self._link_candidate_cache[link] = LinkCandidate(\r\n                                       ^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\candidates.py\", line 293, in __init__\r\n    super().__init__(\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\candidates.py\", line 156, in __init__\r\n    self.dist = self._prepare()\r\n                ^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\candidates.py\", line 225, in _prepare\r\n    dist = self._prepare_distribution()\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\candidates.py\", line 304, in _prepare_distribution\r\n    return preparer.prepare_linked_requirement(self._ireq, parallel_builds=True)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\operations\\prepare.py\", line 525, in prepare_linked_requirement\r\n    return self._prepare_linked_requirement(req, parallel_builds)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\operations\\prepare.py\", line 640, in _prepare_linked_requirement\r\n    dist = _get_prepared_distribution(\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\operations\\prepare.py\", line 71, in _get_prepared_distribution\r\n    abstract_dist.prepare_distribution_metadata(\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\distributions\\sdist.py\", line 54, in prepare_distribution_metadata\r\n    self._install_build_reqs(finder)\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\distributions\\sdist.py\", line 124, in _install_build_reqs\r\n    build_reqs = self._get_build_requires_wheel()\r\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\distributions\\sdist.py\", line 101, in _get_build_requires_wheel\r\n    return backend.get_requires_for_build_wheel()\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_internal\\utils\\misc.py\", line 751, in get_requires_for_build_wheel\r\n    return super().get_requires_for_build_wheel(config_settings=cs)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_impl.py\", line 166, in get_requires_for_build_wheel\r\n    return self._call_hook('get_requires_for_build_wheel', {\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_impl.py\", line 321, in _call_hook\r\n    raise BackendUnavailable(data.get('traceback', ''))\r\npip._vendor.pyproject_hooks._impl.BackendUnavailable: Traceback (most recent call last):\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_in_process\\_in_process.py\", line 77, in _build_backend\r\n    obj = import_module(mod_path)\r\n          ^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\importlib\\__init__.py\", line 90, in import_module\r\n    return _bootstrap._gcd_import(name[level:], package, level)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\r\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\r\n  File \"<frozen importlib._bootstrap>\", line 1310, in _find_and_load_unlocked\r\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\r\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\r\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\r\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\r\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\r\n  File \"<frozen importlib._bootstrap_external>\", line 994, in exec_module\r\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\r\n  File \"D:\\Users\\peter\\AppData\\Local\\Temp\\pip-build-env-fbxvxh1v\\overlay\\Lib\\site-packages\\setuptools\\__init__.py\", line 10, in <module>\r\n    import distutils.core\r\nModuleNotFoundError: No module named 'distutils'\r\n\r\n```\r\n\r\nI've installed Python 3.12.1 and set up a symbolic link from __*python3.exe*__ to __*D:\\Users\\peter\\AppData\\Local\\Programs\\Python\\Python312\\python.exe*__. I seem to have 49 copies of __*python.exe*__ on this machine, but all of the others are part of other application installations. The copy in __*AppData*__ is the one that's on the Windows PATH.\r\n\r\nDo you know what I am doing wrong?\r\n\r\nMany thanks,\r\n\r\nDan\r\n",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-02T18:55:45+00:00",
+    "closed_at": "2024-01-07T15:33:26+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4740/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4740"
+  },
+  {
+    "number": 7774,
+    "title": "Bug: server-cuda Docker image failing as of 2 days ago - \"error while loading shared libraries: libgomp.so.1: cannot open shared object file\"",
+    "body": "### What happened?\n\nSystem: Ubuntu 22.04, CUDA 12.5, Driver 555.42.02, Ryzen 7950x3D, RTX 4090\r\n\r\n`ghcr.io/ggerganov/llama.cpp:server-cuda--b1-a10cda5` is the last image that works as expected for me. `server-cuda--b1-a5735e4` (2 days ago) and later all yield the following error:\r\n\r\n> docker compose up llama-cpp\r\n[+] Running 1/0\r\n \u280b Container quill-ops-llama-cpp-1  Recreated                                                                                                          0.0s\r\nAttaching to llama-cpp-1\r\nllama-cpp-1  | /server: error while loading shared libraries: libgomp.so.1: cannot open shared object file: No such file or directory\r\nllama-cpp-1 exited with code 127\n\n### Name and Version\n\nghcr.io/ggerganov/llama.cpp:server-cuda--b1-a5735e4; Ubuntu 22.04, CUDA 12.5, Driver 555.42.02, Ryzen 7950x3D, RTX 4090, libgomp installed on host, Nvidia docker runtime\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n```shell\n> docker compose up llama-cpp\r\n[+] Running 1/0\r\n \u280b Container quill-ops-llama-cpp-1  Recreated                                                                                                          0.0s\r\nAttaching to llama-cpp-1\r\nllama-cpp-1  | /server: error while loading shared libraries: libgomp.so.1: cannot open shared object file: No such file or directory\r\nllama-cpp-1 exited with code 127\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-05T16:51:43+00:00",
+    "closed_at": "2024-06-06T05:17:23+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7774/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7774"
+  },
+  {
+    "number": 4244,
+    "title": "MPI run on M1 Max",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [YES ] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [ YES] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [YES ] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [ YES] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\n\r\nrun 2 chunks of the model on the same CPU-GPU \r\n\r\n# Current Behavior\r\n\r\nERRORS: \r\nGGML_ASSERT: llama.cpp:8672: false && \"not implemented\"\r\nGGML_ASSERT: llama.cpp:5443: false && \"not implemented\"\r\n\r\n# Environment and Context\r\n\r\nMacbook M1 Max 32GB \r\n\r\n# Steps to Reproduce\r\n\r\n```\r\ncat hostfile \r\n127.0.0.1:2\r\n```\r\n\r\n1. mpirun -hostfile hostfile -n 2 ./main -m  /Users/ageorgios/.ollama/models/blobs/sha256:29fdb92e57cf0827ded04ae6461b5931d01fa595843f55d36f5b275a52087dd2 -n 128 &> ../output.txt\r\n\r\n# Failure Logs\r\n\r\n[output.txt](https://github.com/ggerganov/llama.cpp/files/13486422/output.txt)\r\n\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-28T09:58:37+00:00",
+    "closed_at": "2024-04-03T01:15:05+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4244/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4244"
+  },
+  {
+    "number": 9569,
+    "title": "Bug: Llama-Quantize Not Working with Capital Letters (T^T)",
+    "body": "### What happened?\n\nOhayo gozaimasu, everyone! (\u30fb\ufe4f\u30fb) Anon on 4chan has a tiny problem that I hope someone can help with! When Anon tried to use the llama-quantize function, it didn't work when using capital letters. But when Anon used all lowercase letters, it worked perfectly fine! (T^T)\r\n\r\nHere's what happened:\r\n\r\n**When Anon tried using capital letters:**\r\n```\r\nllama-quantize --output-tensor-type F16 --token-embedding-type F16 Mistral-7B-Instruct-v0.3-F16.gguf Q2_K\r\n```\r\n\r\n   It just... did nothing with those arguments! No errors, just silence. (\u00b4\u2022\u0325\u0325\u0323 `\u2022) Just a normal Q2_K.\r\n\r\n**But when Anon used lowercase letters:**\r\n```\r\nllama-quantize --output-tensor-type f16 --token-embedding-type f16 Mistral-7B-Instruct-v0.3-F16.gguf Q2_K\r\n```\r\n\r\n   It worked perfectly! (*\u2267\u03c9\u2266*)\r\n\r\nI reproduced this on my machine and it was bugged too. Could someone please look into this? That anon wants to be able to use capital letters! (T_T)\n\n### Name and Version\n\nllama-cli.exe --version\r\nversion: 3789 (d39e2674)\r\nbuilt with MSVC 19.40.33811.0 for x64\n\n### What operating system are you seeing the problem on?\n\n_No response_\n\n### Relevant log output\n\n```shell\nBIG LETTERS:\r\n\r\n[   1/ 291]                    token_embd.weight - [ 4096, 32768,     1,     1], type =    f16, converting to q2_K .. size =   256.00 MiB ->    42.00 MiB\r\n...\r\n[ 204/ 291]                        output.weight - [ 4096, 32768,     1,     1], type =    f16, converting to q6_K .. size =   256.00 MiB ->   105.00 MiB\r\n...\r\nllama_model_quantize_internal: model size  = 13825.02 MB\r\nllama_model_quantize_internal: quant size  =  2596.02 MB\r\n```\r\n\r\nsmall letters:\r\n```\r\n[   1/ 291]                    token_embd.weight - [ 4096, 32768,     1,     1], type =    f16, size =  256.000 MB\r\n...\r\n[ 204/ 291]                        output.weight - [ 4096, 32768,     1,     1], type =    f16, size =  256.000 MB\r\n...\r\nllama_model_quantize_internal: model size  = 13825.02 MB\r\nllama_model_quantize_internal: quant size  =  2961.02 MB\r\n```\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-20T17:47:12+00:00",
+    "closed_at": "2024-09-20T18:55:37+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9569/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9569"
+  },
+  {
+    "number": 8275,
+    "title": "Feature Request: (server) Add option to always skip all queued tasks and to process the last one only (within one slot)",
+    "body": "### Prerequisites\n\n- [X] I am running the latest code. Mention the version if possible as well.\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new and useful enhancement to share.\n\n### Feature Description\n\nI think having this as a cli option (disabled by default) would be cool. Something like `--skip-queue` maybe?\n\n### Motivation\n\nWhen using the server for FIM autocompletion (for example with Continue), the front-end could send new requests for every key stroke, but only the last one is relevant. Processing the tasks that were sent before the last keystroke is useless and leads to increased response times, and wasted energy.\n\n### Possible Implementation\n\nI guess that would work by replacing the queue with a single waiting task that gets replaced everytime a new request is recieved.",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-03T10:48:42+00:00",
+    "closed_at": "2024-08-18T01:07:05+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8275/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8275"
+  },
+  {
+    "number": 251,
+    "title": "65B quantized for CPU",
+    "body": "Is there any way to run the 65B model on the CPU quantized for 4 bit? I saw that it's about 40 gigs for RAM usage when quantized.\r\n\r\nHow much RAM is required to quantize the 65B model? I'm not sure I have enough RAM to quantize myself, anyone have the model files for the quantized output for the 65B model for CPU? I've only found the [quantized GPU files](https://huggingface.co/decapoda-research) so far.",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-03-18T02:47:36+00:00",
+    "closed_at": "2023-03-18T05:59:53+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/251/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/251"
+  },
+  {
+    "number": 2134,
+    "title": "Large sched_yield() and threading overhead (+25-40% perf boost)",
+    "body": "Platform: macOS / Apple M2 Pro \r\n\r\nCurrently the current thread finalisation / synchronisation logic in ggml_graph_compute_thread relies on sched_yield() to spin idly waiting for other threads to complete :\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/master/ggml.c#L16045 \r\n\r\n```\r\n            // wait for other threads to finish\r\n            const int last = node_n;\r\n            do {\r\n                sched_yield();\r\n                node_n = atomic_load(&state->shared->node_n);\r\n            } while (node_n == last);\r\n```\r\n\r\nThe problem with that is that this is causing absolutely gigantic amounts of overhead due to context switching and falling back to the kernel with no known time as to when the thread will come back to execution.\r\n\r\nWhen profiling time on an M2 Pro:\r\n\r\n```\r\n./build-llvm16-native/bin/main -m ./models/7B/ggml-model-q4_0.bin -t 8 -n 512 -p \"Explain a CPU microarchitecture basics.\" -s 3215465\r\nmain: build = 775 (d7d2e6a)\r\nmain: seed  = 3215465\r\nllama.cpp: loading model from ./models/7B/ggml-model-q4_0.bin\r\nllama_model_load_internal: format     = ggjt v3 (latest)\r\nllama_model_load_internal: n_vocab    = 32000\r\nllama_model_load_internal: n_ctx      = 512\r\nllama_model_load_internal: n_embd     = 4096\r\nllama_model_load_internal: n_mult     = 256\r\nllama_model_load_internal: n_head     = 32\r\nllama_model_load_internal: n_layer    = 32\r\nllama_model_load_internal: n_rot      = 128\r\nllama_model_load_internal: ftype      = 2 (mostly Q4_0)\r\nllama_model_load_internal: n_ff       = 11008\r\nllama_model_load_internal: model size = 7B\r\nllama_model_load_internal: ggml ctx size =    0.08 MB\r\nllama_model_load_internal: mem required  = 5439.94 MB (+ 1026.00 MB per state)\r\nllama_new_context_with_model: kv self size  =  256.00 MB\r\n\r\nsystem_info: n_threads = 8 / 12 | AVX = 0 | AVX2 = 0 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | FMA = 0 | NEON = 1 | ARM_FMA = 1 | F16C = 0 | FP16_VA = 1 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 0 | VSX = 0 | \r\nsampling: repeat_last_n = 64, repeat_penalty = 1.100000, presence_penalty = 0.000000, frequency_penalty = 0.000000, top_k = 40, tfs_z = 1.000000, top_p = 0.950000, typical_p = 1.000000, temp = 0.800000, mirostat = 0, mirostat_lr = 0.100000, mirostat_ent = 5.000000\r\ngenerate: n_ctx = 512, n_batch = 512, n_predict = 512, n_keep = 0\r\n\r\n\r\n(....)\r\n\r\nllama_print_timings:        load time =   164.84 ms\r\nllama_print_timings:      sample time =   281.18 ms /   414 runs   (    0.68 ms per token,  1472.36 tokens per second)\r\nllama_print_timings: prompt eval time =   397.91 ms /    11 tokens (   36.17 ms per token,    27.64 tokens per second)\r\nllama_print_timings:        eval time = 21528.10 ms /   413 runs   (   52.13 ms per token,    19.18 tokens per second)\r\nllama_print_timings:       total time = 22244.37 ms\r\n```\r\n\r\nWe see that in terms of time spent, the thing is wasting a huge amount of time in `swtch_pri` which is the system library for thread yielding, further then switching into kernel mode.  \r\n\r\n```\r\n56.69 s  100.0%\t0 s\t \tmain (84121)\r\n36.71 s   64.7%\t36.71 s\t \t ggml_vec_dot_q4_0_q8_0\r\n15.95 s   28.1%\t15.95 s\t \t swtch_pri\r\n1.82 s    3.2%\t1.82 s\t \t ggml_compute_forward_mul_mat\r\n980.30 ms    1.7%\t980.30 ms\t \t ggml_vec_dot_q6_K_q8_K\r\n445.90 ms    0.7%\t445.90 ms\t \t ggml_compute_forward_dup\r\n119.30 ms    0.2%\t119.30 ms\t \t ggml_graph_compute_thread\r\n```\r\n\r\nSimply commenting out sched_yield():\r\n\r\n```\r\n            // wait for other threads to finish\r\n            const int last = node_n;\r\n            do {\r\n                //sched_yield();\r\n                node_n = atomic_load(&state->shared->node_n);\r\n            } while (node_n == last);\r\n```\r\n\r\nResults in a massive performance boost:\r\n\r\n```\r\nllama_print_timings:        load time =   129.83 ms\r\nllama_print_timings:      sample time =   291.24 ms /   414 runs   (    0.70 ms per token,  1421.53 tokens per second)\r\nllama_print_timings: prompt eval time =   334.44 ms /    11 tokens (   30.40 ms per token,    32.89 tokens per second)\r\nllama_print_timings:        eval time = 14967.86 ms /   413 runs   (   36.24 ms per token,    27.59 tokens per second)\r\nllama_print_timings:       total time = 15630.33 ms\r\n```\r\n\r\nAs new profile looks like this:\r\n\r\n```\r\n41.25 s  100.0%\t0 s\t \tmain (84137)\r\n33.05 s   80.1%\t33.05 s\t \t ggml_vec_dot_q4_0_q8_0\r\n4.86 s   11.7%\t4.86 s\t \t ggml_graph_compute_thread\r\n1.34 s    3.2%\t1.34 s\t \t ggml_compute_forward_mul_mat\r\n930.00 ms    2.2%\t930.00 ms\t \t ggml_vec_dot_q6_K_q8_K\r\n490.70 ms    1.1%\t490.70 ms\t \t ggml_compute_forward_dup\r\n83.40 ms    0.2%\t83.40 ms\t \t llama_sample_repetition_penalty\r\n```\r\n\r\n\r\nIn the above interactive Terminal command-line example **we see a 43% performance boost**. The % will differ depending on where you call this from due to macOS thread QoS (ssh is around +25%).\r\n\r\nThis seems like a gigantic performance issue on the operating systems which do actually yield back to the scheduler. \r\nMy solution of just commenting out the yield and just looping probably isn't the best for power efficiency, you'd probably want to implement whatever tight atomic lock / wait across the threads. Up to you what to do here, but anything is better than sched_yield().\r\n\r\nAnother issue is the thread creation; as the threads get created and joined on each layer/operation, we see the cumulative overhead to be extremely large:\r\n\r\n```\r\n1.02 min  100.0%\t0 s\t \tmain (82676)\r\n36.31 s   59.4%\t36.31 s\t \t ggml_vec_dot_q4_0_q8_0\r\n16.74 s   27.4%\t16.74 s\t \t swtch_pri\r\n4.51 s    7.3%\t4.51 s\t \t thread_start\r\n1.44 s    2.3%\t1.44 s\t \t ggml_compute_forward_mul_mat\r\n805.01 ms    1.3%\t805.01 ms\t \t ggml_vec_dot_q6_K_q8_K\r\n390.01 ms    0.6%\t390.01 ms\t \t ggml_compute_forward_dup\r\n130.01 ms    0.2%\t130.01 ms\t \t ggml_graph_compute_thread\r\n```\r\n\r\nIt's likely we could see another 7% performance boost here by switching the work dispatch architecture to a thread pool.\r\n\r\nThank you for the work on the otherwise great implementation!",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-07-07T14:31:45+00:00",
+    "closed_at": "2024-05-19T01:07:17+00:00",
+    "comments": 33,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2134/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2134"
+  },
+  {
+    "number": 8767,
+    "title": "Bug: Coredump when quanting to Q4_0_*_* with imatrix",
+    "body": "### What happened?\r\n\r\nHello,\r\n\r\nI don't know if I am supposed to use imatrix with the new ARM dedicated quants (`Q4_0_*_*`). However, when I try to, I get `Aborted (core dumped)`.\r\n\r\nIs not using imatrix with those quants intentional? If that is the case, why does the quantization to `q4_*` and `q5_*` work with imatrix?\r\n\r\n### Name and Version\r\n\r\nRope scaling fix for L3.1 commit. Can't get the latest build due to a new build error I am investigating. \r\n\r\n### What operating system are you seeing the problem on?\r\n\r\nLinux\r\n\r\n### Relevant log output\r\n\r\n```shell\r\n~/files/ai/llama.cpp/git/llama-quantize --imatrix imatrix.dat Meta-Llama-3.1-8B-Instruct-F16.gguf Q4_0_4_4\r\nload_imatrix: imatrix dataset='misc/calibration_datav3.txt'\r\nload_imatrix: loaded 224 importance matrix entries from imatrix.dat computed on 125 chunks\r\nprepare_imatrix: have 224 importance matrix entries\r\nmain: build = 83 (b5e9546)\r\nmain: built with cc (GCC) 14.1.1 20240720 for x86_64-pc-linux-gnu\r\nmain: quantizing 'Meta-Llama-3.1-8B-Instruct-F16.gguf' to 'ggml-model-Q4_0_4_4.gguf' as Q4_0_4_4\r\nllama_model_loader: loaded meta data with 29 key-value pairs and 292 tensors from Meta-Llama-3.1-8B-Instruct-F16.gguf (version GGUF V3 (latest))\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = llama\r\nllama_model_loader: - kv   1:                               general.type str              = model\r\nllama_model_loader: - kv   2:                               general.name str              = Meta llama_Meta Llama 3.1 8B Instruct\r\nllama_model_loader: - kv   3:                           general.finetune str              = Instruct\r\nllama_model_loader: - kv   4:                           general.basename str              = meta-llama_Meta-Llama-3.1\r\nllama_model_loader: - kv   5:                         general.size_label str              = 8B\r\nllama_model_loader: - kv   6:                            general.license str              = llama3.1\r\nllama_model_loader: - kv   7:                               general.tags arr[str,6]       = [\"facebook\", \"meta\", \"pytorch\", \"llam...\r\nllama_model_loader: - kv   8:                          general.languages arr[str,8]       = [\"en\", \"de\", \"fr\", \"it\", \"pt\", \"hi\", ...\r\nllama_model_loader: - kv   9:                          llama.block_count u32              = 32\r\nllama_model_loader: - kv  10:                       llama.context_length u32              = 131072\r\nllama_model_loader: - kv  11:                     llama.embedding_length u32              = 4096\r\nllama_model_loader: - kv  12:                  llama.feed_forward_length u32              = 14336\r\nllama_model_loader: - kv  13:                 llama.attention.head_count u32              = 32\r\nllama_model_loader: - kv  14:              llama.attention.head_count_kv u32              = 8\r\nllama_model_loader: - kv  15:                       llama.rope.freq_base f32              = 500000.000000\r\nllama_model_loader: - kv  16:     llama.attention.layer_norm_rms_epsilon f32              = 0.000010\r\nllama_model_loader: - kv  17:                          general.file_type u32              = 1\r\nllama_model_loader: - kv  18:                           llama.vocab_size u32              = 128256\r\nllama_model_loader: - kv  19:                 llama.rope.dimension_count u32              = 128\r\nllama_model_loader: - kv  20:                       tokenizer.ggml.model str              = gpt2\r\nllama_model_loader: - kv  21:                         tokenizer.ggml.pre str              = llama-bpe\r\nllama_model_loader: - kv  22:                      tokenizer.ggml.tokens arr[str,128256]  = [\"!\", \"\\\"\", \"#\", \"$\", \"%\", \"&\", \"'\", ...\r\nllama_model_loader: - kv  23:                  tokenizer.ggml.token_type arr[i32,128256]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...\r\nllama_model_loader: - kv  24:                      tokenizer.ggml.merges arr[str,280147]  = [\"\u0120 \u0120\", \"\u0120 \u0120\u0120\u0120\", \"\u0120\u0120 \u0120\u0120\", \"...\r\nllama_model_loader: - kv  25:                tokenizer.ggml.bos_token_id u32              = 128000\r\nllama_model_loader: - kv  26:                tokenizer.ggml.eos_token_id u32              = 128009\r\nllama_model_loader: - kv  27:                    tokenizer.chat_template str              = {% set loop_messages = messages %}{% ...\r\nllama_model_loader: - kv  28:               general.quantization_version u32              = 2\r\nllama_model_loader: - type  f32:   66 tensors\r\nllama_model_loader: - type  f16:  226 tensors\r\n================================ Have weights data with 224 entries\r\n[   1/ 292]                    rope_freqs.weight - [   64,     1,     1,     1], type =    f32, size =    0.000 MB\r\n[   2/ 292]                    token_embd.weight - [ 4096, 128256,     1,     1], type =    f16, \r\n====== llama_model_quantize_internal: did not find weights for token_embd.weight\r\nconverting to q4_0 .. size =  1002.00 MiB ->   281.81 MiB\r\n[   3/ 292]               blk.0.attn_norm.weight - [ 4096,     1,     1,     1], type =    f32, size =    0.016 MB\r\n[   4/ 292]                blk.0.ffn_down.weight - [14336,  4096,     1,     1], type =    f16, converting to q4_0_4x4 .. ggml/src/ggml.c:20623: GGML_ASSERT(result == nrows * row_size) failed\r\nggml/src/ggml.c:20623: GGML_ASSERT(result == nrows * row_size) failed\r\nggml/src/ggml.c:20623: GGML_ASSERT(result == nrows * row_size) failed\r\nggml/src/ggml.c:20623: GGML_ASSERT(result == nrows * row_size) failed\r\nggml/src/ggml.c:20623: GGML_ASSERT(result == nrows * row_size) failed\r\nggml/src/ggml.c:20623: GGML_ASSERT(result == nrows * row_size) failed\r\nptrace: Operation not permitted.\r\nNo stack.\r\nThe program is not being run.\r\nggml/src/ggml.c:20623: GGML_ASSERT(result == nrows * row_size) failed\r\nptrace: Operation not permitted.\r\nNo stack.\r\nThe program is not being run.\r\nptrace: Operation not permitted.\r\nNo stack.\r\nThe program is not being run.\r\nptrace: Operation not permitted.\r\nNo stack.\r\nThe program is not being run.\r\nptrace: Operation not permitted.\r\nNo stack.\r\nThe program is not being run.\r\nAborted (core dumped)\r\n```\r\n",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-30T09:53:04+00:00",
+    "closed_at": "2024-08-26T21:34:31+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8767/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8767"
+  },
+  {
+    "number": 7030,
+    "title": "Command-R GGUF conversion no longer working",
+    "body": "As recently as a few days ago, Command-R (and presumably R+) could be converted with convert-hf-to-gguf.py.  I double checked and conversion completes successfully in b2751.  However, with the recent changes to accommodate Llama3, Command-R compatibility has been broken.  Trying to convert today with b2777 I get\r\n\r\n```\r\nraise NotImplementedError(\"BPE pre-tokenizer was not recognized - update get_vocab_base_pre()\")\r\nNotImplementedError: BPE pre-tokenizer was not recognized - update get_vocab_base_pre()\r\n```\r\n\r\nI know that L3 required a new tokenizer provided by meta to facilitate proper conversion.  Do we require something new from cohere, or is this something that can be fixed internally?",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-01T20:40:40+00:00",
+    "closed_at": "2024-05-05T05:19:31+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7030/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7030"
+  },
+  {
+    "number": 7923,
+    "title": "Bug: convert-hf-to-gguf.py on Gemma model ValueError: Duplicated key name 'tokenizer.chat_template'",
+    "body": "### What happened?\n\nWhen trying to convert\r\n\r\nhttps://huggingface.co/SakanaAI/DiscoPOP-zephyr-7b-gemma/\r\n\r\nI get the error in the title, but it's only defined a single time in tokenizer_config.json:\r\n\r\nhttps://huggingface.co/SakanaAI/DiscoPOP-zephyr-7b-gemma/blob/main/tokenizer_config.json#L59\r\n\r\nVerified locally with `cat *.json | grep chat_template` and I only get the one result\r\n\r\nIs it somehow trying to load it twice?\r\n\r\nLooks like when Gemma is initialized, it runs _set_vocab_sentencepiece(), which runs special_vocab.add_to_gguf (which pulls in the chat_template), and then it also again runs special_vocab.add_to_gguf\r\n\r\nbut that would mean it's been broken since April 16..\r\n\r\nhttps://github.com/ggerganov/llama.cpp/pull/6689\n\n### Name and Version\n\nb3145 ubuntu 22.04\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n```shell\nINFO:hf-to-gguf:Loading model: DiscoPOP-zephyr-7b-gemma\r\nINFO:gguf.gguf_writer:gguf: This GGUF file is for Little Endian only\r\nINFO:hf-to-gguf:Set model parameters\r\nINFO:hf-to-gguf:Set model tokenizer\r\nINFO:gguf.vocab:Setting special token type bos to 2\r\nINFO:gguf.vocab:Setting special token type eos to 1\r\nINFO:gguf.vocab:Setting special token type unk to 3\r\nINFO:gguf.vocab:Setting special token type pad to 0\r\nINFO:gguf.vocab:Setting add_bos_token to False\r\nINFO:gguf.vocab:Setting add_eos_token to False\r\nINFO:gguf.vocab:Setting chat_template to {% if messages[0]['role'] == 'user' or messages[0]['role'] == 'system' %}{{ bos_token }}{% endif %}{% for message in messages %}{{ '<|im_start|>' + message['role'] + '\r\n' + message['content'] + '<|im_end|>' + '\r\n' }}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\r\n' }}{% elif messages[-1]['role'] == 'assistant' %}{{ eos_token }}{% endif %}\r\nINFO:gguf.vocab:Setting special token type prefix to 67\r\nINFO:gguf.vocab:Setting special token type suffix to 69\r\nINFO:gguf.vocab:Setting special token type middle to 68\r\nWARNING:gguf.vocab:No handler for special token type fsep with id 70 - skipping\r\nINFO:gguf.vocab:Setting special token type eot to 107\r\nINFO:gguf.vocab:Setting chat_template to {% if messages[0]['role'] == 'user' or messages[0]['role'] == 'system' %}{{ bos_token }}{% endif %}{% for message in messages %}{{ '<|im_start|>' + message['role'] + '\r\n' + message['content'] + '<|im_end|>' + '\r\n' }}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\r\n' }}{% elif messages[-1]['role'] == 'assistant' %}{{ eos_token }}{% endif %}\r\nTraceback (most recent call last):\r\n  File \"/llama.cpp/convert-hf-to-gguf.py\", line 2882, in <module>\r\n    main()\r\n  File \"/llama.cpp/convert-hf-to-gguf.py\", line 2867, in main\r\n    model_instance.set_vocab()\r\n  File \"/llama.cpp/convert-hf-to-gguf.py\", line 2251, in set_vocab\r\n    special_vocab.add_to_gguf(self.gguf_writer)\r\n  File \"/llama.cpp/gguf-py/gguf/vocab.py\", line 73, in add_to_gguf\r\n    gw.add_chat_template(self.chat_template)\r\n  File \"/llama.cpp/gguf-py/gguf/gguf_writer.py\", line 565, in add_chat_template\r\n    self.add_string(Keys.Tokenizer.CHAT_TEMPLATE, value)\r\n  File \"/llama.cpp/gguf-py/gguf/gguf_writer.py\", line 206, in add_string\r\n    self.add_key_value(key, val, GGUFValueType.STRING)\r\n  File \"/llama.cpp/gguf-py/gguf/gguf_writer.py\", line 166, in add_key_value\r\n    raise ValueError(f'Duplicated key name {key!r}')\r\nValueError: Duplicated key name 'tokenizer.chat_template'\n```\n",
+    "labels": [
+      "bug",
+      "low severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-13T19:09:23+00:00",
+    "closed_at": "2024-07-21T01:53:03+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7923/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7923"
+  },
+  {
+    "number": 14670,
+    "title": "Eval bug: Assertion failure when using LFM2 with parallel request processing",
+    "body": "### Name and Version\n\n$ llama-cli --version\nversion: 5890 (982e3472)\nbuilt with Apple clang version 17.0.0 (clang-1700.0.13.3) for arm64-apple-darwin24.4.0\n\n\n### Operating systems\n\nMac\n\n### GGML backends\n\nMetal\n\n### Hardware\n\nApple M4 Max\n\n### Models\n\n<https://huggingface.co/LiquidAI/LFM2-1.2B-GGUF> - Q6_K quanitzation\n\n### Problem description & steps to reproduce\n\nWhen running llama-server with this model and specifying parallel requests (i.e. `-np` with 2 or more parallel requests), it crashes with an assertion failure:\n\n```\nggml/src/ggml.c:2420: GGML_ASSERT(a->ne[d] == b->ne[d]) failed\n```\n\nThe specific command I ran was:\n\n```sh\nllama-server -hf LiquidAI/LFM2-1.2B-GGUF:Q6_K -c 32678 -np 2\n```\n\n### First Bad Commit\n\n_No response_\n\n### Relevant log output\n\n```shell\n$ lldb -- llama-server -hf LiquidAI/LFM2-1.2B-GGUF:Q6_K -c 32678 -np 2\n(lldb) target create \"llama-server\"\nCurrent executable set to '/opt/homebrew/bin/llama-server' (arm64).\n(lldb) settings set -- target.run-args  \"-hf\" \"LiquidAI/LFM2-1.2B-GGUF:Q6_K\" \"-c\" \"32678\" \"-np\" \"2\"\n(lldb) r\nProcess 84371 launched: '/opt/homebrew/bin/llama-server' (arm64)\ncurl_perform_with_retry: HEAD https://huggingface.co/LiquidAI/LFM2-1.2B-GGUF/resolve/main/LFM2-1.2B-Q6_K.gguf (attempt 1 of 1)...\ncommon_download_file_single: using cached file: /Users/sultan/Library/Caches/llama.cpp/LiquidAI_LFM2-1.2B-GGUF_LFM2-1.2B-Q6_K.gguf\nbuild: 5890 (982e3472) with Apple clang version 17.0.0 (clang-1700.0.13.3) for arm64-apple-darwin24.4.0\nsystem info: n_threads = 12, n_threads_batch = 12, total_threads = 16\n\nsystem_info: n_threads = 12 (n_threads_batch = 12) / 16 | Metal : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | DOTPROD = 1 | LLAMAFILE = 1 | ACCELERATE = 1 | REPACK = 1 | \n\nmain: binding port with default address family\nmain: HTTP server is listening, hostname: 127.0.0.1, port: 8080, http threads: 15\nmain: loading model\nsrv    load_model: loading model '/Users/sultan/Library/Caches/llama.cpp/LiquidAI_LFM2-1.2B-GGUF_LFM2-1.2B-Q6_K.gguf'\nllama_model_load_from_file_impl: using device Metal (Apple M4 Max) - 98303 MiB free\nllama_model_loader: loaded meta data with 34 key-value pairs and 148 tensors from /Users/sultan/Library/Caches/llama.cpp/LiquidAI_LFM2-1.2B-GGUF_LFM2-1.2B-Q6_K.gguf (version GGUF V3 (latest))\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\nllama_model_loader: - kv   0:                       general.architecture str              = lfm2\nllama_model_loader: - kv   1:                               general.type str              = model\nllama_model_loader: - kv   2:                               general.name str              = LFM2 1.2B\nllama_model_loader: - kv   3:                           general.basename str              = LFM2\nllama_model_loader: - kv   4:                         general.size_label str              = 1.2B\nllama_model_loader: - kv   5:                            general.license str              = other\nllama_model_loader: - kv   6:                       general.license.name str              = lfm1.0\nllama_model_loader: - kv   7:                       general.license.link str              = LICENSE\nllama_model_loader: - kv   8:                               general.tags arr[str,4]       = [\"liquid\", \"lfm2\", \"edge\", \"text-gene...\nllama_model_loader: - kv   9:                          general.languages arr[str,8]       = [\"en\", \"ar\", \"zh\", \"fr\", \"de\", \"ja\", ...\nllama_model_loader: - kv  10:                           lfm2.block_count u32              = 16\nllama_model_loader: - kv  11:                        lfm2.context_length u32              = 128000\nllama_model_loader: - kv  12:                      lfm2.embedding_length u32              = 2048\nllama_model_loader: - kv  13:                   lfm2.feed_forward_length u32              = 8192\nllama_model_loader: - kv  14:                  lfm2.attention.head_count u32              = 32\nllama_model_loader: - kv  15:               lfm2.attention.head_count_kv arr[i32,16]      = [0, 0, 8, 0, 0, 8, 0, 0, 8, 0, 8, 0, ...\nllama_model_loader: - kv  16:                        lfm2.rope.freq_base f32              = 1000000.000000\nllama_model_loader: - kv  17:                            lfm2.vocab_size u32              = 65536\nllama_model_loader: - kv  18:                     lfm2.shortconv.l_cache u32              = 3\nllama_model_loader: - kv  19:      lfm2.attention.layer_norm_rms_epsilon f32              = 0.000010\nllama_model_loader: - kv  20:                       tokenizer.ggml.model str              = gpt2\nllama_model_loader: - kv  21:                         tokenizer.ggml.pre str              = lfm2\nllama_model_loader: - kv  22:                      tokenizer.ggml.tokens arr[str,65536]   = [\"<|pad|>\", \"<|startoftext|>\", \"<|end...\nllama_model_loader: - kv  23:                  tokenizer.ggml.token_type arr[i32,65536]   = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, ...\nllama_model_loader: - kv  24:                      tokenizer.ggml.merges arr[str,63683]   = [\"\u010a \u010a\", \"\u010a \u010a\u010a\", \"\u010a\u010a \u010a\", \"\u010a ?...\nllama_model_loader: - kv  25:                tokenizer.ggml.bos_token_id u32              = 1\nllama_model_loader: - kv  26:                tokenizer.ggml.eos_token_id u32              = 7\nllama_model_loader: - kv  27:            tokenizer.ggml.padding_token_id u32              = 0\nllama_model_loader: - kv  28:               tokenizer.ggml.add_bos_token bool             = true\nllama_model_loader: - kv  29:               tokenizer.ggml.add_sep_token bool             = false\nllama_model_loader: - kv  30:               tokenizer.ggml.add_eos_token bool             = false\nllama_model_loader: - kv  31:                    tokenizer.chat_template str              = {{bos_token}}{% for message in messag...\nllama_model_loader: - kv  32:               general.quantization_version u32              = 2\nllama_model_loader: - kv  33:                          general.file_type u32              = 18\nllama_model_loader: - type  f32:   55 tensors\nllama_model_loader: - type q6_K:   93 tensors\nprint_info: file format = GGUF V3 (latest)\nprint_info: file type   = Q6_K\nprint_info: file size   = 915.96 MiB (6.57 BPW) \nload: special tokens cache size = 507\nload: token to piece cache size = 0.3756 MB\nprint_info: arch             = lfm2\nprint_info: vocab_only       = 0\nprint_info: n_ctx_train      = 128000\nprint_info: n_embd           = 2048\nprint_info: n_layer          = 16\nprint_info: n_head           = 32\nprint_info: n_head_kv        = [0, 0, 8, 0, 0, 8, 0, 0, 8, 0, 8, 0, 8, 0, 8, 0]\nprint_info: n_rot            = 64\nprint_info: n_swa            = 0\nprint_info: is_swa_any       = 0\nprint_info: n_embd_head_k    = 64\nprint_info: n_embd_head_v    = 64\nprint_info: n_gqa            = [0, 0, 4, 0, 0, 4, 0, 0, 4, 0, 4, 0, 4, 0, 4, 0]\nprint_info: n_embd_k_gqa     = [0, 0, 512, 0, 0, 512, 0, 0, 512, 0, 512, 0, 512, 0, 512, 0]\nprint_info: n_embd_v_gqa     = [0, 0, 512, 0, 0, 512, 0, 0, 512, 0, 512, 0, 512, 0, 512, 0]\nprint_info: f_norm_eps       = 0.0e+00\nprint_info: f_norm_rms_eps   = 1.0e-05\nprint_info: f_clamp_kqv      = 0.0e+00\nprint_info: f_max_alibi_bias = 0.0e+00\nprint_info: f_logit_scale    = 0.0e+00\nprint_info: f_attn_scale     = 0.0e+00\nprint_info: n_ff             = 8192\nprint_info: n_expert         = 0\nprint_info: n_expert_used    = 0\nprint_info: causal attn      = 1\nprint_info: pooling type     = 0\nprint_info: rope type        = 2\nprint_info: rope scaling     = linear\nprint_info: freq_base_train  = 1000000.0\nprint_info: freq_scale_train = 1\nprint_info: n_ctx_orig_yarn  = 128000\nprint_info: rope_finetuned   = unknown\nprint_info: model type       = 1.2B\nprint_info: model params     = 1.17 B\nprint_info: general.name     = LFM2 1.2B\nprint_info: vocab type       = BPE\nprint_info: n_vocab          = 65536\nprint_info: n_merges         = 63683\nprint_info: BOS token        = 1 '<|startoftext|>'\nprint_info: EOS token        = 7 '<|im_end|>'\nprint_info: EOT token        = 2 '<|endoftext|>'\nprint_info: PAD token        = 0 '<|pad|>'\nprint_info: LF token         = 708 '\u010a'\nprint_info: EOG token        = 2 '<|endoftext|>'\nprint_info: EOG token        = 7 '<|im_end|>'\nprint_info: max token length = 30\nload_tensors: loading model tensors, this can take a while... (mmap = true)\nload_tensors: offloading 16 repeating layers to GPU\nload_tensors: offloading output layer to GPU\nload_tensors: offloaded 17/17 layers to GPU\nload_tensors:   CPU_Mapped model buffer size =   105.01 MiB\nload_tensors: Metal_Mapped model buffer size =   810.97 MiB\n.......................................................................\nllama_context: constructing llama_context\nllama_context: n_seq_max     = 2\nllama_context: n_ctx         = 32678\nllama_context: n_ctx_per_seq = 16339\nllama_context: n_batch       = 2048\nllama_context: n_ubatch      = 512\nllama_context: causal_attn   = 1\nllama_context: flash_attn    = 0\nllama_context: freq_base     = 1000000.0\nllama_context: freq_scale    = 1\nllama_context: n_ctx_per_seq (16339) < n_ctx_train (128000) -- the full capacity of the model will not be utilized\nggml_metal_init: allocating\nggml_metal_init: found device: Apple M4 Max\nggml_metal_init: picking default device: Apple M4 Max\nggml_metal_load_library: using embedded metal library\nggml_metal_init: GPU name:   Apple M4 Max\nggml_metal_init: GPU family: MTLGPUFamilyApple9  (1009)\nggml_metal_init: GPU family: MTLGPUFamilyCommon3 (3003)\nggml_metal_init: GPU family: MTLGPUFamilyMetal3  (5001)\nggml_metal_init: simdgroup reduction   = true\nggml_metal_init: simdgroup matrix mul. = true\nggml_metal_init: has residency sets    = true\nggml_metal_init: has bfloat            = true\nggml_metal_init: use bfloat            = false\nggml_metal_init: hasUnifiedMemory      = true\nggml_metal_init: recommendedMaxWorkingSetSize  = 103079.22 MB\nggml_metal_init: skipping kernel_get_rows_bf16                     (not supported)\nggml_metal_init: skipping kernel_set_rows_bf16                     (not supported)\nggml_metal_init: skipping kernel_mul_mv_bf16_f32                   (not supported)\nggml_metal_init: skipping kernel_mul_mv_bf16_f32_c4                (not supported)\nggml_metal_init: skipping kernel_mul_mv_bf16_f32_1row              (not supported)\nggml_metal_init: skipping kernel_mul_mv_bf16_f32_l4                (not supported)\nggml_metal_init: skipping kernel_mul_mv_bf16_bf16                  (not supported)\nggml_metal_init: skipping kernel_mul_mv_id_bf16_f32                (not supported)\nggml_metal_init: skipping kernel_mul_mm_bf16_f32                   (not supported)\nggml_metal_init: skipping kernel_mul_mm_id_bf16_f16                (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_bf16_h64           (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_bf16_h80           (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_bf16_h96           (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_bf16_h112          (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_bf16_h128          (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_bf16_h192          (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_bf16_hk192_hv128   (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_bf16_h256          (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_bf16_hk576_hv512   (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h64       (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h96       (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h128      (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h192      (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_hk192_hv128 (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_h256      (not supported)\nggml_metal_init: skipping kernel_flash_attn_ext_vec_bf16_hk576_hv512 (not supported)\nggml_metal_init: skipping kernel_cpy_f32_bf16                      (not supported)\nggml_metal_init: skipping kernel_cpy_bf16_f32                      (not supported)\nggml_metal_init: skipping kernel_cpy_bf16_bf16                     (not supported)\nllama_context:        CPU  output buffer size =     0.50 MiB\nllama_kv_cache_unified:      Metal KV buffer size =   383.25 MiB\nllama_kv_cache_unified: size =  383.25 MiB ( 32704 cells,   6 layers,  2 seqs), K (f16):  191.62 MiB, V (f16):  191.62 MiB\nllama_kv_cache_unified: LLAMA_SET_ROWS=0, using old ggml_cpy() method for backwards compatibility\nllama_memory_recurrent:      Metal RS buffer size =     0.31 MiB\nllama_memory_recurrent: size =    0.31 MiB (     2 cells,  16 layers,  2 seqs), R (f32):    0.31 MiB, S (f32):    0.00 MiB\n/private/tmp/llama.cpp-20250713-5314-t993c8/ggml/src/ggml.c:2420: GGML_ASSERT(a->ne[d] == b->ne[d]) failed\n(lldb) process attach --pid 84371\nerror: attach failed: tried to attach to process already being debugged\nProcess 84371 stopped\n* thread #1, queue = 'com.apple.main-thread', stop reason = signal SIGABRT\n    frame #0: 0x000000018afb9388 libsystem_kernel.dylib`__pthread_kill + 8\nlibsystem_kernel.dylib`__pthread_kill:\n->  0x18afb9388 <+8>:  b.lo   0x18afb93a8    ; <+40>\n    0x18afb938c <+12>: pacibsp \n    0x18afb9390 <+16>: stp    x29, x30, [sp, #-0x10]!\n    0x18afb9394 <+20>: mov    x29, sp\nTarget 0: (llama-server) stopped.\n```",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2025-07-14T01:09:41+00:00",
+    "closed_at": "2025-07-17T07:22:13+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/14670/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/14670"
+  },
+  {
+    "number": 673,
+    "title": "[Feature Suggestion] Dynamic prompt",
+    "body": "Would love to see a feature where both the AI and the user could change the initial prompt in-situ and when necessary.\n\nEssentially, this would be the same as changing the prompt without exiting llama.cpp, thus eliminates the need to reload the model weights and forgetting the context.\n\nTo trigger this, it could be a trigger word in the input, such as \\iNewPrompt: You are an insane AI assistant. You always gives imprecise answers and easily goes into panic mode. Once you are panicked, you will start babbling and answer everything hysterically. You will become sane again when I tell you to stop panic.",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-01T08:05:43+00:00",
+    "closed_at": "2024-04-11T01:07:19+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/673/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/673"
+  },
+  {
+    "number": 8516,
+    "title": "Bug: Failed to load model",
+    "body": "### What happened?\n\nHi guys. I have got a problem after I compile Llama on my machine. It built properly, but when I try to run it, it is looking for a file don't even exist (a model).\r\n\r\nIs it normal ?\n\n### Name and Version\n\nversion: 0 (unknown)\r\nbuilt with cc (Gentoo Hardened 14.1.1_p20240622 p2) 14.1.1 20240622 for x86_64-pc-linux-gnu\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n```shell\nzohran@alienware-m17-r3 ~/Downloads/llama.cpp-b3400 $ ./examples/chat.sh\r\nLog start\r\nmain: build = 0 (unknown)\r\nmain: built with cc (Gentoo Hardened 14.1.1_p20240622 p2) 14.1.1 20240622 for x86_64-pc-linux-gnu\r\nmain: seed  = 1721142929\r\nllama_model_load: error loading model: llama_model_loader: failed to load model from ./models/llama-7b/ggml-model-q4_0.gguf\r\n\r\nllama_load_model_from_file: failed to load model\r\nllama_init_from_gpt_params: error: failed to load model './models/llama-7b/ggml-model-q4_0.gguf'\r\nmain: error: unable to load model\r\n\r\nzohran@alienware-m17-r3 ~/Downloads/llama.cpp-b3400 $ ls \r\nAUTHORS                        llama-convert-llama2c-to-ggml  llama-simple\r\nbuild                          llama-cvector-generator        llama-speculative\r\nci                             llama-embedding                llama-tokenize\r\ncmake                          llama-eval-callback            llama-train-text-from-scratch\r\nCMakeLists.txt                 llama-export-lora              llama-vdot\r\nCMakePresets.json              llama-finetune                 main\r\ncommon                         llama-gbnf-validator           main.log\r\nCONTRIBUTING.md                llama-gguf                     Makefile\r\nconvert_hf_to_gguf.py          llama-gguf-hash                media\r\nconvert_hf_to_gguf_update.py   llama-gguf-split               models\r\nconvert_llama_ggml_to_gguf.py  llama-gritlm                   mypy.ini\r\nconvert_lora_to_gguf.py        llama-imatrix                  Package.swift\r\ndocs                           llama-infill                   pocs\r\nexamples                       llama-llava-cli                poetry.lock\r\nflake.lock                     llama-lookahead                prompts\r\nflake.nix                      llama-lookup                   pyproject.toml\r\nggml                           llama-lookup-create            pyrightconfig.json\r\ngguf-py                        llama-lookup-merge             README.md\r\ngrammars                       llama-lookup-stats             requirements\r\ninclude                        llama-parallel                 requirements.txt\r\nlibllava.a                     llama-passkey                  scripts\r\nLICENSE                        llama-perplexity               SECURITY.md\r\nllama-baby-llama               llama-q8dot                    server\r\nllama-batched                  llama-quantize                 spm-headers\r\nllama-batched-bench            llama-quantize-stats           src\r\nllama-bench                    llama-retrieval                tests\r\nllama-benchmark-matmult        llama-save-load-state\r\nllama-cli                      llama-server\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "critical severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-16T15:18:53+00:00",
+    "closed_at": "2024-07-17T07:05:36+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8516/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8516"
+  },
+  {
+    "number": 12286,
+    "title": "Compile bug: \u6267\u884cpython3 convert-hf-to-gguf.py D:\\DevelopSoftware\\Ollamamodel\\DeepSeek-R1-Medical-COT-500\u547d\u4ee4\uff0c\u6ca1\u6709\u54cd\u5e94",
+    "body": "### Git commit\n\n![Image](https://github.com/user-attachments/assets/0b8fc84f-a949-4f49-a5a2-e4aa9c7b7876)\n\n### Operating systems\n\nWindows\n\n### GGML backends\n\nCPU\n\n### Problem description & steps to reproduce\n\n\u6267\u884cpython3 convert-hf-to-gguf.py D:\\DevelopSoftware\\Ollamamodel\\DeepSeek-R1-Medical-COT-500\u547d\u4ee4\uff0c\u6ca1\u6709\u54cd\u5e94\n\n### First Bad Commit\n\n_No response_\n\n### Compile command\n\n```shell\n\u6267\u884cpython3 convert-hf-to-gguf.py D:\\DevelopSoftware\\Ollamamodel\\DeepSeek-R1-Medical-COT-500\u547d\u4ee4\uff0c\u6ca1\u6709\u54cd\u5e94\n```\n\n### Relevant log output\n\n```shell\n\u6267\u884cpython3 convert-hf-to-gguf.py D:\\DevelopSoftware\\Ollamamodel\\DeepSeek-R1-Medical-COT-500\u547d\u4ee4\uff0c\u6ca1\u6709\u54cd\u5e94\n```",
+    "labels": [
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-09T14:10:53+00:00",
+    "closed_at": "2025-04-26T01:07:38+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12286/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12286"
+  },
+  {
+    "number": 12553,
+    "title": "Misc. bug: vulkan: performance regression after fd123cfead49eb32e386e26b8ef7a6d41554dda5",
+    "body": "### Name and Version\n\nfd123cfead49eb32e386e26b8ef7a6d41554dda5\n\n### Operating systems\n\nLinux\n\n### Which llama.cpp modules do you know to be affected?\n\nvulkan backend\n\n### Command line\n\n```shell\n\n```\n\n### Problem description & steps to reproduce\n\n| model                          |       size |     params | backend    | ngl |          test |                  t/s |\n| ------------------------------ | ---------: | ---------: | ---------- | --: | ------------: | -------------------: |\n| gemma3 12B Q5_K - Medium       |   8.09 GiB |    11.77 B | Vulkan     |  99 |         pp512 |         61.69 \u00b1 0.04 |\n| gemma3 12B Q5_K - Medium       |   8.09 GiB |    11.77 B | Vulkan     |  99 |         tg128 |         21.87 \u00b1 0.01 |\n\nbuild: a53f7f7b8 (4908)\n\n| model                          |       size |     params | backend    | ngl |          test |                  t/s |\n| ------------------------------ | ---------: | ---------: | ---------- | --: | ------------: | -------------------: |\n| gemma3 12B Q5_K - Medium       |   8.09 GiB |    11.77 B | Vulkan     |  99 |         pp512 |         59.69 \u00b1 0.05 |\n| gemma3 12B Q5_K - Medium       |   8.09 GiB |    11.77 B | Vulkan     |  99 |         tg128 |         21.00 \u00b1 0.25 |\n\nbuild: fd123cfea (4909)\n\n### First Bad Commit\n\nfd123cfead49eb32e386e26b8ef7a6d41554dda5\n\n### Relevant log output\n\n```shell\n\n```",
+    "labels": [
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-24T20:49:08+00:00",
+    "closed_at": "2025-05-09T01:07:52+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12553/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12553"
+  },
+  {
+    "number": 84,
+    "title": "Segfault with 65B model",
+    "body": "This is the output with `-fsanitize=address`:\r\n```\r\nAddressSanitizer:DEADLYSIGNAL\r\n=================================================================\r\n==167666==ERROR: AddressSanitizer: SEGV on unknown address 0x558c0562c438 (pc 0x558a27cc9807 bp 0x000000000000 sp 0x7ffeb2f57310 T0)\r\n==167666==The signal is caused by a READ memory access.\r\n    #0 0x558a27cc9807 in ggml_element_size (/home/mattmcal/repos/llama.cpp/main+0x49807)\r\n    #1 0x558a27c9c03c in llama_eval(llama_model const&, int, int, std::vector<int, std::allocator<int> > const&, std::vector<float, std::allocator<float> >&, unsigned long&) (/home/mattmcal/repos/llama.cpp/main+0x1c03c)\r\n    #2 0x558a27c960fb in main (/home/mattmcal/repos/llama.cpp/main+0x160fb)\r\n    #3 0x7fe45e046189 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\r\n    #4 0x7fe45e046244 in __libc_start_main_impl ../csu/libc-start.c:381\r\n    #5 0x558a27c9b1a0 in _start (/home/mattmcal/repos/llama.cpp/main+0x1b1a0)\r\n\r\nAddressSanitizer can not provide additional info.\r\nSUMMARY: AddressSanitizer: SEGV (/home/mattmcal/repos/llama.cpp/main+0x49807) in ggml_element_size\r\n```\r\nI had to increase `ctx_size` otherwise I got this error:\r\n```\r\nggml_new_tensor_impl: not enough space in the context's memory pool (needed 33373704448, available 33292002560)\r\n```\r\n\r\nIs GGML trying to use more RAM than it malloc'd?",
+    "labels": [
+      "need more info"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-13T07:19:05+00:00",
+    "closed_at": "2023-03-31T05:04:49+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/84/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 1,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/84"
+  },
+  {
+    "number": 6800,
+    "title": "How to fine tune LLaMA 3 in Google Colab (Pro)?",
+    "body": "I have a JSONL dataset like this:\r\n\r\n```\r\n{\"text\": \"This is raw text in 2048 tokens I want to feed in\"},\r\n{\"text\": \"This is next line, tokens are also 2048\"}\r\n```\r\n\r\nIt would be nice to fine-tune in 4, 8, or 16-bit LoRA and then just merge as before!",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-04-21T02:12:14+00:00",
+    "closed_at": "2024-04-25T16:13:38+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6800/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6800"
+  },
+  {
+    "number": 13552,
+    "title": "Misc. bug: missing messages in JSON export via llama-server web UI",
+    "body": "### Name and Version\n\n$ ./llama-cli --version\nversion: 5359 (de4c07f9)\nbuilt with cc (Debian 12.2.0-14) 12.2.0 for x86_64-linux-gnu\n\n\n### Operating systems\n\nLinux\n\n### Which llama.cpp modules do you know to be affected?\n\nllama-server\n\n### Command line\n\n```shell\nllama-server --threads 10 --model ./Ministral-8B.gguf\n```\n\n### Problem description & steps to reproduce\n\nWhen I use the web UI to download a conversation, a JSON file is downloaded, but I only seem to get the conversation's metadata, while the messages are *not* included.\n\n```\n{\n  \"id\": \"conv-1747263476494\",\n  \"lastModified\": 1747263485918,\n  \"currNode\": 1747263476577,\n  \"name\": \"test\"\n}\n```\n\n### First Bad Commit\n\nNot sure. I remember this worked fine with a fresh build from a month ago or so.\n\n**edit:** It still worked in b5124 (bc091a4), which is when the 'Download' button was still located on the right, instead of in a context menu on the left.",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "open",
+    "created_at": "2025-05-14T23:06:48+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/13552/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/13552"
+  }
+]

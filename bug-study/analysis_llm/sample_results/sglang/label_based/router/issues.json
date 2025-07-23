@@ -1,0 +1,324 @@
+[
+  {
+    "number": 7551,
+    "title": "[Router]  [Performance] SGLang hits connection limit at ~32k concurrent requests, causing failures",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n## Summary\n\nSGLang experiences severe performance degradation and request failures when concurrent connections approach 32,768 (2^15), strongly indicating a file descriptor limit issue. While the router provides better resilience than direct worker connections, both modes eventually fail at this threshold. We hope to fully solve this issue as well in https://github.com/sgl-project/sglang/issues/7532 in the coming weeks.\n\n## Key Findings\n\n### 1. Performance Comparison Across Modes\n\n| Concurrency | Direct Worker | Router (2 workers) | Router (4 workers) | Key Observation |\n|-------------|--------------|-------------------|-------------------|-----------------|\n| 10          | 100% (19.9 rps) | 100% (24.3 rps) | 100% (25.1 rps) | Router provides better throughput |\n| 100         | 100% (8.6 rps)  | 100% (6.7 rps)  | 100% (8.0 rps)  | All modes handle well |\n| 1,000       | 100% (1.8 rps)  | 100% (2.1 rps)  | 100% (2.8 rps)  | Router scales better |\n| 10,000      | 100% (0.17 rps) | 100% (0.23 rps) | 100% (0.27 rps) | ~35% better with router |\n| 20,000      | 100% (0.09 rps) | 100% (0.12 rps) | 100% (0.13 rps) | All modes still stable |\n| 30,000      | 100% (0.06 rps) | 100% (0.08 rps) | 100% (0.08 rps) | Direct worker at limit |\n| **40,000**  | **74.2%** | **97.5%** | **100%** | Router significantly better |\n| **50,000**  | **58.8%** | **78.8%** | **89.8%** | All modes degraded |\n\n### 2. The 32,768 Connection Barrier\n\nAll test configurations show a clear performance cliff around 32,768 concurrent connections:\n- **Direct Worker**: First failures at 30k (file descriptor exhaustion)\n- **Router (2 workers)**: First failures at 40k (better distribution)\n- **Router (4 workers)**: Maintains 100% at 40k but fails at 50k\n\nThis 32,768 (2^15) threshold strongly indicates hitting the default file descriptor limit on Linux systems.\n\n### 3. Root Cause Analysis\n\nThe consistent failure pattern at ~32,768 connections across all configurations points to:\n\n1. **File Descriptor Limits**: Default ulimit of 32,768 on many Linux systems\n2. **No Connection Pooling**: Each concurrent request maintains an open connection\n3. **Missing Backpressure**: No mechanism to reject connections when approaching limits\n4. **No Clear Error Messages**: Failures occur silently without indicating resource exhaustion\n\n## Recommendations\n\n### Immediate Actions\n1. **Document the limitation**: Clearly state maximum supported concurrent connections\n2. **Implement connection limits**: Add configurable max_connections parameter\n3. **Return proper errors**: Send 503 Service Unavailable when at capacity\n4. **Add monitoring**: Log connection count and warn when approaching limits\n\n### Long-term Solutions\n1. **Connection pooling**: Implement connection reuse to reduce file descriptor usage\n2. **Backpressure mechanisms**: Queue requests when at capacity instead of failing\n3. **Configuration guide**: Document ulimit tuning for high-concurrency deployments\n4. **Graceful degradation**: Implement progressive load shedding\n\n## Impact\n\nThis issue affects:\n- High-traffic production deployments\n- Load testing and benchmarking\n- Multi-tenant environments\n- Any deployment expecting >30k concurrent connections\n\n## Conclusion\n\nWhile SGLang's router improves concurrency handling significantly (maintaining 100% success at 40k connections with 4 workers vs 74% for direct worker), the fundamental file descriptor limit issue remains. The system needs proper connection management, clear capacity limits, and graceful degradation to handle extreme concurrency scenarios reliably.\n\nThe router's ability to distribute load across workers provides a partial mitigation, but a comprehensive solution requires addressing the underlying resource management issues.\n\n### Reproduction\n\nTest Script:\nhttps://github.com/jhinpan/sglang-test/blob/router-test/test_router_concurrency.py\n\nThe current script supports router testing with multiple workers. To compare performance:\n\n```bash\n# Test 1: Direct worker (baseline - results shown above)\npython test_router_concurrency.py --model qwen/qwen2.5-0.5b-instruct --output direct_results.json\n\n# Test 2: Router with 2 workers\npython test_router_concurrency.py --model qwen/qwen2.5-0.5b-instruct --use-router --dp-size 2 --output router_2w_results.json\n\n# Test 3: Router with 4 workers  \npython test_router_concurrency.py --model qwen/qwen2.5-0.5b-instruct --use-router --dp-size 4 --output router_4w_results.json\n```\n\n### Environment\n\n- **SGLang Version**: 0.4.8\n- **Model**: qwen/qwen2.5-0.5b-instruct\n- **Test Configurations**:\n  - Direct worker (1 instance)\n  - Router with 2 workers (data parallelism)\n  - Router with 4 workers (data parallelism)\n- **System**: Linux with default ulimit settings on H200",
+    "labels": [
+      "bug",
+      "router"
+    ],
+    "state": "open",
+    "created_at": "2025-06-26T06:19:16+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7551/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7551"
+  },
+  {
+    "number": 7533,
+    "title": "Task 000: Centralized Configuration Module",
+    "body": "# Task 000: Centralized Configuration Module\n\n## Summary\nCreate a comprehensive configuration module that centralizes all validation logic, provides type-safe configuration structures, and eliminates scattered validation code throughout the router.\n\n## Problem Statement\nCurrently, configuration validation is scattered across multiple locations:\n- URL validation happens in Python code\n- Mode compatibility checks occur during server startup\n- Policy parameter validation is embedded in individual routers\n- No centralized error handling for configuration issues\n- Duplicate validation logic in different components\n\nThis leads to:\n- Inconsistent validation rules\n- Runtime errors that could be caught at startup\n- Difficult maintenance when adding new configuration options\n- Poor error messages that don't guide users to fixes\n\n## Proposed Solution\n\n### 1. Configuration Type System\nCreate strongly-typed configuration structures with built-in validation:\n\n```rust\n// src/config/types.rs\n#[derive(Debug, Clone, Serialize, Deserialize)]\npub struct RouterConfig {\n    pub mode: RoutingMode,\n    pub policy: PolicyConfig,\n    pub host: String,\n    pub port: u16,\n    pub workers: Vec<String>,\n    pub service_discovery: Option<DiscoveryConfig>,\n    pub metrics: MetricsConfig,\n    pub timeouts: TimeoutConfig,\n}\n\n#[derive(Debug, Clone, Serialize, Deserialize)]\npub enum RoutingMode {\n    Regular,\n    PrefillDecode {\n        prefill_urls: Vec<(String, Option<u16>)>,\n        decode_urls: Vec<String>,\n    },\n}\n\n#[derive(Debug, Clone, Serialize, Deserialize)]\npub enum PolicyConfig {\n    Random,\n    RoundRobin,\n    CacheAware {\n        cache_threshold: f32,\n        balance_abs_threshold: usize,\n        balance_rel_threshold: f32,\n        eviction_period_hours: u64,\n    },\n    PowerOfTwo {\n        interval_secs: u64,\n    },\n}\n```\n\n### 2. Validation Framework\n```rust\n// src/config/validation.rs\npub struct ConfigValidator;\n\nimpl ConfigValidator {\n    pub fn validate(config: &RouterConfig) -> Result<(), ConfigError> {\n        self.validate_basic_fields(config)?;\n        self.validate_urls(config)?;\n        self.validate_mode_policy_compatibility(config)?;\n        self.validate_worker_requirements(config)?;\n        self.validate_numeric_ranges(config)?;\n        Ok(())\n    }\n    \n    fn validate_urls(&self, config: &RouterConfig) -> Result<(), ConfigError> {\n        for url in &config.workers {\n            let parsed = Url::parse(url).map_err(|e| \n                ConfigError::InvalidValue {\n                    field: \"workers\".to_string(),\n                    value: url.clone(),\n                    reason: format!(\"Invalid URL format: {}\", e),\n                }\n            )?;\n            \n            if parsed.scheme() != \"http\" && parsed.scheme() != \"https\" {\n                return Err(ConfigError::InvalidValue {\n                    field: \"workers\".to_string(),\n                    value: url.clone(),\n                    reason: \"URL must use http or https scheme\".to_string(),\n                });\n            }\n        }\n        Ok(())\n    }\n}\n```\n\n### 3. Error Types\n```rust\n// src/config/error.rs\n#[derive(Debug, thiserror::Error)]\npub enum ConfigError {\n    #[error(\"Validation failed: {0}\")]\n    ValidationFailed(String),\n    \n    #[error(\"Invalid value for field '{field}': {value} - {reason}\")]\n    InvalidValue {\n        field: String,\n        value: String,\n        reason: String,\n    },\n    \n    #[error(\"Incompatible configuration: {0}\")]\n    IncompatibleConfig(String),\n    \n    #[error(\"Missing required field: {0}\")]\n    MissingRequired(String),\n}\n```\n\n### 4. Configuration Builder\n```rust\n// src/config/builder.rs\npub struct ConfigBuilder {\n    config: RouterConfig,\n}\n\nimpl ConfigBuilder {\n    pub fn new() -> Self {\n        Self {\n            config: RouterConfig::default(),\n        }\n    }\n    \n    pub fn mode(mut self, mode: RoutingMode) -> Self {\n        self.config.mode = mode;\n        self\n    }\n    \n    pub fn policy(mut self, policy: PolicyConfig) -> Self {\n        self.config.policy = policy;\n        self\n    }\n    \n    pub fn validate_and_build(self) -> Result<RouterConfig, ConfigError> {\n        ConfigValidator::validate(&self.config)?;\n        Ok(self.config)\n    }\n}\n```\n\n## Implementation Plan\n\n### Step 1: Create Config Module Structure\n- Create `src/config/mod.rs` to define module structure\n- Create submodules: `types.rs`, `validation.rs`, `error.rs`\n- Set up module exports and visibility\n\n### Step 2: Define Configuration Types\n- Implement all configuration structs and enums\n- Add serde derives for future config file support\n- Implement Default traits with sensible defaults\n\n### Step 3: Implement Validation Logic\n- Create ConfigValidator with comprehensive validation methods\n- Add field-level validation (URLs, ports, ranges)\n- Add cross-field validation (mode/policy compatibility)\n- Implement clear error messages with actionable fixes\n\n### Step 4: Migration Integration\n- Create conversion methods from old config to new\n- Add backward compatibility layer during transition\n- Update router initialization to use new config\n\n### Step 5: Testing Suite\n- Unit tests for each validation rule\n- Integration tests for full config validation\n- Error message quality tests\n- Performance benchmarks for validation\n\n## Benefits\n\n1. **Early Error Detection**: Configuration errors caught at startup\n2. **Better Error Messages**: Clear, actionable error descriptions\n3. **Type Safety**: Compile-time guarantees for configuration structure\n4. **Centralized Logic**: All validation in one place\n5. **Extensibility**: Easy to add new configuration options\n6. **Documentation**: Types serve as documentation\n7. **Future-Ready**: Foundation for config files and hot reload\n\n## Migration Strategy\n\n1. Implement new config module alongside existing code\n2. Add adapter layer to convert from old format\n3. Gradually migrate components to use new config\n4. Remove old validation code once fully migrated\n5. Enable config file loading as final step\n\n## Acceptance Criteria\n\n- [ ] All configuration types defined with proper structure\n- [ ] Comprehensive validation for all fields\n- [ ] Clear error messages for all failure cases\n- [ ] No scattered validation code remains\n- [ ] Configuration can be built programmatically\n- [ ] Documentation with examples\n\n## Estimated Effort\n- Implementation: 2 days\n- Testing: 2 days\n- Migration and integration: 1 day\n- Total: 5 days\n\n## Dependencies\nNone - this is a foundational task that other improvements will build upon\n\n## Risks and Mitigations\n\n1. **Risk**: Breaking changes to existing API\n   - **Mitigation**: Maintain backward compatibility during transition\n   - **Mitigation**: Provide clear migration guide\n\n2. **Risk**: Over-engineering configuration\n   - **Mitigation**: Start with current needs, design for extension\n   - **Mitigation**: Regular design reviews\n\n3. **Risk**: Performance impact from validation\n   - **Mitigation**: Run validation only at startup\n   - **Mitigation**: Optimize hot paths if needed\n\n## Future Enhancements\n\n1. **Configuration Files**: Load from YAML/TOML\n2. **Hot Reload**: Update config without restart\n3. **Validation Profiles**: Different rules for dev/prod\n4. **Config Schema Export**: Generate documentation\n5. **Environment Variable Support**: Override from env\n",
+    "labels": [
+      "enhancement",
+      "router"
+    ],
+    "state": "closed",
+    "created_at": "2025-06-25T20:09:47+00:00",
+    "closed_at": "2025-06-27T22:42:03+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7533/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7533"
+  },
+  {
+    "number": 7532,
+    "title": "SGLang Router Architecture Improvement Proposal",
+    "body": "# SGLang Router Architecture Improvement Proposal\n\n## Table of Contents\n1. [Summary](#summary)\n2. [Current Architecture Overview](#current-architecture-overview)\n3. [System Components](#system-components)\n4. [Request Flow Analysis](#request-flow-analysis)\n5. [Identified Pain Points](#identified-pain-points)\n6. [Proposed Improvements](#proposed-improvements)\n7. [Long-Term Vision](#long-term-vision)\n8. [Implementation Phases](#implementation-phases)\n9. [Risk Analysis](#risk-analysis)\n10. [Success Metrics](#success-metrics)\n11. [Conclusion](#conclusion)\n12. [Appendix: Architecture Diagrams](#appendix-architecture-diagrams)\n\n## Summary\n\nThis proposal outlines a architectural improvement plan for the SGLang Router, a high-performance load balancer that supports both traditional and disaggregated (Prefill-Decode) routing modes. The improvements focus on enhancing maintainability and extensibility without disrupting existing functionality. These changes lay the foundation for a long-term transformation where sgl-router evolves from a simple proxy into a full-featured OpenAI API server with native tool calling, session management, and direct gRPC communication with SGLang's backend services.\n\n## Current Architecture Overview\n\nThe SGLang Router currently operates as an HTTP proxy that distributes requests across multiple SGLang server instances. It supports both regular routing mode and prefill-decode (PD) disaggregated routing mode, with multiple load balancing policies including random, round-robin, cache-aware, and power-of-two selection. The implementation consists of several large monolithic files that mix concerns and make maintenance challenging. (See [Appendix](#appendix-architecture-diagrams) for detailed architecture diagrams)\n\n## System Components\n\n### 1. Entry Point (`lib.rs`)\nThe main entry point provides Python bindings through PyO3:\n\n```rust\n#[pyclass]\nstruct Router {\n    // Configuration\n    host: String,\n    port: u16,\n    worker_urls: Vec<String>,\n    policy: PolicyType,\n    \n    // PD Mode specific\n    pd_disaggregation: bool,\n    prefill_urls: Option<Vec<(String, Option<u16>)>>,\n    decode_urls: Option<Vec<String>>,\n    \n    // Policy parameters\n    cache_threshold: f32,\n    balance_abs_threshold: usize,\n    balance_rel_threshold: f32,\n    // ... more fields\n}\n```\n\n### 2. HTTP Server (`server.rs`)\nActix-web based server exposing multiple endpoints:\n\n```mermaid\ngraph LR\n    subgraph \"API Endpoints\"\n        subgraph \"OpenAI API\"\n            CC[\"/v1/chat/completions\"]\n            CO[\"/v1/completions\"]\n            GE[\"/generate\"]\n        end\n        \n        subgraph \"Management\"\n            AW[\"/add_worker\"]\n            RW[\"/remove_worker\"]\n            LW[\"/list_workers\"]\n        end\n        \n        subgraph \"Monitoring\"\n            HE[\"/health\"]\n            GL[\"/get_loads\"]\n            SI[\"/get_server_info\"]\n        end\n    end\n    \n    subgraph \"Request Processing\"\n        RP[\"Request Parser\"]\n        RA[\"Request Adapter\"]\n        RO[\"Router Selection\"]\n    end\n    \n    subgraph \"Response Handling\"\n        ST[\"Streaming\\n(SSE)\"]\n        JS[\"JSON\\nResponse\"]\n        ER[\"Error\\nHandler\"]\n    end\n    \n    %% Flow connections\n    CC --> RP\n    CO --> RP\n    GE --> RP\n\n    RP --> RA\n    RA --> RO\n\n    RO --> ST\n    RO --> JS\n    RO --> ER\n\n```\n\n### 3. Router Implementation (`router.rs`)\n\nThe router is implemented as an enum with four variants:\n\n```mermaid\nclassDiagram\n    class Router {\n        <<enumeration>>\n        Random\n        RoundRobin\n        CacheAware\n        PrefillDecode\n    }\n    \n    class Random {\n        -worker_urls: Arc~RwLock~Vec~String~~~\n        -timeout_secs: u64\n        -interval_secs: u64\n        +route(request) HttpResponse\n        +add_worker(url) Result\n        +remove_worker(url) Result\n    }\n    \n    class RoundRobin {\n        -worker_urls: Arc~RwLock~Vec~String~~~\n        -current_index: AtomicUsize\n        -timeout_secs: u64\n        +route(request) HttpResponse\n        +get_next_worker() String\n    }\n    \n    class CacheAware {\n        -worker_urls: Arc~RwLock~Vec~String~~~\n        -tree_map: Arc~DashMap~String, Tree~~\n        -running_queue: Arc~Mutex~HashMap~String, usize~~~\n        -config: CacheAwareConfig\n        +route(request) HttpResponse\n        +select_by_cache(text) String\n        +is_load_balanced() bool\n    }\n    \n    class PrefillDecode {\n        -pd_router: Arc~PDRouter~\n        +route(request) HttpResponse\n        +forward_to_pd() HttpResponse\n    }\n    \n    Router <|-- Random\n    Router <|-- RoundRobin\n    Router <|-- CacheAware\n    Router <|-- PrefillDecode\n```\n\n### 4. Cache-Aware Algorithm Detail\n\n```mermaid\nflowchart TD\n    Start([Request Arrives]) --> Extract[Extract Text from Request]\n    Extract --> CheckBalance{System<br/>Load Balanced?}\n    \n    CheckBalance -->|Yes| TreeLookup[Lookup in Radix Trees]\n    CheckBalance -->|No| LoadBalance[Select Least Loaded]\n    \n    TreeLookup --> FindMatch[Find Best Prefix Match]\n    FindMatch --> CheckThreshold{Match Rate ><br/>Threshold?}\n    \n    CheckThreshold -->|Yes| SelectCache[Select Worker<br/>with Best Match]\n    CheckThreshold -->|No| SelectSmallest[Select Worker with<br/>Smallest Tree]\n    \n    SelectCache --> UpdateTree\n    SelectSmallest --> UpdateTree\n    LoadBalance --> UpdateTree[Update Tree<br/>with Request]\n    \n    UpdateTree --> Forward[Forward Request]\n    Forward --> UpdateLoad[Update Load Counter]\n    UpdateLoad --> End([Return Response])\n```\n\n### 5. PD Router Architecture (`pd_router.rs`)\n\n```mermaid\ngraph TB\n    subgraph \"PD Router Components\"\n        PDR[PD Router]\n        \n        subgraph \"Worker Pools\"\n            PFP[Prefill Pool<br/>RwLock Vec]\n            DCP[Decode Pool<br/>RwLock Vec]\n        end\n        \n        subgraph \"Selection Policies\"\n            PRND[Random Selection]\n            PP2[Power of Two]\n            PCA[Cache Aware]\n        end\n        \n        subgraph \"Request Processing\"\n            BSI[Bootstrap Injection]\n            PAR[Parallel Dispatch]\n            LPM[Logprob Merger]\n        end\n        \n        subgraph \"Load Tracking\"\n            PLT[Prefill Load Tracker]\n            DLT[Decode Load Tracker]\n        end\n    end\n    \n    PDR --> PFP\n    PDR --> DCP\n    PDR --> PRND\n    PDR --> PP2\n    PDR --> PCA\n    \n    PRND --> BSI\n    PP2 --> BSI\n    PCA --> BSI\n    \n    BSI --> PAR\n    PAR --> LPM\n    \n    PFP --> PLT\n    DCP --> DLT\n```\n\n### 6. Service Discovery (`service_discovery.rs`)\n\n```mermaid\nstateDiagram-v2\n    [*] --> Initializing\n    Initializing --> Watching: K8s Client Ready\n    \n    Watching --> Discovering: Timer Tick\n    Discovering --> Processing: Pods Found\n    Processing --> Filtering: Apply Selectors\n    Filtering --> HealthCheck: Valid Pods\n    \n    HealthCheck --> UpdateWorkers: All Healthy\n    HealthCheck --> PartialUpdate: Some Healthy\n    HealthCheck --> Retry: All Failed\n    \n    UpdateWorkers --> Watching: Success\n    PartialUpdate --> Watching: Partial Success\n    Retry --> Discovering: Backoff Wait\n    \n    Watching --> Error: K8s API Error\n    Error --> Retry: Exponential Backoff\n    \n    note right of HealthCheck\n        Concurrent health checks\n        with timeout protection\n    end note\n    \n    note right of UpdateWorkers\n        Atomic worker list update\n        Triggers router refresh\n    end note\n```\n\n## Request Flow Analysis\n\n### Regular Mode Request Flow\n\n```mermaid\nflowchart LR\n    subgraph \"1. Request Receipt\"\n        REQ[HTTP Request] --> PARSE[Parse JSON]\n        PARSE --> ADAPT[Adapt to Internal Format]\n    end\n    \n    subgraph \"2. Routing Decision\"\n        ADAPT --> POLICY{Routing Policy}\n        POLICY -->|Random| RND_LOGIC[Random Selection]\n        POLICY -->|RoundRobin| RR_LOGIC[Sequential Selection]\n        POLICY -->|CacheAware| CA_LOGIC[Cache Analysis]\n    end\n    \n    subgraph \"3. Worker Selection\"\n        RND_LOGIC --> HEALTH{Health Check}\n        RR_LOGIC --> HEALTH\n        CA_LOGIC --> HEALTH\n        HEALTH -->|Healthy| SELECT[Select Worker]\n        HEALTH -->|Unhealthy| RETRY[Try Next]\n        RETRY --> HEALTH\n    end\n    \n    subgraph \"4. Request Forwarding\"\n        SELECT --> BUILD[Build HTTP Request]\n        BUILD --> SEND[Send to Worker]\n        SEND --> WAIT{Response Type}\n        WAIT -->|Stream| SSE[SSE Handler]\n        WAIT -->|JSON| JSON[JSON Handler]\n    end\n    \n    subgraph \"5. Response Processing\"\n        SSE --> STREAM[Stream Response]\n        JSON --> RETURN[Return Response]\n        STREAM --> CLIENT[Client]\n        RETURN --> CLIENT\n    end\n```\n\n### PD Mode Request Flow\n\n```mermaid\nflowchart TB\n    subgraph \"1. Request Preparation\"\n        REQ[Request] --> CHECK{Has Bootstrap?}\n        CHECK -->|No| FETCH[Fetch Bootstrap<br/>from Prefill]\n        CHECK -->|Yes| INJECT[Use Existing]\n        FETCH --> INJECT\n    end\n    \n    subgraph \"2. Worker Selection\"\n        INJECT --> SEL_PF[Select Prefill Worker]\n        INJECT --> SEL_DC[Select Decode Worker]\n        \n        SEL_PF --> PF_POLICY{Policy}\n        SEL_DC --> DC_POLICY{Policy}\n        \n        PF_POLICY -->|Random| PF_RND[Random Prefill]\n        PF_POLICY -->|P2| PF_P2[Power of Two Prefill]\n        \n        DC_POLICY -->|Random| DC_RND[Random Decode]\n        DC_POLICY -->|P2| DC_P2[Power of Two Decode]\n    end\n    \n    subgraph \"3. Parallel Dispatch\"\n        PF_RND --> PF_REQ[Prefill Request]\n        PF_P2 --> PF_REQ\n        DC_RND --> DC_REQ[Decode Request]\n        DC_P2 --> DC_REQ\n        \n        PF_REQ --> PF_WAIT[Wait Prefill]\n        DC_REQ --> DC_WAIT[Wait Decode]\n    end\n    \n    subgraph \"4. Response Handling\"\n        DC_WAIT --> CHECK_LP{Logprobs<br/>Requested?}\n        CHECK_LP -->|Yes| MERGE[Merge Logprobs]\n        CHECK_LP -->|No| RETURN[Return Decode Response]\n        PF_WAIT --> MERGE\n        MERGE --> RETURN\n    end\n```\n\n## Identified Pain Points\n\n### 1. Type Safety and State Management\n- **Issue**: Workers represented as strings (`Vec<String>`)\n- **Impact**: No health/load tracking, type confusion, scattered state\n- **Example**: Health checks require external HashMap lookups\n\n### 2. Code Duplication\n- **Issue**: Routing logic duplicated between regular and PD routers\n- **Impact**: Maintenance overhead, inconsistent behavior\n- **Example**: CacheAware implemented twice with slight variations\n\n### 3. Limited Extensibility\n- **Issue**: Router enum requires modification for new policies\n- **Impact**: Violates Open-Closed Principle, risky changes\n- **Example**: Adding PowerOfTwo to regular mode requires enum changes\n\n### 4. Scattered Observability\n- **Issue**: Metrics collection spread across multiple files\n- **Impact**: Inconsistent naming, missing metrics, hard to dashboard\n- **Example**: Some endpoints lack request duration metrics\n\n### 5. Basic Service Discovery\n- **Issue**: No retry logic, basic error handling\n- **Impact**: Transient K8s API failures cause worker loss\n- **Example**: Network blip removes healthy workers permanently\n\n### 6. PD Mode Limitations\n- **Issue**: No dynamic worker management in PD mode\n- **Impact**: Requires restart to add/remove workers\n- **Example**: `/add_worker` returns error for PD mode\n\n### 7. Configuration Management\n- **Issue**: Configuration validation scattered across multiple locations\n- **Impact**: Inconsistent validation logic, duplicate code, runtime errors\n- **Example**: URL validation in Python code, mode compatibility checks in server startup, policy parameter validation in individual routers\n\n## Proposed Improvements\n\nThe following improvements are designed to address immediate pain points while laying the groundwork for our long-term vision of transforming sgl-router into a full OpenAI API server. Each phase builds capabilities that serve both current needs and future evolution.\n\n### Proposed Project Structure\n\nThe refactored codebase will reorganize existing files into focused modules:\n\n```\nsgl-router/\n\u251c\u2500\u2500 src/\n\u2502   \u251c\u2500\u2500 lib.rs                     # Python bindings, main Router struct\n\u2502   \u251c\u2500\u2500 server.rs                  # HTTP server, actix-web endpoints\n\u2502   \u251c\u2500\u2500 openai_api_types.rs        # OpenAI API request/response types\n\u2502   \u251c\u2500\u2500 service_discovery.rs       # K8s service discovery\n\u2502   \u251c\u2500\u2500 request_adapter.rs         # Request format adaptation\n\u2502   \u2502\n\u2502   \u251c\u2500\u2500 config/                    # Configuration management\n\u2502   \u2502   \u251c\u2500\u2500 mod.rs\n\u2502   \u2502   \u251c\u2500\u2500 types.rs               # RouterConfig, PolicyConfig, etc.\n\u2502   \u2502   \u251c\u2500\u2500 validation.rs          # ConfigValidator\n\u2502   \u2502   \u2514\u2500\u2500 error.rs               # ConfigError\n\u2502   \u2502\n\u2502   \u251c\u2500\u2500 core/                      # Core abstractions\n\u2502   \u2502   \u251c\u2500\u2500 mod.rs\n\u2502   \u2502   \u2514\u2500\u2500 worker.rs              # Worker trait and implementations\n\u2502   \u2502\n\u2502   \u251c\u2500\u2500 router/                    # Routing logic\n\u2502   \u2502   \u251c\u2500\u2500 mod.rs\n\u2502   \u2502   \u251c\u2500\u2500 policies/              # Routing policies\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 mod.rs\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 random.rs\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 round_robin.rs\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 cache_aware.rs\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 power_of_two.rs\n\u2502   \u2502   \u251c\u2500\u2500 router.rs              # Router implementations\n\u2502   \u2502   \u251c\u2500\u2500 pd_router.rs           # PD router logic (includes pd_types)\n\u2502   \u2502   \u251c\u2500\u2500 tree.rs                # Radix tree for cache-aware routing\n\u2502   \u2502   \u2514\u2500\u2500 factory.rs             # Router factory\n\u2502   \u2502\n\u2502   \u2514\u2500\u2500 observability/             # Monitoring\n\u2502       \u251c\u2500\u2500 mod.rs\n\u2502       \u251c\u2500\u2500 logging.rs             # Structured logging\n\u2502       \u2514\u2500\u2500 metrics.rs             # Prometheus metrics\n```\n\nNote: `pd_types.rs` will be merged into `pd_router.rs` as those types are only used there.\n\n### Phase 1: Foundation & Core Abstractions (Weeks 1-3)\n\n#### Task 001: Centralized Configuration\nCreate a comprehensive configuration module to eliminate scattered validation:\n\n```rust\npub struct RouterConfig {\n    pub mode: RoutingMode,\n    pub policy: PolicyConfig,\n    pub workers: Vec<String>,\n    pub host: String,\n    pub port: u16,\n    // ... other fields\n}\n\npub enum RoutingMode {\n    Regular,\n    PrefillDecode {\n        prefill_urls: Vec<(String, Option<u16>)>,\n        decode_urls: Vec<String>,\n    },\n}\n\npub enum PolicyConfig {\n    Random,\n    RoundRobin,\n    CacheAware { threshold: f32, /* ... */ },\n    PowerOfTwo { interval_secs: u64 },\n}\n```\n\nImplement validation with clear error messages:\n- Field-level validation for URLs, ports, thresholds\n- Cross-field compatibility checks (mode vs policy)\n- Early detection of configuration errors\n\n#### Task 002: Worker Abstraction\nTransform workers from strings to typed entities, enabling future support for both HTTP endpoints and gRPC connections:\n\n```rust\npub trait Worker: Send + Sync + Clone {\n    fn url(&self) -> &str;\n    fn worker_type(&self) -> WorkerType;\n    fn is_healthy(&self) -> bool;\n    fn load(&self) -> Arc<AtomicUsize>;\n    async fn check_health(&self) -> Result<(), WorkerError>;\n}\n\npub enum WorkerType {\n    Regular,\n    Prefill { bootstrap_port: Option<u16> },\n    Decode,\n    // Future: GrpcTokenizer, GrpcScheduler for direct backend connections\n}\n```\n\nThis abstraction is crucial for the long-term vision, as it allows the router to treat both traditional HTTP endpoints and future gRPC connections uniformly.\n\n#### Task 003: RoutingPolicy Trait\nUnify routing algorithms:\n\n```rust\n#[async_trait]\npub trait RoutingPolicy: Send + Sync {\n    async fn select_single(&self, workers: &[Arc<dyn Worker>], request: &Value) \n        -> Result<Arc<dyn Worker>, RoutingError>;\n    \n    async fn select_pair(&self, prefill: &[Arc<dyn Worker>], decode: &[Arc<dyn Worker>], request: &Value) \n        -> Result<(Arc<dyn Worker>, Arc<dyn Worker>), RoutingError>;\n}\n```\n\n#### Task 004: Policy Migration\nImplement all policies using the new trait, enabling:\n- PowerOfTwo in regular mode\n- All policies in PD mode\n- Consistent behavior across modes\n\n### Phase 2: Infrastructure (Week 4)\n\n#### Task 005: Centralized Observability\nConsolidate metrics:\n\n```rust\npub struct RouterMetrics;\n\nimpl RouterMetrics {\n    pub fn record_request(route: &str, method: &str);\n    pub fn record_duration(route: &str, duration: Duration);\n    pub fn record_error(route: &str, error: &str);\n    pub fn set_worker_health(url: &str, healthy: bool);\n    pub fn record_cache_hit(worker: &str);\n}\n```\n\n#### Task 006: Enhanced Service Discovery\nAdd resilience:\n- Exponential backoff retry\n- Health validation before adding\n- Support for all worker types\n- Graceful degradation\n\n### Phase 3: Architecture (Week 5)\n\n#### Task 007: Router Factory\nReplace enum with trait-based design, enabling future dual-mode operation:\n\n```rust\npub trait Router: Send + Sync {\n    async fn route(&self, req: HttpRequest, body: Value, route: &str) -> HttpResponse;\n    async fn add_worker(&self, worker: Arc<dyn Worker>) -> Result<(), RouterError>;\n    async fn remove_worker(&self, url: &str) -> Result<(), RouterError>;\n    fn apply_discovery_update(&self, update: DiscoveryUpdate);\n}\n\npub struct RouterFactory;\n\nimpl RouterFactory {\n    pub async fn create_router(config: &RouterConfig) -> Result<Arc<dyn Router>, RouterError>;\n    // Future: create_api_server(config) for full OpenAI API mode\n}\n```\n\nThis factory pattern is essential for supporting both traditional proxy mode and future API server mode, allowing runtime selection based on configuration.\n\n## Long-Term Vision\n\n### From Load Balancer to Full OpenAI API Server\n\nThe architectural improvements proposed in this document are designed with a transformative long-term vision: evolving sgl-router from a simple HTTP proxy into a fully-featured OpenAI-compatible API server that directly integrates with SGLang's backend services.\n\n#### Target Capabilities\n\n1. **Dual Operating Modes**\n   - **Traditional Router Mode**: Continue supporting the current proxy behavior for backward compatibility\n   - **API Server Mode**: Full OpenAI API implementation with advanced features\n\n2. **Native OpenAI API Implementation**\n   - Complete endpoint compatibility (chat/completions, completions, embeddings, etc.)\n   - Built-in request validation and processing\n   - Streaming response support with proper SSE formatting\n   - Error handling matching OpenAI's API behavior\n\n3. **Tool Calling Framework**\n   - Native support for function/tool calling without relying on backend servers\n   - Extensible executor system (HTTP, Python, Shell, custom integrations)\n   - Tool result integration directly in the conversation flow\n   - Security sandboxing and permission management\n\n4. **Direct gRPC Communication**\n   - Replace HTTP forwarding with efficient gRPC calls to SGLang's scheduler\n   - Connection pooling and load balancing\n   - Streaming support for real-time token generation\n   - Reduced latency through protocol optimization and avoid\n\n## Implementation Phases\n\n### Detailed Timeline\n\n```mermaid\ngantt\n    title SGLang Router Improvement Timeline\n    dateFormat  YYYY-MM-DD\n    section Phase 1\n    Configuration Module         :t1, 2025-06-26, 5d\n    Worker Abstraction           :t2, after t1, 6d\n    RoutingPolicy Trait          :t3, after t2, 7d\n    Policy Migration             :t4, after t3, 6d\n    section Phase 2\n    Centralized Observability    :t5, after t4, 4d\n    Enhanced Service Discovery   :t6, after t4, 6d\n    section Phase 3\n    Router Factory               :t7, after t6, 7d\n    section Testing\n    Integration Testing          :t8, after t7, 5d\n    Performance Validation       :t9, after t8, 3d\n    Documentation               :t10, after t8, 3d\n```\n\n## Risk Analysis\n\n### Technical Risks\n\n| Risk                   | Impact | Probability | Mitigation                             |\n|------------------------|--------|-------------|----------------------------------------|\n| Performance Regression | High   | Medium      | Continuous benchmarking, profiling     |\n| Breaking Changes       | High   | Low         | Feature flags, gradual rollout         |\n| Memory Leaks           | Medium | Low         | Stress testing, leak detection         |\n| Thread Safety Issues   | High   | Medium      | Race condition testing, careful review |\n\n\n## Conclusion\n\nThis comprehensive improvement plan addresses fundamental architectural issues while maintaining system stability. The phased approach ensures each improvement builds on the previous, creating a more maintainable, extensible, and reliable routing system for SGLang.\n\n## Appendix: Architecture Diagrams\n\n### High-Level Architecture\n\n```mermaid\ngraph TB\n    subgraph \"Client Layer\"\n        PY[Python Client<br/>SGLang]\n        HTTP[HTTP Client<br/>OpenAI Compatible]\n    end\n\n    subgraph \"Router Layer\"\n        R[Router<br/>lib.rs/PyO3]\n        S[HTTP Server<br/>server.rs]\n\n        subgraph \"Routing Modes\"\n            REG[Regular Router<br/>router.rs]\n            PD[PD Router<br/>pd_router.rs]\n        end\n\n        subgraph \"Routing Policies\"\n            RND[Random]\n            RR[RoundRobin]\n            CA[CacheAware<br/>+ Tree]\n            P2[PowerOfTwo]\n        end\n    end\n\n    subgraph \"Infrastructure\"\n        SD[Service Discovery<br/>K8s Integration]\n        PROM[Prometheus<br/>Metrics]\n        LOG[Logging<br/>tracing]\n    end\n\n    subgraph \"Worker Layer\"\n        subgraph \"Regular Workers\"\n            W1[Worker 1]\n            W2[Worker 2]\n            WN[Worker N]\n        end\n\n        subgraph \"PD Workers\"\n            PF1[Prefill 1]\n            PF2[Prefill 2]\n            D1[Decode 1]\n            D2[Decode 2]\n        end\n    end\n\n    PY --> R\n    HTTP --> S\n    R --> S\n    S --> REG\n    S --> PD\n    REG --> RND\n    REG --> RR\n    REG --> CA\n    PD --> RND\n    PD --> P2\n    PD --> CA\n\n    REG --> W1\n    REG --> W2\n    REG --> WN\n\n    PD --> PF1\n    PD --> PF2\n    PD --> D1\n    PD --> D2\n\n    SD --> REG\n    SD --> PD\n    S --> PROM\n    S --> LOG\n\n```\n\n### Component Interactions\n\n```mermaid\nsequenceDiagram\n    participant C as Client\n    participant S as Server\n    participant R as Router\n    participant P as Policy\n    participant W as Worker\n    participant SD as ServiceDiscovery\n    participant M as Metrics\n    \n    Note over SD: Continuous Discovery\n    SD->>R: Update Workers\n    \n    C->>S: HTTP Request\n    S->>S: Parse & Validate\n    S->>R: Route Request\n    \n    R->>P: Select Worker(s)\n    \n    alt Regular Mode\n        P->>P: Apply Policy Logic\n        P-->>R: Selected Worker\n        R->>W: Forward Request\n        W-->>R: Response\n    else PD Mode\n        P->>P: Select Prefill & Decode\n        P-->>R: Worker Pair\n        par Prefill Request\n            R->>W: Prefill Request\n        and Decode Request\n            R->>W: Decode Request\n        end\n        W-->>R: Merged Response\n    end\n    \n    R-->>S: Response\n    S-->>C: HTTP Response\n    \n    R->>M: Record Metrics\n    \n    Note over R,W: Health Checks\n    loop Every 30s\n        R->>W: Health Check\n        W-->>R: Status\n        R->>M: Update Health\n    end\n```",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "router"
+    ],
+    "state": "open",
+    "created_at": "2025-06-25T20:06:12+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7532/reactions",
+      "total_count": 36,
+      "+1": 18,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 8,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 10,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7532"
+  },
+  {
+    "number": 6491,
+    "title": "[Bug] Router Crashes Intermittently",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nIn our scenario, the router inexplicably crashes after a period of time (which could range from hours to weeks). Through the logs, I identified the following errors:\n```\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - starting new connection: http://192.168.0.99:8001/\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.40688383Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - connecting to 192.168.0.99:8001\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.406894394Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - connected to 192.168.0.99:8001\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.407215453Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - starting new connection: http://192.168.0.99:8001/\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.475498743Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - connecting to 192.168.0.99:8001\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.475507723Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - connected to 192.168.0.99:8001\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.475780015Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - pooling idle connection for (\\\"http\\\", 192.168.0.99:8001)\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.478583325Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - pooling idle connection for (\\\"http\\\", 192.168.0.12:8001)\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.541698776Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - pooling idle connection for (\\\"http\\\", 192.168.0.5:8001)\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.558685005Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - reuse idle connection for (\\\"http\\\", 192.168.0.99:8001)\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.717100847Z\"}\n{\"log\":\"thread 'actix-rt|system:0|arbiter:0' panicked at src/router.rs:589:79:\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.752381579Z\"}\n{\"log\":\"called `Option::unwrap()` on a `None` value\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.75239185Z\"}\n{\"log\":\"note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.752411226Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - pooling idle connection for (\\\"http\\\", 192.168.0.5:8001)\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.754821593Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - starting new connection: http://192.168.0.99:8001/\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.829139458Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - connecting to 192.168.0.99:8001\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.829192622Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - connected to 192.168.0.99:8001\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.829467623Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - pooling idle connection for (\\\"http\\\", 192.168.0.99:8001)\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.831402477Z\"}\n{\"log\":\"thread 'actix-rt|system:0|arbiter:42' panicked at src/router.rs:464:62:\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.833636536Z\"}\n{\"log\":\"called `Result::unwrap()` on an `Err` value: PoisonError { .. }\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.833645485Z\"}\n{\"log\":\"[Router (Rust)] 2025-05-21 03:52:00 - DEBUG - pooling idle connection for (\\\"http\\\", 192.168.0.12:8001)\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:00.948293272Z\"}\n{\"log\":\"thread 'actix-rt|system:0|arbiter:59' panicked at src/router.rs:463:40:\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:01.076034944Z\"}\n{\"log\":\"called `Result::unwrap()` on an `Err` value: PoisonError { .. }\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:01.076044555Z\"}\n{\"log\":\"thread 'actix-rt|system:0|arbiter:187' panicked at src/router.rs:463:40:\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:01.0887445Z\"}\n{\"log\":\"called `Result::unwrap()` on an `Err` value: PoisonError { .. }\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:01.088774003Z\"}\n{\"log\":\"thread 'actix-rt|system:0|arbiter:131' panicked at src/router.rs:463:40:\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:01.228421113Z\"}\n{\"log\":\"called `Result::unwrap()` on an `Err` value: PoisonError { .. }\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:01.228459473Z\"}\n{\"log\":\"thread 'actix-rt|system:0|arbiter:60' panicked at src/router.rs:463:40:\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:01.508341798Z\"}\n{\"log\":\"called `Result::unwrap()` on an `Err` value: PoisonError { .. }\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:01.50835179Z\"}\n{\"log\":\"thread 'actix-rt|system:0|arbiter:61' panicked at src/router.rs:463:40:\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:01.525257122Z\"}\n{\"log\":\"called `Result::unwrap()` on an `Err` value: PoisonError { .. }\\n\",\"stream\":\"stderr\",\"time\":\"2025-05-21T03:52:01.525266461Z\"}\n```\n\n\n### Reproduction\n\n```\nENTRYPOINT  [\"python\", \"-m\", \"sglang_router.launch_router\"]\n```\n\n### Environment\n\n```\nPackage       Version\n------------- -------\npip           23.0.1\nsetuptools    58.1.0\nsglang-router 0.1.4\nwheel         0.45.1\n```",
+    "labels": [
+      "router"
+    ],
+    "state": "open",
+    "created_at": "2025-05-21T07:51:23+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6491/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6491"
+  },
+  {
+    "number": 6446,
+    "title": "[Feature] Support for batch inference within sglang-router over multi-nodes",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nCurrently only the sglang-router supports data parallelism over multiple nodes. However the sglang-router does not provide HTTP APIs such as `/v1/files `and `/v1/batches`. And there is currently no offline engine supporting data parallelism over multiple nodes, this limits the ability to perform large-scale batch inference in distributed setups. We believe adding these APIs to sglang-router would be a valuable addition.\n\nAny consideration or guidance on implementing this feature would be greatly appreciated.\n\n\n### Related resources\n\n[HTTP APIs in sglang http server](https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/entrypoints/http_server.py)\n\n[HTTP APIs in sglang-router http server](https://github.com/sgl-project/sglang/blob/main/sgl-router/src/server.rs)",
+    "labels": [
+      "router"
+    ],
+    "state": "open",
+    "created_at": "2025-05-20T05:16:50+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6446/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6446"
+  },
+  {
+    "number": 6280,
+    "title": "[Bug] When using sgl-router, canceled requests keep running on workers.",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI started sglang router with one worker under it, sent a /chat/completions request, canceled it before response, and it continued running on the worker (checked via nvidia-smi and sglang logs). In fact I believe it was stuck running - didn't finish after 5 minutes.\n\n### Reproduction\n\n```sh\npython -m sglang.launch_server \\\\\n    --model-path ${MODEL_PATH} \\\\\n    --port ${WORKER_PORT} \\\\\n    --host 0.0.0.0 \\\\\n    --tp ${TP_SIZE} \\\\\n    --dist-init-addr ${HEAD_NODE_IP}:${DIST_INIT_PORT} \\\\\n    --nnodes ${NNODES} \\\\\n    --node-rank \\$RANK \\\\\n    --log-level info \\\\\n    --trust-remote-code \\\\\n    --grammar-backend xgrammar\npython -m sglang_router.launch_router --worker-urls ${LOCAL_RANK0_URL} --port ${ROUTER_PORT} --host 0.0.0.0\n```\n\n\n### Environment\n\nVersion: 0.4.4.post1\n",
+    "labels": [
+      "router"
+    ],
+    "state": "open",
+    "created_at": "2025-05-14T05:57:23+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6280/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6280"
+  },
+  {
+    "number": 6237,
+    "title": "[Bug] sglang-router curl get return without content-type: application/json in the header (#3307 reopened)",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI want to reopen (https://github.com/sgl-project/sglang/issues/3307) as the described bug below is not solved in the current version. The bug prohibits the use of sglang in combination with OpenWebUI (https://github.com/open-webui/open-webui).\n\n\n**Reopened from #3307**\n\nThanks for this wonderful router. We are trying it to add several sglang workers to the router and then add the router to open webui for our staff. However, we found that there is a minor issue resulting in the open webui cannot add this router (http://router:30000/v1).\n\nUpon checking, it seems that the sglang router would return empty content-type in the header when requesting http://router:30000/v1/models\n\nBelow please find the curl get for your information\n\n> curl -v http://router:30000/v1/models\n* Connected to router port 30000\n> GET /v1/models HTTP/1.1\n> Host: router:30000\n> User-Agent: curl/8.7.1\n> Accept: */*\n> \n* Request completely sent off\n< HTTP/1.1 200 OK\n< content-length: 150\n< date: Wed, 05 Feb 2025 03:00:03 GMT\n< \n* Connection #0 to host 10.53.194.43 left intact\n{\"object\":\"list\",\"data\":[{\"id\":\"deepseek-ai/DeepSeek-R1\",\"object\":\"model\",\"created\":1738724403,\"owned_by\":\"sglang\",\"root\":\"deepseek-ai/DeepSeek-R1\"}]}% \n\nif we curl get the sglang worker node, such as http://worker:30000/v1/models, we found\n\n> GET /v1/models HTTP/1.1\n> Host: worker:30000\n> User-Agent: curl/8.7.1\n> Accept: */*\n> \n* Request completely sent off\n< HTTP/1.1 200 OK\n< date: Wed, 05 Feb 2025 03:00:20 GMT\n< server: uvicorn\n< content-length: 150\n< content-type: application/json. <==== we got content-type here\n< \n* Connection #0 to host 10.53.193.55 left intact\n{\"object\":\"list\",\"data\":[{\"id\":\"deepseek-ai/DeepSeek-R1\",\"object\":\"model\",\"created\":1738724420,\"owned_by\":\"sglang\",\"root\":\"deepseek-ai/DeepSeek-R1\"}]}%  \n\nOur guess is adding the content-type: application/json in the output would solve openwebui issue. Thanks.\n\n\n### Reproduction\n\nrouter:\nPackage Version\n\npip 25.0\nsglang-router 0.1.4\n\nworker:\nusing docker image lmsysorg/sglang:latest\n\nTo reproduce\n\n    setup the router first: python -m sglang_router.launch_router --worker-urls http://worker:30000 --host=0.0.0.0 --verbose\n    check the output by curl -v http://router:30000/v1/models\n\n\n### Environment\n\nWe only deploy the sglang-router 0.1.4 in a VM (OS: Ubuntu 24.04.1 LTS) with Python version 3.12.0",
+    "labels": [
+      "router"
+    ],
+    "state": "open",
+    "created_at": "2025-05-12T13:54:05+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6237/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6237"
+  },
+  {
+    "number": 4282,
+    "title": "how to update weight with sglang_router? Or how to get worker_urls",
+    "body": null,
+    "labels": [
+      "inactive",
+      "router"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-11T03:57:17+00:00",
+    "closed_at": "2025-05-18T00:20:51+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4282/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4282"
+  },
+  {
+    "number": 4160,
+    "title": "[Bug] sglang-router failure when first load model, try again successed",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nWhen first serving a model, sometimes it fails, but when I serve it again, it works.\n\nI inspected the failed log and found that all 8 workers say 'The server is fired up and ready to roll!', but the router says 'health check is pending with error: error sending request for url (http://127.0.0.1:31000/health)' after 600 seconds.\n\n### Reproduction\n\ni use a finetuned Llama 3.1 8B instruct model. using xtuner to finetune, and generate hf format. \n\ncommand `python -m sglang_router.launch_server --router-worker-startup-timeout-secs 600 --router-balance-abs-threshold 3 --router-balance-rel-threshold 3 --model-path /home/root/XXXX.hf --dp-size 8 --trust-remote-code`\n\n### Environment\n\n[second_time_success.log](https://github.com/user-attachments/files/19120153/second_time_success.log)\n[first_time_error.log](https://github.com/user-attachments/files/19120154/first_time_error.log)\n\nsglang                            0.4.3.post2\nsglang-router                     0.1.4\n\n\n```log\nINFO 03-07 11:43:54 __init__.py:190] Automatically detected platform cuda.\nPython: 3.10.0 (default, Mar  3 2022, 09:58:08) [GCC 7.5.0]\nCUDA available: True\nGPU 0,1,2,3,4: NVIDIA GeForce RTX 3090\nGPU 0,1,2,3,4 Compute Capability: 8.6\nCUDA_HOME: /usr/local/cuda-12.4\nNVCC: Cuda compilation tools, release 12.4, V12.4.99\nCUDA Driver Version: 550.54.14\nPyTorch: 2.5.1+cu124\nsglang: 0.4.3.post2\nsgl_kernel: 0.0.3.post6\nflashinfer: 0.2.2+cu124torch2.5\ntriton: 3.1.0\ntransformers: 4.48.3\ntorchao: 0.8.0\nnumpy: 1.26.4\naiohttp: 3.11.13\nfastapi: 0.115.8\nhf_transfer: 0.1.9\nhuggingface_hub: 0.29.1\ninteregular: 0.3.3\nmodelscope: 1.23.1\norjson: 3.10.15\npackaging: 24.2\npsutil: 7.0.0\npydantic: 2.10.6\nmultipart: 0.0.20\nzmq: 26.2.1\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.7.2\nopenai: 1.64.0\ntiktoken: 0.9.0\nanthropic: 0.47.2\ndecord: 0.6.0\nNVIDIA Topology: \n\t\u001b[4mGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\u001b[0m\nGPU0\t X \tPIX\tSYS\tSYS\tSYS\t0-15,32-47\t0\t\tN/A\nGPU1\tPIX\t X \tSYS\tSYS\tSYS\t0-15,32-47\t0\t\tN/A\nGPU2\tSYS\tSYS\t X \tPIX\tSYS\t16-31,48-63\t1\t\tN/A\nGPU3\tSYS\tSYS\tPIX\t X \tSYS\t16-31,48-63\t1\t\tN/A\nGPU4\tSYS\tSYS\tSYS\tSYS\t X \t16-31,48-63\t1\t\tN/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nulimit soft: 1024\n\n```",
+    "labels": [
+      "inactive",
+      "router"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-07T04:33:47+00:00",
+    "closed_at": "2025-06-11T00:19:41+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4160/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4160"
+  },
+  {
+    "number": 3393,
+    "title": "[Feature] Can router support prometheus metrics",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nK8s is often used to deploy applications online. After the router module is introduced, related service indicator monitoring is also required. Therefore, similar to https://github.com/sgl-project/sglang/pull/1853 provided by the server, does it support the collection of monitoring indicators of the router?\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "inactive",
+      "feature",
+      "router"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-08T06:42:46+00:00",
+    "closed_at": "2025-04-28T00:19:29+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3393/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3393"
+  },
+  {
+    "number": 3073,
+    "title": "[Feature] Support service discovery on Kubernetes in router",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThis feature proposes adding Kubernetes service discovery support to the router component. Service discovery will enable the router to dynamically identify and connect to backend services running in a Kubernetes cluster. This is particularly useful for distributed systems where backend instances may scale up or down dynamically.\n\n## UI/UX\n\n```bash\n# New approach\npython -m sglang_router.launch_router --worker-service-on-k8s default/sglang-svc\n# Static approach\npython -m sglang_router.launch_router --worker-urls http://worker_url_1 http://worker_url_2\n```\n\n## Pseudo code\n\n```py\n# Load Kubernetes configuration (e.g., from kubeconfig or in-cluster config)\nload_kube_config()\n\n# Initialize Kubernetes API client\napi_client = CoreV1Api()\n\n# Define the service name and namespace\nservice_name = \"my-service\"\nnamespace = \"default\"\n\n# Step 1: Get the service's selector\ntry:\n    service = api_client.read_namespaced_service(service_name, namespace)\n    selector = service.spec.selector  # e.g., {\"app\": \"my-app\"}\nexcept ApiException as e:\n    print(f\"Error fetching service: {e}\")\n    exit(1)\n\n# Step 2: List pods matching the selector\ntry:\n    label_selector = \",\".join([f\"{k}={v}\" for k, v in selector.items()])  # e.g., \"app=my-app\"\n    pods = api_client.list_namespaced_pod(namespace, label_selector=label_selector)\nexcept ApiException as e:\n    print(f\"Error listing pods: {e}\")\n    exit(1)\n\n# Step 3: Extract pod IPs\npod_ips = []\nfor pod in pods.items:\n    pod_name = pod.metadata.name\n    pod_ip = pod.status.pod_ip\n    if pod_ip:\n        pod_ips.append((pod_name, pod_ip))\n    else:\n        print(f\"Pod {pod_name} does not have an IP assigned yet.\")\n\n# Step 4: Output the results\nprint(\"Pods and their IPs:\")\nfor pod_name, pod_ip in pod_ips:\n    print(f\"- {pod_name}: {pod_ip}\")\n```\n\n### Related resources\n\nMaybe related to https://github.com/sgl-project/sglang/issues/2932\n",
+    "labels": [
+      "inactive",
+      "router"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-23T07:08:03+00:00",
+    "closed_at": "2025-03-26T00:17:50+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3073/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3073"
+  },
+  {
+    "number": 3031,
+    "title": "Can router support --api-key parameter",
+    "body": "When I add an api key to the worker, the router cannot access it",
+    "labels": [
+      "router"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-21T10:02:21+00:00",
+    "closed_at": "2025-01-24T04:30:32+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3031/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3031"
+  }
+]

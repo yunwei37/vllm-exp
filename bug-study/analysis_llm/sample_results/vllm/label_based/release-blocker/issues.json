@@ -1,0 +1,56 @@
+[
+  {
+    "number": 4210,
+    "title": "Performance Regression between v0.4.0 and v0.4.1",
+    "body": "### Anything you want to discuss about vllm.\n\n#3550 seems to reduce throughput of vLLM\r\n\r\nBefore: Throughput: 20.13 requests/s, 10308.29 tokens/s\r\nAfter: Throughput: 17.67 requests/s, 9048.03 tokens/s\r\n\r\n(reported by @esmeetu and @youkaichao)",
+    "labels": [
+      "performance",
+      "release-blocker"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-19T17:13:42+00:00",
+    "closed_at": "2024-04-23T20:12:42+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4210/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4210"
+  },
+  {
+    "number": 4209,
+    "title": "[Bug]: OpenAI API Server always reports 0 tokens/s",
+    "body": "### Your current environment\n\n```text\nCollecting environment information...\nPyTorch version: 2.2.1+cu121\nIs debug build: False\nCUDA used to build PyTorch: 12.1\nROCM used to build PyTorch: N/A\n \nOS: Ubuntu 22.04.3 LTS (x86_64)\nGCC version: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\nClang version: Could not collect\nCMake version: version 3.29.0\nLibc version: glibc-2.35\n \nPython version: 3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0] (64-bit runtime)\nPython platform: Linux-5.15.0-97-generic-x86_64-with-glibc2.35\nIs CUDA available: True\nCUDA runtime version: 12.3.103\nCUDA_MODULE_LOADING set to: LAZY\nGPU models and configuration:\nGPU 0: NVIDIA RTX A6000\nGPU 1: NVIDIA RTX A6000\nGPU 2: NVIDIA RTX A6000\nGPU 3: NVIDIA RTX A6000\nGPU 4: NVIDIA RTX A6000\nGPU 5: NVIDIA RTX A6000\nGPU 6: NVIDIA RTX A6000\nGPU 7: NVIDIA RTX A6000\n \nNvidia driver version: 545.23.08\ncuDNN version: Could not collect\nHIP runtime version: N/A\nMIOpen runtime version: N/A\nIs XNNPACK available: True\n \nCPU:\nArchitecture: x86_64\nCPU op-mode(s): 32-bit, 64-bit\nAddress sizes: 46 bits physical, 57 bits virtual\nByte Order: Little Endian\nCPU(s): 112\nOn-line CPU(s) list: 0-111\nVendor ID: GenuineIntel\nModel name: Intel(R) Xeon(R) Gold 6348 CPU @ 2.60GHz\nCPU family: 6\nModel: 106\nThread(s) per core: 2\nCore(s) per socket: 28\nSocket(s): 2\nStepping: 6\nCPU max MHz: 3500.0000\nCPU min MHz: 800.0000\nBogoMIPS: 5200.00\nFlags: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 invpcid_single intel_ppin ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect wbnoinvd dtherm ida arat pln pts hwp hwp_act_window hwp_epp hwp_pkg_req avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq la57 rdpid fsrm md_clear pconfig flush_l1d arch_capabilities\nVirtualization: VT-x\nL1d cache: 2.6 MiB (56 instances)\nL1i cache: 1.8 MiB (56 instances)\nL2 cache: 70 MiB (56 instances)\nL3 cache: 84 MiB (2 instances)\nNUMA node(s): 4\nNUMA node0 CPU(s): 0-13,56-69\nNUMA node1 CPU(s): 14-27,70-83\nNUMA node2 CPU(s): 28-41,84-97\nNUMA node3 CPU(s): 42-55,98-111\nVulnerability Gather data sampling: Mitigation; Microcode\nVulnerability Itlb multihit: Not affected\nVulnerability L1tf: Not affected\nVulnerability Mds: Not affected\nVulnerability Meltdown: Not affected\nVulnerability Mmio stale data: Mitigation; Clear CPU buffers; SMT vulnerable\nVulnerability Retbleed: Not affected\nVulnerability Spec rstack overflow: Not affected\nVulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp\nVulnerability Spectre v1: Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2: Mitigation; Enhanced IBRS, IBPB conditional, RSB filling, PBRSB-eIBRS SW sequence\nVulnerability Srbds: Not affected\nVulnerability Tsx async abort: Not affected\n \nVersions of relevant libraries:\n[pip3] mypy==1.9.0\n[pip3] mypy-extensions==1.0.0\n[pip3] numpy==1.26.4\n[pip3] torch==2.2.1\n[pip3] triton==2.2.0\n[conda] Could not collectROCM Version: Could not collect\nNeuron SDK Version: N/A\nvLLM Version: 0.4.1\nvLLM Build Flags:\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\nGPU Topology:\nGPU0 GPU1 GPU2 GPU3 GPU4 GPU5 GPU6 GPU7 CPU Affinity NUMA Affinity GPU NUMA ID\nGPU0 X NV4 SYS SYS SYS SYS SYS SYS 0-13,56-69 0 N/A\nGPU1 NV4 X SYS SYS SYS SYS SYS SYS 0-13,56-69 0 N/A\nGPU2 SYS SYS X NV4 SYS SYS SYS SYS 0-13,56-69 0 N/A\nGPU3 SYS SYS NV4 X SYS SYS SYS SYS 0-13,56-69 0 N/A\nGPU4 SYS SYS SYS SYS X NV4 SYS SYS 14-27,70-83 1 N/A\nGPU5 SYS SYS SYS SYS NV4 X SYS SYS 14-27,70-83 1 N/A\nGPU6 SYS SYS SYS SYS SYS SYS X NV4 14-27,70-83 1 N/A\nGPU7 SYS SYS SYS SYS SYS SYS NV4 X 14-27,70-83 1 N/A\n \nLegend:\n \n  X = Self\n  SYS = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX = Connection traversing at most a single PCIe bridge\n  NV# = Connection traversing a bonded set of # NVLinks\n```\n\n### \ud83d\udc1b Describe the bug\n\nIt seems that the async engine logger in the openai api_server is not reporting tokens/s for either prompt or generation throughput.\n\nStart the server with:\n\n```\npython -m vllm.entrypoints.openai.api_server --model facebook/opt-125m\n```\n\nAnd submit requests with:\n\n```python\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"http://localhost:8000/v1\", api_key=\"EMPTY\")\n\n# List models API\nmodels = client.models.list()\n# Choose the first model\nmodel = models.data[0].id\nprint(f\"Accessing model API '{model}'\")\n\nprompt = \"Write a recipe for banana bread, then another, and then another!\"\n\n# Chat API\nstream = False\nfor i in range(100):\n    completion = client.chat.completions.create(\n        model=model,\n        messages=[{\"role\": \"user\", \"content\": prompt}],\n        stream=stream,\n    )\n\nprint(\"Response:\")\nif stream:\n    for c in completion:\n        print(c)\nelse:\n    print(completion.choices[0].message.content)\n```\n\nYou should be able to see in the server logging output that there are requests running but no tokens/s reported:\n\n```\nINFO 04-19 15:44:56 metrics.py:224] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 5 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.1%, CPU KV cache usage: 0.0%\n```",
+    "labels": [
+      "bug",
+      "release-blocker"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-19T15:49:06+00:00",
+    "closed_at": "2024-04-20T03:48:02+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4209/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4209"
+  }
+]

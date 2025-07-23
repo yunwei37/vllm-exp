@@ -1,0 +1,30 @@
+[
+  {
+    "number": 6544,
+    "title": "[Feature] Phi-4-MM support",
+    "body": "### Update\n\nCurrently we have added text & vision support. \n\nRepeated MMMU benchmark runs range between 53.6 - 55.5, consistent with the the benchmark reported in the original paper (55).\n\n**Known limitations:** (See *Execution Plan* before for full list):\n\n1. Audio capabilities: currently we do not support audio at all. \n2. ~~LoRA / Image quality: Phi4MM depends on LoRA for full image capability, but there is some compatibility issues with the native SGL LORA solution. We are working on solving it by refactoring / generalizing SGL LoRA capabilities.~~ Fixed with #6585, #6734, #6861)\n3. Token: Phi4MM supports two types of image token conventions (`<|image1|>` and `<|endoftext10|>`), currently we only support  the latter. If you use the default chat template, it will automatically pick up the supported one.\n\n### Motivation\n\nSupporting the Phi4 Multimodal model (https://[huggingface.co/microsoft/Phi-4-multimodal-instruct](https://huggingface.co/microsoft/Phi-4-multimodal-instruct) in SGL. \n\nExecution Plan: \n\n- [x] Basic text + image support (@lifuhuang #6494 )\n- [x] LoRA support (required for full image understanding capability): (@lifuhuang #6585 , #6734 , #6861 )\n- [x] perf optimization (@lifuhuang #6960 #6994)\n- [ ] SGLang LoRA compatibility with Radix Attention (@Fridge003 #7216 )\n- [ ] audio support (@byjiang1996  #8048)\n- [ ] (low priority) Precomputed feature support. \n- [ ] (low priority) Refactor SGL MM processor logic support for support the original token variable image token (e.g., `<image_1>`)\n\n\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "help wanted",
+      "high priority",
+      "microsoft"
+    ],
+    "state": "open",
+    "created_at": "2025-05-23T04:17:59+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6544/reactions",
+      "total_count": 8,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6544"
+  }
+]

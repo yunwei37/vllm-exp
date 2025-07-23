@@ -1,0 +1,59 @@
+[
+  {
+    "number": 6361,
+    "title": "Working Fine-Tune Example?",
+    "body": "I am trying to find a working example of fine-tuning. \r\n\r\n- If I run the example from `https://github.com/ggerganov/llama.cpp/tree/master/examples/finetune`, the script can't find the model.\r\nhere is the error\r\n```\r\nmain: seed: 1711608198\r\nmain: model base = 'open-llama-3b-v2-q8_0.gguf'\r\nllama_model_load: error loading model: llama_model_loader: failed to load model from open-llama-3b-v2-q8_0.gguf\r\n\r\nllama_load_model_from_file: failed to load model\r\nllama_new_context_with_model: model cannot be NULL\r\nSegmentation fault: 11\r\n```\r\n\r\n- If I try to use a model in `/models` folder such as \r\n```\r\n./finetune \\\r\n        --model-base ./models/ggml-vocab-llama.gguf \\\r\n        --checkpoint-in  chk-lora-open-llama-3b-v2-q8_0-shakespeare-LATEST.gguf \\\r\n        --checkpoint-out chk-lora-open-llama-3b-v2-q8_0-shakespeare-ITERATION.gguf \\\r\n        --lora-out lora-open-llama-3b-v2-q8_0-shakespeare-ITERATION.bin \\\r\n        --train-data \"shakespeare.txt\" \\\r\n        --save-every 10 \\\r\n        --threads 6 --adam-iter 30 --batch 4 --ctx 64 \\\r\n        --use-checkpointing\r\n```\r\n\r\nIt returns error still\r\n```\r\n...\r\nllm_load_tensors: ggml ctx size =    0.00 MiB\r\nllama_model_load: error loading model: create_tensor: tensor 'token_embd.weight' not found\r\nllama_load_model_from_file: failed to load model\r\nllama_new_context_with_model: model cannot be NULL\r\nWARNING: Behavior may be unexpected when allocating 0 bytes for ggml_malloc!\r\nSegmentation fault: 11\r\n```\r\n\r\nWhat should I do?",
+    "labels": [
+      "documentation",
+      "demo",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-28T06:44:04+00:00",
+    "closed_at": "2024-06-21T01:07:11+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6361/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6361"
+  },
+  {
+    "number": 5588,
+    "title": "Server: add function calling API",
+    "body": "# Motivation\r\n\r\nThis subject is already brought up in https://github.com/ggerganov/llama.cpp/issues/4216 , but my initial research failed.\r\n\r\nRecently, I discovered a new line of model designed specifically for this usage: https://github.com/MeetKai/functionary\r\n\r\nThis model can decide whether to call functions (and which function to be called) in a given context. The chat template looks like this:\r\n\r\n```\r\n{#v2.2#}\r\n{% for message in messages %}\r\n  {% if message['role'] == 'user' or message['role'] == 'system' %}\r\n    {{ '<|from|>' + message['role'] + '\\n<|recipient|>all\\n<|content|>' + message['content'] + '\\n' }}\r\n  {% elif message['role'] == 'tool' %}\r\n    {{ '<|from|>' + message['name'] + '\\n<|recipient|>all\\n<|content|>' + message['content'] + '\\n' }}\r\n  {% else %}\r\n    {% set contain_content='no'%}\r\n    {% if message['content'] is not none %}\r\n      {{ '<|from|>assistant\\n<|recipient|>all\\n<|content|>' + message['content'] }}\r\n      {% set contain_content='yes'%}\r\n    {% endif %}\r\n    {% if 'tool_calls' in message and message['tool_calls'] is not none %}\r\n      {% for tool_call in message['tool_calls'] %}\r\n        {% set prompt='<|from|>assistant\\n<|recipient|>' + tool_call['function']['name'] + '\\n<|content|>' + tool_call['function']['arguments'] %}\r\n        {% if loop.index == 1 and contain_content == \\\"no\\\" %}\r\n          {{ prompt }}\r\n        {% else %}\r\n          {{ '\\n' + prompt}}\r\n        {% endif %}\r\n      {% endfor %}\r\n    {% endif %}\r\n    {{ '<|stop|>\\n' }}\r\n  {% endif %}\r\n{% endfor %}\r\n{% if add_generation_prompt %}\r\n  {{ '<|from|>assistant\\n<|recipient|>' }}\r\n{% endif %}\r\n```\r\n\r\nExample:\r\n\r\n```\r\n<|from|>system\r\n<|recipient|>all\r\n<|content|>// Supported function definitions that should be called when necessary.\r\nnamespace functions {\r\n// Get the current weather\r\ntype get_current_weather = (_: {\r\n// The city and state, e.g. San Francisco, CA\r\nlocation: string,\r\n}) => any;\r\n} // namespace functions\r\n<|from|>system\r\n<|recipient|>all\r\n<|content|>A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions. The assistant calls functions with appropriate input when necessary\r\n<|from|>user\r\n<|recipient|>all\r\n<|content|>What is the weather for Istanbul?\r\n```\r\n\r\n## Possible implementation\r\n\r\nSince this is the only one model available publicly that can do this function, it's quite risky to modify `llama_chat_apply_template` to support it (we may end up pollute the code base).\r\n\r\nThe idea is to firstly keep the implementation in server example, then when the template become more mainstream, we can adopt it in `llama_chat_apply_template`.\r\n\r\nData passing in the direction from user ==> model (input direction)\r\n* [ ] Add function in server example to parse input request and format the prompt. Attention: with function calling, we will have 2 types of system messages: one for the actual prompt (`You are a helpful assistant`) and one for function definition.\r\n\r\nData passing in the direction from model ==> user (output direction)\r\n* [ ] Add grammar to for model to output JSON when it's inside function argument message\r\n* [ ] Add parser to extract function arguments and return it as JSON",
+    "labels": [
+      "enhancement",
+      "demo",
+      "server/webui",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-19T13:47:28+00:00",
+    "closed_at": "2024-06-16T01:07:14+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5588/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5588"
+  }
+]

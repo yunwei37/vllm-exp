@@ -1,0 +1,838 @@
+[
+  {
+    "number": 3380,
+    "title": "llama : mitigate KV cache fragmentation",
+    "body": "With the new unified KV cache implementation from #3228 we now support batched decoding.\r\n\r\nAt runtime, depending on the workload and the length of the decoded sequences, the KV cache can become fragmented. If we think of the cache as an array and each cell being free, or belonging to a certain sequence, then we could end up with many short segments of free cells, instead of one big segment with all the free cells. This hinders the performance since for each new batch, we have to find a free cache segment that can \"hold\" the entire batch and when we cannot do so, we have to start splitting the batch in smaller batches to be able to fit it.\r\n\r\nOne possible mitigation is from time to time (based on some logic, or based on user request) to \"defragment\" the cache. This can be implemented in a very similar way to the existing KV shift functionality, where we add extra graph nodes when there is need to defragment the cache.\r\n\r\nOther approaches might be possible. For example, based on the batch size, allocate the KV data either at the start or at the end of the cache. This way we will keep the larger \"prompt\" segments next to each other at the start of the cache and the small \"text\" segments at the end of the cache. Not sure if this would be lead to less fragmentation, but similar strategies can be explored\r\n\r\n",
+    "labels": [
+      "enhancement",
+      "performance",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-09-28T15:09:15+00:00",
+    "closed_at": "2024-02-27T12:35:52+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3380/reactions",
+      "total_count": 7,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3380"
+  },
+  {
+    "number": 7456,
+    "title": "Optimisation of per-token CPU activities for GPU inference",
+    "body": "When using a GPU backend, for each token evaluation there exists not only computation on the GPU but also significant CPU computation which can potentially be optimized. \r\n\r\nHere are some timing measurements of the critical path for each token for llama2 Q4_K_M 7B and 13B models on A100 and H100 GPUs.\r\n\r\nFirstly, here are absolute times:  \r\n<img src=\"https://github.com/ggerganov/llama.cpp/assets/10851179/fb8ee0a5-09e1-4a05-a042-f60964694f8f\" width=\"70%\">\r\n\r\n\r\nand here are the same data presented as a percentage breakdown in each case:\r\n<img src=\"https://github.com/ggerganov/llama.cpp/assets/10851179/8ea0edfe-95de-43ac-8088-b996e3e0870e\" width=\"70%\">\r\n\r\n`CUDA Graph Execution` is the time spent executing the compute graph on the GPU, which is responsible for around 85-90% of the time taken in evaluating each token..\r\n \r\nThe remaining 10-15% of the time is taken by CPU activities, the most dominant of which are discussed below.\r\n\r\n**GGML Graph Preparation:** `llama_build_graph` and `ggml_backend_sched_split_graph` are related to the building/preparation of the compute graph in GGML format for each token, which is ultimately translated into a CUDA graph for execution. However, we know from the CUDA graph implementation (https://github.com/ggerganov/llama.cpp/issues/6763) that only very minor adjustments are required across the majority of tokens. Therefore, it seems that most of the work is not required and we should be able to cache/reuse components of the GGML graph across tokens, in a similar way that we reuse each CUDA graph with only minor adjustments. E.g. in `build_llama()` we could add some code to save state across tokens, rather than perform the full re-build every token.\r\n\r\n**Sampling:**  `llama_sampling_sample` uses the CPU to perform sampling on the logits that have been evaluated on the GPU, for each token. In principle this sampling could be ported to the GPU.\r\n\r\nI will continue to investigate these optimization possibilities.\r\n\r\n \r\n",
+    "labels": [
+      "performance",
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-22T08:24:24+00:00",
+    "closed_at": "2024-08-23T01:07:15+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7456/reactions",
+      "total_count": 8,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7456"
+  },
+  {
+    "number": 10982,
+    "title": "Research: Performance differences between Metal (macOS) and Vulkan (Linux)",
+    "body": "I'm one of the developers for the Asahi Linux GPU drivers, which provide accelerated Vulkan and OpenGL support on Apple Silicon platforms. I'm interested in improving the performance of llama.cpp on our drivers with the Vulkan backend.\r\n\r\nAs things stand today, macOS is significantly faster on a quick test with `llama-bench`, with default settings (tested on an M2 Max 64GB):\r\n\r\nLinux:\r\n\r\n```\r\nggml_vulkan: Found 1 Vulkan devices:\r\nggml_vulkan: 0 = Apple M2 Max (G14C B1) (Honeykrisp) | uma: 1 | fp16: 1 | warp size: 32 | matrix cores: none\r\n| model                          |       size |     params | backend    | ngl |          test |                  t/s |\r\n| ------------------------------ | ---------: | ---------: | ---------- | --: | ------------: | -------------------: |\r\nggml_vulkan: Compiling shaders................................Done!\r\n| llama 7B Q4_K - Medium         |   4.07 GiB |     7.24 B | Vulkan     |  99 |         pp512 |         92.16 \u00b1 0.08 |\r\n| llama 7B Q4_K - Medium         |   4.07 GiB |     7.24 B | Vulkan     |  99 |         tg128 |         21.93 \u00b1 0.02 |\r\n\r\nbuild: 9ba399dfa7f1 (4391)\r\n```\r\n\r\nmacOS:\r\n\r\n```\r\n./build/bin/llama-bench -m /Volumes/Untitled/mistral-7b-v0.1.Q4_K_M.gguf \r\n| model                          |       size |     params | backend    | threads |          test |                  t/s |\r\n| ------------------------------ | ---------: | ---------: | ---------- | ------: | ------------: | -------------------: |\r\n| llama 7B Q4_K - Medium         |   4.07 GiB |     7.24 B | Metal,BLAS,RPC |       8 |         pp512 |        580.26 \u00b1 8.82 |\r\n| llama 7B Q4_K - Medium         |   4.07 GiB |     7.24 B | Metal,BLAS,RPC |       8 |         tg128 |         61.18 \u00b1 0.41 |\r\n\r\nbuild: 9ba399df (4391)\r\n```\r\n\r\n(I also tested a larger 70B model which failed to load due to failing to allocate memory on Linux, but that's obviously a separate issue that's easy to debug. Probably just a hardcoded alloc size limit in the driver we can raise, since we recently refactored a bunch of stuff to handle >4G buffers properly.)\r\n\r\nOf course, we'd like to improve the driver where possible to make things faster. However, since I know nothing about how LLMs are implemented under the hood, or the state of the llama.cpp Metal and Vulkan backends I would like to ask for help figuring out the perf issues, and analyzing whether llama.cpp itself could also be part of the root cause.\r\n\r\nWould you be able to help us out? I'm curious about these things:\r\n\r\n* The state of the Metal vs. Vulkan backends, and whether any perf differences could be expected on the same hardware based on that alone (are the shaders and the way the workload is run essentially identical, or are there major differences?).\r\n* How to get more information on how the work is scheduled on both Metal and Vulkan (block sizes, shared memory allocations, and things like that), so we can identify if there are any differences or choices at the llama.cpp level that could explain perf differences.\r\n* How to run smaller micro-benchmarks. To work out driver and shader compiler issues, ideally we'd want to narrow it down to single shaders / compute launches, and measure the performance individually.\r\n* General info on what to expect and where we should dig deeper. Are things usually memory-bandwidth-bound (I understand that's the case for LLMs)? Or is it likely we'll run into ALU-bound shaders? Is there any heavy synchronization involved, or are we mostly dealing with large compute launches that stand alone? Is cache performance critical, and could differences in data layout or processing order matter, if any?",
+    "labels": [
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-26T11:12:21+00:00",
+    "closed_at": "2025-05-04T01:08:09+00:00",
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10982/reactions",
+      "total_count": 23,
+      "+1": 14,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 9,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10982"
+  },
+  {
+    "number": 995,
+    "title": "Investigate the performance (speed and perplexity) of Q4_0 with 2x F16 factors",
+    "body": "The current `Q4_0` uses a single F32 floating-point scaling factor.\r\n\r\nAn idea was proposed by @ikawrakow to change this to use 2x F16 factors instead of 1x F32: https://github.com/ggerganov/llama.cpp/commit/679e1cb6c01b16abe4f3ee3c849813b98970df93\r\nInitial results indicate that this might be as accurate as `Q4_1` and hopefully as fast as current `Q4_0`.\r\n\r\nThe goal of this task is to try to implement efficiently this data format (quantization, dequantization and dot product), measure the speed and perplexity and decide if this is viable. Depending on the results, we can think about updating the current `Q4_0` data format and potentially dropping support for `Q4_1`.\r\n\r\n### SIMD implementation progress\r\n\r\n- [x] ARM NEON\r\n- [x] AVX\r\n- [ ] WASM\r\n\r\nI plan to work on the ARM NEON implementation.\r\nIf you want to help with any of the implementations, propose an implementation + results in a PR, summarizing the inference speed and the obtained perplexity of your implementation.\r\n\r\n### Related\r\n\r\n- #397 \r\n- #896 ",
+    "labels": [
+      "help wanted",
+      "high priority",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-15T12:24:00+00:00",
+    "closed_at": "2023-04-22T08:43:17+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/995/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/995"
+  },
+  {
+    "number": 397,
+    "title": "Investigate alternative approach for Q4 quantization ",
+    "body": "Currently, in [Q4_0](https://github.com/ggerganov/ggml/pull/27) quantization we choose the scaling factor for each 32 group of weights as `abs(max(x_i))/7`. It is easy to see that this is suboptimal.\r\n\r\nConsider quantization of the following 4 numbers:\r\n\r\n`0.1 0.2 0.3 0.6`\r\n\r\nCurrently, we would determine a scaling factor of `0.6 / 7 ~= 0.0857` and the dequantized numbers will be:\r\n\r\n`0.0857 0.1714 0.3428 0.6`\r\n\r\nSo the RMS between the dequantized and original values will be non-zero:\r\n\r\n`sqrt((0.1 - 0.0857)^2 + (0.2 - 0.1714)^2 + (0.3 - 0.3428)^2 + (0.6 - 0.6)^2) > 0.0`\r\n\r\nHowever, if we choose the scaling factor to be `0.1` instead, then it is easy to see that the original numbers will be quantized perfectly.\r\n\r\nSo the scaling factor is better to be chosen as the one that minimises some error (e.g. RMS or whatever is more meaningful and easy to compute). Doing that we will certainly achieve better accuracy compared to the existing approach. The question is - how much better?\r\n\r\nThe goal of this task is to implement the described quantization above and evaluate the perplexity using the new approach. The approach in simple terms boils down to making a linear regression of the data with a fixed zero point. This new quantization might be a bit heavier to compute compared to `Q4_0`, so for start we can do it just on the model tensors. The intermediate tensors during the evaluation can remain quantized using the existing approach, so that the evaluation is efficient. If the results look promising, we can put effort into optimising the new approach and replacing completely `Q4_0` with it.\r\n\r\nWhoever demonstrates the results of this quantization will get the chance to give it a name and publish a paper (just kidding \ud83d\ude06 )\r\n\r\nSimilar strategy for determining the scale factor and offset factor can be applied to `Q4_1`. \r\n\r\n\r\n\r\n\r\n",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-22T16:03:20+00:00",
+    "closed_at": "2023-04-25T17:20:48+00:00",
+    "comments": 58,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/397/reactions",
+      "total_count": 17,
+      "+1": 17,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/397"
+  },
+  {
+    "number": 2030,
+    "title": "llama : add example for speculative sampling",
+    "body": "Speculative sampling is explained here: https://arxiv.org/abs/2302.01318\r\n\r\nIn more simple terms here:\r\n\r\n- https://github.com/ggerganov/llama.cpp/issues/630#issuecomment-1518745593\r\n- https://github.com/ggerganov/llama.cpp/issues/630#issuecomment-1556448281\r\n\r\nFor start, the \"draft\" model can be generated using the [train-text-from-scratch](https://github.com/ggerganov/llama.cpp/tree/master/examples/train-text-from-scratch) example using the same vocab as LLaMA. Later, we can try to utilize better models.\r\n\r\nWe also assume that batching multiple tokens with the \"main\" model is significantly faster compared to processing the tokens one-by-one. This may not yet be the case, but it will be when we close https://github.com/ggerganov/ggml/issues/293\r\n\r\n\r\n\r\n",
+    "labels": [
+      "performance",
+      "generation quality",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-28T05:20:52+00:00",
+    "closed_at": "2023-09-03T12:29:06+00:00",
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2030/reactions",
+      "total_count": 22,
+      "+1": 9,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 12,
+      "eyes": 1
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2030"
+  },
+  {
+    "number": 10405,
+    "title": "Research: bench of the llamacpp",
+    "body": "### Research Stage\n\n- [x] Background Research (Let's try to avoid reinventing the wheel)\n- [ ] Hypothesis Formed (How do you think this will work and it's effect?)\n- [ ] Strategy / Implementation Forming\n- [ ] Analysis of results\n- [ ] Debrief / Documentation (So people in the future can learn from us)\n\n### Previous existing literature and research\n\ntheres two Questions:\r\n\r\nIs the content of this batch input self-defined, similar to Some other Infer framework or is there a specific dataset for it? Or other operations?\r\nThe output time only provides the average and variance for each token. How is this time calculated? Is it the mean and variance over multiple runs? Also, what part of the execution is being timed? From which point to which point is the timing measured?\n\n### Hypothesis\n\n_No response_\n\n### Implementation\n\n_No response_\n\n### Analysis\n\n_No response_\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-19T12:50:36+00:00",
+    "closed_at": "2025-01-03T01:07:17+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10405/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10405"
+  },
+  {
+    "number": 1865,
+    "title": "[IDEA] Global token enhancement/depression",
+    "body": "This idea is inspired by Stable Diffusion prompts and anti-prompts. It could be useful to keep the text generation on topic even for small window sizes, for example. (e.g. if creating a poem about cheese and it wanders off on a tangent, still the word \"cheese\" will have high probability)\r\n\r\nThe idea is simple. In the output of some text you may want to increase the probabilities of some words while decreasing the probabilities (or set to zero) of other words, globally.\r\n\r\nAn example of words you may want to depress are swear words etc.\r\nExample of words you may want to increase are words relevant to your topic or words in your style.\r\n\r\nThese global enhancements/depressions of the probabilities would stay constant throughout the text-generation even if the window-size is small.\r\n\r\nThere are two ways this could work\r\n\r\n1. The user includes a list of words and anti-words.\r\n2. A model could automatically be trained to create a global-enhancement matrix from the original prompt which stays constant even when the window moves.\r\n\r\nThere is a slight problem in that words are broken up into tokens, so there might have to be some backtracking to avoid/enhance certain words.\r\n\r\nThe extra calculation and memory is minimal as it is simply a list of numbers, one for each token that stays constant. The probabilities would be calculated like this if it just worked on tokens:\r\n\r\np'(n) = (p(n)*e(n))/ sum( p(i)*e(i) )\r\n\r\nwhere p(n) are the original probabilities at a particular step, and e(n) are the enhancement values. I'm not sure the calculation to make it work on words made of 2 or more tokens.\r\n\r\nThoughts?\r\n\r\n\r\n",
+    "labels": [
+      "help wanted",
+      "research \ud83d\udd2c"
+    ],
+    "state": "open",
+    "created_at": "2023-06-15T02:24:07+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1865/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1865"
+  },
+  {
+    "number": 2060,
+    "title": "llama : try to avoid context swap",
+    "body": "Currently, when the context becomes full, we pick part of the tokens and recompute the KV cache.\r\n\r\nInstead, try to either:\r\n- store non-RoPEd KV cache, \"shift\" it when the context is full and compute the RoPE over the entire cache for every new token taking into account the current positions\r\n- store RoPEd KV cache (as we do now), \"shift\" it when the context is full and apply extra shift-RoPE on it (assuming RoPE is \"additive\")",
+    "labels": [
+      "performance",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-30T19:53:55+00:00",
+    "closed_at": "2023-09-28T16:04:38+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2060/reactions",
+      "total_count": 9,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 4
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2060"
+  },
+  {
+    "number": 4085,
+    "title": "metal : compile-time kernel args and params",
+    "body": "I was just thinking about this idea, so writing it down for future research.\r\n\r\nWe should be able to fairly easy generate model-specific Metal code that has hardcoded kernels for every single node in the computation graph. The idea is to make an initial pass of a certain graph where we record all kernel calls with their respective argument values and parameters and then generate a model-specific MSL source file with all these kernels instances - either copy-paste or via templates. I guess this is something similar to what people call JIT. Wondering what kind of speed-up we will be able to see with this strategy.",
+    "labels": [
+      "performance",
+      "research \ud83d\udd2c",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2023-11-15T11:09:39+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4085/reactions",
+      "total_count": 9,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 2,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4085"
+  },
+  {
+    "number": 9110,
+    "title": "Research: Are there any plans to support AIGC models such as flux1.dev?",
+    "body": "### Research Stage\n\n- [ ] Background Research (Let's try to avoid reinventing the wheel)\n- [ ] Hypothesis Formed (How do you think this will work and it's effect?)\n- [ ] Strategy / Implementation Forming\n- [ ] Analysis of results\n- [ ] Debrief / Documentation (So people in the future can learn from us)\n\n### Previous existing literature and research\n\n_No response_\n\n### Hypothesis\n\n_No response_\n\n### Implementation\n\n_No response_\n\n### Analysis\n\n_No response_\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-21T04:38:20+00:00",
+    "closed_at": "2024-10-18T01:07:16+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9110/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9110"
+  },
+  {
+    "number": 4611,
+    "title": "Mixtral Experts are initialized from Mistral 7b - Low Rank conversion possible?",
+    "body": "![image](https://github.com/ggerganov/llama.cpp/assets/66376113/77a44caa-9fa6-4746-b3c0-9772d68661cb)\r\nWe have evidence that Mixtral's Experts were initialized from a \"common ancestor\", the original Mistral 7b.\r\n\r\nConceptually, the idea that might be able to take advantage of this is:\r\n- Extracting the delta of the original Mistral 7b compared to each expert as a PEFT adapter for each expert\r\n- Use SVD to get the closest low rank approximation on each (let's say we target r=128)\r\n- Add the linear Mixtral routing layer to the original Mistral 7b\r\n- At inference time, keep all the LoRA adapters for each expert in memory (approx. ~1.8b added parameters for 128 rank)\r\n- Apply LoRA in real time for each batch of 'expert' calculations per layer using the corresponding expert's LoRA\r\n\r\nThis could be a viable alternative to [QMoE](https://github.com/ggerganov/llama.cpp/issues/4445) for approaching Mixtral's performance with significantly less memory, given the shared structural similarities.",
+    "labels": [
+      "enhancement",
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-12-23T19:07:56+00:00",
+    "closed_at": "2024-04-02T01:10:09+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4611/reactions",
+      "total_count": 15,
+      "+1": 14,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4611"
+  },
+  {
+    "number": 7727,
+    "title": "llama : support Mamba-2",
+    "body": "Mamba-2 is a new version of the Mamba architecture:\r\n\r\n- Blog: https://tridao.me/blog/2024/mamba2-part1-model/\r\n- Paper: https://arxiv.org/abs/2405.21060",
+    "labels": [
+      "model",
+      "research \ud83d\udd2c",
+      "roadmap"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-04T05:57:48+00:00",
+    "closed_at": "2025-07-02T17:10:26+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7727/reactions",
+      "total_count": 83,
+      "+1": 32,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 39,
+      "rocket": 12,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7727"
+  },
+  {
+    "number": 909,
+    "title": "Investigate alternative ggml_compute_forward_mul_mat_q_f32() implementation",
+    "body": "This is the most computationally significant call in the entire transformer evaluation, so we have to be sure that it is running optimally.\r\n\r\nIt computes the matrix multiplication: `z = x * y`\r\n\r\n- `x` is quantized\r\n- `y` is F32\r\n- `z` is F32\r\n\r\nCurrently, it runs in 2 modes, depending on the tensor shapes:\r\n\r\n- (A) for bigger tensors, if BLAS is available, `x` is dequantized to F32 and we use `sgemm` to perform the matrix multiplication\r\n- (B) for smaller tensors, or if BLAS is not available, `y` is quantized to 4-bits on-the-fly and we use integer-based dot products to perform the matrix multiplication\r\n\r\nThe former method is much more accurate than the latter. This can be clearly observed during perplexity computations.\r\nHowever, during text generation (i.e. batch = 1), it is not feasible to use it - my experience is that there is significant overhead of calling BLAS for smaller tensor shapes, typical for single-token inference calls.\r\n\r\nThere are at least two alternative modes of operation that can be explored:\r\n\r\n- (C) for smaller tensors, or if BLAS is not available, `x` is dequantized to F32 and we use `ggml_vec_dot_f32()` to perform the multiplication\r\n- (D) for smaller tensors, or if BLAS is not available, `x` is dequantized to F16, `y` is converted to F16 and we use `ggml_vec_dot_f16()` to perform the multiplication\r\n- (E) for smaller tensors, or if BLAS is not available, `y` is quantized on-the-fly to 8-bits and we use a new `ggml` dot-product call that operates on `4-bit x` and `8-bit y`. This call will still unpack `x` into 8-bits as usual and perform the 8-bit dot-product as in the existing routines, but in contrast to (B), `y` will already be unpacked to 8-bits and the precision loss will be significantly slower\r\n\r\nTo me it is not immediately clear if (C) or (D) would be significantly slower compared to (B), but they should be much more accurate compared to (B) and probably as accurate as (A).\r\n\r\nI think, one has to be careful and choose the respective mode based on the tensor shapes, trying to find a good balance between speed and accuracy. Ideally, I am hoping after this investigation that we will achieve noticeable perplexity gain without using BLAS at the cost of a slightly slower single-token (i.e. batch = 1) computation.\r\n\r\nEdit: after the analysis and discussion in #896 I added a new mode (E) which I think is very important to be explored. Unless I am missing something, I believe this mode can be exactly as efficient as (B), but with significantly higher accuracy. Much higher than what can be achieved via improving the quantization RMS.\r\nSo I believe we have to investigate this with very high priority.",
+    "labels": [
+      "help wanted",
+      "performance",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-12T07:36:24+00:00",
+    "closed_at": "2023-04-15T14:53:24+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/909/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/909"
+  },
+  {
+    "number": 7831,
+    "title": "Research: Im writing a paper on our medical finetuned llava-v1.6,",
+    "body": "I am currently writing a paper on LLaVA-Med V1.6, which we have fine-tuned on medical images. The paper's first stage, detailing the fine-tuning process, is complete. I am now focusing on stage two: converting our fine-tuned model into a 4-bit GGUF format.\r\n\r\nCould you please advise on what key points to include in this section? Additionally, could you suggest any relevant references or previous papers that discuss similar quantization processes?\r\n\r\nThank you for your assistance.",
+    "labels": [
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-08T09:10:58+00:00",
+    "closed_at": "2024-07-24T01:06:49+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7831/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7831"
+  },
+  {
+    "number": 3332,
+    "title": "llama : add multimodal support (LLaVA)",
+    "body": "Now that OpenAI is adding voice and image to ChatGPT and will probably be the new norm, wouldn't it be a good idea for llama.cpp to also please add this to the roadmap? if possible?",
+    "labels": [
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-09-25T20:53:36+00:00",
+    "closed_at": "2023-10-12T15:23:20+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3332/reactions",
+      "total_count": 8,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3332"
+  },
+  {
+    "number": 14154,
+    "title": "Research: mmap eviction",
+    "body": "### Research Stage\n\n- [x] Background Research (Let's try to avoid reinventing the wheel)\n- [ ] Hypothesis Formed (How do you think this will work and it's effect?)\n- [ ] Strategy / Implementation Forming\n- [ ] Analysis of results\n- [ ] Debrief / Documentation (So people in the future can learn from us)\n\n### Previous existing literature and research\n\n_No response_\n\n### Hypothesis\n\nI'm loading a large model into a large amount of GPU memory with some CPU offload. The GPU memory exceeds system memory.\n\nGPU Memory: 196 GB\nCPU Memory: 148 GB\nModel Size: 220 GB\n\nI've noticed that when the model size exceeds system memory, mmap seemingly has no effect on load times. Whereas when it's within system memory size, the load time is nearly immediate.\n\nI suspect that since the model is being loaded deterministically/sequentially, the mapped file is also being deterministically evicted just prior to it being needed for the load onto GPU.\n\nI suspect loading the large weights in reverse inference order would significantly alleviate this to avoid the deterministic mmap eviction in kernel.\n\nI'm looking for some confirmation from a maintainer that my hypothesis may be correct.\n\n### Implementation\n\n_No response_\n\n### Analysis\n\n_No response_\n\n### Relevant log output\n\n```shell\n\n```",
+    "labels": [
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "open",
+    "created_at": "2025-06-12T16:03:46+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/14154/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/14154"
+  },
+  {
+    "number": 914,
+    "title": "Add GPU support to ggml",
+    "body": "## Intro\r\n\r\nThis issue is more suitable for the https://github.com/ggerganov/ggml repo, but adding it here for more visibility.\r\n\r\nFirst, I don't see adding a GPU framework that is tightly integrated with `ggml` anytime soon because it usually comes with a lot of maintenance drawbacks, architecture changes and issues. However, there is an alternative approach that might be relatively easy to implement and I think would be a very cool way for new developers to join in and help.\r\n\r\n## Description\r\n\r\n`ggml` produces computation graphs which are basically directed acyclic graphs (DAGs) that can be easily exported, iterated, etc. A graph contains the information about all necessary tensor operations and buffers needed to evaluate the model. The idea is to first add basic `ggml` functionality for exporting the graphs in some trivial text format that can be parsed as a second step by a separate `ggml` tool. Having the exported graphs, one can process them and construct hardware-specific code for evaluating them.\r\n\r\nFor example, a `ggml-cuda` tool can parse the exported graph and construct the necessary CUDA kernels and GPU buffers to evaluate it on a NVIDIA GPU. Another tool, for example `ggml-mps`, can do similar stuff but for Metal Performance Shaders. Etc. \r\n\r\nThis approach preserves the cross-platform nature of `ggml` and allows custom hardware support, via compiler-like translation of the exported computation graphs.\r\n\r\nStill, the most difficult part of implementing the respective kernels remains the biggest obstacle.\r\n\r\nI think this decoupled approach of the implementation would make the development process much easier and can potentially allow for some interesting optimizations. My biggest fear of adding a tightly integrated GPU backend to `ggml` is that I don't know the important details for supporting the respective backend, which could lead to bad software design decisions that in turn can potentially affect negatively even the cure CPU implementation.\r\nHowever, with the proposed approach in this issue, we eliminate this risk and allow multiple independent implementations to be provided without any negative side effects on the core `ggml` implementation.\r\n\r\nAnother cool thing about this idea is that there could be separate leading developers for each backend.\r\nSo if you have a good knowledge and understanding about a certain hardware architecture, you are one step away from initiating the kernel \"translation\" process and making a very significant contribution to the project.\r\n\r\n## Guiding principles\r\n\r\nI don't know all the specifics of a GPU code, but I believe one could try to adopt the fundamental principles of `ggml`.\r\nFor example, there could be a single memory buffer allocated and all the tensors can be distributed within that memory buffer at certain offsets. Each graph operation will correspond to a kernel with source tensors as input and a destination tensor for output which will be all part of that single memory buffer allocated at the start of the execution.\r\n\r\nAdditionally, I think we don't need to explicitly add 3rd party dependencies (e.g. CUDA SDK, OpenCL, etc.) to `ggml` to achieve that. The new `ggml` tools will simply generate code, which will be up to the user to compile and run.\r\n\r\nI've heard the concept of \"super-shaders\" / \"super-kernels\" - probably this is something we should try to achieve.\r\n\r\nTaking shortcuts and making custom hacks in favor of better performance is very welcome.\r\n\r\n## Why?\r\n\r\nCurrently, `ggml` is one of the few ML frameworks that provides efficient 4-bit quantization and demonstrates effective application for transformer evaluation. The code is compact, easily comprehensible with very little bloat. I think `ggml` has a slight leading edge in this regard compared to other general purpose frameworks and if we utilize it now, it has the potential of becoming a very respectable machine learning framework in the future with a focus for on-device inference.\r\n\r\n## Links\r\n\r\n- Starting point: https://github.com/ggerganov/llama.cpp/issues/589#issuecomment-1488006470\r\n- Sample graph for LLaMA 7B:\r\n\r\n  ![llama-1l dot](https://user-images.githubusercontent.com/1991296/228443093-b1baf1d8-97ce-439d-9ced-8b3ac6cab5f0.png)\r\n",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "hardware",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-12T11:11:42+00:00",
+    "closed_at": "2023-04-12T11:47:54+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/914/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/914"
+  },
+  {
+    "number": 10453,
+    "title": "ggml : add ANE backend",
+    "body": "According to this https://github.com/ggerganov/llama.cpp/discussions/336#discussioncomment-11184134, there is a new CoreML API and an ANE backend might be possible to implement with latest Apple software/hardware.",
+    "labels": [
+      "help wanted",
+      "research \ud83d\udd2c",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2024-11-22T08:20:22+00:00",
+    "closed_at": null,
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10453/reactions",
+      "total_count": 68,
+      "+1": 36,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 11,
+      "confused": 0,
+      "heart": 8,
+      "rocket": 3,
+      "eyes": 10
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10453"
+  },
+  {
+    "number": 7772,
+    "title": "ggml : add DirectML backend",
+    "body": "It seems like DirectML supports the upcoming NPU-enabled chips for Windows machines:\r\nhttps://devblogs.microsoft.com/directx/introducing-neural-processor-unit-npu-support-in-directml-developer-preview/\r\n\r\nI don't think there is any other way to tap into this hardware, so we should explore if it possible to add this library as a backend in `ggml` in order to run stuff on the NPUs. There has been some semi-related work in the past that combined `ggml` and Direct3D: https://github.com/Const-me/Whisper. Not sure if it is relevant at all, maybe just as an inspiration",
+    "labels": [
+      "help wanted",
+      "research \ud83d\udd2c",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2024-06-05T14:21:34+00:00",
+    "closed_at": null,
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7772/reactions",
+      "total_count": 30,
+      "+1": 26,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 4,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7772"
+  },
+  {
+    "number": 13520,
+    "title": "Research: How to integrate VITA 1.5 for multi-modal GGUF deployment?",
+    "body": "### Research Stage\n\n- [ ] Background Research (Let's try to avoid reinventing the wheel)\n- [ ] Hypothesis Formed (How do you think this will work and it's effect?)\n- [ ] Strategy / Implementation Forming\n- [ ] Analysis of results\n- [ ] Debrief / Documentation (So people in the future can learn from us)\n\n### Previous existing literature and research\n\nI'm trying to deploy a multi-modal model based on VITA-1.5, where:\n\nThe text backbone is the same as Qwen2.\n\nThe vision tower is InternViT-300M-448px from OpenGVLab.\n\nYesterday I noticed that convert_hf_to_gguf.py added a new class:\n\nclass InternVisionModel(VisionModel)\n\nwhich is the same one used in vita's vision part\nHowever:\n\nThere's no corresponding tensor name mapping in constants.py under MODEL_TENSORS.\n\nThere's no build function in llama_model.cpp (e.g., no build_internvit() ).\n\nI\u2019m not sure how to combine the vision and text parts into a single GGUF model so that llama.cpp can infer with both modalities.\n\nMy goal:\nTo deploy VITA-1.5 via llama.cpp and run image+text inference (similar to LLaVA / MobileVLM).\n\nQuestions:\nWhat is the recommended way to combine Qwen2 text + InternViT vision into one GGUF model?\n\nWill InternViTVisionModel support GGUF inference soon, or should I write the corresponding GGML graph manually?\n\n### Hypothesis\n\n_No response_\n\n### Implementation\n\n_No response_\n\n### Analysis\n\n_No response_\n\n### Relevant log output\n\n```shell\n\n```",
+    "labels": [
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-14T02:58:50+00:00",
+    "closed_at": "2025-06-28T01:07:47+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/13520/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/13520"
+  },
+  {
+    "number": 1295,
+    "title": "RPTQ state of the art quantization",
+    "body": "Per yuan etc all, RPTQ quant is state of the art down to 3bit\r\n\r\nIt would be good to implement RPTQ for llama and other c++ downstream projects\r\n\r\nhttps://github.com/hahnyuan/RPTQ4LLM/blob/master/quantize/quantizer.py\r\n\r\nhttps://arxiv.org/abs/2304.01089",
+    "labels": [
+      "generation quality",
+      "research \ud83d\udd2c",
+      "Less than 4 bits",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-05-03T03:23:53+00:00",
+    "closed_at": "2024-04-09T01:09:40+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1295/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1295"
+  },
+  {
+    "number": 2923,
+    "title": "llama : combined beam search + grammar sampling strategy",
+    "body": "This feature was proposed by @spion in https://github.com/ggerganov/llama.cpp/issues/2813#issuecomment-1694390583\r\n\r\n> In some cases, its useful to do constrained evaluation of logits based on a union of possible text values, then pick the sum { logits } (i.e. product(probabilities)) that gives the most probable outcome overall.\r\n\r\n> E.g. template (using MS guidance)\r\n\r\n> {{#select 'armor'}}leather{{or}}chainmail{{or}}plate{{/select}}\r\n\r\n> To definitely make the best choice, we'd need to calculate the probability of all 3 token sequences. Its easy if all the choices map to a single token, but with multiple tokens we'd need not just parallel generation but parallel logit evaluation of multiple possible paths.\r\n\r\n> If we go greedy, we might get suboptimal results in cases multiple choices start with the same logit.\r\n\r\nIt should be possible to implement this by combining the existing beam search and grammar sampling features. See the discussion in the referenced comment for more info",
+    "labels": [
+      "good first issue",
+      "generation quality",
+      "research \ud83d\udd2c",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2023-08-31T06:29:29+00:00",
+    "closed_at": null,
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2923/reactions",
+      "total_count": 18,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 5,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2923"
+  },
+  {
+    "number": 12392,
+    "title": "csm : implement Sesame-based conversation example",
+    "body": "With the first Sesame CSM model [openly available](https://github.com/SesameAILabs/csm), we should implement a local example similar to their [online research demo](https://www.sesame.com/research/crossing_the_uncanny_valley_of_voice#demo). It seems that the released CSM model uses [Kyutai's Mimi](https://arxiv.org/abs/2410.00037) audio codec which we have to implement in a similar way as we did with the [WavTokenizer](https://github.com/ggml-org/llama.cpp/pull/10784). Next we can modify the [talk-llama](https://github.com/ggerganov/whisper.cpp/tree/master/examples/talk-llama) example to support audio generation with the CSM. This way we will be able to plug any LLM for the text response generation and use Sesame for speech input/output.",
+    "labels": [
+      "model",
+      "research \ud83d\udd2c",
+      "stale",
+      "tts"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-14T14:49:46+00:00",
+    "closed_at": "2025-05-14T01:07:48+00:00",
+    "comments": 23,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12392/reactions",
+      "total_count": 28,
+      "+1": 15,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 8,
+      "eyes": 5
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12392"
+  },
+  {
+    "number": 231,
+    "title": "Study how LM Evaluation Harness works and try to implement it",
+    "body": "Update 10 Apr 2024: https://github.com/ggerganov/llama.cpp/issues/231#issuecomment-2047759312\r\n\r\n---\r\n\r\nIt would be great to start doing this kind of quantitative analysis of `ggml`-based inference:\r\n\r\nhttps://bellard.org/ts_server/\r\n\r\nIt looks like Fabrice evaluates the models using something called LM Evaluation Harness:\r\n\r\nhttps://github.com/EleutherAI/lm-evaluation-harness\r\n\r\nI have no idea what this is yet, but would be nice to study it and try to integrate it here and in other `ggml`-based projects.\r\nThis will be very important step needed to estimate the quality of the generated output and see if we are on the right track.",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "high priority",
+      "generation quality",
+      "research \ud83d\udd2c"
+    ],
+    "state": "open",
+    "created_at": "2023-03-17T08:32:33+00:00",
+    "closed_at": null,
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/231/reactions",
+      "total_count": 8,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/231"
+  },
+  {
+    "number": 456,
+    "title": "2-bit integer quantization ",
+    "body": "Add `Q2_0` and `Q2_1` quantization support to `ggml`:\r\n\r\n- Follow the existing `Q4_0` and `Q4_1` implementations\r\n- Implement [reference scalar quantization and dequantization routines](https://github.com/ggerganov/llama.cpp/blob/3cd8dde0d1357b7f11bdd25c45d5bf5e97e284a0/ggml.c#L407-L449)\r\n- I suspect we might have to use `QK == 16` in this case to compensate for further accuracy losses\r\n- Add SIMD support for a specific architecture - investigate best strategy to perform the `ggml_vec_dot_q2()` computation\r\n- No need to implement `ggml_vec_mad_q2()` - these will be deprecated soon\r\n- Compute perplexity scores\r\n\r\nThe expected model sizes for 7B and `QK == 16` are:\r\n\r\n- `Q2_0` - 3.2 GB\r\n\r\nFor `QK == 32` we have:\r\n\r\n- `Q2_0` - 2.4 GB\r\n- `Q2_1` - 3.2 GB\r\n\r\nBefore you send me papers that show 2-bit quantization does not work - no need. I want to have this supported anyway. I have something in mind. The efforts needed to add this support are so small that there is no reason not to do it.",
+    "labels": [
+      "enhancement",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-24T06:55:44+00:00",
+    "closed_at": "2023-06-24T19:17:24+00:00",
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/456/reactions",
+      "total_count": 30,
+      "+1": 20,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 7,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 3
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/456"
+  },
+  {
+    "number": 11474,
+    "title": "Research: Benchmarking DeepSeek-R1 IQ1_S 1.58bit",
+    "body": "### Research Stage\n\n- [ ] Background Research (Let's try to avoid reinventing the wheel)\n- [ ] Hypothesis Formed (How do you think this will work and it's effect?)\n- [ ] Strategy / Implementation Forming\n- [x] Analysis of results\n- [ ] Debrief / Documentation (So people in the future can learn from us)\n\n### Previous existing literature and research\n\n# Command\n```\n ./llama.cpp/build/bin/llama-cli \\\n    --model DeepSeek-R1-GGUF/DeepSeek-R1-UD-IQ1_S/DeepSeek-R1-UD-IQ1_S-00001-of-00003.gguf \\\n    --cache-type-k q4_0 \\\n    --threads 12 -no-cnv --n-gpu-layers 61 --prio 2 \\\n    --temp 0.6 \\\n    --ctx-size 8192 \\\n    --seed 3407 \\\n    --prompt \"<\uff5cUser\uff5c>What is the capital of Italy?<\uff5cAssistant\uff5c>\"\n```\n\n# Model\n[DeepSeek-R1-GGUF/DeepSeek-R1-UD-IQ1_S\n](https://huggingface.co/unsloth/DeepSeek-R1-GGUF) 1.58Bit, 131GB\n\n# Hardware\n```\n+---------------------------------------------------------------------------------------+\n| NVIDIA-SMI 535.183.01             Driver Version: 535.183.01   CUDA Version: 12.2     |\n|-----------------------------------------+----------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |\n|                                         |                      |               MIG M. |\n|=========================================+======================+======================|\n|   0  NVIDIA A100-SXM4-80GB          On  | 00000000:27:00.0 Off |                    0 |\n| N/A   34C    P0              58W / 400W |      0MiB / 81920MiB |      0%      Default |\n|                                         |                      |             Disabled |\n+-----------------------------------------+----------------------+----------------------+\n|   1  NVIDIA A100-SXM4-80GB          On  | 00000000:2A:00.0 Off |                    0 |\n| N/A   32C    P0              60W / 400W |      0MiB / 81920MiB |      0%      Default |\n|                                         |                      |             Disabled |\n+-----------------------------------------+----------------------+----------------------+\n\n+---------------------------------------------------------------------------------------+\n| Processes:                                                                            |\n|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |\n|        ID   ID                                                             Usage      |\n|=======================================================================================|\n|  No running processes found                                                           |\n+---------------------------------------------------------------------------------------+\n```\n\n\n\n\n### Hypothesis\n\n[Reported](https://unsloth.ai/blog/deepseekr1-dynamic) performances is 140 token/second\n\n### Implementation\n\n_No response_\n\n### Analysis\n\n# Llama.cpp Performance Analysis\n\n## Raw Benchmarks\n```\nllama_perf_sampler_print:    sampling time =       2.45 ms /    35 runs   (    0.07 ms per token, 14297.39 tokens per second)\nllama_perf_context_print:        load time =   20988.11 ms\nllama_perf_context_print: prompt eval time =    1233.88 ms /    10 tokens (  123.39 ms per token,     8.10 tokens per second)\nllama_perf_context_print:        eval time =    2612.63 ms /    24 runs   (  108.86 ms per token,     9.19 tokens per second)\nllama_perf_context_print:       total time =    3869.00 ms /    34 tokens\n```\n\n## Detailed Analysis\n\n### 1. Token Sampling Performance\n- **Total Time**: 2.45 ms for 35 runs\n- **Per Token**: 0.07 ms\n- **Speed**: 14,297.39 tokens per second\n- **Description**: This represents the speed at which the model can select the next token after processing. This is extremely fast compared to the actual generation speed, as it only involves the final selection process.\n\n### 2. Model Loading\n- **Total Time**: 20,988.11 ms (\u224821 seconds)\n- **Description**: One-time initialization cost to load the model into memory. This happens only at startup and doesn't affect ongoing performance.\n\n### 3. Prompt Evaluation\n- **Total Time**: 1,233.88 ms for 10 tokens\n- **Per Token**: 123.39 ms\n- **Speed**: 8.10 tokens per second\n- **Description**: Initial processing of the prompt is slightly slower than subsequent token generation, as it needs to establish the full context for the first time.\n\n### 4. Generation Evaluation\n- **Total Time**: 2,612.63 ms for 24 runs\n- **Per Token**: 108.86 ms\n- **Speed**: 9.19 tokens per second\n- **Description**: This represents the actual speed of generating new tokens, including all neural network computations.\n\n### 5. Total Processing Time\n- **Total Time**: 3,869.00 ms\n- **Tokens Processed**: 34 tokens\n- **Average Speed**: \u22488.79 tokens per second\n\n## Key Insights\n\n1. **Performance Bottlenecks**:\n   - The main bottleneck is in the evaluation phase (actual token generation)\n   - While sampling can handle 14K+ tokens per second, actual generation is limited to about 9 tokens per second\n   - This difference highlights that the neural network computations, not the token selection process, are the limiting factor\n\n2. **Processing Stages**:\n   - Model loading is a significant but one-time cost\n   - Prompt evaluation is slightly slower than subsequent token generation\n   - Sampling is extremely fast compared to evaluation\n\n3. **Overall Performance**:\n   - The system demonstrates typical performance characteristics for a CPU-based language model\n   - The total processing rate of ~9 tokens per second is reasonable for local inference on consumer hardware\n\n### Relevant log output\n\n```shell\n\n```",
+    "labels": [
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-28T23:39:28+00:00",
+    "closed_at": "2025-04-25T01:07:52+00:00",
+    "comments": 45,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/11474/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/11474"
+  },
+  {
+    "number": 630,
+    "title": "Combine large LLM with small LLM for faster inference",
+    "body": "So I was thinking about the following idea.\r\nIt is probably completely bogus, but I would definitely investigate it when and if I had the time to, so maybe someone else would be interested as well.\r\n\r\n---\r\n\r\nLarge LLM takes a lot of time to perform token inference. Lets say it takes 500ms per token.\r\n\r\nA small LLM (or some other approach) can infer a token very fast. Lets say < 5ms.\r\n\r\nLets assume that the small LLM is correct 80-90% of the time.\r\n\r\nThe idea is the following:\r\n\r\n- Before I run the large LLM inference for the next token, I infer it using the small LLM\r\n- I now want to somehow partially evaluate the large LLM (let's say the first 10% of the layers) and get an approximate estimate for the next token\r\n- If this estimate indicates a high probability for that token (i.e. above some threshold) - we stop and directly say that this is the new token. At this point we would have consumed (5ms for the small LLM + ~50ms for the large LLM)\r\n- Otherwise, we proceed to evaluate the rest of the layers of the large LLM\r\n\r\nIn the described process, I would reach step 4 only for 10-20% of the tokens, but for the rest - I will take the shortcut in step 3.\r\nHence, I will have an efficient inference with a Large LLM.\r\n\r\nObviously, the biggest question is if step 2 is possible at all.\r\nI suppose the answer is \"no\", but who knows.\r\n",
+    "labels": [
+      "question",
+      "research \ud83d\udd2c",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-30T17:54:01+00:00",
+    "closed_at": "2024-04-12T01:07:17+00:00",
+    "comments": 44,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/630/reactions",
+      "total_count": 26,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 5,
+      "rocket": 2,
+      "eyes": 6
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/630"
+  },
+  {
+    "number": 2083,
+    "title": "llama : add support for Classifier-Free Guidance (CFG) sampling to stay on topic better",
+    "body": "@ggerganov [retweeted](https://twitter.com/Vermeille_/status/1675664118500454400) the \"Stay on topic with Classifier-Free Guidance\" paper that came out showing that \"Classifier-Free Guidance (CFG)\"... \"can be used broadly as an inference-time technique in pure language modeling. \" ... \"brings improvements equivalent to a model with twice the parameter-count\" (with no retraining needed). -  https://arxiv.org/abs/2306.17806\r\n\r\nI saw that the Transformers library has one of the paper's author [working on an implementation](https://github.com/huggingface/transformers/issues/24536).\r\n\r\nI didn't see an issue for it yet here so I figured pointing to it is the least I could do for this awesome library!",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "generation quality",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-07-03T08:38:55+00:00",
+    "closed_at": "2023-07-11T16:18:45+00:00",
+    "comments": 19,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2083/reactions",
+      "total_count": 9,
+      "+1": 9,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2083"
+  },
+  {
+    "number": 959,
+    "title": "Investigate storing results from ggml operations in F16 format",
+    "body": "Currently, all `ggml` operations return the results in F32 format.\r\n\r\nThe goal of this task is to see if there is an elegant way to add support for keeping the results in F16 format.\r\nThis will ideally be passed as a parameter to the `ggml_context` and will also involve adding support for F16 operands in most of the existing operators. Ideally, we want to achieve this somehow without duplicating the entire code base.\r\n\r\nNote that internal floating-point accumulators in the different operations can and should remain in F32 format.\r\nIt is just when we store the results into the `dst` tensor, we will cast them to F16.\r\n\r\nGoing to F16 intermediate results would reduce significantly the memory pressure and could lead to significant speed improvements. Hopefully, the loss in quality would be marginal. But in any case, there will always be the option of switching back to full F32 precision.\r\n\r\nI am looking for suggestions and initial prototypes of how we can achieve this in an elegant way.\r\n\r\nRelated:\r\n\r\n- #909 \r\n- #951 \r\n\r\nEdit: An initial quick and dirty implementation that simply goes over the existing LLaMA related operators and changes the return type to F16 would be useful to determine if such functionality is useful and how much performance gain we can expect. If it is worth, then we can think in more details about how exactly to support it.",
+    "labels": [
+      "help wanted",
+      "performance",
+      "high priority",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-14T07:35:34+00:00",
+    "closed_at": "2023-04-22T08:48:31+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/959/reactions",
+      "total_count": 4,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 1,
+      "confused": 0,
+      "heart": 3,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/959"
+  }
+]

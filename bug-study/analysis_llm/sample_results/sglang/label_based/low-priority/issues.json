@@ -1,0 +1,55 @@
+[
+  {
+    "number": 6608,
+    "title": "[Feature] Customized mapping for LoRA weight names",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe current LoRA impl in SGL maps LoRA weight to modules by (layer index, op_type) tuple, where op_type operation looks like `qkv_proj`, `o_proj`, `gate_up`, etc. This works fine for most standard cases, however, there are some limitations:\n1. For models where there are more than one attention stacks (e.g., VLM), there could be multiple modules with the same (layer index, op_type), e.g., one from vision tower, the other from the language model. Currently SGL cannot handle such cases correctly and would usually fail during loading due to incorrect mapping.\n2. Users cannot enable/disable application of LoRA at module-level, e.g., if user only wants to apply LoRA at language model but not vision (common); or when user only wants to apply LoRA at some layers but not the others (less common?), they cannot do that today. \n3. (Less common?) Models with non-standard LoRA weight / module names. \n\n### Proposal: \n\n* (Short-term) add an optional hook `should_apply_lora` at model level to allow model to customize LoRA application at model level. This would unblock most cases in 1 & 2. For example, for most VLMs, LoRAs should only be applied to language model but not vision tower. In these cases, model authors could simply disable LoRA application for modules in the vision tower, This would address the current LoRA loading failures due to incorrect mapping.\n* (Long-term) generalize the hook to `map_lora_module_name` to allow model owner to map a given module to a specific LoRA weight name or return None when LoRA should not be applied. This would address 3 and some less common cases in 1 (e.g., when LoRA needs to be applied at both vision tower and language model)\n\n(cc @Fridge003 )\n\n\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "low-priority",
+      "lora"
+    ],
+    "state": "open",
+    "created_at": "2025-05-26T04:08:39+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6608/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6608"
+  },
+  {
+    "number": 919,
+    "title": "[Feature] Google TPU Support",
+    "body": "### Motivation\n\nTPUs potentially provide a cheap serving option\n\n### Related resources\n\nvLLM does support TPUs: https://docs.vllm.ai/en/latest/getting_started/tpu-installation.html#installation-with-tpu",
+    "labels": [
+      "low-priority"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-04T20:55:26+00:00",
+    "closed_at": "2024-09-22T14:21:39+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/919/reactions",
+      "total_count": 3,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/919"
+  }
+]

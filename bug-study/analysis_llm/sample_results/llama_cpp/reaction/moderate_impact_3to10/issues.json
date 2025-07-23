@@ -1,0 +1,800 @@
+[
+  {
+    "number": 12642,
+    "title": "Feature Request: convert_hf_to_gguf.py to support model type Qwen2_5_VLForConditionalGeneration",
+    "body": "### Prerequisites\n\n- [x] I am running the latest code. Mention the version if possible as well.\n- [x] I carefully followed the [README.md](https://github.com/ggml-org/llama.cpp/blob/master/README.md).\n- [x] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [x] I reviewed the [Discussions](https://github.com/ggml-org/llama.cpp/discussions), and have a new and useful enhancement to share.\n\n### Feature Description\n\n$ ./convert_hf_to_gguf.py /data/models/Qwen2.5-VL-7B-Instruct --outtype auto --verbose --dry-run\nINFO:hf-to-gguf:Loading model: Qwen2.5-VL-7B-Instruct\nERROR:hf-to-gguf:Model Qwen2_5_VLForConditionalGeneration is not supported\n\nThe model git lfs link:\nhttps://cnb.cool/ai-models/Qwen/Qwen2.5-VL-7B-Instruct.git\n\n### Motivation\n\nThe more type of model to support, the better.\n\n### Possible Implementation\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-29T09:49:09+00:00",
+    "closed_at": "2025-05-13T01:07:48+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12642/reactions",
+      "total_count": 2,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 1,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12642"
+  },
+  {
+    "number": 313,
+    "title": "Add OpenBSD support",
+    "body": "This patch adds OpenBSD support, thanks.\r\n[patch-llama.cpp.txt](https://github.com/ggerganov/llama.cpp/files/11013172/patch-llama.cpp.txt)\r\n",
+    "labels": [
+      "enhancement",
+      "\ud83e\udd99.",
+      "build"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-20T02:25:38+00:00",
+    "closed_at": "2023-03-21T15:50:12+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/313/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/313"
+  },
+  {
+    "number": 11083,
+    "title": "Misc. bug: [Mac M4]llama-server cannot run in release-4409 but can run in 4406",
+    "body": "### Name and Version\n\n llama-b4409-bin-macos-arm64.zip \r\n llama-b4406-bin-macos-arm64.zip \n\n### Operating systems\n\nMac\n\n### Which llama.cpp modules do you know to be affected?\n\nllama-server\n\n### Problem description & steps to reproduce\n\n4409 run log:\r\n```\r\n/Users/liwenbo/Downloads/4409-llamacpp/bin/llama-server -m /Users/liwenbo/models/qwen/Qwen2.5-1.5B-Instruct.Q4_K_M.gguf\r\ndyld[18622]: Library not loaded: @rpath/libllama.dylib\r\n  Referenced from: <A6F705D2-0AC3-32BD-8CF2-3A55262E9195> /Users/liwenbo/Downloads/4409-llamacpp/bin/llama-server\r\n  Reason: tried: '/Users/runner/work/llama.cpp/llama.cpp/build/src/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/src/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-blas/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-blas/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-metal/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-metal/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-rpc/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-rpc/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/src/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/src/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-blas/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-blas/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-metal/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-metal/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-rpc/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-rpc/libllama.dylib' (no such file)\r\nzsh: abort      /Users/liwenbo/Downloads/4409-llamacpp/bin/llama-server -m \r\n```\r\n\r\n4406 run log:\r\n```\r\n/Users/liwenbo/Downloads/4406-llamacpp/bin/llama-server -m /Users/liwenbo/models/qwen/Qwen2.5-1.5B-Instruct.Q4_K_M.gguf\r\nbuild: 4406 (0da5d860) with Apple clang version 15.0.0 (clang-1500.3.9.4) for arm64-apple-darwin23.6.0\r\nsystem info: n_threads = 4, n_threads_batch = 4, total_threads = 10\r\n\r\nsystem_info: n_threads = 4 (n_threads_batch = 4) / 10 | Metal : EMBED_LIBRARY = 1 | BF16 = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | DOTPROD = 1 | LLAMAFILE = 1 | ACCELERATE = 1 | AARCH64_REPACK = 1 | \r\n\r\nmain: HTTP server is listening, hostname: 127.0.0.1, port: 8080, http threads: 9\r\nmain: loading model\r\nsrv    load_model: loading model '/Users/liwenbo/models/qwen/Qwen2.5-1.5B-Instruct.Q4_K_M.gguf'\r\nllama_load_model_from_file: using device Metal (Apple M4) - 10922 MiB free\r\nllama_model_loader: loaded meta data with 32 key-value pairs and 338 tensors from /Users/liwenbo/models/qwen/Qwen2.5-1.5B-Instruct.Q4_K_M.gguf (version GGUF V3 (latest))\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = qwen2\r\nllama_model_loader: - kv   1:                               general.type str              = model\r\nllama_model_loader: - kv   2:                               general.name str              = Models\r\nllama_model_loader: - kv   3:                         general.size_label str              = 1.5B\r\nllama_model_loader: - kv   4:                            general.license str              = apache-2.0\r\nllama_model_loader: - kv   5:                       general.license.link str              = https://huggingface.co/Qwen/Qwen2.5-1...\r\nllama_model_loader: - kv   6:                   general.base_model.count u32              = 1\r\nllama_model_loader: - kv   7:                  general.base_model.0.name str              = Qwen2.5 1.5B\r\nllama_model_loader: - kv   8:          general.base_model.0.organization str              = Qwen\r\nllama_model_loader: - kv   9:              general.base_model.0.repo_url str              = https://huggingface.co/Qwen/Qwen2.5-1.5B\r\nllama_model_loader: - kv  10:                               general.tags arr[str,2]       = [\"chat\", \"text-generation\"]\r\nllama_model_loader: - kv  11:                          general.languages arr[str,1]       = [\"en\"]\r\nllama_model_loader: - kv  12:                          qwen2.block_count u32              = 28\r\nllama_model_loader: - kv  13:                       qwen2.context_length u32              = 32768\r\nllama_model_loader: - kv  14:                     qwen2.embedding_length u32              = 1536\r\nllama_model_loader: - kv  15:                  qwen2.feed_forward_length u32              = 8960\r\nllama_model_loader: - kv  16:                 qwen2.attention.head_count u32              = 12\r\nllama_model_loader: - kv  17:              qwen2.attention.head_count_kv u32              = 2\r\nllama_model_loader: - kv  18:                       qwen2.rope.freq_base f32              = 1000000.000000\r\nllama_model_loader: - kv  19:     qwen2.attention.layer_norm_rms_epsilon f32              = 0.000001\r\nllama_model_loader: - kv  20:                          general.file_type u32              = 15\r\nllama_model_loader: - kv  21:                       tokenizer.ggml.model str              = gpt2\r\nllama_model_loader: - kv  22:                         tokenizer.ggml.pre str              = qwen2\r\nllama_model_loader: - kv  23:                      tokenizer.ggml.tokens arr[str,151936]  = [\"!\", \"\\\"\", \"#\", \"$\", \"%\", \"&\", \"'\", ...\r\nllama_model_loader: - kv  24:                  tokenizer.ggml.token_type arr[i32,151936]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...\r\nllama_model_loader: - kv  25:                      tokenizer.ggml.merges arr[str,151387]  = [\"\u0120 \u0120\", \"\u0120\u0120 \u0120\u0120\", \"i n\", \"\u0120 t\",...\r\nllama_model_loader: - kv  26:                tokenizer.ggml.eos_token_id u32              = 151645\r\nllama_model_loader: - kv  27:            tokenizer.ggml.padding_token_id u32              = 151643\r\nllama_model_loader: - kv  28:                tokenizer.ggml.bos_token_id u32              = 151643\r\nllama_model_loader: - kv  29:               tokenizer.ggml.add_bos_token bool             = false\r\nllama_model_loader: - kv  30:                    tokenizer.chat_template str              = {%- if tools %}\\n    {{- '<|im_start|>...\r\nllama_model_loader: - kv  31:               general.quantization_version u32              = 2\r\nllama_model_loader: - type  f32:  141 tensors\r\nllama_model_loader: - type q4_K:  168 tensors\r\nllama_model_loader: - type q6_K:   29 tensors\r\nllm_load_vocab: special tokens cache size = 22\r\nllm_load_vocab: token to piece cache size = 0.9310 MB\r\nllm_load_print_meta: format           = GGUF V3 (latest)\r\nllm_load_print_meta: arch             = qwen2\r\nllm_load_print_meta: vocab type       = BPE\r\nllm_load_print_meta: n_vocab          = 151936\r\nllm_load_print_meta: n_merges         = 151387\r\nllm_load_print_meta: vocab_only       = 0\r\nllm_load_print_meta: n_ctx_train      = 32768\r\nllm_load_print_meta: n_embd           = 1536\r\nllm_load_print_meta: n_layer          = 28\r\nllm_load_print_meta: n_head           = 12\r\nllm_load_print_meta: n_head_kv        = 2\r\nllm_load_print_meta: n_rot            = 128\r\nllm_load_print_meta: n_swa            = 0\r\nllm_load_print_meta: n_embd_head_k    = 128\r\nllm_load_print_meta: n_embd_head_v    = 128\r\nllm_load_print_meta: n_gqa            = 6\r\nllm_load_print_meta: n_embd_k_gqa     = 256\r\nllm_load_print_meta: n_embd_v_gqa     = 256\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-06\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 0.0e+00\r\nllm_load_print_meta: n_ff             = 8960\r\nllm_load_print_meta: n_expert         = 0\r\nllm_load_print_meta: n_expert_used    = 0\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = 2\r\nllm_load_print_meta: rope scaling     = linear\r\nllm_load_print_meta: freq_base_train  = 1000000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: n_ctx_orig_yarn  = 32768\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: ssm_dt_b_c_rms   = 0\r\nllm_load_print_meta: model type       = 1.5B\r\nllm_load_print_meta: model ftype      = Q4_K - Medium\r\nllm_load_print_meta: model params     = 1.54 B\r\nllm_load_print_meta: model size       = 934.69 MiB (5.08 BPW) \r\nllm_load_print_meta: general.name     = Models\r\nllm_load_print_meta: BOS token        = 151643 '<|endoftext|>'\r\nllm_load_print_meta: EOS token        = 151645 '<|im_end|>'\r\nllm_load_print_meta: EOT token        = 151645 '<|im_end|>'\r\nllm_load_print_meta: PAD token        = 151643 '<|endoftext|>'\r\nllm_load_print_meta: LF token         = 148848 '\u00c4\u012c'\r\nllm_load_print_meta: FIM PRE token    = 151659 '<|fim_prefix|>'\r\nllm_load_print_meta: FIM SUF token    = 151661 '<|fim_suffix|>'\r\nllm_load_print_meta: FIM MID token    = 151660 '<|fim_middle|>'\r\nllm_load_print_meta: FIM PAD token    = 151662 '<|fim_pad|>'\r\nllm_load_print_meta: FIM REP token    = 151663 '<|repo_name|>'\r\nllm_load_print_meta: FIM SEP token    = 151664 '<|file_sep|>'\r\nllm_load_print_meta: EOG token        = 151643 '<|endoftext|>'\r\nllm_load_print_meta: EOG token        = 151645 '<|im_end|>'\r\nllm_load_print_meta: EOG token        = 151662 '<|fim_pad|>'\r\nllm_load_print_meta: EOG token        = 151663 '<|repo_name|>'\r\nllm_load_print_meta: EOG token        = 151664 '<|file_sep|>'\r\nllm_load_print_meta: max token length = 256\r\nllm_load_tensors: offloading 28 repeating layers to GPU\r\nllm_load_tensors: offloading output layer to GPU\r\nllm_load_tensors: offloaded 29/29 layers to GPU\r\nllm_load_tensors: Metal_Mapped model buffer size =   934.70 MiB\r\nllm_load_tensors:   CPU_Mapped model buffer size =   182.57 MiB\r\n.....................................................................\r\nllama_new_context_with_model: n_seq_max     = 1\r\nllama_new_context_with_model: n_ctx         = 4096\r\nllama_new_context_with_model: n_ctx_per_seq = 4096\r\nllama_new_context_with_model: n_batch       = 2048\r\nllama_new_context_with_model: n_ubatch      = 512\r\nllama_new_context_with_model: flash_attn    = 0\r\nllama_new_context_with_model: freq_base     = 1000000.0\r\nllama_new_context_with_model: freq_scale    = 1\r\nllama_new_context_with_model: n_ctx_per_seq (4096) < n_ctx_train (32768) -- the full capacity of the model will not be utilized\r\nggml_metal_init: allocating\r\nggml_metal_init: found device: Apple M4\r\nggml_metal_init: picking default device: Apple M4\r\nggml_metal_init: using embedded metal library\r\nggml_metal_init: GPU name:   Apple M4\r\nggml_metal_init: GPU family: MTLGPUFamilyApple9  (1009)\r\nggml_metal_init: GPU family: MTLGPUFamilyCommon3 (3003)\r\nggml_metal_init: GPU family: MTLGPUFamilyMetal3  (5001)\r\nggml_metal_init: simdgroup reduction   = true\r\nggml_metal_init: simdgroup matrix mul. = true\r\nggml_metal_init: has bfloat            = true\r\nggml_metal_init: use bfloat            = true\r\nggml_metal_init: hasUnifiedMemory      = true\r\nggml_metal_init: recommendedMaxWorkingSetSize  = 11453.25 MB\r\nllama_kv_cache_init: kv_size = 4096, offload = 1, type_k = 'f16', type_v = 'f16', n_layer = 28\r\nllama_kv_cache_init:      Metal KV buffer size =   112.00 MiB\r\nllama_new_context_with_model: KV self size  =  112.00 MiB, K (f16):   56.00 MiB, V (f16):   56.00 MiB\r\nllama_new_context_with_model:        CPU  output buffer size =     0.58 MiB\r\nllama_new_context_with_model:      Metal compute buffer size =   299.75 MiB\r\nllama_new_context_with_model:        CPU compute buffer size =    11.01 MiB\r\nllama_new_context_with_model: graph nodes  = 986\r\nllama_new_context_with_model: graph splits = 2\r\ncommon_init_from_params: setting dry_penalty_last_n to ctx_size = 4096\r\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\r\nsrv          init: initializing slots, n_slots = 1\r\nslot         init: id  0 | task -1 | new slot n_ctx_slot = 4096\r\nmain: model loaded\r\nmain: chat template, chat_template: (built-in), example_format: '<|im_start|>system\r\nYou are a helpful assistant<|im_end|>\r\n<|im_start|>user\r\nHello<|im_end|>\r\n<|im_start|>assistant\r\nHi there<|im_end|>\r\n<|im_start|>user\r\nHow are you?<|im_end|>\r\n<|im_start|>assistant\r\n'\r\nmain: server is listening on http://127.0.0.1:8080 - starting the main loop\r\nsrv  update_slots: all slots are idle\r\n^C\r\n```\r\n\n\n### First Bad Commit\n\n_No response_\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-05T06:11:49+00:00",
+    "closed_at": "2025-02-15T08:35:22+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/11083/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/11083"
+  },
+  {
+    "number": 5282,
+    "title": "SYCL backend support Multi-card",
+    "body": "### Discussed in https://github.com/ggerganov/llama.cpp/discussions/5277\r\n\r\n<div type='discussions-op-text'>\r\n\r\n<sup>Originally posted by **airMeng** February  2, 2024</sup>\r\nFeel free to drop a note, let's know if you have any feature request or bugs (even unconfirmed)\r\n\r\n- [ ] Multi-card Support\r\n- [ ] Multi-batch Support [#5272](https://github.com/ggerganov/llama.cpp/issues/5272)\r\n- [ ] CI test error for more than one GPU is detected and used.\r\n  Current code returns all SYCL devices, including CPU, GPU (level-zero, opencl), FPGA. SYCL only support GPU. So when CI test on other devices, it will be fault.\r\n- [ ] Support no-mmap parameter in other application. \r\n  There is known issue of SYCL: memcpy() from host (mmap) to device will hang in same cases. It's not resolved now. A work around solution is no use mmap. I have handled it in llama-bench (add --mmap parameter). We need add to more applications in examples.\r\n- [ ] Clean code for warning and unused macro and variable.\r\n  Suggest to handle it after multiple-card is finished. Lots of such unused code will be useful for multiple-card feature.\r\n\r\n\r\nAlso let's know if you have taken any tasks here.\r\n\r\ncc @NeoZhangJianyu @luoyu-intel @abhilash1910 </div>",
+    "labels": [
+      "Intel GPU"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-02T12:01:33+00:00",
+    "closed_at": "2024-03-05T15:43:14+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5282/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5282"
+  },
+  {
+    "number": 10075,
+    "title": "Feature Request: Implement \u00ab Why Does the Effective Context Length of LLMs Fall Short? \u00bb",
+    "body": "### Prerequisites\n\n- [X] I am running the latest code. Mention the version if possible as well.\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new and useful enhancement to share.\n\n### Feature Description\n\n(Amazing project, been using it since the very early days)\r\n\r\nThe paper:\r\n\r\nhttps://arxiv.org/abs/2410.18745\r\n\r\nIn a word:\r\n\r\n> Compared to commercial models, Llama 3.1 70B with \\method even achieves better performance than GPT-4-128K and clearly surpasses Claude 2 and Kimi-chat. \r\n\r\nExtract: \r\n\r\n> Advancements in distributed training and efficient attention mechanisms have significantly expanded the context window sizes of large language models (LLMs). However, recent work reveals that the effective context lengths of open-source LLMs often fall short, typically not exceeding half of their training lengths. In this work, we attribute this limitation to the left-skewed frequency distribution of relative positions formed in LLMs pretraining and post-training stages, which impedes their ability to effectively gather distant information. To address this challenge, we introduce ShifTed Rotray position embeddING (STRING). STRING shifts well-trained positions to overwrite the original ineffective positions during inference, enhancing performance within their existing training lengths. Experimental results show that without additional training, STRING dramatically improves the performance of the latest large-scale models, such as Llama3.1 70B and Qwen2 72B, by over 10 points on popular long-context benchmarks RULER and InfiniteBench, establishing new state-of-the-art results for open-source LLMs. Compared to commercial models, Llama 3.1 70B with \\method even achieves better performance than GPT-4-128K and clearly surpasses Claude 2 and Kimi-chat. \r\n\r\nI'm not a scientist, I don't know how valid this is, and how relevant to llama.cpp it is.\r\n\r\nBut my very naive understanding is that this would allow improving long-context inference, without requiring extra training of the models.\r\n\r\nWhich sounds like exactly the sort of stuff that gets added to `llama.cpp` as an improvement / new feature.\r\n\r\nI don't know how difficult this is, and I\u00a0probably can't help, though I'll gladly help with any testing, and might be able to run some long-context benchmarks.\r\n\r\nSincere apologies if this isn't appropriate and I'm just making noise.\r\n\n\n### Motivation\n\nImproving long-context inference.\n\n### Possible Implementation\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-28T18:58:35+00:00",
+    "closed_at": "2024-12-12T01:07:33+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10075/reactions",
+      "total_count": 3,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10075"
+  },
+  {
+    "number": 85,
+    "title": "Faster loading of the model",
+    "body": "I was playing with the 65B model, and it took a minute to read the files. If you wrap the model loader loop with a `#pragma omp parallel for` and add `-fopenmp` to the compiler flags, you can drop it to 18 seconds.\r\n",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-13T08:04:28+00:00",
+    "closed_at": "2023-07-28T19:20:18+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/85/reactions",
+      "total_count": 5,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 4,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/85"
+  },
+  {
+    "number": 6026,
+    "title": "SYCL NVidia build failing",
+    "body": "NVidia SYCL build failing due to multiple GPUs support PR.\r\nThis comes from https://github.com/ggerganov/llama.cpp/pull/5806/files#diff-6af12449fa63d10882b68b8230ff092164a786e01683813a005267630ab9c0b2R3330. \r\nCUDA versions translate the the SM number, so for SM80 the major version is 8.\r\n\r\nI believe we should refrain from using versions if possible in the SYCL backend as it is less backend agnostic.\r\n\r\n### Steps to reproduce:\r\n`$./bin/test-backend-ops -b SYCL0`\r\n```\r\nggml_backend_register: registered backend CPU\r\nterminate called after throwing an instance of 'sycl::_V1::invalid_parameter_error'\r\n  what():  DeviceList is empty. -30 (PI_ERROR_INVALID_VALUE)\r\nAborted\r\n```",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-12T17:54:13+00:00",
+    "closed_at": "2024-03-19T09:39:40+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6026/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6026"
+  },
+  {
+    "number": 4337,
+    "title": "[Feature request] Adding Support for \"XVERSE\" model",
+    "body": "\"**XVERSE**\" is a new Large Language Model which seems to be better than Llama-2.\r\nSee \thttp://www.xverse.cn/ and https://github.com/xverse-ai\r\n\r\nActually, it is the best open-source model currently available according to the authors.\r\n\r\nModel (for Huggingface Transformers library) with 65B ,13B and 7B parameters is available at :\r\n**https://huggingface.co/xverse/XVERSE-65B**\r\n**https://huggingface.co/xverse/XVERSE-13B**\r\nhttps://huggingface.co/xverse/XVERSE-7B\r\nWould be great if it would be supported also in llama.cpp.\r\nThanks!\r\n\r\nAs using GGUF files is a breaking change and the XVERSE model should be supported,\r\nI think adding support for  XverseForCausalLM architecture to convert-hf-to-gguf.py is essential.",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-12-05T11:09:22+00:00",
+    "closed_at": "2024-03-29T16:09:19+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4337/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4337"
+  },
+  {
+    "number": 4843,
+    "title": "Request: Allow for adjustments at the layer-level, for a practically two-fold increase in LLM handling ability by prompters",
+    "body": "# Feature Description\r\n\r\nThe project [\"Brain Hacking Chip\"](https://github.com/SoylentMithril/BrainHackingChip) demonstrates a sophisticated, albeit conceptually simple method of manipulating LLM inference, for a powerful increase in obedience. It has great potential to practically double a prompter's ability to guide an LLM toward desirable behaviors, because it allows for a prompter to *directly discourage* undesirable behaviors, without implying those undesirable behaviors are even possibilities.\r\n\r\nIt is my understanding that this kind of feature is currently very difficult to implement into LLaMA-CPP.\r\n\r\n# Motivation\r\n\r\nThe \"Brain Hacking Chip\" project allows for negative prompts, which have been [demonstrated](https://github.com/SoylentMithril/BrainHackingChip#explain-softmax-with-an-instruction-to-type-in-l33t-sp34k) by the creator to allow for immediate gains in model obedience. I think this is significant, because negative prompting is relatively intuitive and accessible, especially for non-technical prompters.\r\n\r\nNegative prompts are *especially* useful when trying to discourage the LLM from undesirable behaviors via prompting, because it circumvents the \"Don't think of a pink elephant\" problem - wherein explicitly mentioning the thing the LLM *shouldn't* do, *necessarily* puts that idea into mind, and thus pollutes the LLM's inference with the implication that this undesired idea is a possibility in the first place.\r\n\r\nIt is akin to the difference between telling a child, \"Eat the vegetables on your plate, but don't take the candy inside the jar next to your plate,\" and telling a child, \"Eat the vegetables on your plate\" and erasing the jar from existence. \r\n\r\nIf one's ability to command an LLM's behavior could be measured with a scalar, I'd say this could double it.\r\n\r\n# Possible Implementation\r\n\r\nI don't understand the details outside the ideas of vector manipulation, I assume those details are elaborated upon in the [repo](https://github.com/SoylentMithril/BrainHackingChip).\r\n\r\nBut, as someone who has spent a lot of time trying to guide LLM behavior through prompting, I recognize this as an extremely powerful way to improve the consistency and usefulness LLMs for end users, and think the community could greatly benefit from these kinds of experiments being easier to implement into LLaMA-CPP.",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-09T19:57:09+00:00",
+    "closed_at": "2024-04-04T01:06:50+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4843/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4843"
+  },
+  {
+    "number": 966,
+    "title": "The problem with the conversion with the new convert.py",
+    "body": "Hello! Help me figure out:\r\n\r\nF:\\Models\\digitous-Alpacino13b>convert.py --dump-single F:\\Models\\digitous-Alpacino13b\\4bit.safetensors\r\nTraceback (most recent call last):\r\n  File \"F:\\Models\\digitous-Alpacino13b\\convert.py\", line 1145, in <module>\r\n    main()\r\n  File \"F:\\Models\\digitous-Alpacino13b\\convert.py\", line 1116, in main\r\n    model_plus = lazy_load_file(args.model)\r\n  File \"F:\\Models\\digitous-Alpacino13b\\convert.py\", line 853, in lazy_load_file\r\n    return lazy_load_safetensors_file(fp, path)\r\n  File \"F:\\Models\\digitous-Alpacino13b\\convert.py\", line 753, in lazy_load_safetensors_file\r\n    model = {name: convert(info) for (name, info) in header.items()}\r\n  File \"F:\\Models\\digitous-Alpacino13b\\convert.py\", line 753, in <dictcomp>\r\n    model = {name: convert(info) for (name, info) in header.items()}\r\n  File \"F:\\Models\\digitous-Alpacino13b\\convert.py\", line 745, in convert\r\n    assert 0 <= begin <= end <= len(byte_buf)\r\nAssertionError\r\n\r\nWhat is the error here - in the script or maybe there is a problem in the model? The model is from here: https://huggingface.co/digitous/Alpacino13b/tree/main",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-04-14T13:52:17+00:00",
+    "closed_at": "2023-04-15T21:53:22+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/966/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/966"
+  },
+  {
+    "number": 5659,
+    "title": "Add UC Berkleys Large World Models",
+    "body": "Can someone add support for the Large World Models(Text and Multimodal) from UC Berkley?\r\nhttps://largeworldmodel.github.io/",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-22T08:30:06+00:00",
+    "closed_at": "2024-04-12T01:06:46+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5659/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5659"
+  },
+  {
+    "number": 1769,
+    "title": "Issue loading Metal kernels from shared library",
+    "body": "Just looking for some help on this issue integrating the new Metal support as I'm not really familiar with MacOS.\r\n\r\nThe issue, orignally reported [here](https://github.com/abetlen/llama-cpp-python/issues/317), seems to be that path resolution for the `ggml-metal.metal` file fails when `llama.cpp` is built as a shared library. This produces the following output \r\n\r\n```\r\nllama_model_load_internal: mem required  = 2532.67 MB (+ 3124.00 MB per state)\r\n....................................................................................................\r\nllama_init_from_file: kv self size  = 3120.00 MB\r\nggml_metal_init: allocating\r\nggml_metal_init: using MPS\r\nggml_metal_init: loading '(null)'\r\nggml_metal_init: error: Error Domain=NSCocoaErrorDomain Code=258 \"The file name is invalid.\"\r\n```\r\n\r\nIt seems the issue stems from [ggml_metal_init](https://github.com/ggerganov/llama.cpp/blob/master/ggml-metal.m#L108) calling `[[NSBundle mainBundle] pathForResource:@\"ggml-metal\" ofType:@\"metal\"]` to locate the `ggml-metal.metal` file.\r\n\r\nI've tried copying the file to a location relative to the shared library but that doesn't seem to work. It seems that `pathForResource` expects the file location relative to the [absolute path of the executable loading the shared libray](https://github.com/abetlen/llama-cpp-python/issues/317#issuecomment-1583020894) (in this case system python).\r\n\r\nIf anyone here has any thoughts please let me know, much appreciated.\r\n",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-06-09T03:08:27+00:00",
+    "closed_at": "2023-06-10T14:47:37+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1769/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1769"
+  },
+  {
+    "number": 6774,
+    "title": "Truncated model files can cause llama.cpp to crash when using mmap",
+    "body": "`llama_model_loader` does not check if the tensor data is present in the file when using mmap, and in some cases this can cause llama.cpp to crash.\r\n\r\nTo fix this, `llama_model_loader` should check that all the tensor data is within the bounds of the file, and otherwise stop the process and notify the user that the model file is corrupted.",
+    "labels": [
+      "bug",
+      "help wanted",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-19T20:25:00+00:00",
+    "closed_at": "2024-04-25T13:23:48+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6774/reactions",
+      "total_count": 5,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6774"
+  },
+  {
+    "number": 9315,
+    "title": "Bug: RWKV 6 Finch 3B+ models crash llama.cpp with CPU backend",
+    "body": "### What happened?\n\nI cloned latest version from git, compiled it on ArchLinux, CPU backend only, using `make`.\r\n\r\nI downloaded following models, but both did not run:\r\nbartowski/v6-Finch-3B-HF-GGUF (Q4*, Q8*)\r\nbartowski/v6-Finch-7B-HF-GGUF (Q4*, Q8*)\r\n\r\nI run following command:\r\n```bash\r\n./llama-cli -m \"v6-Finch-7B-HF-Q4_K_M.gguf\" -p \"I believe the meaning of life is\" -n 128\r\n```\n\n### Name and Version\n\nversion: 3664 (82e3b03c)\r\nbuilt with cc (GCC) 14.2.1 20240805 for x86_64-pc-linux-gnu\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n```shell\nLog start\r\nmain: build = 3664 (82e3b03c)\r\nmain: built with cc (GCC) 14.2.1 20240805 for x86_64-pc-linux-gnu\r\nmain: seed  = 1725469492\r\nllama_model_loader: loaded meta data with 26 key-value pairs and 902 tensors from v6-Finch-7B-HF-Q4_K_M.gguf (version GGUF V3 (latest))\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = rwkv6\r\nllama_model_loader: - kv   1:                               general.type str              = model\r\nllama_model_loader: - kv   2:                               general.name str              = v6 Finch 7B HF\r\nllama_model_loader: - kv   3:                           general.finetune str              = HF\r\nllama_model_loader: - kv   4:                           general.basename str              = v6-Finch\r\nllama_model_loader: - kv   5:                         general.size_label str              = 7B\r\nllama_model_loader: - kv   6:                            general.license str              = apache-2.0\r\nllama_model_loader: - kv   7:                       rwkv6.context_length u32              = 1048576\r\nllama_model_loader: - kv   8:                     rwkv6.embedding_length u32              = 4096\r\nllama_model_loader: - kv   9:                          rwkv6.block_count u32              = 32\r\nllama_model_loader: - kv  10:         rwkv6.attention.layer_norm_epsilon f32              = 0.000010\r\nllama_model_loader: - kv  11:               rwkv6.rescale_every_n_layers u32              = 6\r\nllama_model_loader: - kv  12:                        rwkv6.wkv.head_size u32              = 64\r\nllama_model_loader: - kv  13:                   rwkv6.time_mix_extra_dim u32              = 64\r\nllama_model_loader: - kv  14:                 rwkv6.time_decay_extra_dim u32              = 128\r\nllama_model_loader: - kv  15:                  rwkv6.feed_forward_length u32              = 14336\r\nllama_model_loader: - kv  16:                          general.file_type u32              = 15\r\nllama_model_loader: - kv  17:                 rwkv6.attention.head_count u32              = 0\r\nllama_model_loader: - kv  18:                       tokenizer.ggml.model str              = rwkv\r\nllama_model_loader: - kv  19:                      tokenizer.ggml.tokens arr[str,65536]   = [\"<s>\", \"\\\\x00\", \"\\\\x01\", \"\\\\x02\", \"\\...\r\nllama_model_loader: - kv  20:                  tokenizer.ggml.token_type arr[i32,65536]   = [3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...\r\nllama_model_loader: - kv  21:               general.quantization_version u32              = 2\r\nllama_model_loader: - kv  22:                      quantize.imatrix.file str              = /models_out/v6-Finch-7B-HF-GGUF/v6-Fi...\r\nllama_model_loader: - kv  23:                   quantize.imatrix.dataset str              = /training_dir/calibration_datav3.txt\r\nllama_model_loader: - kv  24:             quantize.imatrix.entries_count i32              = 352\r\nllama_model_loader: - kv  25:              quantize.imatrix.chunks_count i32              = 131\r\nllama_model_loader: - type  f32:  580 tensors\r\nllama_model_loader: - type q5_0:   32 tensors\r\nllama_model_loader: - type q4_K:  289 tensors\r\nllama_model_loader: - type q6_K:    1 tensors\r\nllm_load_vocab: special tokens cache size = 1\r\nllm_load_vocab: token to piece cache size = 0.3561 MB\r\nllm_load_print_meta: format           = GGUF V3 (latest)\r\nllm_load_print_meta: arch             = rwkv6\r\nllm_load_print_meta: vocab type       = RWKV\r\nllm_load_print_meta: n_vocab          = 65536\r\nllm_load_print_meta: n_merges         = 0\r\nllm_load_print_meta: vocab_only       = 0\r\nllm_load_print_meta: n_ctx_train      = 1048576\r\nllm_load_print_meta: n_embd           = 4096\r\nllm_load_print_meta: n_layer          = 32\r\nllm_load_print_meta: n_head           = 0\r\nllm_load_print_meta: n_head_kv        = 0\r\nllm_load_print_meta: n_rot            = 0\r\nllm_load_print_meta: n_swa            = 0\r\nllm_load_print_meta: n_embd_head_k    = 0\r\nllm_load_print_meta: n_embd_head_v    = 0\r\nllm_load_print_meta: n_gqa            = 0\r\nllm_load_print_meta: n_embd_k_gqa     = 0\r\nllm_load_print_meta: n_embd_v_gqa     = 0\r\nllm_load_print_meta: f_norm_eps       = 1.0e-05\r\nllm_load_print_meta: f_norm_rms_eps   = 0.0e+00\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 0.0e+00\r\nllm_load_print_meta: n_ff             = 14336\r\nllm_load_print_meta: n_expert         = 0\r\nllm_load_print_meta: n_expert_used    = 0\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = -1\r\nllm_load_print_meta: rope scaling     = linear\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: n_ctx_orig_yarn  = 1048576\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: ssm_dt_b_c_rms   = 0\r\nllm_load_print_meta: model type       = 7B\r\nllm_load_print_meta: model ftype      = Q4_K - Medium\r\nllm_load_print_meta: model params     = 7.64 B\r\nllm_load_print_meta: model size       = 4.34 GiB (4.88 BPW) \r\nllm_load_print_meta: general.name     = v6 Finch 7B HF\r\nllm_load_print_meta: LF token         = 11 '\\n'\r\nllm_load_print_meta: max token length = 192\r\nllm_load_tensors: ggml ctx size =    0.35 MiB\r\nllm_load_tensors:        CPU buffer size =  4446.06 MiB\r\n...............................................................................................\r\nllama_new_context_with_model: n_ctx      = 1048576\r\nllama_new_context_with_model: n_batch    = 2048\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 1\r\nllama_kv_cache_init:        CPU KV buffer size =    33.00 MiB\r\nllama_new_context_with_model: KV self size  =   33.00 MiB, K (f32):    1.00 MiB, V (f32):   32.00 MiB\r\nllama_new_context_with_model:        CPU  output buffer size =     0.25 MiB\r\nllama_new_context_with_model:        CPU compute buffer size =   144.00 MiB\r\nllama_new_context_with_model: graph nodes  = 3631\r\nllama_new_context_with_model: graph splits = 1\r\nfish: Job 1, './llama-cli -m \".c\u2026' terminated by signal SIGSEGV (Address boundary error)\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "critical severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-04T17:10:11+00:00",
+    "closed_at": "2024-09-12T11:25:17+00:00",
+    "comments": 26,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9315/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9315"
+  },
+  {
+    "number": 14448,
+    "title": "Eval bug: gemma-3n crash when using HIP",
+    "body": "### Name and Version\n\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\nggml_cuda_init: found 1 ROCm devices:\n  Device 0: AMD Radeon 890M Graphics, gfx1102 (0x1102), VMM: no, Wave Size: 32\nversion: 5775 (bd9c981d7)\nbuilt with clang version 19.0.0git (/srcdest/rocm-llvm c87081df219c42dc27c5b6d86c0525bc7d01f727) for x86_64-pc-linux-gnu\n\n### Operating systems\n\nLinux\n\n### GGML backends\n\nHIP\n\n### Hardware\n\nAMD Radeon 890M Graphics\n\n### Models\n\nGemma 3n\n\n### Problem description & steps to reproduce\n\nRunning all gemma-3n models works well when using cpu, using HIP result in same crash.\n\nQuick debugging show that the array is all nan:\n\n```\n(gdb) p cur_p->data[0].p\n$8 = nan(0x400000)\n(gdb) p cur_p->data[1].p\n$9 = nan(0x400000)\n(gdb) p cur_p->data[2].p\n$10 = nan(0x400000)\n```\n\n### Relevant log output\n\n```shell\n$ llama-cli -hf unsloth/gemma-3n-E4B-it-GGUF -co -c 0 -fa -ngl 1000\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\nggml_cuda_init: found 1 ROCm devices:\n  Device 0: AMD Radeon 890M Graphics, gfx1102 (0x1102), VMM: no, Wave Size: 32\ncurl_perform_with_retry: HEAD https://huggingface.co/unsloth/gemma-3n-E4B-it-GGUF/resolve/main/gemma-3n-E4B-it-Q4_K_M.gguf (attempt 1 of 1)...\ncommon_download_file_single: using cached file: /home/user/.cache/llama.cpp/unsloth_gemma-3n-E4B-it-GGUF_gemma-3n-E4B-it-Q4_K_M.gguf\nbuild: 5775 (bd9c981d7) with clang version 19.0.0git (/srcdest/rocm-llvm c87081df219c42dc27c5b6d86c0525bc7d01f727) for x86_64-pc-linux-gnu\nmain: llama backend init\nmain: load the model and apply lora adapter, if any\nllama_model_load_from_file_impl: using device ROCm0 (AMD Radeon 890M Graphics) - 17672 MiB free\nllama_model_loader: loaded meta data with 45 key-value pairs and 847 tensors from /home/user/.cache/llama.cpp/unsloth_gemma-3n-E4B-it-GGUF_gemma-3n-E4B-it-Q4_K_M.gguf (version GGUF V3 (latest))\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\nllama_model_loader: - kv   0:                       general.architecture str              = gemma3n\nllama_model_loader: - kv   1:                               general.type str              = model\nllama_model_loader: - kv   2:                               general.name str              = Gemma-3N-E4B-It\nllama_model_loader: - kv   3:                           general.finetune str              = 3n-E4B-it\nllama_model_loader: - kv   4:                           general.basename str              = Gemma-3N-E4B-It\nllama_model_loader: - kv   5:                       general.quantized_by str              = Unsloth\nllama_model_loader: - kv   6:                         general.size_label str              = 6.9B\nllama_model_loader: - kv   7:                           general.repo_url str              = https://huggingface.co/unsloth\nllama_model_loader: - kv   8:                     gemma3n.context_length u32              = 32768\nllama_model_loader: - kv   9:                   gemma3n.embedding_length u32              = 2048\nllama_model_loader: - kv  10:                        gemma3n.block_count u32              = 35\nllama_model_loader: - kv  11:                gemma3n.feed_forward_length arr[i32,35]      = [16384, 16384, 16384, 16384, 16384, 1...\nllama_model_loader: - kv  12:               gemma3n.attention.head_count u32              = 8\nllama_model_loader: - kv  13:   gemma3n.attention.layer_norm_rms_epsilon f32              = 0.000001\nllama_model_loader: - kv  14:               gemma3n.attention.key_length u32              = 256\nllama_model_loader: - kv  15:             gemma3n.attention.value_length u32              = 256\nllama_model_loader: - kv  16:                     gemma3n.rope.freq_base f32              = 1000000.000000\nllama_model_loader: - kv  17:           gemma3n.attention.sliding_window u32              = 512\nllama_model_loader: - kv  18:            gemma3n.attention.head_count_kv u32              = 2\nllama_model_loader: - kv  19:                   gemma3n.altup.active_idx u32              = 0\nllama_model_loader: - kv  20:                   gemma3n.altup.num_inputs u32              = 4\nllama_model_loader: - kv  21:   gemma3n.embedding_length_per_layer_input u32              = 256\nllama_model_loader: - kv  22:         gemma3n.attention.shared_kv_layers u32              = 15\nllama_model_loader: - kv  23:          gemma3n.activation_sparsity_scale arr[f32,35]      = [1.644854, 1.644854, 1.644854, 1.6448...\nllama_model_loader: - kv  24:   gemma3n.attention.sliding_window_pattern arr[bool,35]     = [true, true, true, true, false, true,...\nllama_model_loader: - kv  25:                    tokenizer.chat_template str              = {{ bos_token }}\\n{%- if messages[0]['r...\nllama_model_loader: - kv  26:                       tokenizer.ggml.model str              = llama\nllama_model_loader: - kv  27:                         tokenizer.ggml.pre str              = default\nllama_model_loader: - kv  28:                      tokenizer.ggml.tokens arr[str,262144]  = [\"<pad>\", \"<eos>\", \"<bos>\", \"<unk>\", ...\nllama_model_loader: - kv  29:                      tokenizer.ggml.scores arr[f32,262144]  = [-1000.000000, -1000.000000, -1000.00...\nllama_model_loader: - kv  30:                  tokenizer.ggml.token_type arr[i32,262144]  = [3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, ...\nllama_model_loader: - kv  31:                tokenizer.ggml.bos_token_id u32              = 2\nllama_model_loader: - kv  32:                tokenizer.ggml.eos_token_id u32              = 106\nllama_model_loader: - kv  33:            tokenizer.ggml.unknown_token_id u32              = 3\nllama_model_loader: - kv  34:            tokenizer.ggml.padding_token_id u32              = 0\nllama_model_loader: - kv  35:               tokenizer.ggml.add_bos_token bool             = true\nllama_model_loader: - kv  36:               tokenizer.ggml.add_sep_token bool             = false\nllama_model_loader: - kv  37:               tokenizer.ggml.add_eos_token bool             = false\nllama_model_loader: - kv  38:            tokenizer.ggml.add_space_prefix bool             = false\nllama_model_loader: - kv  39:               general.quantization_version u32              = 2\nllama_model_loader: - kv  40:                          general.file_type u32              = 15\nllama_model_loader: - kv  41:                      quantize.imatrix.file str              = gemma-3n-E4B-it-GGUF/imatrix_unsloth.dat\nllama_model_loader: - kv  42:                   quantize.imatrix.dataset str              = unsloth_calibration_gemma-3n-E4B-it.txt\nllama_model_loader: - kv  43:             quantize.imatrix.entries_count u32              = 459\nllama_model_loader: - kv  44:              quantize.imatrix.chunks_count u32              = 1326\nllama_model_loader: - type  f32:  422 tensors\nllama_model_loader: - type  f16:  108 tensors\nllama_model_loader: - type q8_0:    1 tensors\nllama_model_loader: - type q4_K:  282 tensors\nllama_model_loader: - type q6_K:   34 tensors\nprint_info: file format = GGUF V3 (latest)\nprint_info: file type   = Q4_K - Medium\nprint_info: file size   = 4.90 GiB (6.14 BPW)\nload: special tokens cache size = 6414\nload: token to piece cache size = 1.9446 MB\nprint_info: arch             = gemma3n\nprint_info: vocab_only       = 0\nprint_info: n_ctx_train      = 32768\nprint_info: n_embd           = 2048\nprint_info: n_layer          = 35\nprint_info: n_head           = 8\nprint_info: n_head_kv        = 2\nprint_info: n_rot            = 256\nprint_info: n_swa            = 512\nprint_info: is_swa_any       = 1\nprint_info: n_embd_head_k    = 256\nprint_info: n_embd_head_v    = 256\nprint_info: n_gqa            = 4\nprint_info: n_embd_k_gqa     = 512\nprint_info: n_embd_v_gqa     = 512\nprint_info: f_norm_eps       = 0.0e+00\nprint_info: f_norm_rms_eps   = 1.0e-06\nprint_info: f_clamp_kqv      = 0.0e+00\nprint_info: f_max_alibi_bias = 0.0e+00\nprint_info: f_logit_scale    = 0.0e+00\nprint_info: f_attn_scale     = 1.0e+00\nprint_info: n_ff             = 16384\nprint_info: n_expert         = 0\nprint_info: n_expert_used    = 0\nprint_info: causal attn      = 1\nprint_info: pooling type     = 0\nprint_info: rope type        = 2\nprint_info: rope scaling     = linear\nprint_info: freq_base_train  = 1000000.0\nprint_info: freq_scale_train = 1\nprint_info: n_ctx_orig_yarn  = 32768\nprint_info: rope_finetuned   = unknown\nprint_info: ssm_d_conv       = 0\nprint_info: ssm_d_inner      = 0\nprint_info: ssm_d_state      = 0\nprint_info: ssm_dt_rank      = 0\nprint_info: ssm_dt_b_c_rms   = 0\nprint_info: model type       = E4B\nprint_info: model params     = 6.87 B\nprint_info: general.name     = Gemma-3N-E4B-It\nprint_info: vocab type       = SPM\nprint_info: n_vocab          = 262144\nprint_info: n_merges         = 0\nprint_info: BOS token        = 2 '<bos>'\nprint_info: EOS token        = 106 '<end_of_turn>'\nprint_info: EOT token        = 106 '<end_of_turn>'\nprint_info: UNK token        = 3 '<unk>'\nprint_info: PAD token        = 0 '<pad>'\nprint_info: LF token         = 248 '<0x0A>'\nprint_info: EOG token        = 106 '<end_of_turn>'\nprint_info: max token length = 48\nload_tensors: loading model tensors, this can take a while... (mmap = true)\nload_tensors: offloading 35 repeating layers to GPU\nload_tensors: offloading output layer to GPU\nload_tensors: offloaded 36/36 layers to GPU\nload_tensors:        ROCm0 model buffer size =  5022.53 MiB\nload_tensors:   CPU_Mapped model buffer size =   288.00 MiB\n...............................................\nllama_context: constructing llama_context\nllama_context: n_seq_max     = 1\nllama_context: n_ctx         = 32768\nllama_context: n_ctx_per_seq = 32768\nllama_context: n_batch       = 2048\nllama_context: n_ubatch      = 512\nllama_context: causal_attn   = 1\nllama_context: flash_attn    = 1\nllama_context: freq_base     = 1000000.0\nllama_context: freq_scale    = 1\nllama_context:  ROCm_Host  output buffer size =     1.00 MiB\nllama_kv_cache_unified_iswa: creating non-SWA KV cache, size = 32768 cells\nllama_kv_cache_unified:      ROCm0 KV buffer size =   256.00 MiB\nllama_kv_cache_unified: size =  256.00 MiB ( 32768 cells,   4 layers,  1 seqs), K (f16):  128.00 MiB, V (f16):  128.00 MiB\nllama_kv_cache_unified_iswa: creating     SWA KV cache, size = 1024 cells\nllama_kv_cache_unified:      ROCm0 KV buffer size =    32.00 MiB\nllama_kv_cache_unified: size =   32.00 MiB (  1024 cells,  16 layers,  1 seqs), K (f16):   16.00 MiB, V (f16):   16.00 MiB\nllama_context:      ROCm0 compute buffer size =   520.00 MiB\nllama_context:  ROCm_Host compute buffer size =   102.01 MiB\nllama_context: graph nodes  = 3143\nllama_context: graph splits = 22\ncommon_init_from_params: KV cache shifting is not supported for this context, disabling KV cache shifting\ncommon_init_from_params: setting dry_penalty_last_n to ctx_size = 32768\ncommon_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)\nmain: llama threadpool init, n_threads = 12\nmain: chat template is available, enabling conversation mode (disable it with -no-cnv)\nmain: chat template example:\n<start_of_turn>user\nYou are a helpful assistant\n\nHello<end_of_turn>\n<start_of_turn>model\nHi there<end_of_turn>\n<start_of_turn>user\nHow are you?<end_of_turn>\n<start_of_turn>model\n\n\nsystem_info: n_threads = 12 (n_threads_batch = 12) / 24 | ROCm : NO_VMM = 1 | PEER_MAX_BATCH_SIZE = 128 | CPU : OPENMP = 1 | REPACK = 1 |\n\nmain: interactive mode on.\nsampler seed: 1372900278\nsampler params:\n        repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 0.000\n        dry_multiplier = 0.000, dry_base = 1.750, dry_allowed_length = 2, dry_penalty_last_n = 32768\n        top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.800\n        mirostat = 0, mirostat_lr = 0.100, mirostat_ent = 5.000\nsampler chain: logits -> logit-bias -> penalties -> dry -> top-n-sigma -> top-k -> typical -> top-p -> min-p -> xtc -> temp-ext -> dist\ngenerate: n_ctx = 32768, n_batch = 2048, n_predict = -1, n_keep = 1\n\n== Running in interactive mode. ==\n - Press Ctrl+C to interject at any time.\n - Press Return to return control to the AI.\n - To return control without starting a new line, end your input with '/'.\n - If you want to submit another line, end your input with '\\'.\n - Not using system message. To change it, set a different value via -sys PROMPT\n\n\n> hi\n/usr/lib64/gcc/x86_64-pc-linux-gnu/15.1.1/../../../../include/c++/15.1.1/bits/random.tcc:2668: void std::discrete_distribution<>::param_type::_M_initialize() [_IntType = int]: Assertion '__sum > 0' failed.\nzsh: IOT instruction (core dumped)  llama-cli -hf unsloth/gemma-3n-E4B-it-GGUF -co -c 0 -fa -ngl 1000\n```",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "open",
+    "created_at": "2025-06-29T15:53:06+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/14448/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/14448"
+  },
+  {
+    "number": 6875,
+    "title": "Getting \"Bad CPU type in executable\" on macos-x64 build",
+    "body": "I downloaded build 2717 (April 24th) into a macbook pro Intel x86_64 and I am getting \"Bad CPU type in executable\" on any of the built commands. I tested with the previous build and I get the same issue.",
+    "labels": [
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-24T13:36:26+00:00",
+    "closed_at": "2024-06-25T02:41:40+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6875/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6875"
+  },
+  {
+    "number": 388,
+    "title": "llama_init_from_file: failed to load model",
+    "body": "When I execute this command\uff1a\r\nmake -j && ./main -m ./models/7B/ggml-model-q4_0.bin -p \"Building a website can be done in 10 simple steps:\" -n 512\r\n\r\nAn error was reported\uff1a\r\nllama_init_from_file: failed to load model\r\nmain: error: failed to load model './models/7B/ggml-model-q4_0.bin'",
+    "labels": [
+      "need more info"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-22T10:00:00+00:00",
+    "closed_at": "2023-03-24T02:54:48+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/388/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/388"
+  },
+  {
+    "number": 3269,
+    "title": "[Enhancement Proposal] Single Model Speculative Sampling (+ possible future dynamic bit-depth models)",
+    "body": "Hi,\r\n\r\nI'm currently working on developing a different feature that I plan on submitting at some point. In the process of that, I took some time to work on fast sampling. As I'm out of bandwidth at the moment (have a ton to juggle), I'm putting this out here as an enhancement proposal, and would like to see if I could get someone interested in working on it. I could use your help! <3 :') I think it is worthwhile not just because of the present value it brings, but also because of certain future optimizations that it enables.\r\n\r\nThis may or may not not be the right time for this feature because I believe it depends upon two limiting factors:\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A. a good-enough uniform quantization scheme, and\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;B. efficient utilization of reduced compute from lower bit depths.\r\n\r\nTL;DR: For a sufficient non-dynamic quantization scheme, dropping the least N significant bits of a model for the initial speculative sampling generation should be a more unbiased estimator of that model's predictions than an outside model, meaning we only need to keep one model in memory. It also allows for other optimization methods to be implemented (dynamic bit-dropping per layer per forward pass, etc).\r\n\r\n### Introduction\r\n\r\nLlama.cpp models generally use integer quantized weights currently, with some recent developments in dynamic compression with K-Quants. A recent method, Speculative Sampling (https://arxiv.org/abs/2302.01318), was proposed by researchers at Deepmind. I'm proposing a simpler successor to the method -- Single Model Speculative Sampling, which uses only a single large model, I share some details about its benefits, as well as directions for 'fewest cuts' and 'max performance' implementations.\r\n\r\nSpeculative Sampling uses a smaller, noisier model to create candidate tokens, which are all validated at once by a larger, more accurate model. My best understanding is that this is analogous to branch prediction in computing. However, this requires two different models, which adds not only complexity, but memory cost, and oddly enough, a potential performance hit.\r\n\r\nI'm proposing Single Model Speculative Sampling, which uses the same overall methodology as Speculative Sampling (forward pass sampling, token acceptance/rejection, etc) and should be faster and more accurate, with less memory when ideally implemented. I do not believe this method is initially naively compatible with K-Quants, but I also believe that can be accomodated.\r\n\r\n### Proposal\r\n\r\nHere is how it works: For this method, we are assuming direct integer multiplication. Let's assume our model has weights stored in `num_bits` bits, and we define a `num_dropped` operator to measure how many bits we want to drop.\r\n\r\nFor a model already held in memory, we first run the necessary forward passes by _truncating the model weights by dropping the `num_dropped` least significant bits_. This does not need to occur to all layers, and we can simply pick and choose which layers offer the best speed/truncation advantage at runtime. This offers the benefit of potentially caching values, like the initial embedding layer, if we choose not to drop bits on those (so we can reuse it easily for the larger model).\r\n\r\nWe also then need to bitshift some scale value left by `num_dropped` bits on the weight value at some point (where the most efficient point in the code for this is, I can't say).\r\n\r\nHere's a figure to demonstrate a 3 -> 2 bit drop showing the higher bits binning strategy.\r\n\r\n![lsb_down_demo](https://github.com/ggerganov/llama.cpp/assets/120343106/58ef653d-b118-4773-9c8e-7ec5b296d80f)\r\n\r\nThis might seem a bit simplistic...and it is! This only affects the actual precision of the multiplication where it counts. If we have kernels/functions that can take advantage of this bit width, then that's a win for us. Depending upon quantization implementation details, there might be a mild % accuracy hit for the smaller model compared to a version naturally quantized at that bit depth.\r\n\r\nThat said, because a reduced-bit quantization version of a larger model is a less-biased (and potentially unbiased) estimator of the larger model's predictions than a smaller model, we should have fewer branch mispredicts.\r\n\r\n### Implementation\r\n\r\nTwo methods of implementing this come to mind.\r\n\r\n1. Trading extra memory for simplicity -- just generating a lower-bit-depth copy of some of the weights of the model in memory, and using that with the correct function for that bit depth from there on out.\r\n2. Rewriting the functions to either take in a stride, a variable number of bits and just read the top N bits, or something that dynamically operates on the data structure (I fear this will interfere with the packing/unpacking schemes used currently in the data structures. It's hard to understand all of what's happening due to all of the duplicated code between the N bit depth functions :'/)\r\n\r\n#1 does not fully fulfill the promise of 'no extra memory', but is much simpler. #2 is much more complex, and I feel like it might require (please don't hate me!) a low boilerplate, well-templated rewrite of the existing methods to be compatible.\r\n\r\nI prefer #2, though I'm not nearly skilled enough in the details of AVX2/AVX-512/NEON/metal etc to make a good guess about how worthwhile this route is. :'))))\r\n\r\n\r\n### Conclusion\r\n\r\nAll in all -- this method feels very much like 'the right way of doing things' for this particular problem. It's neat, resource efficient, and will scale as our capability to quantize models and run lower-precision compute kernels becomes more and more efficient. However, it does make some assumptions about ideals (larger models quantized more are better than smaller models quantized less, lower bit computations scale well, etc) that may not be well enough established in the real world to be effective. I don't believe that's necessarily the case, and I think it wins on the convenience factor alone. With some good heuristics, I could see a pretty sizeable boost in generation speed.\r\n\r\nAdditionally, in the future, based on some criterion (during each forward pass of the 'light' model or beforehand), this allows for us to choose what bit-depth to use on-the-fly. For example, in a 5 bit model run AOT in 3 bits, one might find that a small delta in the first residual is correlates with resilience to lower bit depths later on, and the bit precision is dropped to 2 until a residual has a high magnitude (in which case it could possibly be re-run in 3 bit precision and still have a speed advantage, depending upon frequency). This is just an example scenario, what the actual 'tells' are of a model's resilience to dynamic runtime precision I cannot say, though I'd be surprised if there wasn't at least some research about it.\r\n\r\nTo any one reading this -- I know this was quite a lot of text, I hope you find it interesting and compelling enough to take a crack at! I'm working on my own project and hoping to bring it to fruition, and hopefully this is a useful feature that is compelling enough for some people! :) <3",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-09-19T19:52:39+00:00",
+    "closed_at": "2024-04-03T01:15:57+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3269/reactions",
+      "total_count": 4,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 4
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3269"
+  },
+  {
+    "number": 7813,
+    "title": "Qwen2-57B-A14B-Instruct not supported",
+    "body": "### What happened?\n\nThe converted model fails to load due to unexpected expert tensor dimensions, the current qwen2moe implementation expects it to be `n_ff`/`n_expert_used`, which it is not.\n\n### Name and Version\n\n./main --version\r\nversion: 3066 (e141ce62)\r\nbuilt with cc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0 for x86_64-linux-gnu\n\n### What operating system are you seeing the problem on?\n\nLinux\n\n### Relevant log output\n\n```shell\nllama_model_load: error loading model: check_tensor_dims: tensor 'blk.0.ffn_gate_exps.weight' has wrong shape; expected  3584,  2368,    64, got  3584,  2560,    64,     1\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-07T08:47:04+00:00",
+    "closed_at": "2024-06-07T10:00:28+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7813/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7813"
+  },
+  {
+    "number": 3713,
+    "title": "[LoRA] Falcon merges still don't work. Ideas as to why?",
+    "body": "I've been merging lora into quantized models for a while now with export_lora and have had good results. The models definitely merge and performance appears to improve. Converting the lora to GGUF and then applying it to models results in a working model.\r\n\r\nThe same can't be said for falcon. All falcon tunes are released as PEFT and the model is simply too large to d/l as FP16. It's several hundred GB unless quantized.\r\n\r\nI applied the PR https://github.com/ggerganov/llama.cpp/pull/3333 and am able to successfully convert lora to GGUF. I can then use export_lora to merge. However the models come out repeating gibberish and having sentence piece errors when used with HF sampling.\r\n\r\nLooking over the code, there is nothing llama specific that I can find in it. Has anyone been able to load a lora to any falcon models, either live or as merges? Anyone have ideas of what's wrong?",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-21T13:25:41+00:00",
+    "closed_at": "2024-04-04T01:07:37+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3713/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 2
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3713"
+  },
+  {
+    "number": 4073,
+    "title": "GPT2 Architecture Integration",
+    "body": "# Feature Description\r\nThe idea is to be able to convert models using the GPT2 architecture into GGUF. The convert-hf-to-gguf.py should include GPT2, as well as llama.cpp for running the model.\r\n\r\n# Motivation\r\nThere are quite a few models for low resource languages or specific use cases that are fine-tuned on GPT2 architecture.\r\n\r\n# Possible Implementation\r\nThe structure of models is quite similar to Starcoder. From my understanding, you can modify it quite easily by:\r\n\r\nconvert-hf-to-gguf.py\r\n- Add a new model class\r\n- Modify the set_gguf_parameters() [kv heads] and write_tensors() [maybe you need to transpose the qkv, up-ffn and down-ffn layer] methods\r\n\r\nllama.cpp\r\n- Add an new model class\r\n\r\n# Status\r\nI tried implementing that myself, but am not deep enough into the topic and find it quite hard to understand the libraries structure (is there any good documentation). So, I am probably not able to pull this off by myself, but am happy to support!",
+    "labels": [
+      "enhancement",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-14T14:52:32+00:00",
+    "closed_at": "2023-12-28T14:03:58+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4073/reactions",
+      "total_count": 4,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 4,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4073"
+  },
+  {
+    "number": 11321,
+    "title": "Library not loaded: @rpath/libllama.dylib",
+    "body": "### Name and Version\n\nI just downloaded the latest binary (b4519) to play around with on my Mac, however it looks like the binary didn't quite compile correctly. I tried downloading an earlier version (b4514) with the same result. Running `llamba-cli` yields:\n\n```\n\u279c  llama.cpp ./llama-cli --version\ndyld[90496]: Library not loaded: @rpath/libllama.dylib\n  Referenced from: <653E6B29-4AFF-3485-B031-B4F65747F8CF> /Users/constantmeiring/Downloads/build/llama.cpp/llama-cli\n```\n\n\n\n### Operating systems\n\nMacOS 15.1.1 (24B91)\n\n### GGML backends\n\nMetal\n\n### Hardware\n\nMacbook - M3 Max\n\n### Models\n\n_No response_\n\n### Problem description & steps to reproduce\n\nDownload the latest build and try and run it on Mac.\n\n### First Bad Commit\n\n_No response_\n\n### Relevant log output\n\n```shell\ndyld[90496]: Library not loaded: @rpath/libllama.dylib\n  Referenced from: <653E6B29-4AFF-3485-B031-B4F65747F8CF> /Users/constantmeiring/Downloads/build/llama.cpp/llama-cli\n  Reason: tried: '/Users/runner/work/llama.cpp/llama.cpp/build/src/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/src/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-blas/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-blas/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-metal/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-metal/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-rpc/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-rpc/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/src/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/src/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-blas/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-blas/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-metal/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-metal/libllama.dylib' (no such file), '/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-rpc/libllama.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/runner/work/llama.cpp/llama.cpp/build/ggml/src/ggml-rpc/libllama.dylib' (no such file)\n[1]    90496 abort      ./llama-cli --version\n```",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-20T21:41:04+00:00",
+    "closed_at": "2025-01-25T13:21:45+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/11321/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/11321"
+  },
+  {
+    "number": 6546,
+    "title": "kubernetes example",
+    "body": "### Motivation\r\n\r\nKubernetes is widely used in the industry to deploy product and application at scale.\r\n\r\nIt can be useful for the community to have a `llama.cpp` [helm](https://helm.sh/docs/intro/quickstart/) chart for the server.\r\n\r\nI have started several weeks ago, I will continue when I have more time, meanwhile any help is welcomed:\r\n\r\nhttps://github.com/phymbert/llama.cpp/tree/example/kubernetes/examples/kubernetes\r\n\r\n### References\r\n- #6545\r\n",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "server/webui",
+      "kubernetes"
+    ],
+    "state": "open",
+    "created_at": "2024-04-08T16:31:37+00:00",
+    "closed_at": null,
+    "comments": 18,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6546/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6546"
+  },
+  {
+    "number": 12279,
+    "title": "Misc. bug: tool call issues with hf unsloth/Qwen2.5-Coder-7B-Instruct-128K-GGUF",
+    "body": "### Name and Version\n\nI'm running my server like this, to test #12034 \n```bash\nllama-server --jinja -fa -c 0 -hf unsloth/Qwen2.5-Coder-7B-Instruct-128K-GGUF\n```\n\nUsing various LLM frameworks in different languages, I couldn't get a successful tool call to complete. I've listed the errors, that vary, in the details\n\n\n### Operating systems\n\n_No response_\n\n### Which llama.cpp modules do you know to be affected?\n\n_No response_\n\n### Command line\n\n```shell\nHere's the version of llama-cpp\n\n$ llama-cli --version\nversion: 4856 (6fefc05a)\nbuilt with Apple clang version 16.0.0 (clang-1600.0.26.6) for arm64-apple-darwin24.2.0\n```\n\n### Problem description & steps to reproduce\n\nI ran each [tool calling example app](https://github.com/elastic/observability-examples/tree/main/genai-function-calling) in this directory catching where it errored at via `socat -v TCP-LISTEN:8080,fork TCP:localhost:8081`, then I re-ran the corresponding curl to that failure.\n\n\n### Semantic Kernel dotnet: fails because tool_call.id is returned empty.\n\nFYI this was First noticed here https://github.com/microsoft/semantic-kernel/issues/10842\n\nHere's the equiv request in curl:\n```bash\ncurl -sX POST localhost:8080/v1/chat/completions   -H \"Content-Type: application/json\"   -d '{\n  \"temperature\": 0,\n  \"tools\": [\n    {\n      \"function\": {\n        \"description\": \"Returns the latest GA version of Elasticsearch in \\\"X.Y.Z\\\" format.\",\n        \"name\": \"Elasticsearch-get_latest_version\",\n        \"strict\": false,\n        \"parameters\": {\n          \"type\": \"object\",\n          \"required\": [],\n          \"properties\": {\n            \"majorVersion\": {\n              \"description\": \"Major version to filter by (e.g. 7, 8). Defaults to latest\",\n              \"type\": \"integer\"\n            }\n          }\n        }\n      },\n      \"type\": \"function\"\n    }\n  ],\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"What is the latest version of Elasticsearch 8?\"\n    }\n  ],\n  \"model\": \"unused\",\n  \"tool_choice\": \"auto\"\n}'|jq .\n{\n  \"choices\": [\n    {\n      \"finish_reason\": \"tool_calls\",\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": null,\n        \"tool_calls\": [\n          {\n            \"type\": \"function\",\n            \"function\": {\n              \"name\": \"Elasticsearch-get_latest_version\",\n              \"arguments\": \"{\\\"majorVersion\\\":8}\"\n            },\n            \"id\": \"\"\n          }\n        ]\n      }\n    }\n  ],\n  \"created\": 1741499613,\n  \"model\": \"unused\",\n  \"system_fingerprint\": \"b4856-6fefc05a\",\n  \"object\": \"chat.completion\",\n  \"usage\": {\n    \"completion_tokens\": 32,\n    \"prompt_tokens\": 206,\n    \"total_tokens\": 238\n  },\n  \"id\": \"chatcmpl-d7mNPLF5fmLGgt7VQjyWuBxrScIKzAXY\",\n  \"timings\": {\n    \"prompt_n\": 1,\n    \"prompt_ms\": 55.296,\n    \"prompt_per_token_ms\": 55.296,\n    \"prompt_per_second\": 18.08449074074074,\n    \"predicted_n\": 32,\n    \"predicted_ms\": 1107.194,\n    \"predicted_per_token_ms\": 34.5998125,\n    \"predicted_per_second\": 28.901890725563906\n  }\n}\n```\n\n###  Spring AI: llama-server returns 500 `failed to parse messages: Expected 'content'`\n\nNotes:\n* This also fails the same way with pydantic-ai\n* If you run via ramalama so that you can run `ollama://qwen2.5:3b` with `llama-server`, it completes fine.\n\nHere's the equiv request in curl:\n```bash\n$ curl -sX POST http://localhost:8080/v1/chat/completions   -H \"Content-Type: application/json\"   -d '{\n    \"messages\": [\n      {\n        \"content\": \"What is the latest version of Elasticsearch 8?\",\n        \"role\": \"user\"\n      },\n      {\n        \"role\": \"assistant\",\n        \"tool_calls\": [\n          {\n            \"id\": \"\",\n            \"type\": \"function\",\n            \"function\": {\n              \"name\": \"getLatestElasticsearchVersion\",\n              \"arguments\": \"{\\\"majorVersion\\\":8}\"\n            }\n          }\n        ]\n      },\n      {\n        \"content\": \"\\\"8.17.3\\\"\",\n        \"role\": \"tool\",\n        \"name\": \"getLatestElasticsearchVersion\",\n        \"tool_call_id\": \"\"\n      }\n    ],\n    \"model\": \"unused\",\n    \"stream\": false,\n    \"temperature\": 0.0,\n    \"tools\": [\n      {\n        \"type\": \"function\",\n        \"function\": {\n          \"description\": \"Returns the latest GA version of Elasticsearch in \\\"X.Y.Z\\\" format.\",\n          \"name\": \"getLatestElasticsearchVersion\",\n          \"parameters\": {\n            \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n            \"additionalProperties\": false,\n            \"type\": \"object\",\n            \"properties\": {\n              \"majorVersion\": {\n                \"type\": \"integer\",\n                \"format\": \"int32\",\n                \"description\": \"Major version to filter by (e.g. 7, 8). Defaults to latest\"\n              }\n            },\n            \"required\": [\"majorVersion\"]\n          }\n        }\n      }\n    ]\n  }'|jq .\n{\n  \"error\": {\n    \"code\": 500,\n    \"message\": \"Failed to parse messages: Expected 'content' (ref: https://github.com/ggml-org/llama.cpp/issues/8367); messages = [\\n  {\\n    \\\"content\\\": \\\"What is the latest version of Elasticsearch 8?\\\",\\n    \\\"role\\\": \\\"user\\\"\\n  },\\n  {\\n    \\\"role\\\": \\\"assistant\\\",\\n    \\\"tool_calls\\\": [\\n      {\\n        \\\"id\\\": \\\"\\\",\\n        \\\"type\\\": \\\"function\\\",\\n        \\\"function\\\": {\\n          \\\"name\\\": \\\"getLatestElasticsearchVersion\\\",\\n          \\\"arguments\\\": \\\"{\\\\\\\"majorVersion\\\\\\\":8}\\\"\\n        }\\n      }\\n    ]\\n  },\\n  {\\n    \\\"content\\\": \\\"\\\\\\\"8.17.3\\\\\\\"\\\",\\n    \\\"role\\\": \\\"tool\\\",\\n    \\\"name\\\": \\\"getLatestElasticsearchVersion\\\",\\n    \\\"tool_call_id\\\": \\\"\\\"\\n  }\\n]\",\n    \"type\": \"server_error\"\n  }\n}\n\n```\n\n### Vercel AI (node.js):  returns `choices[0].message.content` xml of the tool content instead of completing\n\nThe last message sent to the LLM is the result of the tool call, it should have completed the initial request, not reformat that same message as xml.\n\nNotes:\n* If you run via ramalama so that you can run `ollama://qwen2.5:3b` with `llama-server`, it completes fine.\n\n```bash\n$ curl -sX POST localhost:8080/v1/chat/completions \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n  \"model\": \"unused\",\n  \"temperature\": 0,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"What is the latest version of Elasticsearch 8?\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"\",\n      \"tool_calls\": [\n        {\n          \"id\": \"\",\n          \"type\": \"function\",\n          \"function\": {\n            \"name\": \"getLatestElasticsearchVersion\",\n            \"arguments\": \"{\\\"majorVersion\\\":8}\"\n          }\n        }\n      ]\n    },\n    {\n      \"role\": \"tool\",\n      \"tool_call_id\": \"\",\n      \"content\": \"\\\"8.17.3\\\"\"\n    }\n  ],\n  \"tools\": [\n    {\n      \"type\": \"function\",\n      \"function\": {\n        \"name\": \"getLatestElasticsearchVersion\",\n        \"description\": \"Get the latest version of Elasticsearch\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"majorVersion\": {\n              \"type\": \"number\",\n              \"description\": \"Major version to filter by (e.g. 7, 8). Defaults to latest\"\n            }\n          },\n          \"additionalProperties\": false,\n          \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n        }\n      }\n    }\n  ],\n  \"tool_choice\": \"auto\"\n}'|jq .\n{\n  \"choices\": [\n    {\n      \"finish_reason\": \"stop\",\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"<tool_response>\\n\\\"8.17.3\\\"\\n</tool_response>\"\n      }\n    }\n  ],\n  \"created\": 1741500130,\n  \"model\": \"unused\",\n  \"system_fingerprint\": \"b4856-6fefc05a\",\n  \"object\": \"chat.completion\",\n  \"usage\": {\n    \"completion_tokens\": 17,\n    \"prompt_tokens\": 267,\n    \"total_tokens\": 284\n  },\n  \"id\": \"chatcmpl-stqLFsYGVG2NBoW8c5gwNSQtDKQMVbQE\",\n  \"timings\": {\n    \"prompt_n\": 64,\n    \"prompt_ms\": 222.386,\n    \"prompt_per_token_ms\": 3.47478125,\n    \"prompt_per_second\": 287.78790031746604,\n    \"predicted_n\": 17,\n    \"predicted_ms\": 565.839,\n    \"predicted_per_token_ms\": 33.28464705882353,\n    \"predicted_per_second\": 30.04388174021232\n  }\n}\n```\n\n### First Bad Commit\n\n_No response_\n\n### Relevant log output\n\n```shell\n\n```",
+    "labels": [
+      "bug"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-09T06:24:52+00:00",
+    "closed_at": "2025-03-10T10:36:35+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12279/reactions",
+      "total_count": 2,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12279"
+  },
+  {
+    "number": 7060,
+    "title": "llava 1.5 invalid output after first inference (llamacpp server)",
+    "body": "I use this server config:\r\n```{\r\n    \"host\": \"0.0.0.0\",\r\n    \"port\": 8085,\r\n    \"api_key\": \"api_key\",\r\n    \"models\": [\r\n        {\r\n            \"model\": \"models/phi3_mini_model/phi3_mini_model.gguf\",\r\n            \"model_alias\": \"gpt-3.5-turbo\",\r\n            \"chat_format\": \"chatml\",\r\n            \"n_gpu_layers\": 35,\r\n            \"offload_kqv\": true,\r\n            \"n_threads\": 12,\r\n            \"n_batch\": 512,\r\n            \"n_ctx\": 2048\r\n        },\r\n        {\r\n            \"model\": \"models/phi3_mini_model/phi3_mini_model.gguf\",\r\n            \"model_alias\": \"gpt-4\",\r\n            \"chat_format\": \"chatml\",\r\n            \"n_gpu_layers\": 35,\r\n            \"offload_kqv\": true,\r\n            \"n_threads\": 12,\r\n            \"n_batch\": 512,\r\n            \"n_ctx\": 4096\r\n        },\r\n        {\r\n            \"model\": \"models/llava15_vision_model/ggml-model-q4_k.gguf\",\r\n            \"model_alias\": \"gpt-4-vision-preview\",\r\n            \"chat_format\": \"llava-1-5\",\r\n            \"clip_model_path\": \"models/llava15_vision_model/mmproj-model-f16.gguf\",\r\n            \"n_gpu_layers\": 35,\r\n            \"offload_kqv\": true,\r\n            \"n_threads\": 12,\r\n            \"n_batch\": 512,\r\n            \"n_ctx\": 2048,\r\n            \"flash_attn\": true\r\n        }\r\n    ]\r\n}\r\n```\r\n\r\nstart server with this command:\r\n```\r\npython3 -m llama_cpp.server --config_file server_config.json\r\n```\r\n\r\nAll works good for only text mode. But for llava 1.5, works only first run, after this for any image response is invalid.\r\n\r\nI execute folllow notebook cells:\r\n\r\n```\r\nfrom openai import OpenAI\r\n\r\nclient = OpenAI(base_url=\"http://localtest.me:8085/v1\", api_key=\"api_key\")\r\n```\r\n\r\n```\r\nimport base64\r\nimport io\r\nfrom PIL import Image\r\nimport requests\r\n\r\ndef load_image_and_convert_to_base64(url):\r\n    image = Image.open(requests.get(url, stream=True).raw)\r\n    image = image.resize((336, 336))\r\n    buffered = io.BytesIO()\r\n    image.save(buffered, format=\"PNG\")\r\n    img_str = base64.b64encode(buffered.getvalue()).decode(\"utf-8\")\r\n    return img_str\r\n\r\n\r\nurl_1 = \"https://www.princeton.edu/sites/default/files/styles/1x_full_2x_half_crop/public/images/2022/02/KOA_Nassau_2697x1517.jpg?itok=Bg2K7j7J\"\r\nurl_2 = \"https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2\"\r\n\r\n\r\nfirst_image_b64 = load_image_and_convert_to_base64(url_1)\r\nsecond_image_b64 = load_image_and_convert_to_base64(url_2)\r\n```\r\n\r\n```\r\ndef generate_caption(image_b64):\r\n    response = client.chat.completions.create(\r\n        model=\"gpt-4-vision-preview\",\r\n        max_tokens=1000,\r\n        stop=[\"<|end|>\"],\r\n        temperature=0.1,\r\n        messages=[\r\n            {\r\n                \"role\": \"system\",\r\n                \"content\": \"You are an assistant who perfectly describes images.\"\r\n            },\r\n            {\r\n                \"role\": \"user\",\r\n                \"content\": [\r\n                    {\"type\": \"text\", \"text\": \"What's in this image?\"},\r\n                    {\"type\": \"image_url\", \"image_url\": {\"url\": f\"data:image/png;base64,{image_b64}\"}}\r\n                ]\r\n            }\r\n        ]\r\n    )\r\n    return response.choices[0].message.content\r\n```\r\n\r\nFor first run works correctly:\r\n\r\n![CleanShot 2024-05-03 at 17 35 45@2x](https://github.com/ggerganov/llama.cpp/assets/39195263/5d0398f3-b4cd-4211-9cba-930b099053f3)\r\n\r\nSecond run with another image dosen't work:\r\n\r\n![CleanShot 2024-05-03 at 17 36 06@2x](https://github.com/ggerganov/llama.cpp/assets/39195263/65cf9b26-ce6a-4802-be22-4b8a21647b6b)\r\n\r\nAgain with first image:\r\n![CleanShot 2024-05-03 at 17 42 01@2x](https://github.com/ggerganov/llama.cpp/assets/39195263/28699a45-25e3-4b22-8240-4379dca28aeb)\r\n\r\nHere are logs for model loading:\r\n```\r\nclip_model_load: loaded meta data with 18 key-value pairs and 377 tensors from models/llava15_vision_model/mmproj-model-f16.gguf\r\nclip_model_load: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nclip_model_load: - kv   0:                       general.architecture str              = clip\r\nclip_model_load: - kv   1:                      clip.has_text_encoder bool             = false\r\nclip_model_load: - kv   2:                    clip.has_vision_encoder bool             = true\r\nclip_model_load: - kv   3:                   clip.has_llava_projector bool             = true\r\nclip_model_load: - kv   4:                          general.file_type u32              = 1\r\nclip_model_load: - kv   5:                               general.name str              = openai/clip-vit-large-patch14-336\r\nclip_model_load: - kv   6:                        general.description str              = image encoder for LLaVA\r\nclip_model_load: - kv   7:                     clip.vision.image_size u32              = 336\r\nclip_model_load: - kv   8:                     clip.vision.patch_size u32              = 14\r\nclip_model_load: - kv   9:               clip.vision.embedding_length u32              = 1024\r\nclip_model_load: - kv  10:            clip.vision.feed_forward_length u32              = 4096\r\nclip_model_load: - kv  11:                 clip.vision.projection_dim u32              = 768\r\nclip_model_load: - kv  12:           clip.vision.attention.head_count u32              = 16\r\nclip_model_load: - kv  13:   clip.vision.attention.layer_norm_epsilon f32              = 0.000010\r\nclip_model_load: - kv  14:                    clip.vision.block_count u32              = 23\r\nclip_model_load: - kv  15:                     clip.vision.image_mean arr[f32,3]       = [0.481455, 0.457828, 0.408211]\r\nclip_model_load: - kv  16:                      clip.vision.image_std arr[f32,3]       = [0.268630, 0.261303, 0.275777]\r\nclip_model_load: - kv  17:                              clip.use_gelu bool             = false\r\nclip_model_load: - type  f32:  235 tensors\r\nclip_model_load: - type  f16:  142 tensors\r\nggml_metal_init: allocating\r\nggml_metal_init: found device: Apple M3 Max\r\nggml_metal_init: picking default device: Apple M3 Max\r\nggml_metal_init: using embedded metal library\r\nggml_metal_init: GPU name:   Apple M3 Max\r\nggml_metal_init: GPU family: MTLGPUFamilyApple9  (1009)\r\nggml_metal_init: GPU family: MTLGPUFamilyCommon3 (3003)\r\nggml_metal_init: GPU family: MTLGPUFamilyMetal3  (5001)\r\nggml_metal_init: simdgroup reduction support   = true\r\nggml_metal_init: simdgroup matrix mul. support = true\r\nggml_metal_init: hasUnifiedMemory              = true\r\nggml_metal_init: recommendedMaxWorkingSetSize  = 28991.03 MB\r\nclip_model_load: CLIP using Metal backend\r\nclip_model_load: params backend buffer size =  595.49 MB (377 tensors)\r\nkey clip.vision.image_grid_pinpoints not found in file\r\nkey clip.vision.mm_patch_merge_type not found in file\r\nkey clip.vision.image_crop_resolution not found in file\r\nclip_model_load: compute allocated memory: 32.89 MB\r\nllama_model_loader: loaded meta data with 19 key-value pairs and 291 tensors from models/llava15_vision_model/ggml-model-q4_k.gguf (version GGUF V2)\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = llama\r\nllama_model_loader: - kv   1:                               general.name str              = LLaMA v2\r\nllama_model_loader: - kv   2:                       llama.context_length u32              = 4096\r\nllama_model_loader: - kv   3:                     llama.embedding_length u32              = 4096\r\nllama_model_loader: - kv   4:                          llama.block_count u32              = 32\r\nllama_model_loader: - kv   5:                  llama.feed_forward_length u32              = 11008\r\nllama_model_loader: - kv   6:                 llama.rope.dimension_count u32              = 128\r\nllama_model_loader: - kv   7:                 llama.attention.head_count u32              = 32\r\nllama_model_loader: - kv   8:              llama.attention.head_count_kv u32              = 32\r\nllama_model_loader: - kv   9:     llama.attention.layer_norm_rms_epsilon f32              = 0.000010\r\nllama_model_loader: - kv  10:                          general.file_type u32              = 15\r\nllama_model_loader: - kv  11:                       tokenizer.ggml.model str              = llama\r\nllama_model_loader: - kv  12:                      tokenizer.ggml.tokens arr[str,32000]   = [\"<unk>\", \"<s>\", \"</s>\", \"<0x00>\", \"<...\r\nllama_model_loader: - kv  13:                      tokenizer.ggml.scores arr[f32,32000]   = [0.000000, 0.000000, 0.000000, 0.0000...\r\nllama_model_loader: - kv  14:                  tokenizer.ggml.token_type arr[i32,32000]   = [2, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, ...\r\nllama_model_loader: - kv  15:                tokenizer.ggml.bos_token_id u32              = 1\r\nllama_model_loader: - kv  16:                tokenizer.ggml.eos_token_id u32              = 2\r\nllama_model_loader: - kv  17:            tokenizer.ggml.padding_token_id u32              = 0\r\nllama_model_loader: - kv  18:               general.quantization_version u32              = 2\r\nllama_model_loader: - type  f32:   65 tensors\r\nllama_model_loader: - type q4_K:  193 tensors\r\nllama_model_loader: - type q6_K:   33 tensors\r\nllm_load_vocab: special tokens definition check successful ( 259/32000 ).\r\nllm_load_print_meta: format           = GGUF V2\r\nllm_load_print_meta: arch             = llama\r\nllm_load_print_meta: vocab type       = SPM\r\nllm_load_print_meta: n_vocab          = 32000\r\nllm_load_print_meta: n_merges         = 0\r\nllm_load_print_meta: n_ctx_train      = 4096\r\nllm_load_print_meta: n_embd           = 4096\r\nllm_load_print_meta: n_head           = 32\r\nllm_load_print_meta: n_head_kv        = 32\r\nllm_load_print_meta: n_layer          = 32\r\nllm_load_print_meta: n_rot            = 128\r\nllm_load_print_meta: n_embd_head_k    = 128\r\nllm_load_print_meta: n_embd_head_v    = 128\r\nllm_load_print_meta: n_gqa            = 1\r\nllm_load_print_meta: n_embd_k_gqa     = 4096\r\nllm_load_print_meta: n_embd_v_gqa     = 4096\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-05\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 0.0e+00\r\nllm_load_print_meta: n_ff             = 11008\r\nllm_load_print_meta: n_expert         = 0\r\nllm_load_print_meta: n_expert_used    = 0\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = 0\r\nllm_load_print_meta: rope scaling     = linear\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: n_yarn_orig_ctx  = 4096\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: model type       = 7B\r\nllm_load_print_meta: model ftype      = Q4_K - Medium\r\nllm_load_print_meta: model params     = 6.74 B\r\nllm_load_print_meta: model size       = 3.80 GiB (4.84 BPW) \r\nllm_load_print_meta: general.name     = LLaMA v2\r\nllm_load_print_meta: BOS token        = 1 '<s>'\r\nllm_load_print_meta: EOS token        = 2 '</s>'\r\nllm_load_print_meta: UNK token        = 0 '<unk>'\r\nllm_load_print_meta: PAD token        = 0 '<unk>'\r\nllm_load_print_meta: LF token         = 13 '<0x0A>'\r\nllm_load_tensors: ggml ctx size =    0.30 MiB\r\nggml_backend_metal_log_allocated_size: allocated buffer, size =  3820.94 MiB, ( 4460.03 / 27648.00)\r\nllm_load_tensors: offloading 32 repeating layers to GPU\r\nllm_load_tensors: offloading non-repeating layers to GPU\r\nllm_load_tensors: offloaded 33/33 layers to GPU\r\nllm_load_tensors:        CPU buffer size =    70.31 MiB\r\nllm_load_tensors:      Metal buffer size =  3820.93 MiB\r\n..................................................................................................\r\nllama_new_context_with_model: n_ctx      = 2048\r\nllama_new_context_with_model: n_batch    = 512\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: flash_attn = 0\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 1\r\nggml_metal_init: allocating\r\nggml_metal_init: found device: Apple M3 Max\r\nggml_metal_init: picking default device: Apple M3 Max\r\nggml_metal_init: using embedded metal library\r\nggml_metal_init: GPU name:   Apple M3 Max\r\nggml_metal_init: GPU family: MTLGPUFamilyApple9  (1009)\r\nggml_metal_init: GPU family: MTLGPUFamilyCommon3 (3003)\r\nggml_metal_init: GPU family: MTLGPUFamilyMetal3  (5001)\r\nggml_metal_init: simdgroup reduction support   = true\r\nggml_metal_init: simdgroup matrix mul. support = true\r\nggml_metal_init: hasUnifiedMemory              = true\r\nggml_metal_init: recommendedMaxWorkingSetSize  = 28991.03 MB\r\nllama_kv_cache_init:      Metal KV buffer size =  1024.00 MiB\r\nllama_new_context_with_model: KV self size  = 1024.00 MiB, K (f16):  512.00 MiB, V (f16):  512.00 MiB\r\nllama_new_context_with_model:        CPU  output buffer size =     0.14 MiB\r\nllama_new_context_with_model:      Metal compute buffer size =   164.00 MiB\r\nllama_new_context_with_model:        CPU compute buffer size =    12.01 MiB\r\nllama_new_context_with_model: graph nodes  = 1030\r\nllama_new_context_with_model: graph splits = 2\r\nAVX = 0 | AVX_VNNI = 0 | AVX2 = 0 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | FMA = 0 | NEON = 1 | ARM_FMA = 1 | F16C = 0 | FP16_VA = 1 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 0 | SSSE3 = 0 | VSX = 0 | MATMUL_INT8 = 0 | LLAMAFILE = 1 | \r\nModel metadata: {'general.quantization_version': '2', 'tokenizer.ggml.padding_token_id': '0', 'tokenizer.ggml.eos_token_id': '2', 'tokenizer.ggml.bos_token_id': '1', 'tokenizer.ggml.model': 'llama', 'llama.attention.head_count_kv': '32', 'llama.context_length': '4096', 'llama.attention.head_count': '32', 'llama.rope.dimension_count': '128', 'general.file_type': '15', 'llama.feed_forward_length': '11008', 'llama.embedding_length': '4096', 'llama.block_count': '32', 'general.architecture': 'llama', 'llama.attention.layer_norm_rms_epsilon': '0.000010', 'general.name': 'LLaMA v2'}\r\nencode_image_with_clip: image embedding created: 576 tokens\r\n```",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-03T14:47:40+00:00",
+    "closed_at": "2024-05-10T06:41:11+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7060/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 2
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7060"
+  },
+  {
+    "number": 1081,
+    "title": "Multi-thread the Q8_0 quantization in ggml_compute_forward_mul_mat_q_f32()",
+    "body": "This part takes about 10% of the total inference time for 7B and it is currently single-threaded:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/6a9661ea5ad72166b700ae5e87976e4452499dda/ggml.c#L7877-L7884\r\n\r\nTry to multi-thread this by splitting the work across rows.\r\nSince the `GGML_TASK_INIT` currently runs only 1 thread, either:\r\n- update `ggml` to support multi-threaded `GGML_TASK_INIT`\r\n- move the quantization in `GGML_TASK_COMPUTE` (might be difficult since no barrier mechanism)",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-20T15:24:39+00:00",
+    "closed_at": "2023-04-23T10:35:28+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1081/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1081"
+  },
+  {
+    "number": 6516,
+    "title": "CPU only, Vs GPU/CPU split VS GPU only",
+    "body": "Windows 11 (24 core/32 processor) (nov 2023, 6MHZ processor) , 64 GIG ram, Nvidia 16 GB card (GEforce RTX 4060TI ) , version LLAMA.CPP mar 31 2024.\r\n\r\nI have noticed some anomalies after testing close to 500 GGUF models over the past 6 months.\r\nI have a standardized method of testing models, and record the results (and any issues) and grade them from 1 to 10 (1 being top).\r\nThis includes models from 1B to 70B in size, with some testing of 103/120 B models.\r\nThis covers multiple quants as well as Imatrix quants including standard models, MOEs (all sizes, configs) and merged models.\r\n\r\nTHE ISSUE:\r\nSpecifically differences between CPU only, GPU/CPU split, and GPU only processing of instructions and output quality.\r\n\r\nIn some cases CPU VS GPU : CPU performance - in terms of quality is much higher than GPU only.\r\nIn some cases CPU/GPU (split 50,50) is superior to GPU only quality.\r\n\r\nTesting involves getting a GPU baseline, CPU baseline and then GPU/CPU baseline and comparing carefully.\r\n\r\nRESULT DIFFERENCES:\r\n\r\nIn some cases GPU/CPU split quality is 1 to 2 points HIGHER than GPU only output.\r\nIn some cases CPU only is 1 point to 2 points higher than GPU output.\r\n(note: Prompt the same, no change in any parameters)\r\n\r\nTo be clear - this is not to infer than GPU performance is not exceptional - it is. \r\nI can not explain the differences in results, but I can detect them. (??)\r\n\r\nIE: Running 13B model @ Q8 : First in GPU only, then GPU only, and then 50/50 split.\r\nI tested this across a spectrum of models including factors such as age \r\n(IE created 4 months ago vs 2 weeks ago - all same \"Q8\").\r\n\r\nAs of this writing further experimentation is underway to ascertain the \"sweet spot\" between GPU/CPU \"splitting\" to optimize T/S and quality - where quality is the priority. (IE: 25% cpu with 75% GPU, % of layers offload to CPU etc etc)\r\n\r\nI was wondering if you could shed some light on these results as it might be the gateway to further LLAMA.CPP quants of a hybrid nature as well as enhanced quality overall - instruction following and output.\r\n\r\nI have to say also, that after testing close to 100 IMAT/IMATRIX quants (as well as comparing to \"old\" Qs and GPTQ/AWQ etc) that you guys have knocked it out of the park with this new post compression quality process.\r\n",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-07T00:01:57+00:00",
+    "closed_at": "2024-04-16T05:01:15+00:00",
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6516/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 2
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6516"
+  },
+  {
+    "number": 3969,
+    "title": "Infinite loop of \"context shift\"",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [x] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [x] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [x] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\n\r\nllama.cpp (server) processes inputs\r\n\r\n# Current Behavior\r\n\r\nWhen chatting with the LLM through `server` (and `api_like_OAI.py`) it works for a bit, but then seemingly when `--ctx-size` is exceeded, it gets into an infinite loop of `context_shift`s:\r\n\r\nI have mostly seen:\r\n\r\n`slot 0: context shift - n_keep = 4092, n_left = 2, n_discard = 1`\r\n\r\nbut am currently looking at:\r\n\r\n`slot 0: context shift - n_keep = 2224, n_left = 3894, n_discard = 1947`\r\n\r\nIt just keeps repeating this at near-full GPU usage without ever continuing. I have to restart `server`.\r\n\r\n# Environment and Context\r\n\r\nI've seen this happen both on the Windows (`llama-b1492-bin-win-cublas-cu12.2.0-x64.zip`) host as well as on WSL2 (tag `b1492`, `make LLAMA_CUBLAS=1`), with:\r\n\r\n`server -t 16 -m deepseek-coder-33b-instruct.Q4_K_S.gguf -c 6120 --timeout 30 -ngl 65`\r\n\r\nNote that these are the several-times-corrected gguf's from TheBloke, and the latest at time of writing (there was a tokenizer issue before). md5sum `19a1079a27fd5a6925a34076de8fbf74 deepseek-coder-33b-instruct.Q4_K_S.gguf`\r\n\r\n* Physical (or virtual) hardware you are using, e.g. for Linux:\r\n\r\nFrom WSL2:\r\n\r\n```\r\nArchitecture:                    x86_64\r\nCPU op-mode(s):                  32-bit, 64-bit\r\nByte Order:                      Little Endian\r\nAddress sizes:                   48 bits physical, 48 bits virtual\r\nCPU(s):                          32\r\nOn-line CPU(s) list:             0-31\r\nThread(s) per core:              2\r\nCore(s) per socket:              16\r\nSocket(s):                       1\r\nVendor ID:                       AuthenticAMD\r\nCPU family:                      23\r\nModel:                           8\r\nModel name:                      AMD Ryzen Threadripper 2950X 16-Core Processor\r\nStepping:                        2\r\nCPU MHz:                         3493.482\r\nBogoMIPS:                        6986.96\r\nVirtualization:                  AMD-V\r\nHypervisor vendor:               Microsoft\r\nVirtualization type:             full\r\nL1d cache:                       512 KiB\r\nL1i cache:                       1 MiB\r\nL2 cache:                        8 MiB\r\nL3 cache:                        32 MiB\r\nVulnerability Itlb multihit:     Not affected\r\nVulnerability L1tf:              Not affected\r\nVulnerability Mds:               Not affected\r\nVulnerability Meltdown:          Not affected\r\nVulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp\r\nVulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization\r\nVulnerability Spectre v2:        Mitigation; Full AMD retpoline, IBPB conditional, STIBP disabled, RSB filling\r\nVulnerability Srbds:             Not affected\r\nVulnerability Tsx async abort:   Not affected\r\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl tsc_reliable nonstop_tsc cpuid extd_apicid pni pclmulqdq ssse3 fma cx16 ss\r\n                                 e4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy svm cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext ssbd ibpb vmmcall fsgsbase bmi1 avx2 smep bmi2 rdseed adx smap clflushopt sha_ni xsaveopt xsavec xgetb\r\n                                 v1 xsaves clzero xsaveerptr virt_ssbd arat npt nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold v_vmsave_vmload\r\n```\r\n\r\n* Operating System, e.g. for Linux:\r\n\r\n`Linux Jorrit 5.10.43.3-microsoft-standard-WSL2 #1 SMP Wed Jun 16 23:47:55 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux`\r\n\r\n* SDK version, e.g. for Linux:\r\n\r\n```\r\nPython 3.10.13\r\nGNU Make 4.2.1\r\ng++ (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0\r\n```\r\n\r\n# Failure Information (for bugs)\r\n\r\nPlease help provide information about the failure / bug.\r\n\r\n# Steps to Reproduce\r\n\r\nPlease provide detailed steps for reproducing the issue. We are not sitting in front of your screen, so the more detail the better.\r\n\r\n1. `server -t 16 -m deepseek-coder-33b-instruct.Q4_K_S.gguf -c 6120 --timeout 30 -ngl 65`\r\n2. `python api_like_OAI.py --chat-prompt \"You are an AI programming assistant, utilizing the Deepseek Coder model, developed by Deepseek Company, and you only answer questions related to computer science. For politically sensitive questions, security and privacy issues, and other non-computer science questions, you will refuse to answer.\\n\" --user-name \"\\n### Instruction:\\n\" --ai-name \"\\n### Response:\\n\" --system-name \"\\n\"`\r\n3. Talk to API and exceed context size (I use Aider's test benchmark, which is tricky to get working, but if interested - [instructions](https://github.com/paul-gauthier/aider/tree/main/benchmark) )\r\n4. Infinite `context shift` loop\r\n\r\n# Failure Logs\r\n\r\n```\r\nggml_init_cublas: GGML_CUDA_FORCE_MMQ:   no\r\nggml_init_cublas: CUDA_USE_TENSOR_CORES: yes\r\nggml_init_cublas: found 1 CUDA devices:\r\n  Device 0: NVIDIA GeForce RTX 4090, compute capability 8.9\r\n{\"timestamp\":1699281996,\"level\":\"INFO\",\"function\":\"main\",\"line\":2267,\"message\":\"build info\",\"build\":1492,\"commit\":\"2833a6f\"}\r\n{\"timestamp\":1699281996,\"level\":\"INFO\",\"function\":\"main\",\"line\":2274,\"message\":\"system info\",\"n_threads\":16,\"n_threads_batch\":-1,\"total_threads\":32,\"system_info\":\"AVX = 1 | AVX2 = 1 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | SSSE3 = 0 | VSX = 0 | \"}\r\nllama_model_loader: loaded meta data with 22 key-value pairs and 561 tensors from s:\\WizardCoder34B\\deepseek-coder-33b-instruct.Q4_K_S.gguf (version GGUF V3 (latest))\r\n\r\n( ... llama_model_loader ... )\r\n\r\nllama_model_loader: - kv   0:                       general.architecture str\r\nllama_model_loader: - kv   1:                               general.name str\r\nllama_model_loader: - kv   2:                       llama.context_length u32\r\nllama_model_loader: - kv   3:                     llama.embedding_length u32\r\nllama_model_loader: - kv   4:                          llama.block_count u32\r\nllama_model_loader: - kv   5:                  llama.feed_forward_length u32\r\nllama_model_loader: - kv   6:                 llama.rope.dimension_count u32\r\nllama_model_loader: - kv   7:                 llama.attention.head_count u32\r\nllama_model_loader: - kv   8:              llama.attention.head_count_kv u32\r\nllama_model_loader: - kv   9:     llama.attention.layer_norm_rms_epsilon f32\r\nllama_model_loader: - kv  10:                       llama.rope.freq_base f32\r\nllama_model_loader: - kv  11:                    llama.rope.scale_linear f32\r\nllama_model_loader: - kv  12:                          general.file_type u32\r\nllama_model_loader: - kv  13:                       tokenizer.ggml.model str\r\nllama_model_loader: - kv  14:                      tokenizer.ggml.tokens arr\r\nllama_model_loader: - kv  15:                      tokenizer.ggml.scores arr\r\nllama_model_loader: - kv  16:                  tokenizer.ggml.token_type arr\r\nllama_model_loader: - kv  17:                      tokenizer.ggml.merges arr\r\nllama_model_loader: - kv  18:                tokenizer.ggml.bos_token_id u32\r\nllama_model_loader: - kv  19:                tokenizer.ggml.eos_token_id u32\r\nllama_model_loader: - kv  20:            tokenizer.ggml.padding_token_id u32\r\nllama_model_loader: - kv  21:               general.quantization_version u32\r\nllama_model_loader: - type  f32:  125 tensors\r\nllama_model_loader: - type q4_K:  427 tensors\r\nllama_model_loader: - type q5_K:    8 tensors\r\nllama_model_loader: - type q6_K:    1 tensors\r\nllm_load_vocab: mismatch in special tokens definition ( 243/32256 vs 237/32256 ).\r\nllm_load_print_meta: format           = GGUF V3 (latest)\r\nllm_load_print_meta: arch             = llama\r\nllm_load_print_meta: vocab type       = BPE\r\nllm_load_print_meta: n_vocab          = 32256\r\nllm_load_print_meta: n_merges         = 31757\r\nllm_load_print_meta: n_ctx_train      = 16384\r\nllm_load_print_meta: n_embd           = 7168\r\nllm_load_print_meta: n_head           = 56\r\nllm_load_print_meta: n_head_kv        = 8\r\nllm_load_print_meta: n_layer          = 62\r\nllm_load_print_meta: n_rot            = 128\r\nllm_load_print_meta: n_gqa            = 7\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-06\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: n_ff             = 19200\r\nllm_load_print_meta: rope scaling     = linear\r\nllm_load_print_meta: freq_base_train  = 100000.0\r\nllm_load_print_meta: freq_scale_train = 0.25\r\nllm_load_print_meta: n_yarn_orig_ctx  = 16384\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: model type       = ?B\r\nllm_load_print_meta: model ftype      = mostly Q4_K - Small\r\nllm_load_print_meta: model params     = 33.34 B\r\nllm_load_print_meta: model size       = 17.59 GiB (4.53 BPW)\r\nllm_load_print_meta: general.name   = deepseek-ai_deepseek-coder-33b-instruct\r\nllm_load_print_meta: BOS token = 32013 '<\u2229\u255c\u00a3begin\u0393\u00fb\u00fcof\u0393\u00fb\u00fcsentence\u2229\u255c\u00a3>'\r\nllm_load_print_meta: EOS token = 32021 '<|EOT|>'\r\nllm_load_print_meta: PAD token = 32014 '<\u2229\u255c\u00a3end\u0393\u00fb\u00fcof\u0393\u00fb\u00fcsentence\u2229\u255c\u00a3>'\r\nllm_load_print_meta: LF token  = 30 '?'\r\nllm_load_tensors: ggml ctx size =    0.21 MB\r\nllm_load_tensors: using CUDA for GPU acceleration\r\nllm_load_tensors: mem required  =  124.24 MB\r\nllm_load_tensors: offloading 62 repeating layers to GPU\r\nllm_load_tensors: offloading non-repeating layers to GPU\r\nllm_load_tensors: offloaded 65/65 layers to GPU\r\nllm_load_tensors: VRAM used: 17891.45 MB\r\n...................................................................................................\r\nllama_new_context_with_model: n_ctx      = 6120\r\nllama_new_context_with_model: freq_base  = 100000.0\r\nllama_new_context_with_model: freq_scale = 0.25\r\nllama_kv_cache_init: offloading v cache to GPU\r\nllama_kv_cache_init: offloading k cache to GPU\r\nllama_kv_cache_init: VRAM kv self = 1482.19 MB\r\nllama_new_context_with_model: kv self size  = 1482.19 MB\r\nllama_build_graph: non-view tensors processed: 1430/1430\r\nllama_new_context_with_model: compute buffer total size = 729.96 MB\r\nllama_new_context_with_model: VRAM scratch buffer: 723.33 MB\r\nllama_new_context_with_model: total VRAM used: 20096.97 MB (model: 17891.45 MB, context: 2205.52 MB)\r\nAvailable slots:\r\n -> Slot 0 - max context: 6120\r\n\r\nllama server listening at http://0.0.0.0:8080\r\n\r\n( ... lots of API calls ... )\r\n\r\nprint_timings: prompt eval time =     514.27 ms /   521 tokens (    0.99 ms per token,  1013.09 tokens per second)\r\nprint_timings:        eval time =    9365.17 ms /   250 runs   (   37.46 ms per token,    26.69 tokens per second)\r\nprint_timings:       total time =    9879.43 ms\r\nslot 0 released (1119 tokens in cache)\r\n{\"timestamp\":1699284174,\"level\":\"INFO\",\"function\":\"log_server_request\",\"line\":2217,\"message\":\"request\",\"remote_addr\":\"172.22.146.2\",\"remote_port\":57682,\"status\":200,\"method\":\"POST\",\"path\":\"/completion\",\"params\":{}}\r\nslot 0 is processing [task id: 204]\r\nslot 0 : in cache: 347 tokens | to process: 934 tokens\r\nslot 0 : kv cache rm - [347, end)\r\n\r\nprint_timings: prompt eval time =     845.49 ms /   934 tokens (    0.91 ms per token,  1104.68 tokens per second)\r\nprint_timings:        eval time =   13463.77 ms /   352 runs   (   38.25 ms per token,    26.14 tokens per second)\r\nprint_timings:       total time =   14309.26 ms\r\nslot 0 released (1634 tokens in cache)\r\n{\"timestamp\":1699284188,\"level\":\"INFO\",\"function\":\"log_server_request\",\"line\":2217,\"message\":\"request\",\"remote_addr\":\"172.22.146.2\",\"remote_port\":57686,\"status\":200,\"method\":\"POST\",\"path\":\"/completion\",\"params\":{}}\r\nslot 0 is processing [task id: 205]\r\nslot 0 : in cache: 336 tokens | to process: 1888 tokens\r\nslot 0 : kv cache rm - [336, end)\r\nslot 0: context shift - n_keep = 2224, n_left = 3894, n_discard = 1947\r\nslot 0: context shift - n_keep = 2224, n_left = 3894, n_discard = 1947\r\nslot 0: context shift - n_keep = 2224, n_left = 3894, n_discard = 1947\r\nslot 0: context shift - n_keep = 2224, n_left = 3894, n_discard = 1947\r\nslot 0: context shift - n_keep = 2224, n_left = 3894, n_discard = 1947\r\nslot 0: context shift - n_keep = 2224, n_left = 3894, n_discard = 1947\r\nslot unavailable\r\n{\"timestamp\":1699284790,\"level\":\"INFO\",\"function\":\"log_server_request\",\"line\":2217,\"message\":\"request\",\"remote_addr\":\"172.22.146.2\",\"remote_port\":57694,\"status\":404,\"method\":\"POST\",\"path\":\"/completion\",\"params\":{}}\r\nslot unavailable\r\n{\"timestamp\":1699284790,\"level\":\"INFO\",\"function\":\"log_server_request\",\"line\":2217,\"message\":\"request\",\"remote_addr\":\"172.22.146.2\",\"remote_port\":57698,\"status\":404,\"method\":\"POST\",\"path\":\"/completion\",\"params\":{}}\r\nslot unavailable\r\n{\"timestamp\":1699284791,\"level\":\"INFO\",\"function\":\"log_server_request\",\"line\":2217,\"message\":\"request\",\"remote_addr\":\"172.22.146.2\",\"remote_port\":57702,\"status\":404,\"method\":\"POST\",\"path\":\"/completion\",\"params\":{}}\r\nslot unavailable\r\n{\"timestamp\":1699284797,\"level\":\"INFO\",\"function\":\"log_server_request\",\"line\":2217,\"message\":\"request\",\"remote_addr\":\"172.22.146.2\",\"remote_port\":57706,\"status\":404,\"method\":\"POST\",\"path\":\"/completion\",\"params\":{}}\r\nslot unavailable\r\n{\"timestamp\":1699284803,\"level\":\"INFO\",\"function\":\"log_server_request\",\"line\":2217,\"message\":\"request\",\"remote_addr\":\"172.22.146.2\",\"remote_port\":57710,\"status\":404,\"method\":\"POST\",\"path\":\"/completion\",\"params\":{}}\r\nslot unavailable\r\n{\"timestamp\":1699284833,\"level\":\"INFO\",\"function\":\"log_server_request\",\"line\":2217,\"message\":\"request\",\"remote_addr\":\"172.22.146.2\",\"remote_port\":57714,\"status\":404,\"method\":\"POST\",\"path\":\"/completion\",\"params\":{}}\r\nslot 0: context shift - n_keep = 2224, n_left = 3894, n_discard = 1947\r\nslot unavailable\r\n{\"timestamp\":1699284864,\"level\":\"INFO\",\"function\":\"log_server_request\",\"line\":2217,\"message\":\"request\",\"remote_addr\":\"172.22.146.2\",\"remote_port\":57718,\"status\":404,\"method\":\"POST\",\"path\":\"/completion\",\"params\":{}}\r\nslot unavailable\r\n{\"timestamp\":1699284900,\"level\":\"INFO\",\"function\":\"log_server_request\",\"line\":2217,\"message\":\"request\",\"remote_addr\":\"172.22.146.2\",\"remote_port\":57722,\"status\":404,\"method\":\"POST\",\"path\":\"/completion\",\"params\":{}}\r\nslot 0: context shift - n_keep = 2224, n_left = 3894, n_discard = 1947\r\nslot unavailable\r\n{\"timestamp\":1699284975,\"level\":\"INFO\",\"function\":\"log_server_request\",\"line\":2217,\"message\":\"request\",\"remote_addr\":\"172.22.146.2\",\"remote_port\":57726,\"status\":404,\"method\":\"POST\",\"path\":\"/completion\",\"params\":{}}\r\nslot 0: context shift - n_keep = 2224, n_left = 3894, n_discard = 1947\r\nslot 0: context shift - n_keep = 2224, n_left = 3894, n_discard = 1947\r\n(repeats forever)\r\n```\r\n",
+    "labels": [
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-06T16:02:22+00:00",
+    "closed_at": "2024-02-23T18:41:04+00:00",
+    "comments": 23,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3969/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3969"
+  },
+  {
+    "number": 1519,
+    "title": "new cuda kernel for quantized direct multiplication - performance not worth it ?",
+    "body": "I was surprised to see dmmv() being implemented, I had tested (a less well optimized) cuda kernel for 4 bit quantization a week ago and my result was that the performance loss can not be overcome without an incredible effort in optimization.\r\n\r\ncuBLAS (and I suppose clBLAST too in that regard) uses Tensor cores, not CUDA cores. Also this stuff goes through a series of complex optimizations. Last time I compared the speed difference from a custom \"average\" kernel from scratch to cuBLAS was **30+ times**.\r\nThat hit can not be compensated with the lower performance required from low precision calculations.\r\n\r\nI just ran a quick test on Q8_0 with the new kernel on and forced off using ggml_cuda_mul_mat_q_f32()\r\nwith the new kernel I had average times of 580ms matmul per layer\r\nwith the new kernel disabled it's down to 150ms matmul per layer\r\n\r\nIt would be awesome to have a high performance kernel that can process 4,5,8 bit quantized values but that would need to be optimized a ton to compete.\r\n\r\nI suppose there are some cases where the new function is providing a benefit but it's likely depending a lot by the model, quantization type and gpu",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-05-18T14:20:51+00:00",
+    "closed_at": "2023-05-21T16:31:47+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1519/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1519"
+  },
+  {
+    "number": 730,
+    "title": "New kv_cache API insufficient to restore model state",
+    "body": "I may be doing something wrong or misunderstanding the purpose of the `kv_cache` API but I believe the recent PR #685 by @chrfalch which added the ability to get / set the `kv_cache` is still insufficient to restore the state of the model even when resetting external model state such as `last_n_tokens_data` and `n_past`.\r\n\r\nHere is a minimal example\r\n\r\n```c++\r\n#include \"llama.h\"\r\n#include <vector>\r\n#include <iostream>\r\n\r\nusing namespace std;\r\n\r\nint main() {\r\n    // init\r\n    auto params = llama_context_default_params();\r\n    auto ctx = llama_init_from_file(\"../../models/ggml-model.bin\", params);\r\n    auto tokens = vector<llama_token>(params.n_ctx);\r\n    auto prompt = \"The quick brown fox\";\r\n    auto n_tokens = llama_tokenize(ctx, prompt, tokens.data(), tokens.size(), true);\r\n\r\n    // evaluate prompt\r\n    llama_eval(ctx, tokens.data(), n_tokens, 0, 12);\r\n    auto last_n_tokens_size = 64;\r\n    auto last_n_tokens_data = vector<llama_token>(last_n_tokens_size, 0);\r\n    last_n_tokens_data.insert(last_n_tokens_data.end(), tokens.data(), tokens.data() + n_tokens);\r\n    auto n_past = n_tokens;\r\n\r\n    // save state\r\n    auto kv_cache_size = llama_get_kv_cache_size(ctx);\r\n    auto kv_cache_token_count = llama_get_kv_cache_token_count(ctx);\r\n    auto kv_cache = llama_get_kv_cache(ctx);\r\n    auto kv_cache_copy = vector<uint8_t>(kv_cache, kv_cache + kv_cache_size);\r\n    auto n_past_copy = n_past;\r\n    auto last_n_tokens_data_copy = vector<llama_token>(last_n_tokens_data);\r\n    \r\n    // first run\r\n    cout << prompt;\r\n    for (auto i = 0; i < 6; i++) {\r\n        auto next_token = llama_sample_top_p_top_k(\r\n            ctx,\r\n            last_n_tokens_data.data() + last_n_tokens_data.size() - n_past,\r\n            last_n_tokens_size,\r\n            1,\r\n            1.0,\r\n            0.0,\r\n            1.1\r\n        );\r\n        auto next_token_str = llama_token_to_str(ctx, next_token);\r\n        last_n_tokens_data.push_back(next_token);\r\n        cout << next_token_str;\r\n        llama_eval(ctx, &next_token, 1, n_past, 12);\r\n        n_past += 1;\r\n    }\r\n    cout << endl;\r\n    //\r\n\r\n    // restore state\r\n    llama_set_kv_cache(ctx, kv_cache_copy.data(), kv_cache_size, kv_cache_token_count);\r\n    last_n_tokens_data = last_n_tokens_data_copy;\r\n    n_past = n_past_copy;\r\n    //\r\n\r\n    // second run\r\n    cout << prompt;\r\n    for (auto i = 0; i < 6; i++) {\r\n        auto next_token = llama_sample_top_p_top_k(\r\n            ctx,\r\n            last_n_tokens_data.data() + last_n_tokens_data.size() - n_past,\r\n            last_n_tokens_size,\r\n            1,\r\n            1.0,\r\n            0.0,\r\n            1.1\r\n        );\r\n        auto next_token_str = llama_token_to_str(ctx, next_token);\r\n        last_n_tokens_data.push_back(next_token);\r\n        cout << next_token_str;\r\n        llama_eval(ctx, &next_token, 1, n_past, 12);\r\n        n_past += 1;\r\n    }\r\n    cout << endl;\r\n    //\r\n    return 0;\r\n}\r\n```\r\n\r\nI'd expect the following output\r\n\r\n```\r\nThe quick brown fox jumps over the lazy dog\r\nThe quick brown fox jumps over the lazy dog\r\n```\r\n\r\nBut instead I get \r\n\r\n```\r\nThe quick brown fox jumps over the lazy dog\r\nThe quick brown fox.\r\nThe quick brown fo\r\n```\r\n\r\nWhich implies the model is still generating from the end of the first run.",
+    "labels": [
+      "bug",
+      "help wanted",
+      "good first issue",
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-03T03:28:49+00:00",
+    "closed_at": "2023-04-23T13:51:21+00:00",
+    "comments": 23,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/730/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/730"
+  }
+]

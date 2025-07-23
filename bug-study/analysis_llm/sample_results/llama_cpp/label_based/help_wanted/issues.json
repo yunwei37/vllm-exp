@@ -1,0 +1,839 @@
+[
+  {
+    "number": 582,
+    "title": "Fix failing CI test using thread sanitizer",
+    "body": "I cannot reproduce on my machines:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/actions/runs/4545676297/jobs/8013336777\r\n\r\nIf someone that can reproduce, please try to fix this",
+    "labels": [
+      "help wanted",
+      "high priority",
+      "testing"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-28T17:16:53+00:00",
+    "closed_at": "2023-04-02T07:18:54+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/582/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/582"
+  },
+  {
+    "number": 2504,
+    "title": "convert.py can not identify type of pytorch BF16 tensors",
+    "body": "The original model files have tensors stored in BF16 which have a wider numeric range than F16. The quality will suffer too much if the norm tensors are converted to lower precision, I believe this is the reason why they are always stored in F32 since there is no support for BF16 in ggml.\r\n\r\nWhen I tried to list the tensor types in convert.py for experimentation purposes, I discovered that all BF16 tensors in pytorch and safetensors models are identified as F16, but are for some unknown reason correctly converted to F32. BF16 tensors in .pth model files are correctly identified.\r\n\r\nDirectly following this line:\r\nhttps://github.com/ggerganov/llama.cpp/blob/8183159cf3def112f6d1fe94815fce70e1bffa12/convert.py#L88\r\n\r\nInsert this:\r\n```\r\n        if tensor.data_type == DT_F16:  print(name + \" DT_F16\")\r\n        if tensor.data_type == DT_F32:  print(name + \" DT_F32\")\r\n        if tensor.data_type == DT_BF16: print(name + \" DT_BF16\")\r\n\r\n        if tensor.data_type == DT_F16:\r\n            return DT_F16\r\n        else:\r\n            return DT_F32\r\n\r\n```\r\nThis will keep any tensors identified as F16 and convert all else to F32. There should be no reason to store F16 tensors as F32 since F16 is supported by ggml. Now perplexity will shoot up compared to storing all tensors as F32.\r\n\r\n[openllama-3b-v2](https://huggingface.co/openlm-research/open_llama_3b_v2)\r\n\r\nPerplexity all F32: [1] 4.7087, [2] 6.3550, [3] 6.4358  ...\r\nPerplexity keep F16: [1] 28972.1316, [2] 29087.7513, [3] 30817.8770 ...\r\n\r\n[llama2-13b-hf](https://huggingface.co/TheBloke/Llama-2-13B-fp16)\r\n\r\nPerplexity all F32: [1] 3.9331027798115668\r\nPerplexity keep F16: [1] 33766.1105509410190280\r\n\r\n[llama2-13b-pth](https://huggingface.co/anonymous4chan/llama-2-13b-original)\r\n\r\nPerplexity all F32: [1] 3.9331135303250822\r\nPerplexity all F16: [1] 33766.1105509410190280\r\n",
+    "labels": [
+      "bug",
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2023-08-03T19:02:37+00:00",
+    "closed_at": "2023-08-14T10:37:54+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2504/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2504"
+  },
+  {
+    "number": 1602,
+    "title": "llama : add Falcon LLM support",
+    "body": "Falcon LLM 40b and 7b were just open sourced under a license which allows commercial use (~~with royalties for over $1 million revenue per year~~) and have are topping the Huggingface Open LLM leaderboard. It seems to be based on a modified gpt3 architecture. I\u2019m wondering if support in llama.cpp would be considered.\r\n\r\nhttps://huggingface.co/tiiuae/falcon-40b",
+    "labels": [
+      "help wanted",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-05-26T17:45:06+00:00",
+    "closed_at": "2023-08-23T20:11:44+00:00",
+    "comments": 210,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1602/reactions",
+      "total_count": 110,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 71,
+      "rocket": 21,
+      "eyes": 14
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1602"
+  },
+  {
+    "number": 1575,
+    "title": "Extend ggml format to include a description of the model.",
+    "body": "On Hugging Face there are many files called ggml-model-f16.bin or similar. Once downloaded the user can rename them. The information about its origin gets lost. Updating the file becomes difficult when the origin is unknown. It would be easier to extend the ggml format so that the creator can embed a description of the model when generating them using 'quantize'.",
+    "labels": [
+      "enhancement",
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2023-05-23T16:39:04+00:00",
+    "closed_at": "2024-05-17T12:37:14+00:00",
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1575/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1575"
+  },
+  {
+    "number": 4545,
+    "title": "metal : need help debugging a kernel and setting up Xcode",
+    "body": "Recently, we found out that we can run the Metal code in debug mode with shader validation enabled:\r\n\r\n```bash\r\nmake -j tests && MTL_DEBUG_LAYER=1 MTL_SHADER_VALIDATION=1 MTL_SHADER_VALIDATION_REPORT_TO_STDERR=1 MTL_SHADER_VALIDATION_FAIL_MODE=allow MTL_DEBUG_LAYER_VALIDATE_STORE_ACTIONS=1 MTL_DEBUG_LAYER_VALIDATE_LOAD_ACTIONS=1 ./tests/test-backend-ops -b Metal -o MUL_MAT\r\n```\r\n\r\nThis has been a useful way to debug the Metal shaders in `ggml-metal.metal`. The above command runs the `ggml_mul_mat` operator in isolation and compares the results with the reference CPU result.\r\n\r\nThe result from the command without `MTL_SHADER_VALIDATION=1` is success.\r\nHowever, when the shader validation instrumentation is enabled, we get some NaNs:\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/1991296/07e57680-b200-4e72-a59d-fded8350caa1)\r\n\r\nThe failures are produced by the matrix-matrix multiplication kernel:\r\n\r\n- invoked here:\r\n  https://github.com/ggerganov/llama.cpp/blob/328b83de23b33240e28f4e74900d1d06726f5eb1/ggml-metal.m#L1481-L1520\r\n- implemented here:\r\n  https://github.com/ggerganov/llama.cpp/blob/328b83de23b33240e28f4e74900d1d06726f5eb1/ggml-metal.metal#L3788-L3920\r\n\r\nI've been trying to figure out what is causing the NaNs, but without success, so I'm calling for help from people that are more familiar with the Metal debugging pipeline and environment.\r\n\r\nCurrently, I think that this is somehow a false-positive because we've never observed an error and this kernel is used a lot. But still, I would very much like to make the Metal Validator happy.\r\n\r\nI am reading on the internet that there should be a way to make a capture of this kernel and somehow debug it in Xcode, but I am not able to figure out exactly how. I was able to create an Xcode project with:\r\n\r\n```bash\r\nmkdir build-xcode\r\ncd build-xcode\r\ncmake -G Xcode ..\r\n```\r\n\r\nThis allows me to run the `test-backend-ops` tool in Xcode in Debug mode.\r\nI can also enable \"Shader Validation\" from the UI:\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/1991296/016584f2-2aef-4870-99c2-4d9c1071846a)\r\n\r\nBut that is as far as I've gotten. I cannot figure out how to capture some additional data in order to debug the source of these NaNs.\r\n\r\nTo isolate the tool to a single kernel call, you can apply this patch:\r\n\r\n```diff\r\ndiff --git a/tests/test-backend-ops.cpp b/tests/test-backend-ops.cpp\r\nindex f04b9438..7e363912 100644\r\n--- a/tests/test-backend-ops.cpp\r\n+++ b/tests/test-backend-ops.cpp\r\n@@ -1506,22 +1506,23 @@ static bool test_backend(ggml_backend_t backend, test_mode mode, const char * op\r\n     for (ggml_type type_a : all_types) {\r\n         for (ggml_type type_b : {GGML_TYPE_F32 /*, GGML_TYPE_F16 */}) {\r\n             // FIXME: CPU crashes on f16xf16\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, { 1,  1}, {1, 1}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10,  1}, {1, 1}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10,  1}, {2, 1}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10, 10}, {1, 1}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10, 10}, {2, 1}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10, 10}, {1, 2}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10, 10}, {2, 2}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, { 1,  1}, {1, 1}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10,  1}, {1, 1}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10,  1}, {2, 1}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10, 10}, {1, 1}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10, 10}, {2, 1}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10, 10}, {1, 2}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 1, 256, {10, 10}, {2, 2}));\r\n \r\n             test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, { 1,  1}, {1, 1}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10,  1}, {1, 1}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10,  1}, {2, 1}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10, 10}, {1, 1}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10, 10}, {2, 1}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10, 10}, {1, 2}));\r\n-            test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10, 10}, {2, 2}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10,  1}, {1, 1}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10,  1}, {2, 1}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10, 10}, {1, 1}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10, 10}, {2, 1}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10, 10}, {1, 2}));\r\n+            //test_cases.emplace_back(new test_mul_mat(type_a, type_b, 16, 16, 256, {10, 10}, {2, 2}));\r\n         }\r\n+        break;\r\n     }\r\n \r\n     for (ggml_type type_a : all_types) {\r\n```\r\n\r\nAny help on this would be very appreciated. Even if it is just information of how to setup Xcode so that I can obtain some extra debug information.\r\n\r\ncc @jhen0409 @bachittle or anyone else, thanks!",
+    "labels": [
+      "help wanted",
+      "macos"
+    ],
+    "state": "closed",
+    "created_at": "2023-12-20T09:20:35+00:00",
+    "closed_at": "2024-01-02T08:57:45+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4545/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4545"
+  },
+  {
+    "number": 6112,
+    "title": "Constrained decoding with grammar fails for c4ai-command-r-v01",
+    "body": "I am trying to apply constrained decoding for the recently adopted command-r. \r\n\r\nUsing the most recent master branch (https://github.com/ggerganov/llama.cpp/commit/c47cf414efafb8f60596edc7edb5a2d68065e992) I'm trying to apply the simplest list.  \r\n\r\n`./main -m ~/data/c4ai-command-r-v01/ggml-model-Q4_K_M.gguf -p \"<BOS_TOKEN><|START_OF_TURN_TOKEN|><|USER_TOKEN|>Please give me a list of things to do in SF?<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>\" -ctk q8_0 -ngl 99 -n 500 --grammar-file grammars/list.gbnf`\r\n\r\nIt fails with \r\n\r\n`libc++abi: terminating due to uncaught exception of type std::out_of_range: unordered_map::at: key not found`\r\n\r\nAny idea what could go wrong here?\r\n\r\nMore details:\r\n\r\n```\r\nLog start\r\nmain: build = 2447 (c47cf414)\r\nmain: built with Apple clang version 15.0.0 (clang-1500.3.9.4) for arm64-apple-darwin23.3.0\r\nmain: seed  = 1710686911\r\nllama_model_loader: loaded meta data with 23 key-value pairs and 322 tensors from ~/data/c4ai-command-r-v01/ggml-model-Q4_K_M.gguf (version GGUF V3 (latest))\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = command-r\r\nllama_model_loader: - kv   1:                               general.name str              = c4ai-command-r-v01\r\nllama_model_loader: - kv   2:                      command-r.block_count u32              = 40\r\nllama_model_loader: - kv   3:                   command-r.context_length u32              = 8192\r\nllama_model_loader: - kv   4:                 command-r.embedding_length u32              = 8192\r\nllama_model_loader: - kv   5:              command-r.feed_forward_length u32              = 22528\r\nllama_model_loader: - kv   6:             command-r.attention.head_count u32              = 64\r\nllama_model_loader: - kv   7:          command-r.attention.head_count_kv u32              = 64\r\nllama_model_loader: - kv   8:                   command-r.rope.freq_base f32              = 8000000.000000\r\nllama_model_loader: - kv   9:     command-r.attention.layer_norm_epsilon f32              = 0.000010\r\nllama_model_loader: - kv  10:                          general.file_type u32              = 15\r\nllama_model_loader: - kv  11:                      command-r.logit_scale f32              = 0.062500\r\nllama_model_loader: - kv  12:                command-r.rope.scaling.type str              = none\r\nllama_model_loader: - kv  13:                       tokenizer.ggml.model str              = gpt2\r\nllama_model_loader: - kv  14:                      tokenizer.ggml.tokens arr[str,256000]  = [\"<PAD>\", \"<UNK>\", \"<CLS>\", \"<SEP>\", ...\r\nllama_model_loader: - kv  15:                  tokenizer.ggml.token_type arr[i32,256000]  = [3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, ...\r\nllama_model_loader: - kv  16:                      tokenizer.ggml.merges arr[str,253333]  = [\"\u0120 \u0120\", \"\u0120 t\", \"e r\", \"i n\", \"\u0120 a...\r\nllama_model_loader: - kv  17:                tokenizer.ggml.bos_token_id u32              = 5\r\nllama_model_loader: - kv  18:                tokenizer.ggml.eos_token_id u32              = 255001\r\nllama_model_loader: - kv  19:            tokenizer.ggml.padding_token_id u32              = 0\r\nllama_model_loader: - kv  20:               tokenizer.ggml.add_bos_token bool             = true\r\nllama_model_loader: - kv  21:               tokenizer.ggml.add_eos_token bool             = false\r\nllama_model_loader: - kv  22:               general.quantization_version u32              = 2\r\nllama_model_loader: - type  f32:   41 tensors\r\nllama_model_loader: - type q4_K:  240 tensors\r\nllama_model_loader: - type q6_K:   41 tensors\r\nllm_load_vocab: special tokens definition check successful ( 1008/256000 ).\r\nllm_load_print_meta: format           = GGUF V3 (latest)\r\nllm_load_print_meta: arch             = command-r\r\nllm_load_print_meta: vocab type       = BPE\r\nllm_load_print_meta: n_vocab          = 256000\r\nllm_load_print_meta: n_merges         = 253333\r\nllm_load_print_meta: n_ctx_train      = 8192\r\nllm_load_print_meta: n_embd           = 8192\r\nllm_load_print_meta: n_head           = 64\r\nllm_load_print_meta: n_head_kv        = 64\r\nllm_load_print_meta: n_layer          = 40\r\nllm_load_print_meta: n_rot            = 128\r\nllm_load_print_meta: n_embd_head_k    = 128\r\nllm_load_print_meta: n_embd_head_v    = 128\r\nllm_load_print_meta: n_gqa            = 1\r\nllm_load_print_meta: n_embd_k_gqa     = 8192\r\nllm_load_print_meta: n_embd_v_gqa     = 8192\r\nllm_load_print_meta: f_norm_eps       = 1.0e-05\r\nllm_load_print_meta: f_norm_rms_eps   = 0.0e+00\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: f_logit_scale    = 6.2e-02\r\nllm_load_print_meta: n_ff             = 22528\r\nllm_load_print_meta: n_expert         = 0\r\nllm_load_print_meta: n_expert_used    = 0\r\nllm_load_print_meta: causal attn      = 1\r\nllm_load_print_meta: pooling type     = 0\r\nllm_load_print_meta: rope type        = 0\r\nllm_load_print_meta: rope scaling     = none\r\nllm_load_print_meta: freq_base_train  = 8000000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: n_yarn_orig_ctx  = 8192\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: ssm_d_conv       = 0\r\nllm_load_print_meta: ssm_d_inner      = 0\r\nllm_load_print_meta: ssm_d_state      = 0\r\nllm_load_print_meta: ssm_dt_rank      = 0\r\nllm_load_print_meta: model type       = 35B\r\nllm_load_print_meta: model ftype      = Q4_K - Medium\r\nllm_load_print_meta: model params     = 34.98 B\r\nllm_load_print_meta: model size       = 20.04 GiB (4.92 BPW) \r\nllm_load_print_meta: general.name     = c4ai-command-r-v01\r\nllm_load_print_meta: BOS token        = 5 '<BOS_TOKEN>'\r\nllm_load_print_meta: EOS token        = 255001 '<|END_OF_TURN_TOKEN|>'\r\nllm_load_print_meta: PAD token        = 0 '<PAD>'\r\nllm_load_print_meta: LF token         = 136 '\u00c4'\r\nllm_load_tensors: ggml ctx size =    0.25 MiB\r\nggml_backend_metal_buffer_from_ptr: allocated buffer, size = 20519.42 MiB, (20519.48 / 147456.00)\r\nllm_load_tensors: offloading 40 repeating layers to GPU\r\nllm_load_tensors: offloading non-repeating layers to GPU\r\nllm_load_tensors: offloaded 41/41 layers to GPU\r\nllm_load_tensors:      Metal buffer size = 20519.41 MiB\r\nllm_load_tensors:        CPU buffer size =  1640.62 MiB\r\n.......................................................................................\r\nllama_new_context_with_model: n_ctx      = 512\r\nllama_new_context_with_model: n_batch    = 512\r\nllama_new_context_with_model: n_ubatch   = 512\r\nllama_new_context_with_model: freq_base  = 8000000.0\r\nllama_new_context_with_model: freq_scale = 1\r\nggml_metal_init: allocating\r\nggml_metal_init: found device: Apple M2 Ultra\r\nggml_metal_init: picking default device: Apple M2 Ultra\r\nggml_metal_init: default.metallib not found, loading from source\r\nggml_metal_init: GGML_METAL_PATH_RESOURCES = nil\r\nggml_metal_init: loading '[...]src/llama.cpp/ggml-metal.metal'\r\nggml_metal_init: GPU name:   Apple M2 Ultra\r\nggml_metal_init: GPU family: MTLGPUFamilyApple8  (1008)\r\nggml_metal_init: GPU family: MTLGPUFamilyCommon3 (3003)\r\nggml_metal_init: GPU family: MTLGPUFamilyMetal3  (5001)\r\nggml_metal_init: simdgroup reduction support   = true\r\nggml_metal_init: simdgroup matrix mul. support = true\r\nggml_metal_init: hasUnifiedMemory              = true\r\nggml_metal_init: recommendedMaxWorkingSetSize  = 154618.82 MB\r\nggml_backend_metal_buffer_type_alloc_buffer: allocated buffer, size =   490.00 MiB, (21011.30 / 147456.00)\r\nllama_kv_cache_init:      Metal KV buffer size =   490.00 MiB\r\nllama_new_context_with_model: KV self size  =  490.00 MiB, K (q8_0):  170.00 MiB, V (f16):  320.00 MiB\r\nllama_new_context_with_model:        CPU  output buffer size =   500.00 MiB\r\nggml_backend_metal_buffer_type_alloc_buffer: allocated buffer, size =   516.00 MiB, (21527.30 / 147456.00)\r\nllama_new_context_with_model:      Metal compute buffer size =   516.00 MiB\r\nllama_new_context_with_model:        CPU compute buffer size =    17.00 MiB\r\nllama_new_context_with_model: graph splits: 2\r\n\r\nsystem_info: n_threads = 16 / 24 | AVX = 0 | AVX_VNNI = 0 | AVX2 = 0 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | FMA = 0 | NEON = 1 | ARM_FMA = 1 | F16C = 0 | FP16_VA = 1 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 0 | SSSE3 = 0 | VSX = 0 | MATMUL_INT8 = 0 | \r\nsampling: \r\n        repeat_last_n = 64, repeat_penalty = 1.100, frequency_penalty = 0.000, presence_penalty = 0.000\r\n        top_k = 40, tfs_z = 1.000, top_p = 0.950, min_p = 0.050, typical_p = 1.000, temp = 0.800\r\n        mirostat = 0, mirostat_lr = 0.100, mirostat_ent = 5.000\r\nsampling order: \r\nCFG -> Penalties -> top_k -> tfs_z -> typical_p -> top_p -> min_p -> temperature \r\ngenerate: n_ctx = 512, n_batch = 2048, n_predict = 500, n_keep = 1\r\n\r\n\r\n<|START_OF_TURN_TOKEN|><|USER_TOKEN|>Please give me a list of things to do in SF?<|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>libc++abi: terminating due to uncaught exception of type std::out_of_range: unordered_map::at: key not found\r\n```",
+    "labels": [
+      "bug",
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-17T14:51:01+00:00",
+    "closed_at": "2024-05-28T10:55:36+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6112/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6112"
+  },
+  {
+    "number": 6774,
+    "title": "Truncated model files can cause llama.cpp to crash when using mmap",
+    "body": "`llama_model_loader` does not check if the tensor data is present in the file when using mmap, and in some cases this can cause llama.cpp to crash.\r\n\r\nTo fix this, `llama_model_loader` should check that all the tensor data is within the bounds of the file, and otherwise stop the process and notify the user that the model file is corrupted.",
+    "labels": [
+      "bug",
+      "help wanted",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-19T20:25:00+00:00",
+    "closed_at": "2024-04-25T13:23:48+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6774/reactions",
+      "total_count": 5,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6774"
+  },
+  {
+    "number": 4654,
+    "title": "b1705 introduces build error on linux-aarch64",
+    "body": "Starting with b1705, I get the following when building for linux-aarch64:\r\n```\r\nclang++ -I. -Icommon -D_XOPEN_SOURCE=600 -D_GNU_SOURCE -DNDEBUG  -std=c++11 -fPIC -O3 -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wmissing-declarations -Wmissing-noreturn -pthread -mcpu=native   -Wunreachable-code-break -Wunreachable-code-return -Wmissing-prototypes -Wextra-semi -c common/train.cpp -o train.o\r\nggml-quants.c:413:25: error: redefinition of 'vdotq_s32'\r\ninline static int32x4_t vdotq_s32(int32x4_t acc, int8x16_t a, int8x16_t b) {\r\n                        ^\r\n/opt/llvm.org/v16.0.6/lib/clang/16/include/arm_neon.h:33859:51: note: previous definition is here\r\n__ai __attribute__((target(\"dotprod\"))) int32x4_t vdotq_s32(int32x4_t __p0, int8x16_t __p1, int8x16_t __p2) {\r\n                                                  ^\r\n1 error generated.\r\n```\r\n\r\nit seems to be directly related to https://github.com/ggerganov/llama.cpp/pull/4630. the various #define tricks i'm used to don't seem to be able to resolve it. any ideas?\r\n\r\nfull build log: https://github.com/pkgxdev/pantry/actions/runs/7340844999/job/19987542307",
+    "labels": [
+      "help wanted",
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2023-12-27T18:28:34+00:00",
+    "closed_at": "2023-12-31T09:44:23+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4654/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4654"
+  },
+  {
+    "number": 9507,
+    "title": "metal : increase GPU duty-cycle during inference",
+    "body": "Apparently there is a significant GPU downtime between Metal compute encoders within a single `ggml_metal_graph_compute()`: \r\n\r\n<img width=\"2672\" alt=\"image\" src=\"https://github.com/user-attachments/assets/e01b56a0-cdcf-4777-9944-be6e456858eb\">\r\n\r\nSee https://github.com/ggerganov/llama.cpp/issues/6506 for instructions how to generate the trace from the picture.\r\n\r\nMy expectation was that enqueuing the command buffers in parallel would make them execute without any downtime. The goal of this issue is to understand where this overhead comes from and if there is a way to avoid it.\r\n\r\nObviously, using a single command buffer will avoid all the GPU downtime, but it is much slower to construct it in a single thread. Ideally, we want to continue queuing multiple encoders, but not have the gaps in-between during execution.",
+    "labels": [
+      "help wanted",
+      "performance",
+      "Apple Metal"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-16T12:14:00+00:00",
+    "closed_at": "2024-10-01T13:00:26+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9507/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9507"
+  },
+  {
+    "number": 13523,
+    "title": "tutorials : list for llama.cpp",
+    "body": "Project: https://github.com/orgs/ggml-org/projects/6\n\nList:\n\n- [tutorial : compute embeddings using llama.cpp](https://github.com/ggml-org/llama.cpp/discussions/7712)\n- [tutorial : parallel inference using Hugging Face dedicated endpoints](https://github.com/ggml-org/llama.cpp/discussions/9041)\n- [tutorial : KV cache reuse with llama-server](https://github.com/ggml-org/llama.cpp/discussions/13606)\n- [tutorial : measuring time to first token (TTFT) and time between tokens (TBT)](https://github.com/ggml-org/llama.cpp/discussions/14115)\n\nTODO:\n- [ ] https://github.com/ggml-org/llama.cpp/discussions/13488\n- [ ] https://github.com/ggml-org/llama.cpp/discussions/13134\n- [ ] https://github.com/ggml-org/llama.cpp/discussions/13251\n- [ ] https://github.com/ggml-org/llama.cpp/discussions/12742\n- [ ] How to get started with webui development (ref: https://github.com/ggml-org/llama.cpp/issues/13523#issuecomment-2879256096)\n- [ ] etc.\n\nSimply search for \"How to\" in the Discussions: https://github.com/ggml-org/llama.cpp/discussions?discussions_q=is%3Aopen+How+to\n\nContributions for writing tutorials are welcome!",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2025-05-14T05:00:53+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/13523/reactions",
+      "total_count": 7,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 2,
+      "rocket": 0,
+      "eyes": 2
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/13523"
+  },
+  {
+    "number": 7559,
+    "title": "Refactor: Existing examples refactoring opportunities",
+    "body": "[GG in this PR was suggesting a refactoring of examples and provided an example of what he would like to refactor. This is a ticket to inform others about opportunities to improve examples](https://github.com/ggerganov/llama.cpp/pull/7534#issuecomment-2132746334)\r\n\r\n> I think a bigger advantage would be to do some refactoring in the existing examples and \"hide\" some of the state for sampling and KV cache management that we expose behind the common API\r\n\r\n- [ ] Hide some state for sampling (unsure what this mean)\r\n- [ ] Key Value cache management should be abstracted away behind the common API\r\n- [ ] @ngxson [suggest restructuring the help message in gpt_params_print_usage() to improve help message clarity](https://github.com/ggerganov/llama.cpp/pull/7534#issuecomment-2133064853)\r\n\r\nIf there is any other aspect of the example which is currently a pain point for developer grokking, feel free to also suggest some so it can be added here.",
+    "labels": [
+      "help wanted",
+      "refactoring"
+    ],
+    "state": "open",
+    "created_at": "2024-05-27T09:31:05+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7559/reactions",
+      "total_count": 2,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7559"
+  },
+  {
+    "number": 6537,
+    "title": "common: download from URL, improve parallel download progress status",
+    "body": "### Context\r\n\r\nWhen downloading a sharded model, files are downloaded in parallel, it was added in:\r\n- #6192\r\n\r\nThe progressions of each download conflict:\r\n![image](https://github.com/ggerganov/llama.cpp/assets/5741141/d4937fc7-edf4-4920-ba63-dadf1c77b2d0)\r\n\r\nNeed to properly implement [CURLOPT_NOPROGRESS](https://curl.se/libcurl/c/CURLOPT_NOPROGRESS.html) for parallel download.\r\n\r\nExample in #6515:\r\n\r\n```shell\r\nmain --hf-repo ggml-org/models \\\r\n  --hf-file grok-1/grok-1-q4_0-00001-of-00009.gguf \\\r\n  --model   models/grok-1-q4_0-00001-of-00009.gguf \\\r\n  -ngl 64\r\n   --prompt \"I believe the meaning of life is\"\r\n```",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "good first issue",
+      "split"
+    ],
+    "state": "open",
+    "created_at": "2024-04-08T07:37:01+00:00",
+    "closed_at": null,
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6537/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6537"
+  },
+  {
+    "number": 22,
+    "title": "Windows 64-bit, Microsoft Visual Studio - it works like a charm after those fixes!",
+    "body": "First of all thremendous work Georgi! I managed to run your project with a small adjustments on:\r\n- Intel(R) Core(TM) i7-10700T CPU @ 2.00GHz / 16GB as x64 bit app, it takes around 5GB of RAM.\r\n\r\n<img width=\"622\" alt=\"image\" src=\"https://user-images.githubusercontent.com/95347171/224509962-6ed8d954-66bc-4531-8dd0-423cc2ee5e2c.png\">\r\n\r\n<img width=\"568\" alt=\"image\" src=\"https://user-images.githubusercontent.com/95347171/224510066-a8adccfa-d9db-4546-8efb-e69efc549b97.png\">\r\n\r\nHere is the list of those small fixes:\r\n\r\n- main.cpp: added ggml_time_init() at start of main (division by zero otherwise)\r\n- quantize.cpp: same as above at start of main (division by zero otherwise)\r\n- ggml.c: #define QK 32 moved to dedicated define.h (should not be in .c)\r\n- ggml.c: replace fopen with fopen_s (VS secure error message)\r\n- ggml.c: below changes due to 'expression must be a pointer or complete object type':\r\n1. 2x `(uint8_t*)(y` to: `((uint8_t*)y` \r\n2. 4x `(const uint8_t*)(x` to `((const uint8_t*)x`\r\n3. 2x `(const uint8_t*)(y` to `((const uint8_t*)y`\r\n- quantize.cpp: removed qk in ggml_quantize_q4_0 & ggml_quantize_q4_1 calls\r\n- utils.cpp: use of QK value instead of parameter value (VS raise error for: `uint8_t pp[qk / 2];`)\r\n\r\nIt would be really great if you could incorporate those small fixes.",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "good first issue",
+      "windows"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-11T20:44:33+00:00",
+    "closed_at": "2023-04-16T10:25:54+00:00",
+    "comments": 40,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/22/reactions",
+      "total_count": 41,
+      "+1": 29,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 6,
+      "rocket": 0,
+      "eyes": 6
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/22"
+  },
+  {
+    "number": 6421,
+    "title": "Feature Request: Task Cancellation on Client Disconnection",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [x] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [x] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [x] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Feature Description\r\nIn the current embedding server setup, if a client sends a request and then cancels it, tasks that are already queued continue processing without detecting the cancellation. This can lead to inefficiencies and potential server overload.\r\n\r\n**[Test Case]** \r\nDuring an actual load test, I canceled a request, but the queued requests prior to the cancellation were processed to completion, causing subsequent requests to be delayed.\r\n\r\n**[After Modification]**\r\nDuring a load test, when a request is cancelled, task processing should be terminated. If a new request is sent immediately afterward, it should be processed without delay.\r\n\r\n# Motivation\r\nIf a client makes a massive number of requests and then disconnects, the server could become paralyzed. I would like to remove tasks from the queue if the associated request is terminated.\r\n\r\n# Possible Implementation\r\nI don't have experience with configuring servers in C++, so it's difficult for me to suggest implementation details. If you have an idea as to how it can be implemented, please write a detailed description. Feel free to give links to external sources or share visuals that might be helpful to understand the details better.\r\n",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "good first issue",
+      "server/webui"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-01T08:20:25+00:00",
+    "closed_at": "2025-05-16T19:42:45+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6421/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6421"
+  },
+  {
+    "number": 995,
+    "title": "Investigate the performance (speed and perplexity) of Q4_0 with 2x F16 factors",
+    "body": "The current `Q4_0` uses a single F32 floating-point scaling factor.\r\n\r\nAn idea was proposed by @ikawrakow to change this to use 2x F16 factors instead of 1x F32: https://github.com/ggerganov/llama.cpp/commit/679e1cb6c01b16abe4f3ee3c849813b98970df93\r\nInitial results indicate that this might be as accurate as `Q4_1` and hopefully as fast as current `Q4_0`.\r\n\r\nThe goal of this task is to try to implement efficiently this data format (quantization, dequantization and dot product), measure the speed and perplexity and decide if this is viable. Depending on the results, we can think about updating the current `Q4_0` data format and potentially dropping support for `Q4_1`.\r\n\r\n### SIMD implementation progress\r\n\r\n- [x] ARM NEON\r\n- [x] AVX\r\n- [ ] WASM\r\n\r\nI plan to work on the ARM NEON implementation.\r\nIf you want to help with any of the implementations, propose an implementation + results in a PR, summarizing the inference speed and the obtained perplexity of your implementation.\r\n\r\n### Related\r\n\r\n- #397 \r\n- #896 ",
+    "labels": [
+      "help wanted",
+      "high priority",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-15T12:24:00+00:00",
+    "closed_at": "2023-04-22T08:43:17+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/995/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/995"
+  },
+  {
+    "number": 10747,
+    "title": "Compile bug: ios swift xcode build error when upgrade to llama : use cmake for swift build ",
+    "body": "### Git commit\n\n$git rev-parse HEAD 43ed389a3f102517e6f7d5620d8e451e88afbf27\n\n### Operating systems\n\nMac\n\n### GGML backends\n\nMetal\n\n### Problem description & steps to reproduce\n\nios swift xcode build error when upgrade to\r\n\r\n- https://github.com/ggerganov/llama.cpp/pull/10525\r\n\r\nBefore the upgrade, the code compiled successfully. After the upgrade, it throws a compilation error: \"Cannot find type 'xxx' in scope.\"\r\n\r\n<img width=\"1721\" alt=\"image\" src=\"https://github.com/user-attachments/assets/1bc2e76a-158a-4aa3-9755-855930f2f7ed\">\r\n\n\n### First Bad Commit\n\n43ed389a3f102517e6f7d5620d8e451e88afbf27\n\n### Relevant log output\n\n```shell\n/ios/llama.cpp.swift/LibLlama.swift:8:39 Cannot find type 'llama_batch' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:12:37 Cannot find type 'llama_batch' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:12:56 Cannot find type 'llama_token' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:12:76 Cannot find type 'llama_pos' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:12:99 Cannot find type 'llama_seq_id' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:27:48 Cannot find type 'llama_sampler' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:28:24 Cannot find type 'llama_batch' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:29:31 Cannot find type 'llama_token' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:44:22 Cannot find 'llama_batch_init' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:46:23 Cannot find 'llama_sampler_chain_default_params' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:47:25 Cannot find 'llama_sampler_chain_init' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:48:9 Cannot find 'llama_sampler_chain_add' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:48:48 Cannot find 'llama_sampler_init_temp' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:49:9 Cannot find 'llama_sampler_chain_add' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:49:48 Cannot find 'llama_sampler_init_dist' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:53:9 Cannot find 'llama_sampler_free' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:54:9 Cannot find 'llama_batch_free' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:55:9 Cannot find 'llama_free' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:56:9 Cannot find 'llama_free_model' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:57:9 Cannot find 'llama_backend_free' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:61:9 Cannot find 'llama_backend_init' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:62:28 Cannot find 'llama_model_default_params' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:68:21 Cannot find 'llama_load_model_from_file' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:77:26 Cannot find 'llama_context_default_params' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:82:23 Cannot find 'llama_new_context_with_model' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:100:22 Cannot find 'llama_model_desc' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:121:21 Cannot find 'llama_n_ctx' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:142:12 Cannot find 'llama_decode' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:150:27 Cannot find type 'llama_token' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:152:24 Cannot find 'llama_sampler_sample' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:154:12 Cannot find 'llama_token_is_eog' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:185:12 Cannot find 'llama_decode' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:211:13 Cannot find 'llama_kv_cache_clear' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:213:30 Cannot find 'ggml_time_us' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:215:16 Cannot find 'llama_decode' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:218:13 Cannot find 'llama_synchronize' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:220:28 Cannot find 'ggml_time_us' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:224:13 Cannot find 'llama_kv_cache_clear' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:226:30 Cannot find 'ggml_time_us' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:235:20 Cannot find 'llama_decode' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:238:17 Cannot find 'llama_synchronize' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:241:28 Cannot find 'ggml_time_us' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:243:13 Cannot find 'llama_kv_cache_clear' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:245:24 No exact matches in call to initializer \r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:246:24 No exact matches in call to initializer \r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:254:32 Cannot convert value of type 'Duration' to expected argument type 'Double'\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:255:32 Cannot convert value of type 'Duration' to expected argument type 'Double'\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:272:64 Cannot find 'llama_model_size' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:273:62 Cannot find 'llama_model_n_params' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:293:9 Cannot find 'llama_kv_cache_clear' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:296:60 Cannot find type 'llama_token' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:299:43 Cannot find type 'llama_token' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:300:26 Cannot find 'llama_tokenize' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:302:27 Cannot find type 'llama_token' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:313:40 Cannot find type 'llama_token' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:319:23 Cannot find 'llama_token_to_piece' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:327:30 Cannot find 'llama_token_to_piece' in scope\r\n\r\n/ios/llama.cpp.swift/LibLlama.swift:328:33 Generic parameter 'Element' could not be inferred\r\n\r\n~/Library/Developer/Xcode/DerivedData/Runner-efnwjojzxwrmmpfdjskgbtmftvem/SourcePackages/checkouts/llama.cpp/Sources/llama/llama.h\r\n~/Library/Developer/Xcode/DerivedData/Runner-efnwjojzxwrmmpfdjskgbtmftvem/SourcePackages/checkouts/llama.cpp/Sources/llama/llama.h:3:10 'llama.h' file not found with <angled> include; use \"quotes\" instead\n```\n",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "build"
+    ],
+    "state": "open",
+    "created_at": "2024-12-10T05:12:25+00:00",
+    "closed_at": null,
+    "comments": 41,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10747/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10747"
+  },
+  {
+    "number": 173,
+    "title": "Use RMSNorm",
+    "body": "The original paper, and the reference implementation [1] uses RMS norm. However, llama.cpp uses ggml_norm() which looks like Layer norm?\r\n\r\nThe differences between these may not be too obvious, because the mean is probably around 0. However, we should follow the original design.\r\n\r\n[1] https://github.com/facebookresearch/llama/blob/main/llama/model.py",
+    "labels": [
+      "bug",
+      "help wanted",
+      "good first issue",
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-15T19:05:29+00:00",
+    "closed_at": "2023-03-19T15:31:53+00:00",
+    "comments": 18,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/173/reactions",
+      "total_count": 2,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/173"
+  },
+  {
+    "number": 959,
+    "title": "Investigate storing results from ggml operations in F16 format",
+    "body": "Currently, all `ggml` operations return the results in F32 format.\r\n\r\nThe goal of this task is to see if there is an elegant way to add support for keeping the results in F16 format.\r\nThis will ideally be passed as a parameter to the `ggml_context` and will also involve adding support for F16 operands in most of the existing operators. Ideally, we want to achieve this somehow without duplicating the entire code base.\r\n\r\nNote that internal floating-point accumulators in the different operations can and should remain in F32 format.\r\nIt is just when we store the results into the `dst` tensor, we will cast them to F16.\r\n\r\nGoing to F16 intermediate results would reduce significantly the memory pressure and could lead to significant speed improvements. Hopefully, the loss in quality would be marginal. But in any case, there will always be the option of switching back to full F32 precision.\r\n\r\nI am looking for suggestions and initial prototypes of how we can achieve this in an elegant way.\r\n\r\nRelated:\r\n\r\n- #909 \r\n- #951 \r\n\r\nEdit: An initial quick and dirty implementation that simply goes over the existing LLaMA related operators and changes the return type to F16 would be useful to determine if such functionality is useful and how much performance gain we can expect. If it is worth, then we can think in more details about how exactly to support it.",
+    "labels": [
+      "help wanted",
+      "performance",
+      "high priority",
+      "research \ud83d\udd2c"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-14T07:35:34+00:00",
+    "closed_at": "2023-04-22T08:48:31+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/959/reactions",
+      "total_count": 4,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 1,
+      "confused": 0,
+      "heart": 3,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/959"
+  },
+  {
+    "number": 8724,
+    "title": "Improve `cvector-generator`",
+    "body": "- Fix random direction of vector produced by PCA method https://github.com/ggerganov/llama.cpp/pull/8069#issuecomment-2185328171 (cc @jukofyork)\r\n- Performance: Using batch and multi-sequences (for `llama_decode`)\r\n- Performance: Allow using GPU (need to test, because some backends don't support certain ops)\r\n- Add SVD and UMAP\r\n- Add tests if possible\r\n\r\nRef: https://github.com/ggerganov/llama.cpp/pull/7514\r\n\r\nNote: I'm writing this for tracking, but people are free to do PRs if you have any ideas to share. I'm planning to do some of the tasks in August 2024.",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "good first issue"
+    ],
+    "state": "open",
+    "created_at": "2024-07-27T13:05:20+00:00",
+    "closed_at": null,
+    "comments": 33,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8724/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8724"
+  },
+  {
+    "number": 6506,
+    "title": "Question: How to generate an MPS gputrace",
+    "body": "We're doing some work over at https://github.com/huggingface/candle to improve our Metal backend, I've been collecting various gputraces for the different frameworks and was wondering if there was a documented/known way to generate one for llama.cpp during model inference.\r\n\r\nSpecifically talking about this type of debugger output: https://developer.apple.com/documentation/xcode/metal-debugger",
+    "labels": [
+      "help wanted",
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2024-04-05T14:08:32+00:00",
+    "closed_at": null,
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6506/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6506"
+  },
+  {
+    "number": 1003,
+    "title": "Measure perplexity delta between Q4_0 and F16 \"output\" tensor",
+    "body": "The last tensor of the transformer (called `output` in llama.cpp) is one of the biggest ones:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/0ad964631f9b3970f1936008fcfb1eadef59c7ed/llama.cpp#L945\r\n\r\nI wonder how the perplexity improves by keeping it in F16 format instead of quantizing that particular tensor\r\n\r\n### Results\r\n\r\n<details>\r\n  <summary>Q4_0 M1 Pro (with BLAS) [655]6.2838 (i.e. reference)</summary>\r\n\r\n```\r\n$  make clean && make -j perplexity && time ./perplexity -m ./models/7B/ggml-model-q4_0.bin -f ./build/wiki.test.raw -t 8\r\nI llama.cpp build info: \r\nI UNAME_S:  Darwin\r\nI UNAME_P:  arm\r\nI UNAME_M:  arm64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread\r\nI LDFLAGS:   -framework Accelerate\r\nI CC:       Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\nI CXX:      Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\n\r\nrm -vf *.o main quantize quantize-stats perplexity embedding benchmark-q4_0-matmult\r\ncommon.o\r\nggml.o\r\nllama.o\r\nmain\r\nquantize\r\nperplexity\r\nembedding\r\nI llama.cpp build info: \r\nI UNAME_S:  Darwin\r\nI UNAME_P:  arm\r\nI UNAME_M:  arm64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread\r\nI LDFLAGS:   -framework Accelerate\r\nI CC:       Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\nI CXX:      Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\n\r\ncc  -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE   -c ggml.c -o ggml.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -c llama.cpp -o llama.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -c examples/common.cpp -o common.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread examples/perplexity/perplexity.cpp ggml.o llama.o common.o -o perplexity  -framework Accelerate\r\nmain: seed = 1681463663\r\nllama.cpp: loading model from ./models/7B/ggml-model-q4_0.bin\r\nllama_model_load_internal: format     = ggjt v1 (latest)\r\nllama_model_load_internal: n_vocab    = 32000\r\nllama_model_load_internal: n_ctx      = 512\r\nllama_model_load_internal: n_embd     = 4096\r\nllama_model_load_internal: n_mult     = 256\r\nllama_model_load_internal: n_head     = 32\r\nllama_model_load_internal: n_layer    = 32\r\nllama_model_load_internal: n_rot      = 128\r\nllama_model_load_internal: ftype      = 2 (mostly Q4_0)\r\nllama_model_load_internal: n_ff       = 11008\r\nllama_model_load_internal: n_parts    = 1\r\nllama_model_load_internal: model size = 7B\r\nllama_model_load_internal: ggml ctx size =  59.11 KB\r\nllama_model_load_internal: mem required  = 5809.32 MB (+ 1026.00 MB per state)\r\nllama_init_from_file: kv self size  =  256.00 MB\r\n\r\nsystem_info: n_threads = 8 / 10 | AVX = 0 | AVX2 = 0 | AVX512 = 0 | FMA = 0 | NEON = 1 | ARM_FMA = 1 | F16C = 0 | FP16_VA = 1 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 0 | VSX = 0 | \r\nperplexity : calculating perplexity over 655 chunks, batch_size=512\r\n10.60 seconds per pass - ETA 1.93 hours\r\n[1]4.3802,[2]4.9555,[3]5.8269,[4]6.4692,[5]6.5435,[6]6.5411,[7]6.7174,[8]6.8069,[9]7.1756,[10]7.4121,[11]7.6567,[12]7.6957,[13]7.6058,[14]7.6820,[15]7.9366,[16]7.5419,[17]7.4189,[18]7.3798,[19]7.0077,[20]6.9948,[21]6.8969,[22]6.7125,[23]6.6744,[24]6.5868,[25]6.5871,[26]6.4149,[27]6.2349,[28]6.1341,[29]6.0498,[30]5.8938,[31]5.8659,[32]5.8839,[33]5.8189,[34]5.8537,[35]5.8795,[36]5.9232,[37]5.9272,[38]5.9443,[39]5.9825,[40]6.0412,[41]6.0482,[42]6.0826,[43]6.0397,[44]6.0944,[45]6.0989,[46]6.0729,[47]6.0967,[48]6.0674,[49]6.0745,[50]6.0351,[51]6.0309,[52]6.0200,[53]6.0641,[54]6.0476,[55]6.0250,[56]6.0593,[57]6.0824,[58]6.1043,[59]6.1182,[60]6.1647,[61]6.1536,[62]6.2166,[63]6.2502,[64]6.2653,[65]6.3119,[66]6.3220,[67]6.3401,[68]6.3541,[69]6.3790,[70]6.4113,[71]6.4327,[72]6.4625,[73]6.5276,[74]6.5330,[75]6.5474,[76]6.5637,[77]6.5770,[78]6.5618,[79]6.5914,[80]6.5839,[81]6.5967,[82]6.6005,[83]6.5468,[84]6.5322,[85]6.5208,[86]6.4997,[87]6.4344,[88]6.4059,[89]6.3853,[90]6.3687,[91]6.3948,[92]6.3909,[93]6.3935,[94]6.3910,[95]6.4198,[96]6.4177,[97]6.4105,[98]6.4035,[99]6.3895,[100]6.3895,[101]6.4154,[102]6.4091,[103]6.4308,[104]6.4376,[105]6.4361,[106]6.4538,[107]6.4525,[108]6.4648,[109]6.4595,[110]6.4550,[111]6.4779,[112]6.4969,[113]6.4983,[114]6.4949,[115]6.5032,[116]6.4958,[117]6.5014,[118]6.5298,[119]6.5507,[120]6.5872,[121]6.6035,[122]6.6282,[123]6.6672,[124]6.6850,[125]6.6762,[126]6.7153,[127]6.7524,[128]6.7798,[129]6.7629,[130]6.7725,[131]6.7672,[132]6.7584,[133]6.7456,[134]6.7568,[135]6.7534,[136]6.7402,[137]6.7322,[138]6.7151,[139]6.7035,[140]6.7005,[141]6.6707,[142]6.6658,[143]6.6379,[144]6.6178,[145]6.6092,[146]6.5957,[147]6.6031,[148]6.6054,[149]6.5994,[150]6.5953,[151]6.5965,[152]6.5870,[153]6.5703,[154]6.5613,[155]6.5680,[156]6.5630,[157]6.5813,[158]6.5849,[159]6.5890,[160]6.5916,[161]6.6041,[162]6.5739,[163]6.5619,[164]6.5357,[165]6.5039,[166]6.4751,[167]6.4377,[168]6.4051,[169]6.3916,[170]6.3791,[171]6.3502,[172]6.3322,[173]6.3136,[174]6.2829,[175]6.2607,[176]6.2505,[177]6.2295,[178]6.2059,[179]6.1887,[180]6.1798,[181]6.1574,[182]6.1382,[183]6.1239,[184]6.1238,[185]6.1165,[186]6.1182,[187]6.1236,[188]6.1200,[189]6.1384,[190]6.1393,[191]6.1597,[192]6.1760,[193]6.1938,[194]6.2054,[195]6.2263,[196]6.2434,[197]6.2655,[198]6.2810,[199]6.2840,[200]6.2885,[201]6.2844,[202]6.3049,[203]6.3115,[204]6.3114,[205]6.3224,[206]6.3302,[207]6.3262,[208]6.3346,[209]6.3398,[210]6.3449,[211]6.3547,[212]6.3620,[213]6.3727,[214]6.3762,[215]6.3802,[216]6.3951,[217]6.4129,[218]6.4264,[219]6.4267,[220]6.4231,[221]6.4168,[222]6.4133,[223]6.4024,[224]6.3958,[225]6.3910,[226]6.4125,[227]6.4212,[228]6.4271,[229]6.4338,[230]6.4294,[231]6.4462,[232]6.4332,[233]6.4160,[234]6.4004,[235]6.3845,[236]6.3768,[237]6.3664,[238]6.3698,[239]6.3536,[240]6.3433,[241]6.3466,[242]6.3503,[243]6.3488,[244]6.3368,[245]6.3342,[246]6.3221,[247]6.3097,[248]6.3030,[249]6.3010,[250]6.3057,[251]6.2980,[252]6.2946,[253]6.2844,[254]6.2804,[255]6.2688,[256]6.2496,[257]6.2385,[258]6.2299,[259]6.2279,[260]6.2197,[261]6.2154,[262]6.2095,[263]6.2050,[264]6.1858,[265]6.1850,[266]6.1835,[267]6.1766,[268]6.1862,[269]6.1843,[270]6.1850,[271]6.1928,[272]6.1974,[273]6.1969,[274]6.1983,[275]6.2073,[276]6.2128,[277]6.2288,[278]6.2397,[279]6.2483,[280]6.2518,[281]6.2617,[282]6.2678,[283]6.2825,[284]6.2902,[285]6.2997,[286]6.3144,[287]6.3138,[288]6.3198,[289]6.3107,[290]6.2956,[291]6.2802,[292]6.2644,[293]6.2505,[294]6.2530,[295]6.2524,[296]6.2567,[297]6.2553,[298]6.2579,[299]6.2551,[300]6.2439,[301]6.2440,[302]6.2359,[303]6.2282,[304]6.2204,[305]6.2180,[306]6.2047,[307]6.2072,[308]6.2104,[309]6.1941,[310]6.1880,[311]6.1816,[312]6.1838,[313]6.1782,[314]6.1769,[315]6.1604,[316]6.1562,[317]6.1395,[318]6.1179,[319]6.1298,[320]6.1428,[321]6.1466,[322]6.1421,[323]6.1355,[324]6.1331,[325]6.1431,[326]6.1430,[327]6.1451,[328]6.1494,[329]6.1554,[330]6.1579,[331]6.1703,[332]6.1671,[333]6.1741,[334]6.1682,[335]6.1617,[336]6.1655,[337]6.1625,[338]6.1612,[339]6.1555,[340]6.1511,[341]6.1589,[342]6.1613,[343]6.1669,[344]6.1668,[345]6.1667,[346]6.1638,[347]6.1686,[348]6.1727,[349]6.1746,[350]6.1712,[351]6.1717,[352]6.1717,[353]6.1665,[354]6.1664,[355]6.1718,[356]6.1749,[357]6.1712,[358]6.1802,[359]6.1833,[360]6.1795,[361]6.1791,[362]6.1858,[363]6.1970,[364]6.2035,[365]6.2093,[366]6.2100,[367]6.2188,[368]6.2165,[369]6.2175,[370]6.2185,[371]6.2125,[372]6.2178,[373]6.2234,[374]6.2220,[375]6.2217,[376]6.2301,[377]6.2252,[378]6.2277,[379]6.2338,[380]6.2254,[381]6.2211,[382]6.2154,[383]6.2144,[384]6.2137,[385]6.2124,[386]6.2119,[387]6.2111,[388]6.2066,[389]6.2012,[390]6.1943,[391]6.1862,[392]6.1821,[393]6.1802,[394]6.1828,[395]6.1812,[396]6.1738,[397]6.1814,[398]6.1852,[399]6.1935,[400]6.1931,[401]6.1944,[402]6.1950,[403]6.1969,[404]6.2032,[405]6.1937,[406]6.1903,[407]6.1895,[408]6.1905,[409]6.2029,[410]6.2139,[411]6.2264,[412]6.2427,[413]6.2542,[414]6.2618,[415]6.2670,[416]6.2750,[417]6.2881,[418]6.2916,[419]6.2990,[420]6.3076,[421]6.3197,[422]6.3255,[423]6.3326,[424]6.3446,[425]6.3537,[426]6.3602,[427]6.3647,[428]6.3730,[429]6.3775,[430]6.3865,[431]6.4011,[432]6.4054,[433]6.4041,[434]6.3995,[435]6.4002,[436]6.4026,[437]6.4121,[438]6.4200,[439]6.4164,[440]6.4158,[441]6.4108,[442]6.4099,[443]6.4112,[444]6.4115,[445]6.4095,[446]6.4118,[447]6.4147,[448]6.4190,[449]6.4164,[450]6.4167,[451]6.4124,[452]6.4005,[453]6.3922,[454]6.3862,[455]6.3869,[456]6.3917,[457]6.3934,[458]6.3912,[459]6.3922,[460]6.4009,[461]6.3981,[462]6.3965,[463]6.4015,[464]6.4006,[465]6.3976,[466]6.3895,[467]6.3898,[468]6.3897,[469]6.3919,[470]6.3924,[471]6.3876,[472]6.3922,[473]6.3866,[474]6.3880,[475]6.3821,[476]6.3844,[477]6.3773,[478]6.3764,[479]6.3827,[480]6.3879,[481]6.3899,[482]6.3854,[483]6.3813,[484]6.3835,[485]6.3818,[486]6.3763,[487]6.3763,[488]6.3744,[489]6.3694,[490]6.3667,[491]6.3637,[492]6.3579,[493]6.3548,[494]6.3530,[495]6.3528,[496]6.3493,[497]6.3440,[498]6.3422,[499]6.3372,[500]6.3275,[501]6.3206,[502]6.3204,[503]6.3202,[504]6.3109,[505]6.3133,[506]6.3142,[507]6.3081,[508]6.3038,[509]6.3027,[510]6.3066,[511]6.3113,[512]6.3148,[513]6.3166,[514]6.3232,[515]6.3177,[516]6.3169,[517]6.3180,[518]6.3181,[519]6.3211,[520]6.3238,[521]6.3255,[522]6.3283,[523]6.3294,[524]6.3357,[525]6.3393,[526]6.3405,[527]6.3426,[528]6.3372,[529]6.3376,[530]6.3329,[531]6.3319,[532]6.3367,[533]6.3390,[534]6.3372,[535]6.3395,[536]6.3341,[537]6.3318,[538]6.3366,[539]6.3378,[540]6.3417,[541]6.3426,[542]6.3433,[543]6.3447,[544]6.3459,[545]6.3437,[546]6.3443,[547]6.3398,[548]6.3343,[549]6.3345,[550]6.3318,[551]6.3280,[552]6.3260,[553]6.3217,[554]6.3195,[555]6.3166,[556]6.3163,[557]6.3186,[558]6.3146,[559]6.3142,[560]6.3137,[561]6.3139,[562]6.3120,[563]6.3120,[564]6.3163,[565]6.3180,[566]6.3177,[567]6.3155,[568]6.3160,[569]6.3144,[570]6.3170,[571]6.3176,[572]6.3186,[573]6.3188,[574]6.3151,[575]6.3147,[576]6.3145,[577]6.3135,[578]6.3114,[579]6.3122,[580]6.3056,[581]6.3018,[582]6.3008,[583]6.3016,[584]6.3020,[585]6.2943,[586]6.2875,[587]6.2877,[588]6.2927,[589]6.2985,[590]6.3015,[591]6.3037,[592]6.3022,[593]6.2985,[594]6.2996,[595]6.2973,[596]6.3010,[597]6.2987,[598]6.2949,[599]6.2971,[600]6.2969,[601]6.2954,[602]6.2972,[603]6.3001,[604]6.3012,[605]6.3044,[606]6.3065,[607]6.3048,[608]6.3013,[609]6.3019,[610]6.3056,[611]6.3037,[612]6.3062,[613]6.3026,[614]6.2975,[615]6.2898,[616]6.2928,[617]6.2865,[618]6.2814,[619]6.2757,[620]6.2615,[621]6.2542,[622]6.2525,[623]6.2540,[624]6.2545,[625]6.2544,[626]6.2529,[627]6.2550,[628]6.2555,[629]6.2552,[630]6.2586,[631]6.2650,[632]6.2704,[633]6.2687,[634]6.2721,[635]6.2726,[636]6.2694,[637]6.2659,[638]6.2686,[639]6.2657,[640]6.2667,[641]6.2669,[642]6.2738,[643]6.2760,[644]6.2772,[645]6.2751,[646]6.2793,[647]6.2755,[648]6.2762,[649]6.2763,[650]6.2801,[651]6.2858,[652]6.2865,[653]6.2908,[654]6.2844,[655]6.2838,\r\n\r\nllama_print_timings:        load time = 11216.03 ms\r\nllama_print_timings:      sample time =     0.00 ms /     1 runs   (    0.00 ms per run)\r\nllama_print_timings: prompt eval time = 4989892.61 ms / 335360 tokens (   14.88 ms per token)\r\nllama_print_timings:        eval time =     0.00 ms /     1 runs   (    0.00 ms per run)\r\nllama_print_timings:       total time = 5024616.43 ms\r\n\r\nreal\t83m45.024s\r\nuser\t126m54.284s\r\nsys\t4m10.884s\r\n```\r\n</details>\r\n\r\n\r\n<details>\r\n  <summary>Q4_0 + F16 \"output\" M1 Pro (with BLAS) [655]6.2355</summary>\r\n\r\n```\r\n$  make clean && make -j perplexity && time ./perplexity -m ./models/7B/ggml-model-q4_0-output-f16.bin -f ./build/wiki.test.raw -t 8\r\nI llama.cpp build info: \r\nI UNAME_S:  Darwin\r\nI UNAME_P:  arm\r\nI UNAME_M:  arm64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread\r\nI LDFLAGS:   -framework Accelerate\r\nI CC:       Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\nI CXX:      Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\n\r\nrm -vf *.o main quantize quantize-stats perplexity embedding benchmark-q4_0-matmult\r\ncommon.o\r\nggml.o\r\nllama.o\r\nperplexity\r\nI llama.cpp build info: \r\nI UNAME_S:  Darwin\r\nI UNAME_P:  arm\r\nI UNAME_M:  arm64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread\r\nI LDFLAGS:   -framework Accelerate\r\nI CC:       Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\nI CXX:      Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\n\r\ncc  -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE   -c ggml.c -o ggml.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -c llama.cpp -o llama.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -c examples/common.cpp -o common.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread examples/perplexity/perplexity.cpp ggml.o llama.o common.o -o perplexity  -framework Accelerate\r\nmain: seed = 1681643028\r\nllama.cpp: loading model from ./models/7B/ggml-model-q4_0-output-f16.bin\r\nllama_model_load_internal: format     = ggjt v1 (latest)\r\nllama_model_load_internal: n_vocab    = 32000\r\nllama_model_load_internal: n_ctx      = 512\r\nllama_model_load_internal: n_embd     = 4096\r\nllama_model_load_internal: n_mult     = 256\r\nllama_model_load_internal: n_head     = 32\r\nllama_model_load_internal: n_layer    = 32\r\nllama_model_load_internal: n_rot      = 128\r\nllama_model_load_internal: ftype      = 2 (mostly Q4_0)\r\nllama_model_load_internal: n_ff       = 11008\r\nllama_model_load_internal: n_parts    = 1\r\nllama_model_load_internal: model size = 7B\r\nllama_model_load_internal: ggml ctx size =  59.11 KB\r\nllama_model_load_internal: mem required  = 5981.20 MB (+ 1026.00 MB per state)\r\nllama_init_from_file: kv self size  =  256.00 MB\r\n\r\nsystem_info: n_threads = 8 / 10 | AVX = 0 | AVX2 = 0 | AVX512 = 0 | FMA = 0 | NEON = 1 | ARM_FMA = 1 | F16C = 0 | FP16_VA = 1 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 0 | VSX = 0 | \r\nperplexity : calculating perplexity over 655 chunks, batch_size=512\r\n8.00 seconds per pass - ETA 1.46 hours\r\n[1]4.3820,[2]4.9320,[3]5.7997,[4]6.4555,[5]6.5526,[6]6.5317,[7]6.6993,[8]6.7881,[9]7.1519,[10]7.3934,[11]7.6302,[12]7.6638,[13]7.5714,[14]7.6539,[15]7.9047,[16]7.5068,[17]7.3838,[18]7.3480,[19]6.9755,[20]6.9635,[21]6.8675,[22]6.6824,[23]6.6426,[24]6.5537,[25]6.5529,[26]6.3839,[27]6.2037,[28]6.1026,[29]6.0173,[30]5.8628,[31]5.8366,[32]5.8546,[33]5.7921,[34]5.8260,[35]5.8504,[36]5.8945,[37]5.9009,[38]5.9162,[39]5.9532,[40]6.0109,[41]6.0177,[42]6.0521,[43]6.0101,[44]6.0655,[45]6.0683,[46]6.0426,[47]6.0653,[48]6.0340,[49]6.0399,[50]6.0009,[51]5.9970,[52]5.9861,[53]6.0296,[54]6.0120,[55]5.9897,[56]6.0228,[57]6.0441,[58]6.0658,[59]6.0792,[60]6.1234,[61]6.1133,[62]6.1763,[63]6.2096,[64]6.2248,[65]6.2699,[66]6.2788,[67]6.2958,[68]6.3095,[69]6.3344,[70]6.3670,[71]6.3873,[72]6.4174,[73]6.4828,[74]6.4876,[75]6.5007,[76]6.5153,[77]6.5276,[78]6.5126,[79]6.5407,[80]6.5326,[81]6.5463,[82]6.5502,[83]6.4981,[84]6.4830,[85]6.4714,[86]6.4496,[87]6.3847,[88]6.3565,[89]6.3362,[90]6.3209,[91]6.3459,[92]6.3416,[93]6.3440,[94]6.3410,[95]6.3697,[96]6.3678,[97]6.3612,[98]6.3548,[99]6.3409,[100]6.3413,[101]6.3673,[102]6.3601,[103]6.3811,[104]6.3873,[105]6.3867,[106]6.4034,[107]6.4011,[108]6.4136,[109]6.4074,[110]6.4026,[111]6.4245,[112]6.4435,[113]6.4448,[114]6.4416,[115]6.4494,[116]6.4420,[117]6.4473,[118]6.4765,[119]6.4978,[120]6.5334,[121]6.5496,[122]6.5749,[123]6.6139,[124]6.6311,[125]6.6222,[126]6.6614,[127]6.6977,[128]6.7255,[129]6.7096,[130]6.7191,[131]6.7134,[132]6.7047,[133]6.6922,[134]6.7029,[135]6.6991,[136]6.6870,[137]6.6790,[138]6.6625,[139]6.6515,[140]6.6482,[141]6.6195,[142]6.6150,[143]6.5875,[144]6.5680,[145]6.5592,[146]6.5460,[147]6.5535,[148]6.5555,[149]6.5491,^[[B^[[B^[[B^[[B^[[B^[[B[150]6.5451,[151]6.5464,[152]6.5363,[153]6.5191,[154]6.5099,[155]6.5168,[156]6.5117,[157]6.5297,[158]6.5331,[159]6.5372,[160]6.5394,[161]6.5517,[162]6.5219,[163]6.5102,[164]6.4844,[165]6.4525,[166]6.4245,[167]6.3876,[168]6.3551,[169]6.3419,[170]6.3298,[171]6.3012,[172]6.2834,[173]6.2650,[174]6.2349,[175]6.2133,[176]6.2031,[177]6.1820,[178]6.1591,[179]6.1420,[180]6.1333,[181]6.1111,[182]6.0922,[183]6.0782,[184]6.0781,[185]6.0709,[186]6.0727,[187]6.0783,[188]6.0745,[189]6.0930,[190]6.0941,[191]6.1149,[192]6.1311,[193]6.1486,[194]6.1601,[195]6.1811,[196]6.1974,[197]6.2193,[198]6.2349,[199]6.2384,[200]6.2431,[201]6.2386,[202]6.2590,[203]6.2657,[204]6.2656,[205]6.2766,[206]6.2843,[207]6.2805,[208]6.2886,[209]6.2935,[210]6.2989,[211]6.3091,[212]6.3164,[213]6.3269,[214]6.3305,[215]6.3342,[216]6.3496,[217]6.3675,[218]6.3807,[219]6.3809,[220]6.3774,[221]6.3711,[222]6.3680,[223]6.3574,[224]6.3502,[225]6.3459,[226]6.3671,[227]6.3756,[228]6.3817,[229]6.3879,[230]6.3838,[231]6.4007,[232]6.3874,[233]6.3703,[234]6.3544,[235]6.3387,[236]6.3314,[237]6.3205,[238]6.3237,[239]6.3076,[240]6.2971,[241]6.3001,[242]6.3037,[243]6.3022,[244]6.2904,[245]6.2879,[246]6.2758,[247]6.2636,[248]6.2570,[249]6.2548,[250]6.2590,[251]6.2516,[252]6.2482,[253]6.2383,[254]6.2341,[255]6.2226,[256]6.2035,[257]6.1923,[258]6.1839,[259]6.1820,[260]6.1740,[261]6.1699,[262]6.1641,[263]6.1597,[264]6.1406,[265]6.1398,^[[B^[[B[266]6.1385,^R\r\n[267]6.1316,[268]6.1408,[269]6.1385,[270]6.1393,[271]6.1470,[272]6.1509,[273]6.1505,[274]6.1521,[275]6.1611,[276]6.1664,[277]6.1824,[278]6.1929,[279]6.2015,[280]6.2048,[281]6.2142,[282]6.2199,[283]6.2342,[284]6.2422,[285]6.2512,[286]6.2658,[287]6.2654,[288]6.2714,[289]6.2624,[290]6.2471,[291]6.2316,[292]6.2164,[293]6.2029,[294]6.2052,[295]6.2047,[296]6.2090,[297]6.2076,[298]6.2104,[299]6.2073,[300]6.1962,[301]6.1960,[302]6.1882,[303]6.1805,[304]6.1727,[305]6.1703,[306]6.1573,[307]6.1594,[308]6.1631,[309]6.1469,[310]6.1408,[311]6.1346,[312]6.1368,[313]6.1314,[314]6.1301,[315]6.1137,[316]6.1092,[317]6.0928,[318]6.0714,[319]6.0833,[320]6.0960,[321]6.0998,[322]6.0953,[323]6.0888,[324]6.0866,[325]6.0963,[326]6.0964,[327]6.0985,[328]6.1025,[329]6.1084,[330]6.1112,[331]6.1233,[332]6.1204,[333]6.1275,[334]6.1218,[335]6.1153,[336]6.1190,[337]6.1161,[338]6.1149,[339]6.1091,[340]6.1047,[341]6.1127,[342]6.1152,[343]6.1207,[344]6.1209,[345]6.1209,[346]6.1181,[347]6.1226,[348]6.1266,[349]6.1285,[350]6.1251,[351]6.1258,[352]6.1258,[353]6.1204,[354]6.1204,[355]6.1256,[356]6.1286,[357]6.1249,[358]6.1337,[359]6.1366,[360]6.1329,[361]6.1324,[362]6.1391,[363]6.1503,[364]6.1564,[365]6.1621,[366]6.1629,[367]6.1715,[368]6.1690,[369]6.1699,[370]6.1713,[371]6.1655,[372]6.1705,[373]6.1760,[374]6.1746,[375]6.1742,[376]6.1823,[377]6.1774,[378]6.1798,[379]6.1859,[380]6.1776,[381]6.1735,[382]6.1681,[383]6.1671,[384]6.1664,[385]6.1653,[386]6.1647,[387]6.1640,[388]6.1596,[389]6.1542,[390]6.1473,[391]6.1394,[392]6.1355,[393]6.1340,[394]6.1364,[395]6.1347,[396]6.1273,[397]6.1348,[398]6.1387,[399]6.1469,[400]6.1465,[401]6.1481,[402]6.1487,[403]6.1504,[404]6.1567,[405]6.1474,[406]6.1442,[407]6.1434,[408]6.1446,[409]6.1569,[410]6.1678,[411]6.1800,[412]6.1962,[413]6.2076,[414]6.2152,[415]6.2203,[416]6.2281,[417]6.2409,[418]6.2445,[419]6.2519,[420]6.2605,[421]6.2724,[422]6.2779,[423]6.2848,[424]6.2968,[425]6.3056,[426]6.3121,[427]6.3166,[428]6.3249,[429]6.3297,[430]6.3385,[431]6.3528,[432]6.3569,[433]6.3558,[434]6.3512,[435]6.3519,[436]6.3545,[437]6.3639,[438]6.3717,[439]6.3684,[440]6.3674,[441]6.3625,[442]6.3614,[443]6.3627,[444]6.3630,[445]6.3610,[446]6.3632,[447]6.3660,[448]6.3703,[449]6.3677,[450]6.3680,[451]6.3638,[452]6.3522,[453]6.3438,[454]6.3377,[455]6.3386,[456]6.3433,[457]6.3450,[458]6.3429,[459]6.3436,[460]6.3522,[461]6.3495,[462]6.3479,[463]6.3529,[464]6.3519,[465]6.3489,[466]6.3410,[467]6.3414,[468]6.3413,[469]6.3435,[470]6.3440,[471]6.3390,[472]6.3435,[473]6.3379,[474]6.3393,[475]6.3335,[476]6.3353,[477]6.3282,[478]6.3274,[479]6.3338,[480]6.3389,[481]6.3408,[482]6.3364,[483]6.3322,[484]6.3343,[485]6.3329,[486]6.3274,[487]6.3274,[488]6.3255,[489]6.3205,[490]6.3179,[491]6.3145,[492]6.3086,[493]6.3057,[494]6.3041,[495]6.3037,[496]6.3003,[497]6.2949,[498]6.2930,[499]6.2881,[500]6.2787,[501]6.2720,[502]6.2719,[503]6.2714,[504]6.2622,[505]6.2649,[506]6.2658,[507]6.2600,[508]6.2560,[509]6.2550,[510]6.2591,[511]6.2636,[512]6.2669,[513]6.2686,[514]6.2751,[515]6.2697,[516]6.2690,[517]6.2701,[518]6.2702,[519]6.2731,[520]6.2760,[521]6.2776,[522]6.2806,[523]6.2815,[524]6.2875,[525]6.2910,[526]6.2922,[527]6.2943,[528]6.2891,[529]6.2897,[530]6.2849,[531]6.2839,[532]6.2887,[533]6.2910,[534]6.2893,[535]6.2916,[536]6.2861,[537]6.2838,[538]6.2888,[539]6.2900,[540]6.2940,[541]6.2948,[542]6.2956,[543]6.2970,[544]6.2981,[545]6.2960,[546]6.2967,[547]6.2922,[548]6.2868,[549]6.2868,[550]6.2841,[551]6.2805,[552]6.2784,[553]6.2743,[554]6.2720,[555]6.2691,[556]6.2689,[557]6.2712,[558]6.2674,[559]6.2667,[560]6.2662,[561]6.2662,[562]6.2640,[563]6.2640,[564]6.2682,[565]6.2698,[566]6.2696,[567]6.2675,[568]6.2679,[569]6.2663,[570]6.2689,[571]6.2694,[572]6.2703,[573]6.2703,[574]6.2667,[575]6.2664,[576]6.2661,[577]6.2651,[578]6.2630,[579]6.2639,[580]6.2572,[581]6.2534,[582]6.2524,[583]6.2531,[584]6.2534,[585]6.2457,[586]6.2390,[587]6.2393,[588]6.2442,[589]6.2499,[590]6.2530,[591]6.2549,[592]6.2535,[593]6.2501,[594]6.2511,[595]6.2488,[596]6.2525,[597]6.2503,[598]6.2466,[599]6.2486,[600]6.2482,[601]6.2469,[602]6.2486,[603]6.2516,[604]6.2526,[605]6.2557,[606]6.2576,[607]6.2561,[608]6.2527,[609]6.2531,[610]6.2568,[611]6.2549,[612]6.2574,[613]6.2537,[614]6.2487,[615]6.2411,[616]6.2440,[617]6.2379,[618]6.2330,[619]6.2274,[620]6.2133,[621]6.2061,[622]6.2043,[623]6.2058,[624]6.2062,[625]6.2061,[626]6.2047,[627]6.2068,[628]6.2073,[629]6.2069,[630]6.2102,[631]6.2166,[632]6.2219,[633]6.2203,[634]6.2238,[635]6.2244,[636]6.2212,[637]6.2179,[638]6.2206,[639]6.2176,[640]6.2187,[641]6.2189,[642]6.2256,[643]6.2279,[644]6.2290,[645]6.2271,[646]6.2314,[647]6.2275,[648]6.2282,[649]6.2282,[650]6.2320,[651]6.2377,[652]6.2384,[653]6.2426,[654]6.2361,[655]6.2355,\r\n\r\nllama_print_timings:        load time =  8543.28 ms\r\nllama_print_timings:      sample time =     0.00 ms /     1 runs   (    0.00 ms per run)\r\nllama_print_timings: prompt eval time = 4971705.35 ms / 335360 tokens (   14.82 ms per token)\r\nllama_print_timings:        eval time =     0.00 ms /     1 runs   (    0.00 ms per run)\r\nllama_print_timings:       total time = 5006225.35 ms\r\n\r\nreal\t83m26.348s\r\nuser\t126m29.113s\r\nsys\t4m14.981s\r\n```\r\n</details>\r\n\r\n  Perplexity delta: `-0.0542`\r\n\r\n<details>\r\n  <summary>Q4_0 + F16 \"tok_embd\" M1 Pro (with BLAS) [655]6.2838</summary>\r\n\r\n```\r\nmake clean && make -j perplexity && time ./perplexity -m ./models/7B/ggml-model-q4_0-tok-f16.bin -f ./build/wiki.test.raw -t 8\r\nI llama.cpp build info: \r\nI UNAME_S:  Darwin\r\nI UNAME_P:  arm\r\nI UNAME_M:  arm64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread\r\nI LDFLAGS:   -framework Accelerate\r\nI CC:       Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\nI CXX:      Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\n--------\r\nrm -vf *.o main quantize quantize-stats perplexity embedding benchmark-q4_0-matmult\r\ncommon.o\r\nggml.o\r\nllama.o\r\nperplexity\r\nI llama.cpp build info: \r\nI UNAME_S:  Darwin\r\nI UNAME_P:  arm\r\nI UNAME_M:  arm64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread\r\nI LDFLAGS:   -framework Accelerate\r\nI CC:       Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\nI CXX:      Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\n\r\ncc  -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE   -c ggml.c -o ggml.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -c llama.cpp -o llama.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -c examples/common.cpp -o common.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread examples/perplexity/perplexity.cpp ggml.o llama.o common.o -o perplexity  -framework Accelerate\r\nmain: seed = 1681660693\r\nllama.cpp: loading model from ./models/7B/ggml-model-q4_0-tok-f16.bin\r\nllama_model_load_internal: format     = ggjt v1 (latest)\r\nllama_model_load_internal: n_vocab    = 32000\r\nllama_model_load_internal: n_ctx      = 512\r\nllama_model_load_internal: n_embd     = 4096\r\nllama_model_load_internal: n_mult     = 256\r\nllama_model_load_internal: n_head     = 32\r\nllama_model_load_internal: n_layer    = 32\r\nllama_model_load_internal: n_rot      = 128\r\nllama_model_load_internal: ftype      = 2 (mostly Q4_0)\r\nllama_model_load_internal: n_ff       = 11008\r\nllama_model_load_internal: n_parts    = 1\r\nllama_model_load_internal: model size = 7B\r\nllama_model_load_internal: ggml ctx size =  59.11 KB\r\nllama_model_load_internal: mem required  = 5981.20 MB (+ 1026.00 MB per state)\r\nllama_init_from_file: kv self size  =  256.00 MB\r\n\r\nsystem_info: n_threads = 8 / 10 | AVX = 0 | AVX2 = 0 | AVX512 = 0 | FMA = 0 | NEON = 1 | ARM_FMA = 1 | F16C = 0 | FP16_VA = 1 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 0 | VSX = 0 | \r\nperplexity : calculating perplexity over 655 chunks, batch_size=512\r\n7.95 seconds per pass - ETA 1.45 hours\r\n[1]4.3739,[2]4.9529,[3]5.8213,[4]6.4643,[5]6.5415,[6]6.5390,[7]6.7169,[8]6.8060,[9]7.1773,[10]7.4132,[11]7.6578,[12]7.6972,[13]7.6086,[14]7.6865,[15]7.9420,[16]7.5476,[17]7.4239,[18]7.3840,[19]7.0114,[20]6.9981,[21]6.9015,[22]6.7166,[23]6.6774,[24]6.5905,[25]6.5920,[26]6.4192,[27]6.2383,[28]6.1364,[29]6.0522,[30]5.8955,[31]5.8674,[32]5.8854,[33]5.8205,[34]5.8555,[35]5.8813,[36]5.9244,[37]5.9287,[38]5.9455,[39]5.9833,[40]6.0422,[41]6.0498,[42]6.0843,[43]6.0413,[44]6.0960,[45]6.1002,[46]6.0737,[47]6.0975,[48]6.0685,[49]6.0755,[50]6.0361,[51]6.0320,[52]6.0210,[53]6.0650,[54]6.0485,[55]6.0261,[56]6.0603,[57]6.0835,[58]6.1052,[59]6.1190,[60]6.1657,[61]6.1545,[62]6.2175,[63]6.2511,[64]6.2662,[65]6.3128,[66]6.3228,[67]6.3410,[68]6.3551,[69]6.3804,[70]6.4129,[71]6.4345,[72]6.4645,[73]6.5293,[74]6.5346,[75]6.5489,[76]6.5648,[77]6.5779,[78]6.5630,[79]6.5924,[80]6.5849,[81]6.5977,[82]6.6011,[83]6.5474,[84]6.5327,[85]6.5212,[86]6.5001,[87]6.4346,[88]6.4062,[89]6.3857,[90]6.3691,[91]6.3952,[92]6.3912,[93]6.3939,[94]6.3915,[95]6.4203,[96]6.4183,[97]6.4113,[98]6.4044,[99]6.3902,[100]6.3903,[101]6.4162,[102]6.4100,[103]6.4319,[104]6.4385,[105]6.4372,[106]6.4550,[107]6.4537,[108]6.4665,[109]6.4612,[110]6.4567,[111]6.4796,[112]6.4986,[113]6.5000,[114]6.4966,[115]6.5048,[116]6.4974,[117]6.5029,[118]6.5313,[119]6.5523,[120]6.5888,[121]6.6050,[122]6.6297,[123]6.6688,[124]6.6867,[125]6.6778,[126]6.7170,[127]6.7540,[128]6.7816,[129]6.7644,[130]6.7740,[131]6.7687,[132]6.7600,[133]6.7470,[134]6.7581,[135]6.7546,[136]6.7414,[137]6.7333,[138]6.7160,[139]6.7043,[140]6.7012,[141]6.6713,[142]6.6666,[143]6.6387,[144]6.6187,[145]6.6100,[146]6.5964,[147]6.6037,[148]6.6060,[149]6.5999,[150]6.5957,[151]6.5970,[152]6.5875,[153]6.5708,[154]6.5616,[155]6.5684,[156]6.5634,[157]6.5818,[158]6.5855,[159]6.5897,[160]6.5923,[161]6.6047,[162]6.5744,[163]6.5625,[164]6.5363,[165]6.5045,[166]6.4757,[167]6.4382,[168]6.4056,[169]6.3921,[170]6.3796,[171]6.3507,[172]6.3326,[173]6.3140,[174]6.2833,[175]6.2612,[176]6.2510,[177]6.2299,[178]6.2064,[179]6.1893,[180]6.1803,[181]6.1579,[182]6.1388,[183]6.1245,[184]6.1242,[185]6.1170,[186]6.1187,[187]6.1241,[188]6.1205,[189]6.1390,[190]6.1398,[191]6.1601,[192]6.1765,[193]6.1943,[194]6.2060,[195]6.2269,[196]6.2439,[197]6.2659,[198]6.2815,[199]6.2843,[200]6.2889,[201]6.2848,[202]6.3055,[203]6.3122,[204]6.3121,[205]6.3231,[206]6.3309,[207]6.3268,[208]6.3353,[209]6.3404,[210]6.3455,[211]6.3550,[212]6.3623,[213]6.3731,[214]6.3768,[215]6.3809,[216]6.3957,[217]6.4137,[218]6.4273,[219]6.4276,[220]6.4240,[221]6.4179,[222]6.4145,[223]6.4036,[224]6.3969,[225]6.3922,[226]6.4136,[227]6.4223,[228]6.4281,[229]6.4348,[230]6.4305,[231]6.4474,[232]6.4344,[233]6.4172,[234]6.4016,[235]6.3858,[236]6.3780,[237]6.3676,[238]6.3710,[239]6.3548,[240]6.3445,[241]6.3477,[242]6.3515,[243]6.3499,[244]6.3380,[245]6.3354,[246]6.3233,[247]6.3108,[248]6.3040,[249]6.3020,[250]6.3067,[251]6.2991,[252]6.2957,[253]6.2855,[254]6.2814,[255]6.2698,[256]6.2507,[257]6.2396,[258]6.2310,[259]6.2289,[260]6.2208,[261]6.2165,[262]6.2106,[263]6.2061,[264]6.1868,[265]6.1861,[266]6.1845,[267]6.1776,[268]6.1874,[269]6.1855,[270]6.1861,[271]6.1940,[272]6.1986,[273]6.1981,[274]6.1995,[275]6.2085,[276]6.2140,[277]6.2300,[278]6.2408,[279]6.2495,[280]6.2530,[281]6.2629,[282]6.2689,[283]6.2836,[284]6.2914,[285]6.3008,[286]6.3155,[287]6.3148,[288]6.3208,[289]6.3116,[290]6.2965,[291]6.2811,[292]6.2652,[293]6.2514,[294]6.2539,[295]6.2533,[296]6.2575,[297]6.2561,[298]6.2587,[299]6.2559,[300]6.2446,[301]6.2448,[302]6.2367,[303]6.2290,[304]6.2211,[305]6.2187,[306]6.2055,[307]6.2078,[308]6.2111,[309]6.1947,[310]6.1887,[311]6.1823,[312]6.1845,[313]6.1790,[314]6.1777,[315]6.1612,[316]6.1569,[317]6.1402,[318]6.1186,[319]6.1304,[320]6.1436,[321]6.1474,[322]6.1431,[323]6.1365,[324]6.1340,[325]6.1439,[326]6.1439,[327]6.1460,[328]6.1503,[329]6.1564,[330]6.1589,[331]6.1712,[332]6.1682,[333]6.1751,[334]6.1693,[335]6.1628,[336]6.1665,[337]6.1635,[338]6.1623,[339]6.1565,[340]6.1521,[341]6.1598,[342]6.1623,[343]6.1678,[344]6.1677,[345]6.1676,[346]6.1647,[347]6.1695,[348]6.1736,[349]6.1755,[350]6.1721,[351]6.1726,[352]6.1726,[353]6.1674,[354]6.1673,[355]6.1727,[356]6.1757,[357]6.1721,[358]6.1812,[359]6.1842,[360]6.1804,[361]6.1800,[362]6.1867,[363]6.1979,[364]6.2044,[365]6.2102,[366]6.2109,[367]6.2196,[368]6.2174,[369]6.2183,[370]6.2194,[371]6.2134,[372]6.2186,[373]6.2242,[374]6.2229,[375]6.2225,[376]6.2309,[377]6.2260,[378]6.2285,[379]6.2345,[380]6.2261,[381]6.2219,[382]6.2161,[383]6.2151,[384]6.2144,[385]6.2132,[386]6.2126,[387]6.2118,[388]6.2073,[389]6.2019,[390]6.1949,[391]6.1869,[392]6.1828,[393]6.1809,[394]6.1835,[395]6.1819,[396]6.1745,[397]6.1821,[398]6.1859,[399]6.1942,[400]6.1937,[401]6.1951,[402]6.1957,[403]6.1976,[404]6.2039,[405]6.1943,[406]6.1909,[407]6.1902,[408]6.1912,[409]6.2035,[410]6.2145,[411]6.2269,[412]6.2432,[413]6.2546,[414]6.2622,[415]6.2674,[416]6.2755,[417]6.2886,[418]6.2921,[419]6.2994,[420]6.3081,[421]6.3202,[422]6.3259,[423]6.3331,[424]6.3451,[425]6.3542,[426]6.3606,[427]6.3651,[428]6.3734,[429]6.3779,[430]6.3869,[431]6.4015,[432]6.4059,[433]6.4045,[434]6.3999,[435]6.4006,[436]6.4030,[437]6.4124,[438]6.4203,[439]6.4167,[440]6.4161,[441]6.4111,[442]6.4102,[443]6.4115,[444]6.4118,[445]6.4098,[446]6.4122,[447]6.4151,[448]6.4194,[449]6.4167,[450]6.4170,[451]6.4127,[452]6.4009,[453]6.3925,[454]6.3865,[455]6.3872,[456]6.3919,[457]6.3936,[458]6.3914,[459]6.3924,[460]6.4011,[461]6.3982,[462]6.3966,[463]6.4018,[464]6.4009,[465]6.3978,[466]6.3898,[467]6.3901,[468]6.3900,[469]6.3922,[470]6.3927,[471]6.3879,[472]6.3925,[473]6.3869,[474]6.3883,[475]6.3824,[476]6.3848,[477]6.3776,[478]6.3767,[479]6.3830,[480]6.3882,[481]6.3902,[482]6.3856,[483]6.3815,[484]6.3838,[485]6.3821,[486]6.3765,[487]6.3765,[488]6.3747,[489]6.3697,[490]6.3670,[491]6.3640,[492]6.3582,[493]6.3552,[494]6.3534,[495]6.3532,[496]6.3497,[497]6.3444,[498]6.3426,[499]6.3376,[500]6.3279,[501]6.3209,[502]6.3208,[503]6.3206,[504]6.3112,[505]6.3138,[506]6.3147,[507]6.3086,[508]6.3042,[509]6.3031,[510]6.3070,[511]6.3116,[512]6.3152,[513]6.3170,[514]6.3236,[515]6.3181,[516]6.3173,[517]6.3184,[518]6.3185,[519]6.3215,[520]6.3242,[521]6.3258,[522]6.3287,[523]6.3297,[524]6.3360,[525]6.3397,[526]6.3408,[527]6.3428,[528]6.3375,[529]6.3379,[530]6.3331,[531]6.3321,[532]6.3370,[533]6.3393,[534]6.3375,[535]6.3399,[536]6.3345,[537]6.3321,[538]6.3369,[539]6.3381,[540]6.3420,[541]6.3429,[542]6.3436,[543]6.3450,[544]6.3462,[545]6.3440,[546]6.3446,[547]6.3402,[548]6.3347,[549]6.3348,[550]6.3321,[551]6.3283,[552]6.3262,[553]6.3220,[554]6.3197,[555]6.3168,[556]6.3165,[557]6.3188,[558]6.3148,[559]6.3143,[560]6.3138,[561]6.3140,[562]6.3121,[563]6.3121,[564]6.3164,[565]6.3181,[566]6.3178,[567]6.3156,[568]6.3161,[569]6.3145,[570]6.3171,[571]6.3177,[572]6.3187,[573]6.3189,[574]6.3152,[575]6.3148,[576]6.3147,[577]6.3136,[578]6.3115,[579]6.3123,[580]6.3056,[581]6.3018,[582]6.3009,[583]6.3016,[584]6.3020,[585]6.2944,[586]6.2876,[587]6.2878,[588]6.2928,[589]6.2985,[590]6.3015,[591]6.3037,[592]6.3022,[593]6.2985,[594]6.2996,[595]6.2973,[596]6.3010,[597]6.2987,[598]6.2949,[599]6.2971,[600]6.2968,[601]6.2953,[602]6.2971,[603]6.3001,[604]6.3011,[605]6.3044,[606]6.3065,[607]6.3048,[608]6.3013,[609]6.3019,[610]6.3055,[611]6.3037,[612]6.3062,[613]6.3026,[614]6.2975,[615]6.2898,[616]6.2927,[617]6.2865,[618]6.2813,[619]6.2757,[620]6.2614,[621]6.2542,[622]6.2525,[623]6.2540,[624]6.2544,[625]6.2543,[626]6.2529,[627]6.2550,[628]6.2555,[629]6.2552,[630]6.2586,[631]6.2650,[632]6.2704,[633]6.2686,[634]6.2720,[635]6.2726,[636]6.2694,[637]6.2659,[638]6.2686,[639]6.2657,[640]6.2666,[641]6.2669,[642]6.2738,[643]6.2759,[644]6.2772,[645]6.2750,[646]6.2793,[647]6.2755,[648]6.2761,[649]6.2762,[650]6.2801,[651]6.2858,[652]6.2865,[653]6.2908,[654]6.2844,[655]6.2838,\r\n\r\nllama_print_timings:        load time =  8491.14 ms\r\nllama_print_timings:      sample time =     0.00 ms /     1 runs   (    0.00 ms per run)\r\nllama_print_timings: prompt eval time = 4938363.87 ms / 335360 tokens (   14.73 ms per token)\r\nllama_print_timings:        eval time =     0.00 ms /     1 runs   (    0.00 ms per run)\r\nllama_print_timings:       total time = 4971712.41 ms\r\n\r\nreal\t82m51.839s\r\nuser\t125m49.041s\r\nsys\t4m12.038s\r\n```\r\n</details>\r\n\r\n  Perplexity delta: `-0.0059`\r\n\r\n<details>\r\n  <summary>Q4_0 + F16 \"output\" + F16 \"tok_embd\" M1 Pro (with BLAS) [655]6.2357</summary>\r\n\r\n```\r\n$  make clean && make -j perplexity && time ./perplexity -m ./models/7B/ggml-model-q4_0-output-f16-tok-f16.bin -f ./build/wiki.test.raw -t 8\r\nI llama.cpp build info: \r\nI UNAME_S:  Darwin\r\nI UNAME_P:  arm\r\nI UNAME_M:  arm64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread\r\nI LDFLAGS:   -framework Accelerate\r\nI CC:       Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\nI CXX:      Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\nv1_0l:        97      106      128      151\r\nrm -vf *.o main quantize quantize-stats perplexity embedding benchmark-q4_0-matmult\r\ncommon.o\r\nggml.o\r\nllama.o\r\nperplexity\r\nI llama.cpp build info: \r\nI UNAME_S:  Darwin\r\nI UNAME_P:  arm\r\nI UNAME_M:  arm64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread\r\nI LDFLAGS:   -framework Accelerate\r\nI CC:       Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\nI CXX:      Apple clang version 14.0.3 (clang-1403.0.22.14.1)\r\n\r\ncc  -I.              -O3 -DNDEBUG -std=c11   -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wdouble-promotion -Wshadow -Wstrict-prototypes -Wpointer-arith -Wno-unused-function -pthread -DGGML_USE_ACCELERATE   -c ggml.c -o ggml.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -c llama.cpp -o llama.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread -c examples/common.cpp -o common.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-multichar -pthread examples/perplexity/perplexity.cpp ggml.o llama.o common.o -o perplexity  -framework Accelerate\r\nmain: seed = 1681648653\r\nllama.cpp: loading model from ./models/7B/ggml-model-q4_0-output-f16-tok-f16.bin\r\nllama_model_load_internal: format     = ggjt v1 (latest)\r\nllama_model_load_internal: n_vocab    = 32000\r\nllama_model_load_internal: n_ctx      = 512\r\nllama_model_load_internal: n_embd     = 4096\r\nllama_model_load_internal: n_mult     = 256\r\nllama_model_load_internal: n_head     = 32\r\nllama_model_load_internal: n_layer    = 32\r\nllama_model_load_internal: n_rot      = 128\r\nllama_model_load_internal: ftype      = 2 (mostly Q4_0)\r\nllama_model_load_internal: n_ff       = 11008\r\nllama_model_load_internal: n_parts    = 1\r\nllama_model_load_internal: model size = 7B\r\nllama_model_load_internal: ggml ctx size =  59.11 KB\r\nllama_model_load_internal: mem required  = 6153.07 MB (+ 1026.00 MB per state)\r\nllama_init_from_file: kv self size  =  256.00 MB\r\n\r\nsystem_info: n_threads = 8 / 10 | AVX = 0 | AVX2 = 0 | AVX512 = 0 | FMA = 0 | NEON = 1 | ARM_FMA = 1 | F16C = 0 | FP16_VA = 1 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 0 | VSX = 0 | \r\nperplexity : calculating perplexity over 655 chunks, batch_size=512\r\n15.48 seconds per pass - ETA 2.82 hours\r\n[1]4.3765,[2]4.9302,[3]5.7950,[4]6.4520,[5]6.5518,[6]6.5306,[7]6.6998,[8]6.7882,[9]7.1546,[10]7.3953,[11]7.6318,[12]7.6658,[13]7.5747,[14]7.6587,[15]7.9104,[16]7.5129,[17]7.3892,[18]7.3527,[19]6.9798,[20]6.9674,[21]6.8726,[22]6.6872,[23]6.6463,[24]6.5580,[25]6.5584,[26]6.3886,[27]6.2075,[28]6.1053,[29]6.0200,[30]5.8647,[31]5.8386,[32]5.8566,[33]5.7941,[34]5.8282,[35]5.8526,[36]5.8961,[37]5.9029,[38]5.9178,[39]5.9545,[40]6.0124,[41]6.0197,[42]6.0541,[43]6.0122,[44]6.0675,[45]6.0701,[46]6.0438,[47]6.0666,[48]6.0354,[49]6.0414,[50]6.0023,[51]5.9984,[52]5.9875,[53]6.0309,[54]6.0133,[55]5.9911,[56]6.0240,[57]6.0455,[58]6.0671,[59]6.0803,[60]6.1247,[61]6.1146,[62]6.1776,[63]6.2109,[64]6.2261,[65]6.2713,[66]6.2799,[67]6.2971,[68]6.3109,[69]6.3362,[70]6.3690,[71]6.3895,[72]6.4198,[73]6.4849,[74]6.4895,[75]6.5025,[76]6.5167,[77]6.5289,[78]6.5140,[79]6.5421,[80]6.5340,[81]6.5476,[82]6.5512,[83]6.4990,[84]6.4838,[85]6.4722,[86]6.4504,[87]6.3854,[88]6.3571,[89]6.3370,[90]6.3217,[91]6.3466,[92]6.3422,[93]6.3448,[94]6.3418,[95]6.3706,[96]6.3687,[97]6.3623,[98]6.3560,[99]6.3420,[100]6.3425,[101]6.3685,[102]6.3614,[103]6.3825,[104]6.3886,[105]6.3881,[106]6.4049,[107]6.4026,[108]6.4156,[109]6.4094,[110]6.4046,[111]6.4266,[112]6.4455,[113]6.4468,[114]6.4436,[115]6.4513,[116]6.4439,[117]6.4491,[118]6.4783,[119]6.4997,[120]6.5353,[121]6.5514,[122]6.5767,[123]6.6158,[124]6.6331,[125]6.6241,[126]6.6633,[127]6.6996,[128]6.7275,[129]6.7114,[130]6.7209,[131]6.7152,[132]6.7066,[133]6.6939,[134]6.7044,[135]6.7006,[136]6.6885,[137]6.6804,[138]6.6637,[139]6.6526,[140]6.6492,[141]6.6204,[142]6.6161,[143]6.5886,[144]6.5692,[145]6.5603,[146]6.5471,[147]6.5544,[148]6.5564,[149]6.5499,[150]6.5458,[151]6.5472,[152]6.5370,[153]6.5199,[154]6.5106,[155]6.5175,[156]6.5124,[157]6.5304,[158]6.5340,[159]6.5381,[160]6.5404,[161]6.5526,[162]6.5227,[163]6.5111,[164]6.4853,[165]6.4534,[166]6.4254,[167]6.3884,[168]6.3559,[169]6.3427,[170]6.3306,[171]6.3019,[172]6.2840,[173]6.2657,[174]6.2357,[175]6.2140,[176]6.2038,[177]6.1827,[178]6.1598,[179]6.1428,[180]6.1340,[181]6.1119,[182]6.0930,[183]6.0791,[184]6.0789,[185]6.0717,[186]6.0734,[187]6.0791,[188]6.0753,[189]6.0939,[190]6.0949,[191]6.1156,[192]6.1319,[193]6.1494,[194]6.1610,[195]6.1818,[196]6.1981,[197]6.2201,[198]6.2356,[199]6.2390,[200]6.2437,[201]6.2393,[202]6.2599,[203]6.2666,[204]6.2665,[205]6.2775,[206]6.2852,[207]6.2814,[208]6.2895,[209]6.2944,[210]6.2998,[211]6.3097,[212]6.3169,[213]6.3276,[214]6.3313,[215]6.3351,[216]6.3505,[217]6.3684,[218]6.3818,[219]6.3821,[220]6.3785,[221]6.3725,[222]6.3694,[223]6.3587,[224]6.3516,[225]6.3472,[226]6.3684,[227]6.3769,[228]6.3829,[229]6.3891,[230]6.3850,[231]6.4020,[232]6.3888,[233]6.3716,[234]6.3558,[235]6.3401,[236]6.3328,[237]6.3219,[238]6.3252,[239]6.3091,[240]6.2985,[241]6.3015,[242]6.3051,[243]6.3035,[244]6.2918,[245]6.2893,[246]6.2772,[247]6.2648,[248]6.2582,[249]6.2559,[250]6.2602,[251]6.2529,[252]6.2495,[253]6.2396,[254]6.2354,[255]6.2239,[256]6.2048,[257]6.1935,[258]6.1852,[259]6.1833,[260]6.1753,[261]6.1711,[262]6.1654,[263]6.1610,[264]6.1418,[265]6.1411,[266]6.1397,[267]6.1329,[268]6.1421,[269]6.1399,[270]6.1406,[271]6.1484,[272]6.1524,[273]6.1519,[274]6.1535,[275]6.1624,[276]6.1677,[277]6.1837,[278]6.1943,[279]6.2029,[280]6.2061,[281]6.2156,[282]6.2212,[283]6.2356,[284]6.2435,[285]6.2525,[286]6.2670,[287]6.2665,[288]6.2726,[289]6.2635,[290]6.2482,[291]6.2327,[292]6.2175,[293]6.2039,[294]6.2063,[295]6.2057,[296]6.2100,[297]6.2086,[298]6.2113,[299]6.2083,[300]6.1971,[301]6.1970,[302]6.1892,[303]6.1815,[304]6.1736,[305]6.1713,[306]6.1582,[307]6.1603,[308]6.1640,[309]6.1478,[310]6.1417,[311]6.1355,[312]6.1377,[313]6.1324,[314]6.1310,[315]6.1147,[316]6.1102,[317]6.0938,[318]6.0723,[319]6.0841,[320]6.0970,[321]6.1008,[322]6.0964,[323]6.0899,[324]6.0876,[325]6.0974,[326]6.0974,[327]6.0995,[328]6.1037,[329]6.1096,[330]6.1124,[331]6.1245,[332]6.1216,[333]6.1287,[334]6.1230,[335]6.1165,[336]6.1202,[337]6.1173,[338]6.1161,[339]6.1103,[340]6.1059,[341]6.1138,[342]6.1163,[343]6.1218,[344]6.1220,[345]6.1220,[346]6.1191,[347]6.1236,[348]6.1276,[349]6.1296,[350]6.1262,[351]6.1269,[352]6.1268,[353]6.1215,[354]6.1214,[355]6.1267,[356]6.1296,[357]6.1259,[358]6.1347,[359]6.1376,[360]6.1340,[361]6.1334,[362]6.1401,[363]6.1513,[364]6.1575,[365]6.1632,[366]6.1639,[367]6.1725,[368]6.1701,[369]6.1710,[370]6.1723,[371]6.1665,[372]6.1715,[373]6.1770,[374]6.1756,[375]6.1751,[376]6.1832,[377]6.1783,[378]6.1807,[379]6.1868,[380]6.1785,[381]6.1744,[382]6.1690,[383]6.1679,[384]6.1672,[385]6.1661,[386]6.1656,[387]6.1649,[388]6.1604,[389]6.1550,[390]6.1481,[391]6.1402,[392]6.1363,[393]6.1348,[394]6.1373,[395]6.1356,[396]6.1281,[397]6.1356,[398]6.1396,[399]6.1478,[400]6.1473,[401]6.1489,[402]6.1495,[403]6.1512,[404]6.1575,[405]6.1482,[406]6.1450,[407]6.1442,[408]6.1454,[409]6.1576,[410]6.1686,[411]6.1807,[412]6.1968,[413]6.2082,[414]6.2157,[415]6.2208,[416]6.2287,[417]6.2415,[418]6.2451,[419]6.2525,[420]6.2611,[421]6.2730,[422]6.2785,[423]6.2854,[424]6.2974,[425]6.3062,[426]6.3127,[427]6.3172,[428]6.3255,[429]6.3302,[430]6.3390,[431]6.3533,[432]6.3575,[433]6.3564,[434]6.3518,[435]6.3524,[436]6.3550,[437]6.3643,[438]6.3721,[439]6.3688,[440]6.3678,[441]6.3629,[442]6.3618,[443]6.3631,[444]6.3634,[445]6.3615,[446]6.3636,[447]6.3664,[448]6.3708,[449]6.3681,[450]6.3685,[451]6.3642,[452]6.3527,[453]6.3442,[454]6.3381,[455]6.3390,[456]6.3436,[457]6.3454,[458]6.3432,[459]6.3439,[460]6.3525,[461]6.3498,[462]6.3482,[463]6.3532,[464]6.3522,[465]6.3493,[466]6.3414,[467]6.3418,[468]6.3417,[469]6.3439,[470]6.3444,[471]6.3394,[472]6.3440,[473]6.3383,[474]6.3398,[475]6.3339,[476]6.3358,[477]6.3287,[478]6.3279,[479]6.3343,[480]6.3393,[481]6.3412,[482]6.3368,[483]6.3326,[484]6.3347,[485]6.3333,[486]6.3277,[487]6.3278,[488]6.3259,[489]6.3210,[490]6.3183,[491]6.3150,[492]6.3091,[493]6.3062,[494]6.3046,[495]6.3042,[496]6.3009,[497]6.2954,[498]6.2935,[499]6.2886,[500]6.2792,[501]6.2724,[502]6.2724,[503]6.2718,[504]6.2627,[505]6.2654,[506]6.2664,[507]6.2605,[508]6.2565,[509]6.2556,[510]6.2596,[511]6.2640,[512]6.2675,[513]6.2692,[514]6.2757,[515]6.2703,[516]6.2695,[517]6.2707,[518]6.2707,[519]6.2737,[520]6.2765,[521]6.2781,[522]6.2811,[523]6.2820,[524]6.2880,[525]6.2915,[526]6.2926,[527]6.2947,[528]6.2896,[529]6.2901,[530]6.2853,[531]6.2843,[532]6.2891,[533]6.2914,[534]6.2897,[535]6.2921,[536]6.2866,[537]6.2843,[538]6.2892,[539]6.2905,[540]6.2944,[541]6.2952,[542]6.2960,[543]6.2974,[544]6.2985,[545]6.2965,[546]6.2971,[547]6.2926,[548]6.2873,[549]6.2873,[550]6.2846,[551]6.2809,[552]6.2788,[553]6.2747,[554]6.2723,[555]6.2694,[556]6.2692,[557]6.2716,[558]6.2676,[559]6.2670,[560]6.2665,[561]6.2665,[562]6.2643,[563]6.2642,[564]6.2685,[565]6.2701,[566]6.2698,[567]6.2677,[568]6.2682,[569]6.2666,[570]6.2691,[571]6.2696,[572]6.2705,[573]6.2706,[574]6.2669,[575]6.2666,[576]6.2664,[577]6.2653,[578]6.2632,[579]6.2640,[580]6.2574,[581]6.2536,[582]6.2526,[583]6.2532,[584]6.2536,[585]6.2459,[586]6.2392,[587]6.2395,[588]6.2444,[589]6.2501,[590]6.2531,[591]6.2551,[592]6.2537,[593]6.2502,[594]6.2512,[595]6.2489,[596]6.2526,[597]6.2504,[598]6.2467,[599]6.2487,[600]6.2483,[601]6.2470,[602]6.2487,[603]6.2517,[604]6.2526,[605]6.2558,[606]6.2577,[607]6.2562,[608]6.2528,[609]6.2533,[610]6.2569,[611]6.2550,[612]6.2575,[613]6.2538,[614]6.2488,[615]6.2412,[616]6.2441,[617]6.2380,[618]6.2330,[619]6.2275,[620]6.2134,[621]6.2062,[622]6.2044,[623]6.2060,[624]6.2063,[625]6.2062,[626]6.2048,[627]6.2070,[628]6.2075,[629]6.2071,[630]6.2104,[631]6.2166,[632]6.2220,[633]6.2204,[634]6.2239,[635]6.2245,[636]6.2214,[637]6.2181,[638]6.2207,[639]6.2178,[640]6.2188,[641]6.2190,[642]6.2258,[643]6.2280,[644]6.2291,[645]6.2272,[646]6.2315,[647]6.2276,[648]6.2283,[649]6.2283,[650]6.2321,[651]6.2379,[652]6.2386,[653]6.2427,[654]6.2362,[655]6.2357,\r\n\r\nllama_print_timings:        load time = 16073.04 ms\r\nllama_print_timings:      sample time =     0.00 ms /     1 runs   (    0.00 ms per run)\r\nllama_print_timings: prompt eval time = 4977968.90 ms / 335360 tokens (   14.84 ms per token)\r\nllama_print_timings:        eval time =     0.00 ms /     1 runs   (    0.00 ms per run)\r\nllama_print_timings:       total time = 5012024.06 ms\r\n\r\nreal\t83m32.235s\r\nuser\t126m43.253s\r\nsys\t4m15.665s\r\n```\r\n</details>\r\n\r\n  Perplexity delta: `-0.0540`\r\n\r\n#### M1 Pro results\r\n\r\n| `tok_embd` | `output` | Perplexity (with BLAS) | Delta | Size (MB) |\r\n| --- | --- | --- | --- | --- |\r\n| `Q4_0` | `Q4_0` | `6.2897` | ` 0.0000` |  `3.9G` |\r\n| `Q4_0` | `F16` | `6.2355` | `-0.0542` | `4.1G` |\r\n| `F16` | `Q4_0` | `6.2838`  | `-0.0059` | `4.1G` |\r\n| `F16` | `F16` | `6.2357` | `-0.0540` | `4.3G` |",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "high priority",
+      "generation quality"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-15T19:22:22+00:00",
+    "closed_at": "2023-04-16T20:08:54+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1003/reactions",
+      "total_count": 6,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 6,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1003"
+  },
+  {
+    "number": 382,
+    "title": "Add proper instructions for using Alpaca models",
+    "body": "So I am looking at https://github.com/antimatter15/alpaca.cpp and I see they are already running 30B Alpaca models, while we are struggling to run 7B due to the recent tokenizer updates.\r\n\r\nI also see that the models are now even floating on Hugging Face - I guess license issues are no longer a problem?\r\n\r\nWe should add detailed instructions for obtaining the Alpaca models and a temporary explanation how to use the following script to make the models compatible with the latest `master`:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/issues/324#issuecomment-1476227818\r\n\r\nThe bigger issue is that people keep producing the old version of the `ggml` models instead of migrating to the latest `llama.cpp` changes. And therefore, we now need this extra conversion step. It's best to figure out the steps for generating the Alpaca models and generate them in the correct format.\r\n\r\n**Edit: just don't post direct links to the models!**",
+    "labels": [
+      "documentation",
+      "help wanted",
+      "good first issue",
+      "high priority",
+      "\ud83e\udd99."
+    ],
+    "state": "closed",
+    "created_at": "2023-03-22T07:26:07+00:00",
+    "closed_at": "2023-07-28T19:20:56+00:00",
+    "comments": 22,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/382/reactions",
+      "total_count": 21,
+      "+1": 21,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/382"
+  },
+  {
+    "number": 6613,
+    "title": "support `--hf-token` param in addition of `--hf-repo`",
+    "body": "### Motivation\r\n\r\nModels with non standard licence requires an opt-in on HF and the download requires a read token if the model is gated.\r\n\r\n### Proposal\r\n\r\n- Add an `--hf-token` param in `common` and add it in the url built with `--hf-repo` and `--hf-file` in `llama_load_model_from_hf`.\r\n\r\n\r\n\r\n",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-11T17:27:58+00:00",
+    "closed_at": "2024-09-23T16:23:11+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6613/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6613"
+  },
+  {
+    "number": 5674,
+    "title": "[SYCL] Support newer non linear quantization",
+    "body": "cc: @abhilash1910 @airMeng \r\n\r\nAlso [important](https://github.com/ggerganov/llama.cpp/pull/5590#issuecomment-1952955062)!",
+    "labels": [
+      "help wanted",
+      "bug-unconfirmed"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-23T05:40:16+00:00",
+    "closed_at": "2024-04-09T05:38:28+00:00",
+    "comments": 20,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5674/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5674"
+  },
+  {
+    "number": 1299,
+    "title": "Test replit-code-v1-3b model",
+    "body": "Replit recently trained a 3B parameter Llama-style code model with some very promising results. Weights have been released [here](https://huggingface.co/replit/replit-code-v1-3b)",
+    "labels": [
+      "help wanted",
+      "model"
+    ],
+    "state": "open",
+    "created_at": "2023-05-03T15:47:01+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1299/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1299"
+  },
+  {
+    "number": 7773,
+    "title": "ggml : add WebGPU backend",
+    "body": "I hope that this would be relatively easy to do since AFAIK WebGPU allows us to write kernels in a shader language, so we have experience how to create such backends.\r\n\r\nThere has been some initial work in https://github.com/ggerganov/ggml/pull/585 - could be useful as a starting point",
+    "labels": [
+      "help wanted",
+      "research \ud83d\udd2c",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2024-06-05T14:24:37+00:00",
+    "closed_at": null,
+    "comments": 21,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7773/reactions",
+      "total_count": 19,
+      "+1": 12,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 5,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 2
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7773"
+  },
+  {
+    "number": 6027,
+    "title": "llava-cli: improve llava-cli and the API for using LLaVA",
+    "body": "From:\r\n - https://github.com/ggerganov/llama.cpp/issues/4216#issuecomment-1991730224\r\n\r\n1. cleaning up the clip/llava libs and improving the API\r\n2. in the old implementation, there were many internal object exposed to the server and the memory management was dubious\r\n3. there was no obvious path for supporting parallel multimodal slots\r\n",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "good first issue",
+      "llava"
+    ],
+    "state": "open",
+    "created_at": "2024-03-12T21:18:55+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6027/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6027"
+  },
+  {
+    "number": 1163,
+    "title": "llama.cpp + Final Jeopardy",
+    "body": "I was browsing reddit and saw this post:\r\n\r\nhttps://www.reddit.com/r/LocalLLaMA/comments/12xkm9v/alpaca_vs_final_jeopardy/\r\n\r\nIf anyone is interested, it would be great to add such evaluation as an example to `llama.cpp` and add instructions for running it with different models: LLaMA, Alpaca, Vicuna, etc. and different quantizations.\r\n\r\nHere is the original work by @aigoopy which can be a good starting point:\r\n\r\nhttps://github.com/aigoopy/llm-jeopardy\r\n\r\n",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "\ud83e\udd99."
+    ],
+    "state": "closed",
+    "created_at": "2023-04-24T19:44:16+00:00",
+    "closed_at": "2023-04-28T16:13:35+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1163/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1163"
+  },
+  {
+    "number": 9566,
+    "title": "Bug: gguf pypi package corrupts environment",
+    "body": "### What happened?\n\ninstalling `gguf` using `pip install gguf` will register `gguf` AND `scripts`\r\nwhich means that any app that has `scripts` in their structure will suddenly start failing just because `gguf` is installed.\r\n\r\nlooking at <https://github.com/ggerganov/llama.cpp/blob/master/gguf-py/pyproject.toml>\r\n```js\r\npackages = [\r\n    {include = \"gguf\"},\r\n    {include = \"gguf/py.typed\"},\r\n    {include = \"scripts\"},\r\n]\r\n```\r\nculprit is clear - `scripts` folder should be moved to be under `gguf`, not as a separate package.\r\nif that is too much, then at least rename scripts package to be `gguf_scripts`\n\n### Name and Version\n\nlatest commit as of date of issue: [d39e267](https://github.com/ggerganov/llama.cpp/commit/d39e26741f9f02340651dbc640c9776e1a1128ef)\n\n### What operating system are you seeing the problem on?\n\nLinux, Mac, Windows, BSD\n\n### Relevant log output\n\n```shell\nimport gguf\r\nfrom scripts import test_module\r\n\r\ntest_module.some_method()\r\n\r\n\r\n```log\r\nImportError: cannot import name 'test_module' from 'scripts' (venv/lib/python3.12/site-packages/scripts/__init__.py)\r\n```\n```\n",
+    "labels": [
+      "bug",
+      "help wanted",
+      "high severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-20T15:32:43+00:00",
+    "closed_at": "2025-01-08T18:55:00+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9566/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9566"
+  },
+  {
+    "number": 54,
+    "title": "error: 'CLOCK_MONOTONIC' undeclared",
+    "body": " The initial `make` fails with `CLOCK_MONOTONIC undeclared`\r\n```\r\nI llama.cpp build info: \r\nI UNAME_S:  Linux\r\nI UNAME_P:  unknown\r\nI UNAME_M:  x86_64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -pthread -mavx -mavx2 -mfma -mf16c -msse3\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -pthread\r\nI LDFLAGS:  \r\nI CC:       cc (Alpine 12.2.1_git20220924-r9) 12.2.1 20220924\r\nI CXX:      g++ (Alpine 12.2.1_git20220924-r9) 12.2.1 20220924\r\n\r\ncc  -I.              -O3 -DNDEBUG -std=c11   -fPIC -pthread -mavx -mavx2 -mfma -mf16c -msse3   -c ggml.c -o ggml.o\r\nggml.c: In function 'ggml_time_ms':\r\nggml.c:309:5: warning: implicit declaration of function 'clock_gettime' [-Wimplicit-function-declaration]\r\n  309 |     clock_gettime(CLOCK_MONOTONIC, &ts);\r\n      |     ^~~~~~~~~~~~~\r\nggml.c:309:19: error: 'CLOCK_MONOTONIC' undeclared (first use in this function)\r\n  309 |     clock_gettime(CLOCK_MONOTONIC, &ts);\r\n      |                   ^~~~~~~~~~~~~~~\r\nggml.c:309:19: note: each undeclared identifier is reported only once for each function it appears in\r\nggml.c: In function 'ggml_time_us':\r\nggml.c:315:19: error: 'CLOCK_MONOTONIC' undeclared (first use in this function)\r\n  315 |     clock_gettime(CLOCK_MONOTONIC, &ts);\r\n      |                   ^~~~~~~~~~~~~~~\r\nmake: *** [Makefile:182: ggml.o] Error 1\r\n``` \r\n\r\nThis can be solved by adding `-D_POSIX_C_SOURCE=199309L` to the `C{,XX}FLAGS` in the Makefile. See this Stackoverflow question: https://stackoverflow.com/questions/29666937/error-clock-monotonic-undeclared-first-use-in-this-function",
+    "labels": [
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-12T17:39:45+00:00",
+    "closed_at": "2023-03-22T17:20:28+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/54/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/54"
+  }
+]

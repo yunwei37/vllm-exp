@@ -1,0 +1,111 @@
+[
+  {
+    "number": 6346,
+    "title": "nix: ci: fit into the new limits",
+    "body": "Most (all) of the nix-build jobs are being cancelled in progress since the quotas have changed. Adjust the workflows to fit in the new limits.\r\n\r\nContext: since https://github.com/ggerganov/llama.cpp/pull/6243 the ci jobs are grouped by refs and cancelled together. The existing \"Nix CI\" job wasn't prepared for this for two reasons:\r\n\r\n- It builds _many_ variants of `llama.cpp` in a single job.\r\n- It only pushes the results to cachix after all of the builds have ended (not sure if it does the push in the \"destructor\" step after the cancellation).\r\n- PRs from forks don't have access to the repo secrets so they don't push to cachix. However, it's plausible that these could make up the majority of all jobs?\r\n- We're running pure nix-builds, meaning we can only cache store paths (results of complete and successful builds) not e.g. intermediate object files. This provides a strong guarantee that a passing CI means the build can be reproduced locally, but this also limits how much we can reuse between the CI jobs\r\n\r\nReferences:\r\n\r\n- https://github.com/ggerganov/llama.cpp/pull/6327#issuecomment-2022157572\r\n- https://github.com/ggerganov/llama.cpp/pull/6243\r\n\r\nCC @philiptaron @Green-Sky \r\n\r\n\r\n### Potential solutions\r\n\r\n- Make `onPush` builds (`.#checks`) less pure\r\n  - ccacheStdenv\r\n  - check-pointing\r\n  - Run pure builds `onSchedule` instead\r\n- More granular jobs: generate individual github jobs for individual attributes\r\n\r\n### Questions\r\n\r\n- How effective is the caching right now?\r\n  - PRs from forks aren't allowed to push to cachix",
+    "labels": [
+      "nix",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-27T13:19:02+00:00",
+    "closed_at": "2024-05-17T01:06:32+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6346/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6346"
+  },
+  {
+    "number": 5681,
+    "title": "nix: consider moving outputs to legacyPackages for lazier evaluation",
+    "body": "(This issue is for a conversation concerning specifically the `flake.nix`, open here for transparency)\r\n\r\n### The proposal\r\n\r\nThe current approach to managing multiple variants of llama (BLAS, ROCm, CUDA) is to instantiate Nixpkgs several times in a [flake-parts](https://github.com/hercules-ci/flake-parts)  [module](https://github.com/ggerganov/llama.cpp/blob/15499eb94227401bdc8875da6eb85c15d37068f7/.devops/nix/nixpkgs-instances.nix), expose these instances [as arguments](https://github.com/ggerganov/llama.cpp/blob/15499eb94227401bdc8875da6eb85c15d37068f7/.devops/nix/nixpkgs-instances.nix#L9) for other flake-parts \"`perSystem`\" modules, and use them to populate the flake's `packages` and `checks`: https://github.com/ggerganov/llama.cpp/blob/15499eb94227401bdc8875da6eb85c15d37068f7/flake.nix#L150-L157\r\n\r\nThis means that running simple commands like `nix flake show` will trigger evaluating all of these several nixpkgs instances, tripling the evaluation cost.\r\n\r\n\r\nWe could instead remove all these non-default instantiations from `_module.args`, and variants from `packages` and `checks`, and define all of the same things under `legacyPackages`. Defining `legacyPackages.${system}.cuda`, we'd still be able to use `nix build .#cuda`, but we won't see it in `nix flake show`, and we might build it without evaluating (much of) `import nixpkgs { config.rocmSupport = true; }`. More specifically, I'm guessing what we want to avoid is evaluating `llamaPackagesRocm.llama-cpp.meta` and `llamaPackagesRocm.llama-cpp.outPath`, but this needs more investigation\r\n\r\n### Broader context\r\n\r\nThe broader issue is that `llama.cpp` shouldn't need to instantiate its own nixpkgs at all, but there should be an ergonomic way to pass the flake a different nixpkgs config. Cf. e.g. https://github.com/NixOS/nixpkgs/pull/160061\r\n\r\nCC @philiptaron ",
+    "labels": [
+      "nix",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-23T11:17:41+00:00",
+    "closed_at": "2024-05-05T01:06:43+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5681/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5681"
+  },
+  {
+    "number": 4851,
+    "title": "CI: nix flake update: no permission to create a PR",
+    "body": "The weekly workflow for updating the nixpkgs revision pinned in the `flake.lock`, introduced in https://github.com/ggerganov/llama.cpp/pull/4709, fails with insufficient permissions: https://github.com/ggerganov/llama.cpp/actions/runs/7434790471/job/20229364773. The action is attempting to open a PR with the updated lock file. The action can be configured to use a separate token when creating the PR: https://github.com/ggerganov/llama.cpp/blob/c75ca5d96f902564cbbbdd7f5cade80d53c288bb/.github/workflows/nix-flake-update.yml#L22\r\n\r\nSide-note: for the CI/nix-build workflow to also run automatically on these PRs a personal token would be required, https://github.com/DeterminateSystems/update-flake-lock#with-a-personal-authentication-token\r\n\r\n@ggerganov: it's preferable to keep the action; can we use another token or do you know if there's another way to allow opening PRs from the specific workflow?",
+    "labels": [
+      "nix",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-10T01:52:06+00:00",
+    "closed_at": "2024-03-18T07:56:23+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4851/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4851"
+  },
+  {
+    "number": 3824,
+    "title": "gguf-py not in flake.nix?",
+    "body": "When I try to run convert.py from the default x86_64-linux package installed from the Nix flake, it fails with the error `ModuleNotFoundError: No module named 'gguf'`. The gguf-py documentation from its subdirectory in this repo suggests to install it with pip, which really isn't ideal at all in a Nix/NixOS setup and also defeats the purpose of installing llama.cpp from the flake.nix file in the first place.  Am I just doing something wrong, or is this program missing from the flake outputs? In which case, I think it should be added. Thanks.",
+    "labels": [
+      "enhancement",
+      "nix",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-28T04:32:14+00:00",
+    "closed_at": "2024-04-02T01:12:48+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3824/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3824"
+  }
+]

@@ -1,0 +1,116 @@
+[
+  {
+    "number": 11142,
+    "title": "server : add support for multiple responses",
+    "body": "It would be very useful to add multi-response support per slot so that a single request would be able to generate `n` independent completions. This functionality is useful in different situations - for example, a FIM completion can provide multiple alternative suggestions at a smaller or equal compute cost compared to running them sequentially.\r\n\r\nI think this can be implemented by adding multiple sequence id per slot (instead of having just one like we currently do). However, I am not sure how yet much complexity would be introduced to support this.",
+    "labels": [
+      "server/api",
+      "server",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2025-01-08T16:11:24+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/11142/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/11142"
+  },
+  {
+    "number": 10887,
+    "title": "Feature Request: support `\"encoding_format\": \"base64\"` in the `*/embeddings` endpoints",
+    "body": "### Prerequisites\n\n- [X] I am running the latest code. Mention the version if possible as well.\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new and useful enhancement to share.\n\n### Feature Description\n\nThe OpenAI embeddings API supports returning the embeddings in `base64` format:\r\n\r\nhttps://platform.openai.com/docs/api-reference/embeddings/create#embeddings-create-encoding_format\r\n\r\nWe should implement this option in the server and enable it both for the `/v1/embeddings` and `/embeddings` endpoints.\n\n### Motivation\n\nReduce JSON payload and increase OAI compatibility.\n\n### Possible Implementation\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "server/api",
+      "server"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-18T10:50:45+00:00",
+    "closed_at": "2024-12-24T20:33:05+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10887/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10887"
+  },
+  {
+    "number": 9842,
+    "title": "server : temperature sampling is not working",
+    "body": "### What happened?\n\nUsing 1000000000000000 temperature does not affect model's response.\r\n```python\r\nimport httpx\r\n\r\n# Define the URL and the headers\r\nurl = 'http://localhost:8080/completion'\r\nheaders = {\r\n    'Content-Type': 'application/json'\r\n}\r\n\r\n# Define the JSON payload with properly escaped newlines\r\ndata = {\r\n    \"prompt\": \"<|im_start|>system\\nYou are a helpful assistant.<|im_end|>\\n<|im_start|>user\\nHi!<|im_end|>\\n<|im_start|>assistant\\nHow can I assist you today?<|im_end|>\\n<|im_start|>user\\nImplement fibbonaci in Python<|im_end|>\\n<|im_start|>assistant\\n\",\r\n    \"n_predict\": 128,\r\n    \"temperature\": 1000000,\r\n}\r\n\r\n# Send the POST request using httpx with no timeout\r\nresponse = httpx.post(url, json=data, headers=headers, timeout=None)\r\n\r\n# Print the response from the server\r\nprint(response.json())\r\n```\n\n### Name and Version\n\nd5cb86844f26f600c48bf3643738ea68138f961d\n\n### What operating system are you seeing the problem on?\n\n_No response_\n\n### Relevant log output\n\n_No response_",
+    "labels": [
+      "bug-unconfirmed",
+      "server/api",
+      "server",
+      "high severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-11T07:38:07+00:00",
+    "closed_at": "2024-10-11T07:41:07+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9842/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9842"
+  },
+  {
+    "number": 8367,
+    "title": "server : support content array in OAI chat API",
+    "body": "According to the OpenAI API, the `\"content\"` field of user messages can be both `string` and `array`: https://platform.openai.com/docs/api-reference/chat/create\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/1991296/62d6dc27-ca65-4eeb-80c0-5c134dbdcfb4)\r\n\r\nSo we should support requests such as:\r\n\r\n```json\r\n{\r\n  \"role\": \"user\",\r\n  \"content\": [ { \"type\": \"text\", \"text\": \"tell me a joke\" } ]\r\n}\r\n```\r\n\r\nand\r\n\r\n```json\r\n{\r\n  \"role\": \"user\",\r\n  \"content\": [\r\n    { \"type\": \"text\", \"text\": \"msg part 0\" },\r\n    { \"type\": \"text\", \"text\": \"msg part 1\" },\r\n    ...\r\n    { \"type\": \"text\", \"text\": \"msg part N\" }\r\n  ]\r\n}\r\n```",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "server/api"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-08T10:11:06+00:00",
+    "closed_at": "2024-07-12T11:48:16+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8367/reactions",
+      "total_count": 3,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 3,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8367"
+  }
+]

@@ -1,0 +1,835 @@
+[
+  {
+    "number": 16354,
+    "title": "[Feature]: Benchmarks for audio models",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\n- Add audio datasets to `benchmarks/benchmark_dataset.py` to so we can run performance benchmarks on audio models as well.\n- Add a benchmark similar to MMMU (#11196) but for audio models to evaluate their correctness.\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\ncc @mgoin @ywang96 \n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "feature request",
+      "multi-modality"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-09T16:55:19+00:00",
+    "closed_at": "2025-04-19T09:24:15+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/16354/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/16354"
+  },
+  {
+    "number": 14002,
+    "title": "[Feature]: Implement Priority Scheduling In V1 Engine",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nIn V0, we support request priority. I would like to see this in V1\n\ncc @WoosukKwon \n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-28T01:33:35+00:00",
+    "closed_at": "2025-06-23T03:18:09+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14002/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14002"
+  },
+  {
+    "number": 4694,
+    "title": "[Feature]: bind python and c++ through tools other than pybind11",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nAs vLLM goes into a fast release schedule (currently one release every two weeks), we will quickly hit the project-wide limit of pypi (around 5GB per project). One solution, as pointed out in https://github.com/pypi/support/issues/3792#issuecomment-2099941677 , is to build one wheel for all python versions (Python 3.8+).\r\n\r\nI have figured out the procedure https://github.com/pypi/support/issues/3792#issuecomment-2101360740 , but pybind11 does not support this Python Limited API protocol.\r\n\r\nOne possible solution is to replace pybind11 with some other tools, so that the binding procedure can be used with Python Limited API.\r\n\r\nPossible solutions:\r\n\r\n- Nanobind (seems to support it starting from Python 3.12 only: https://github.com/wjakob/nanobind/pull/561 )\r\n- register ops through pytorch directly https://pytorch.org/tutorials/advanced/torch_script_custom_ops.html\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_",
+    "labels": [
+      "help wanted",
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-08T23:18:56+00:00",
+    "closed_at": "2024-10-27T22:53:29+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4694/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4694"
+  },
+  {
+    "number": 11155,
+    "title": "[New Model]: WisdomShell",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nTraceback (most recent call last):\r\n  File \"/usr/local/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\r\n    return _run_code(code, main_globals, None,\r\n  File \"/usr/local/lib/python3.10/runpy.py\", line 86, in _run_code\r\n    exec(code, run_globals)\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/entrypoints/api_server.py\", line 158, in <module>\r\n    asyncio.run(run_server(args))\r\n  File \"/usr/local/lib/python3.10/asyncio/runners.py\", line 44, in run\r\n    return loop.run_until_complete(main)\r\n  File \"/usr/local/lib/python3.10/asyncio/base_events.py\", line 649, in run_until_complete\r\n    return future.result()\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/entrypoints/api_server.py\", line 115, in run_server\r\n    app = await init_app(args, llm_engine)\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/entrypoints/api_server.py\", line 103, in init_app\r\n    if llm_engine is not None else AsyncLLMEngine.from_engine_args(\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/engine/async_llm_engine.py\", line 471, in from_engine_args\r\n    engine = cls(\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/engine/async_llm_engine.py\", line 381, in __init__\r\n    self.engine = self._init_engine(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/engine/async_llm_engine.py\", line 552, in _init_engine\r\n    return engine_class(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/engine/llm_engine.py\", line 249, in __init__\r\n    self.model_executor = executor_class(\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/executor/executor_base.py\", line 47, in __init__\r\n    self._init_executor()\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/executor/gpu_executor.py\", line 36, in _init_executor\r\n    self.driver_worker.load_model()\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/worker/worker.py\", line 139, in load_model\r\n    self.model_runner.load_model()\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/worker/model_runner.py\", line 722, in load_model\r\n    self.model = get_model(model_config=self.model_config,\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/model_executor/model_loader/__init__.py\", line 21, in get_model\r\n    return loader.load_model(model_config=model_config,\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/model_executor/model_loader/loader.py\", line 324, in load_model\r\n    model = _initialize_model(model_config, self.load_config,\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/model_executor/model_loader/loader.py\", line 151, in _initialize_model\r\n    model_class = get_model_architecture(model_config)[0]\r\n  File \"/usr/local/lib/python3.10/site-packages/vllm/model_executor/model_loader/utils.py\", line 35, in get_model_architecture\r\n    raise ValueError(\r\nValueError: Model architectures ['CodeShellForCausalLM'] are not supported for now. Supported architectures: ['AquilaModel', 'AquilaForCausalLM', 'BaiChuanForCausalLM', 'BaichuanForCausalLM', 'BloomForCausalLM', 'Blip2ForConditionalGeneration', 'ChameleonForConditionalGeneration', 'ChatGLMModel', 'ChatGLMForConditionalGeneration', 'CohereForCausalLM', 'DbrxForCausalLM', 'DeciLMForCausalLM', 'DeepseekForCausalLM', 'DeepseekV2ForCausalLM', 'FalconForCausalLM', 'FuyuForCausalLM', 'GemmaForCausalLM', 'Gemma2ForCausalLM', 'GPT2LMHeadModel', 'GPTBigCodeForCausalLM', 'GPTJForCausalLM', 'GPTNeoXForCausalLM', 'InternLMForCausalLM', 'InternLM2ForCausalLM', 'InternVLChatModel', 'JAISLMHeadModel', 'LlamaForCausalLM', 'LlavaForConditionalGeneration', 'LlavaNextForConditionalGeneration', 'LLaMAForCausalLM', 'MistralForCausalLM', 'MixtralForCausalLM', 'QuantMixtralForCausalLM', 'MptForCausalLM', 'MPTForCausalLM', 'MiniCPMForCausalLM', 'MiniCPMV', 'NemotronForCausalLM', 'OlmoForCausalLM', 'OPTForCausalLM', 'OrionForCausalLM', 'PersimmonForCausalLM', 'PaliGemmaForConditionalGeneration', 'PhiForCausalLM', 'Phi3ForCausalLM', 'Phi3VForCausalLM', 'QWenLMHeadModel', 'Qwen2ForCausalLM', 'Qwen2MoeForCausalLM', 'RWForCausalLM', 'StableLMEpochForCausalLM', 'StableLmForCausalLM', 'Starcoder2ForCausalLM', 'ArcticForCausalLM', 'XverseForCausalLM', 'Phi3SmallForCausalLM', 'MedusaModel', 'MLPSpeculatorPreTrainedModel', 'JambaForCausalLM', 'TelechatForCausalLM', 'MistralModel']\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "new-model",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-13T03:30:27+00:00",
+    "closed_at": "2025-04-13T02:16:48+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/11155/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/11155"
+  },
+  {
+    "number": 3873,
+    "title": "[Doc/Feature]: Llava 1.5 in OpenAI compatible server",
+    "body": "### \ud83d\udcda The doc issue\n\nHey vLLM team it looks like there is added support for llava 1.5 but there are no docs or examples on how to use it via the api server. Are there any reference examples? For using llava via the OpenAI sdk? \n\n### Suggest a potential alternative/fix\n\n_No response_",
+    "labels": [
+      "documentation",
+      "help wanted",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-05T19:07:32+00:00",
+    "closed_at": "2024-06-07T18:25:15+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3873/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3873"
+  },
+  {
+    "number": 13663,
+    "title": "[New Model]: Google SigLip 2",
+    "body": "### The model to consider.\n\n[Google SigLip 2](https://huggingface.co/collections/google/siglip2-67b5dcef38c175486e240107)\n\n### The closest model vllm already supports.\n\nhttps://github.com/vllm-project/vllm/blob/main/vllm/model_executor/models/siglip.py\n> \"\"\"Implementation of SiglipVisionModel intended to be only used\nwithin a vision language model.\"\"\"\n\nHowever, SigLip 2 can be very useful for zero-shot image classification and image-text retrieval\n\n### What's your difficulty of supporting the model you want?\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2025-02-21T09:40:40+00:00",
+    "closed_at": null,
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13663/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13663"
+  },
+  {
+    "number": 6348,
+    "title": "[Feature]: FlashAttention 3 support",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nAs you know, FA3 promises 1.5x~ improvements\r\nhttps://github.com/Dao-AILab/flash-attention/commit/7ef24848cf2f855077cef88fe122775b727dcd74\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_",
+    "labels": [
+      "help wanted",
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-11T19:11:40+00:00",
+    "closed_at": "2025-02-21T16:42:32+00:00",
+    "comments": 17,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6348/reactions",
+      "total_count": 12,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 11,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6348"
+  },
+  {
+    "number": 4632,
+    "title": "[Performance] [Speculative decoding]: Support draft model on different tensor-parallel size than target model",
+    "body": "## Overview\r\nSpeculative decoding allows a speedup for memory-bound LLMs by using a fast proposal method to propose tokens that are verified in a single forward pass by the larger LLM. Papers report 2-3x speedup for bs=1, in Anyscale's fork we see up to 2x speedup with a small draft model for bs=8 (30% for bs=16) (we can improve this! see https://github.com/vllm-project/vllm/issues/4630 if you want to help).\r\n\r\nA key optimization for small models (68m/160m domain) is to use tensor-parallel degree 1, even if the target model is using tensor-parallel degree 4 or 8. In our fork, this reduces proposal time from 5ms/tok to 1.5ms/tok. This will allow a well-aligned 68m draft model to get 2x per-user throughput improvement on 70B target model.\r\n\r\nFurthermore, a 1B/7B proposer model may ideally be placed on TP=2 or TP=4, while the larger model is placed on TP=8. vLLM should support these configuration so the community can use the configuration best for their draft model.\r\n\r\n## Design suggestions\r\nI implemented a Worker which patches the tensor parallel group to TP1 in our fork. The [code is dumped here](https://gist.github.com/cadedaniel/f8479bf5fa5543b946d2133b5db38c56). We should use this approach in vLLM, however we can improve it by using @youkaichao 's tensor-parallel group improvements.",
+    "labels": [
+      "help wanted",
+      "performance",
+      "speculative-decoding"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-06T18:14:40+00:00",
+    "closed_at": "2024-06-25T09:56:08+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4632/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4632"
+  },
+  {
+    "number": 139,
+    "title": "Publish wheels with pre-built CUDA binaries",
+    "body": "Currently, pip installing our package takes 5-10 minutes because our CUDA kernels are compiled on the user machine. For better UX, we should include pre-built CUDA binaries in our PyPI distribution, just like PyTorch and xformers.",
+    "labels": [
+      "help wanted",
+      "installation"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-05T00:07:35+00:00",
+    "closed_at": "2023-08-25T04:38:06+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/139/reactions",
+      "total_count": 4,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 4,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/139"
+  },
+  {
+    "number": 11171,
+    "title": "[Bug]: Missing Content Type returns 500 Internal Server Error instead of 415 Unsupported Media Type",
+    "body": "### Your current environment\n\n<details>\r\n<summary>The output of `python collect_env.py`</summary>\r\n\r\n```text\r\nVersions of relevant libraries:\r\n[pip3] flashinfer==0.1.6+cu121torch2.4\r\n[pip3] numpy==1.26.4\r\n[pip3] nvidia-cublas-cu12==12.4.5.8\r\n[pip3] nvidia-cuda-cupti-cu12==12.4.127\r\n[pip3] nvidia-cuda-nvrtc-cu12==12.4.127\r\n[pip3] nvidia-cuda-runtime-cu12==12.4.127\r\n[pip3] nvidia-cudnn-cu12==9.1.0.70\r\n[pip3] nvidia-cufft-cu12==11.2.1.3\r\n[pip3] nvidia-curand-cu12==10.3.5.147\r\n[pip3] nvidia-cusolver-cu12==11.6.1.9\r\n[pip3] nvidia-cusparse-cu12==12.3.1.170\r\n[pip3] nvidia-ml-py==12.560.30\r\n[pip3] nvidia-nccl-cu12==2.21.5\r\n[pip3] nvidia-nvjitlink-cu12==12.4.127\r\n[pip3] nvidia-nvtx-cu12==12.4.127\r\n[pip3] pyzmq==26.2.0\r\n[pip3] torch==2.5.1\r\n[pip3] torchvision==0.20.1\r\n[pip3] transformers==4.46.2\r\n[pip3] triton==3.1.0\r\n[conda] Could not collect\r\nROCM Version: Could not collect\r\nNeuron SDK Version: N/A\r\nvLLM Version: 0.6.4.post1\r\n\r\nI don't see the point in sharing hardware specifications for a simple HTTP Server problem.\r\n```\r\n\r\n</details>\r\n\n\n### Model Input Dumps\n\n_No response_\n\n### \ud83d\udc1b Describe the bug\n\nThis is essentially a \"remainder\" from [this issue](https://github.com/vllm-project/vllm/issues/4041). Pydantic validates the protocol, but you guys forgot to check whether the data you pass through pydantic is actually a JSON document, so it just crashes in a random place.\r\n\r\n```bash\r\n#!/bin/env bash\r\nsource .env\r\ncurl -v 127.0.0.1:8000/v1/chat/completions \\\r\n   -H \"Authorization: Bearer $VLLM_API_KEY\" \\\r\n   -d '{\r\n  \"model\": \"AIDC-AI/Marco-o1\",\r\n  \"messages\": [\r\n    {\r\n      \"role\": \"user\",\r\n      \"content\": \"why is the sky blue?\"\r\n    }\r\n  ],\r\n  \"stream\": false\r\n}'\r\n\r\necho\r\n```\r\n\r\n```\r\n./vllm-crash.sh \r\n*   Trying 127.0.0.1:8000...\r\n* Connected to 127.0.0.1 (127.0.0.1) port 8000\r\n> POST /v1/chat/completions HTTP/1.1\r\n> Host: 127.0.0.1:8000\r\n> User-Agent: curl/8.5.0\r\n> Accept: */*\r\n> Authorization: Bearer ---\r\n> Content-Length: 147\r\n> Content-Type: application/x-www-form-urlencoded\r\n> \r\n< HTTP/1.1 500 Internal Server Error\r\n< date: Fri, 13 Dec 2024 11:20:00 GMT\r\n< server: uvicorn\r\n< content-length: 21\r\n< content-type: text/plain; charset=utf-8\r\n< \r\n* Connection #0 to host 127.0.0.1 left intact\r\nInternal Server Error\r\n```\r\n\r\nNote that the error message itself is completely meaningless, since it really is just complaining that it interpreted the request body as an array of bytes rather than parse it into a class object. The error location is just the first place where it had the opportunity to crash. What you will have to do is reject the request with the HTTP status code [415 Unsupported Media Type](https://www.rfc-editor.org/rfc/rfc9110.html#name-415-unsupported-media-type)\r\n\r\n```\r\nERROR:    Exception in ASGI application\r\n  + Exception Group Traceback (most recent call last):\r\n  |   File \"/usr/local/lib/python3.12/dist-packages/starlette/_utils.py\", line 76, in collapse_excgroups\r\n  |     yield\r\n  |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 186, in __call__\r\n  |     async with anyio.create_task_group() as task_group:\r\n  |                ^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  |   File \"/usr/local/lib/python3.12/dist-packages/anyio/_backends/_asyncio.py\", line 763, in __aexit__\r\n  |     raise BaseExceptionGroup(\r\n  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)\r\n  +-+---------------- 1 ----------------\r\n    | Traceback (most recent call last):\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/uvicorn/protocols/http/httptools_impl.py\", line 401, in run_asgi\r\n    |     result = await app(  # type: ignore[func-returns-value]\r\n    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/uvicorn/middleware/proxy_headers.py\", line 60, in __call__\r\n    |     return await self.app(scope, receive, send)\r\n    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/fastapi/applications.py\", line 1054, in __call__\r\n    |     await super().__call__(scope, receive, send)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/applications.py\", line 113, in __call__\r\n    |     await self.middleware_stack(scope, receive, send)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/errors.py\", line 187, in __call__\r\n    |     raise exc\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/errors.py\", line 165, in __call__\r\n    |     await self.app(scope, receive, _send)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 185, in __call__\r\n    |     with collapse_excgroups():\r\n    |          ^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/lib/python3.12/contextlib.py\", line 158, in __exit__\r\n    |     self.gen.throw(value)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/_utils.py\", line 82, in collapse_excgroups\r\n    |     raise exc\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 187, in __call__\r\n    |     response = await self.dispatch_func(request, call_next)\r\n    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/vllm/entrypoints/openai/api_server.py\", line 490, in add_request_id\r\n    |     response = await call_next(request)\r\n    |                ^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 163, in call_next\r\n    |     raise app_exc\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 149, in coro\r\n    |     await self.app(scope, receive_or_disconnect, send_no_error)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 185, in __call__\r\n    |     with collapse_excgroups():\r\n    |          ^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/lib/python3.12/contextlib.py\", line 158, in __exit__\r\n    |     self.gen.throw(value)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/_utils.py\", line 82, in collapse_excgroups\r\n    |     raise exc\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 187, in __call__\r\n    |     response = await self.dispatch_func(request, call_next)\r\n    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/vllm/entrypoints/openai/api_server.py\", line 485, in authentication\r\n    |     return await call_next(request)\r\n    |            ^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 163, in call_next\r\n    |     raise app_exc\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 149, in coro\r\n    |     await self.app(scope, receive_or_disconnect, send_no_error)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/cors.py\", line 85, in __call__\r\n    |     await self.app(scope, receive, send)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/exceptions.py\", line 62, in __call__\r\n    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/_exception_handler.py\", line 53, in wrapped_app\r\n    |     raise exc\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/_exception_handler.py\", line 42, in wrapped_app\r\n    |     await app(scope, receive, sender)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/routing.py\", line 715, in __call__\r\n    |     await self.middleware_stack(scope, receive, send)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/routing.py\", line 735, in app\r\n    |     await route.handle(scope, receive, send)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/routing.py\", line 288, in handle\r\n    |     await self.app(scope, receive, send)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/routing.py\", line 76, in app\r\n    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/_exception_handler.py\", line 53, in wrapped_app\r\n    |     raise exc\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/_exception_handler.py\", line 42, in wrapped_app\r\n    |     await app(scope, receive, sender)\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/starlette/routing.py\", line 73, in app\r\n    |     response = await f(request)\r\n    |                ^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/fastapi/routing.py\", line 291, in app\r\n    |     solved_result = await solve_dependencies(\r\n    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/fastapi/dependencies/utils.py\", line 666, in solve_dependencies\r\n    |     ) = await request_body_to_args(  # body_params checked above\r\n    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/fastapi/dependencies/utils.py\", line 898, in request_body_to_args\r\n    |     v_, errors_ = _validate_value_with_model_field(\r\n    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/fastapi/dependencies/utils.py\", line 706, in _validate_value_with_model_field\r\n    |     v_, errors_ = field.validate(value, values, loc=loc)\r\n    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/fastapi/_compat.py\", line 129, in validate\r\n    |     self._type_adapter.validate_python(value, from_attributes=True),\r\n    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/pydantic/type_adapter.py\", line 135, in wrapped\r\n    |     return func(self, *args, **kwargs)\r\n    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/pydantic/type_adapter.py\", line 366, in validate_python\r\n    |     return self.validator.validate_python(object, strict=strict, from_attributes=from_attributes, context=context)\r\n    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    |   File \"/usr/local/lib/python3.12/dist-packages/vllm/entrypoints/openai/protocol.py\", line 513, in check_generation_prompt\r\n    |     if data.get(\"continue_final_message\") and data.get(\r\n    |        ^^^^^^^^\r\n    | AttributeError: 'bytes' object has no attribute 'get'\r\n    +------------------------------------\r\n\r\nDuring handling of the above exception, another exception occurred:\r\n\r\nTraceback (most recent call last):\r\n  File \"/usr/local/lib/python3.12/dist-packages/uvicorn/protocols/http/httptools_impl.py\", line 401, in run_asgi\r\n    result = await app(  # type: ignore[func-returns-value]\r\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/uvicorn/middleware/proxy_headers.py\", line 60, in __call__\r\n    return await self.app(scope, receive, send)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/fastapi/applications.py\", line 1054, in __call__\r\n    await super().__call__(scope, receive, send)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/applications.py\", line 113, in __call__\r\n    await self.middleware_stack(scope, receive, send)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/errors.py\", line 187, in __call__\r\n    raise exc\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/errors.py\", line 165, in __call__\r\n    await self.app(scope, receive, _send)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 185, in __call__\r\n    with collapse_excgroups():\r\n         ^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/lib/python3.12/contextlib.py\", line 158, in __exit__\r\n    self.gen.throw(value)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/_utils.py\", line 82, in collapse_excgroups\r\n    raise exc\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 187, in __call__\r\n    response = await self.dispatch_func(request, call_next)\r\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/vllm/entrypoints/openai/api_server.py\", line 490, in add_request_id\r\n    response = await call_next(request)\r\n               ^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 163, in call_next\r\n    raise app_exc\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 149, in coro\r\n    await self.app(scope, receive_or_disconnect, send_no_error)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 185, in __call__\r\n    with collapse_excgroups():\r\n         ^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/lib/python3.12/contextlib.py\", line 158, in __exit__\r\n    self.gen.throw(value)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/_utils.py\", line 82, in collapse_excgroups\r\n    raise exc\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 187, in __call__\r\n    response = await self.dispatch_func(request, call_next)\r\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/vllm/entrypoints/openai/api_server.py\", line 485, in authentication\r\n    return await call_next(request)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 163, in call_next\r\n    raise app_exc\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/base.py\", line 149, in coro\r\n    await self.app(scope, receive_or_disconnect, send_no_error)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/cors.py\", line 85, in __call__\r\n    await self.app(scope, receive, send)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/middleware/exceptions.py\", line 62, in __call__\r\n    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/_exception_handler.py\", line 53, in wrapped_app\r\n    raise exc\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/_exception_handler.py\", line 42, in wrapped_app\r\n    await app(scope, receive, sender)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/routing.py\", line 715, in __call__\r\n    await self.middleware_stack(scope, receive, send)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/routing.py\", line 735, in app\r\n    await route.handle(scope, receive, send)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/routing.py\", line 288, in handle\r\n    await self.app(scope, receive, send)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/routing.py\", line 76, in app\r\n    await wrap_app_handling_exceptions(app, request)(scope, receive, send)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/_exception_handler.py\", line 53, in wrapped_app\r\n    raise exc\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/_exception_handler.py\", line 42, in wrapped_app\r\n    await app(scope, receive, sender)\r\n  File \"/usr/local/lib/python3.12/dist-packages/starlette/routing.py\", line 73, in app\r\n    response = await f(request)\r\n               ^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/fastapi/routing.py\", line 291, in app\r\n    solved_result = await solve_dependencies(\r\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/fastapi/dependencies/utils.py\", line 666, in solve_dependencies\r\n    ) = await request_body_to_args(  # body_params checked above\r\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/fastapi/dependencies/utils.py\", line 898, in request_body_to_args\r\n    v_, errors_ = _validate_value_with_model_field(\r\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/fastapi/dependencies/utils.py\", line 706, in _validate_value_with_model_field\r\n    v_, errors_ = field.validate(value, values, loc=loc)\r\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/fastapi/_compat.py\", line 129, in validate\r\n    self._type_adapter.validate_python(value, from_attributes=True),\r\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/pydantic/type_adapter.py\", line 135, in wrapped\r\n    return func(self, *args, **kwargs)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/pydantic/type_adapter.py\", line 366, in validate_python\r\n    return self.validator.validate_python(object, strict=strict, from_attributes=from_attributes, context=context)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/usr/local/lib/python3.12/dist-packages/vllm/entrypoints/openai/protocol.py\", line 513, in check_generation_prompt\r\n    if data.get(\"continue_final_message\") and data.get(\r\n       ^^^^^^^^\r\nAttributeError: 'bytes' object has no attribute 'get'\r\n```\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "bug",
+      "help wanted",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-13T11:31:21+00:00",
+    "closed_at": "2025-02-13T14:52:23+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/11171/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/11171"
+  },
+  {
+    "number": 16353,
+    "title": "[Feature]: Run performance benchmarks for multi-modal models in CI",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nWe currently only have benchmarks for text-only models such as Llama. With the increasing importance of multi-modality and related optimizations such as processor cache, we should add performance benchmarks for multi-modal models to avoid regressions (e.g. memory leaks, slow batching).\n\nWe can measure the peak memory usage based on this code:\n\n```python\nimport resource\n\nmax_self_usage = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1 << 20)\nmax_children_usage = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss / (1 << 20)\nprint(f\"Peak memory usage: {max_self_usage} (self) + {max_children_usage} (children) GiB\")\n```\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\ncc @mgoin @ywang96 \n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "feature request",
+      "stale",
+      "multi-modality"
+    ],
+    "state": "open",
+    "created_at": "2025-04-09T16:48:25+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/16353/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/16353"
+  },
+  {
+    "number": 15144,
+    "title": "[Bug] Mismatch between `get_multimodal_embedding` output and `PlaceholderRange`",
+    "body": "In V1, we expect the output of `get_multimodal_embedding` to correspond to the `PlaceholderRange`, which is in turn constructed based on `PromptUpdateDetails.features`. However, the current V1 code doesn't validate this, causing the model to crash during inference when under high load (e.g. #14897, #14963).\n\nFrom a quick look at the code, these models output embedding sizes which are inconsistent with the placeholder range:\n\n- [x] Fuyu (fixed by #15731)\n- [x] Gemma3 (fixed by #14980)\n- [x] Idefics3 (fixed by #15696)\n- [x] InternVL-based models (fixed by #15086)\n- [x] MiniCPM-V (fixed by #15487)\n\n(Basically, any model that has image newline/column tokens after applying HF processor needs a mask to map image patch features to image embeddings, as described below.)\n\nTo fix this, we can follow these steps:\n\n1. Update the multi-modal processor to output a mask to indicate which positions in the `PlaceholderRange`-aligned embeddings should the patch features (outputted by vision encoder) be assigned to. This mask can be called `embed_is_patch`.\n2. Use `scatter_patch_features` to scatter the patch features into the image embedding tensor.\n3. When merging multimodal embeddings, use `select_patch_features` to recover the patch features from the image embeddings. The number of patch features should correspond to the number of image tokens (which is a subset of the feature tokens in `PromptUpdateDetails`).\n\nFollow-up work:\n\n- #15712 (assigned to @DarkLight1337)\n- Directly use individual token IDs instead of range of IDs (assigned to @ywang96 )\n",
+    "labels": [
+      "bug",
+      "help wanted",
+      "v1",
+      "multi-modality"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-19T16:53:23+00:00",
+    "closed_at": "2025-03-30T10:47:54+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15144/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15144"
+  },
+  {
+    "number": 1869,
+    "title": "Support `tools` and `tool_choice` parameter in OpenAI compatible service ",
+    "body": "Also aliased as `functions` and `function_call` in deprecated parameters.\r\n\r\nhttps://platform.openai.com/docs/api-reference/chat/create#chat-create-tools\r\n\r\nAfter #1756 is merged (thanks @Tostino!), it should be straightforward to add this as a core parameter to OpenAI compatible service. This will help unlock client libraries using similar interface. Do note that the underlying model need to support function calling (e.g. OpenHermes) and prompt engineering might be needed. \r\n\r\nAlso see @dongxiaolong's example here: https://github.com/vllm-project/vllm/pull/1756#issuecomment-1827064922\r\n",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-30T19:57:08+00:00",
+    "closed_at": "2024-06-03T23:25:30+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1869/reactions",
+      "total_count": 5,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 5,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1869"
+  },
+  {
+    "number": 7371,
+    "title": "[Feature]: Support block manager v2 for chunked prefill",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\r\n\r\nChunked prefill currently doesn't work with block manager v2. Add `use_v2_block_manager=True` to https://github.com/vllm-project/vllm/blob/main/tests/basic_correctness/test_chunked_prefill.py#L48 to reproduce the error:\r\n\r\n```\r\n    def append_token_ids(self, block_index: int, token_ids: List[int]) -> None:\r\n>       block = self._blocks[block_index]\r\nE       IndexError: list index out of range\r\n```\r\n\r\n### Alternatives\r\n\r\nUse block manager v1\r\n\r\n### Additional context\r\n\r\ncc @rkooo567 @cadedaniel ",
+    "labels": [
+      "help wanted",
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-09T16:51:57+00:00",
+    "closed_at": "2024-08-09T23:48:50+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/7371/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/7371"
+  },
+  {
+    "number": 13507,
+    "title": "[V1][Bug]: Consider sampler in memory profiling",
+    "body": "### Your current environment\n\n<details>\n<summary>The output of `python collect_env.py`</summary>\n\n```text\nYour output of `python collect_env.py` here\n```\n\n</details>\n\n\n### \ud83d\udc1b Describe the bug\n\nCurrently, V1 model runner does not consider (or run) sampler during the initial memory profiling. This should be fixed 1) for more accurate memory profiling and 2) to warm up the sampler before processing any real requests.\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "bug",
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-19T02:36:15+00:00",
+    "closed_at": "2025-02-22T08:08:30+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13507/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13507"
+  },
+  {
+    "number": 10111,
+    "title": "[Bug]: When apply continue_final_message for OpenAI server, the `\"echo\":false` is ignored.",
+    "body": "### Your current environment\n\n\r\nvLLM Version: 0.6.3.post2.dev256+g4be3a451\r\n<details>\r\n<summary>The output of `python collect_env.py`</summary>\r\n\r\n```text\r\nCollecting environment information...                                                                                                                                                                       INFO 11-06 09:39:21 importing.py:15] Triton not installed or not compatible; certain GPU-related functions will not be available.                                                                           PyTorch version: 2.4.0+cpu                                                                                                                                                                                  \r\nIs debug build: False                              \r\nCUDA used to build PyTorch: None                   \r\nROCM used to build PyTorch: N/A                                                                       \r\n                                                                                                      \r\nOS: Ubuntu 22.04.4 LTS (x86_64)                                                                       \r\nGCC version: (Ubuntu 12.3.0-1ubuntu1~22.04) 12.3.0                                                    \r\nClang version: Could not collect                   \r\nCMake version: version 3.30.5                      \r\nLibc version: glibc-2.35                           \r\n                                                   \r\nPython version: 3.10.12 (main, Jul 29 2024, 16:56:48) [GCC 11.4.0] (64-bit runtime)                   \r\nPython platform: Linux-5.10.25-nvidia-gpu-x86_64-with-glibc2.35                                       \r\nIs CUDA available: False                                                                              \r\nCUDA runtime version: No CUDA                      \r\nCUDA_MODULE_LOADING set to: N/A                    \r\nGPU models and configuration: No CUDA              \r\nNvidia driver version: No CUDA                     \r\ncuDNN version: No CUDA                             \r\nHIP runtime version: N/A                           \r\nMIOpen runtime version: N/A\r\n\r\nCPU:\r\nArchitecture:                    x86_64\r\nCPU op-mode(s):                  32-bit, 64-bit\r\nAddress sizes:                   46 bits physical, 57 bits virtual\r\nByte Order:                      Little Endian\r\nCPU(s):                          17\r\nOn-line CPU(s) list:             0-16\r\nVendor ID:                       GenuineIntel\r\nModel name:                      Intel(R) Xeon(R) Gold 6330 CPU @ 2.00GHz\r\nCPU family:                      6\r\nModel:                           106\r\nThread(s) per core:              1\r\nCore(s) per socket:              1\r\nSocket(s):                       17\r\nStepping:                        6\r\nBogoMIPS:                        4000.00\r\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology cpuid tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch cpuid_fault invpcid_single ssbd ibrs ibpb stibp ibrs_enhanced fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves wbnoinvd arat avx512vbmi umip pku avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid md_clear arch_capabilities\r\nHypervisor vendor:               KVM\r\nVirtualization type:             full\r\nL1d cache:                       544 KiB (17 instances)\r\nL1i cache:                       544 KiB (17 instances)\r\nL2 cache:                        68 MiB (17 instances)\r\nL3 cache:                        272 MiB (17 instances)\r\nVulnerability Itlb multihit:     Not affected\r\nVulnerability L1tf:              Not affected\r\nVulnerability Mds:               Not affected\r\nVulnerability Meltdown:          Not affected\r\nVulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp\r\nVulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization\r\nVulnerability Spectre v2:        Mitigation; Enhanced IBRS, IBPB conditional, RSB filling\r\nVulnerability Srbds:             Not affected\r\nVulnerability Tsx async abort:   Not affected\r\n\r\nVersions of relevant libraries:\r\n[pip3] intel_extension_for_pytorch==2.4.0\r\n[pip3] numpy==1.26.4\r\n[pip3] pyzmq==26.2.0\r\n[pip3] torch==2.4.0+cpu\r\n[pip3] torchvision==0.19.0+cpu\r\n[pip3] transformers==4.46.2\r\n[conda] Could not collect\r\nROCM Version: Could not collect\r\nNeuron SDK Version: N/A\r\nvLLM Version: 0.6.3.post2.dev256+g4be3a451\r\nvLLM Build Flags:\r\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\r\nGPU Topology:\r\nCould not collect\r\n```\r\n\r\n</details>\n\n### Model Input Dumps\n\n_No response_\n\n### \ud83d\udc1b Describe the bug\n\nAccording to the documentation, the `echo` parameter is false by default, but with `continue_final_message` set, the new message will always be prepended with the last message.\r\n\r\nReproduction Code:\r\n```bash\r\ncurl -X POST \"http://39.105.21.95:12481/v1/chat/completions\" \\\r\n     -H \"Content-Type: application/json\" \\\r\n     -d '{\r\n           \"model\": \"meta-llama/Meta-Llama-3-8B-Instruct\",\r\n           \"messages\": [\r\n             {\r\n               \"role\": \"user\",\r\n               \"content\": \"tell me a common saying\"\r\n             },\r\n             {\r\n               \"role\": \"assistant\",\r\n               \"content\": \"Here is a common saying about apple. An apple a day, keeps\"\r\n             }\r\n           ],\r\n           \"add_generation_prompt\": false, \"continue_final_message\": true, \"echo\":false      \r\n         }'\r\n\r\n\r\n{\"id\":\"chatcmpl-c49a327f6edd48ed9993668771d5589f\",\"object\":\"chat.completion\",\"created\":1730963591,\"model\":\"meta-llama/Meta-Llama-3-8B-Instruct\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"Here is a common saying about apple. An apple a day, keeps the doctor away!\",\"tool_calls\":[]},\"logprobs\":null,\"finish_reason\":\"stop\",\"stop_reason\":null}],\"usage\":{\"prompt_tokens\":29,\"total_tokens\":34,\"completion_tokens\":5},\"prompt_logprobs\":null}% \r\n```\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "bug",
+      "help wanted",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-07T07:30:08+00:00",
+    "closed_at": "2024-11-21T16:24:33+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/10111/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/10111"
+  },
+  {
+    "number": 13567,
+    "title": "[Feature]: Support for Running Classification Task in Online Server",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nI would like it to be easy to stand up models for sequence classification using the vllm online inference pattern. Currently this is available for offline inference but it would be nice to expose this server in kubernetes similar to how we host OpenAI compatible servers.\n\n### Alternatives\n\nWe could train a causal lm where we treat special tokens as the classification labels. We could then take the softmaxed logprobs for those 2 tokens to threshold. However this is going to require slightly more code on the client side.\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-19T20:57:19+00:00",
+    "closed_at": "2025-05-11T07:57:08+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13567/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13567"
+  },
+  {
+    "number": 14677,
+    "title": "[Bug]: Unit test `tests/models/embedding/vision_language/test_phi3v.py` failing",
+    "body": "### Your current environment\n\n<details>\n<summary>The output of `python collect_env.py`</summary>\n\n```text\nYour output of `python collect_env.py` here\nCollecting environment information...                                                                                            \nPyTorch version: 2.5.1+cu124                                                                                                     \nIs debug build: False                                                                                                            \nCUDA used to build PyTorch: 12.4                                                                                                 \nROCM used to build PyTorch: N/A                                                                                                  \n                                                                                                                                 \nOS: Ubuntu 24.04.1 LTS (x86_64)                                                                                                  \nGCC version: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0                                                                               \nClang version: 18.1.3 (1ubuntu1)                                                                                                 \nCMake version: version 3.28.3                                                                                                    \nLibc version: glibc-2.39                                                                                                         \n                                                                                                                                 \nPython version: 3.12.9 | packaged by Anaconda, Inc. | (main, Feb  6 2025, 18:56:27) [GCC 11.2.0] (64-bit runtime)                \nPython platform: Linux-6.8.0-47-generic-x86_64-with-glibc2.39                                                                    \nIs CUDA available: True                                                                                                          \nCUDA runtime version: 12.6.77                                                                                                    \nCUDA_MODULE_LOADING set to: LAZY                                                                      \nNvidia driver version: 550.127.05                                                                                                \ncuDNN version: Could not collect                                                                                                 \nHIP runtime version: N/A                                                                                                         \nMIOpen runtime version: N/A                                                                                                      \nIs XNNPACK available: True    \n\nVersions of relevant libraries:                                                                                                  \n[pip3] mypy-extensions==1.0.0                                                                                                    \n[pip3] numpy==1.26.4                                                                                                             \n[pip3] nvidia-cublas-cu12==12.4.5.8                                                                                              \n[pip3] nvidia-cuda-cupti-cu12==12.4.127                                                                                          \n[pip3] nvidia-cuda-nvrtc-cu12==12.4.127                                                                                          \n[pip3] nvidia-cuda-runtime-cu12==12.4.127                                                                                        \n[pip3] nvidia-cudnn-cu12==9.1.0.70                                                                                               \n[pip3] nvidia-cufft-cu12==11.2.1.3                                                                                               \n[pip3] nvidia-curand-cu12==10.3.5.147                                                                                            \n[pip3] nvidia-cusolver-cu12==11.6.1.9                                                                                            \n[pip3] nvidia-cusparse-cu12==12.3.1.170                                                                                          \n[pip3] nvidia-nccl-cu12==2.21.5                                                                                                  \n[pip3] nvidia-nvjitlink-cu12==12.4.127                                                                                           \n[pip3] nvidia-nvtx-cu12==12.4.127                                                                                                \n[pip3] pyzmq==26.2.1                                                                                                             \n[pip3] sentence-transformers==3.2.1                                                                                              \n[pip3] torch==2.5.1                                                                                                              \n[pip3] torchaudio==2.5.1                                                                                                         \n[pip3] torchvision==0.20.1                                                                                                       \n[pip3] transformers==4.49.0                                                                                                      \n[pip3] transformers-stream-generator==0.0.5                                                                                      \n[pip3] triton==3.1.0                                                                                                             \n[pip3] tritonclient==2.51.0                                                                                                      \n[pip3] vector-quantize-pytorch==1.21.2 \n[conda] numpy                     1.26.4                   pypi_0    pypi                                                        \n[conda] nvidia-cublas-cu12        12.4.5.8                 pypi_0    pypi                                                        \n[conda] nvidia-cuda-cupti-cu12    12.4.127                 pypi_0    pypi                                                        \n[conda] nvidia-cuda-nvrtc-cu12    12.4.127                 pypi_0    pypi                                                        \n[conda] nvidia-cuda-runtime-cu12  12.4.127                 pypi_0    pypi                                                        \n[conda] nvidia-cudnn-cu12         9.1.0.70                 pypi_0    pypi                                                        \n[conda] nvidia-cufft-cu12         11.2.1.3                 pypi_0    pypi                                                        \n[conda] nvidia-curand-cu12        10.3.5.147               pypi_0    pypi                                                        \n[conda] nvidia-cusolver-cu12      11.6.1.9                 pypi_0    pypi                                                        \n[conda] nvidia-cusparse-cu12      12.3.1.170               pypi_0    pypi                                                        \n[conda] nvidia-nccl-cu12          2.21.5                   pypi_0    pypi                                                        \n[conda] nvidia-nvjitlink-cu12     12.4.127                 pypi_0    pypi                                                        \n[conda] nvidia-nvtx-cu12          12.4.127                 pypi_0    pypi                                                        \n[conda] pyzmq                     26.2.1                   pypi_0    pypi                                                        \n[conda] sentence-transformers     3.2.1                    pypi_0    pypi                                                        \n[conda] torch                     2.5.1                    pypi_0    pypi                                                        \n[conda] torchaudio                2.5.1                    pypi_0    pypi                                                        \n[conda] torchvision               0.20.1                   pypi_0    pypi                                                        \n[conda] transformers              4.49.0                   pypi_0    pypi                                                        \n[conda] transformers-stream-generator 0.0.5                    pypi_0    pypi                                                    \n[conda] triton                    3.1.0                    pypi_0    pypi\n[conda] tritonclient              2.51.0                   pypi_0    pypi\n[conda] vector-quantize-pytorch   1.21.2                   pypi_0    pypi\nROCM Version: Could not collect\nNeuron SDK Version: N/A\nvLLM Version: 0.1.dev5072+g63d635d (git sha: 63d635d\nvLLM Build Flags:\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\nLD_LIBRARY_PATH=miniconda3/envs/vllm073/lib/python3.12/site-packages/cv2/../../lib64:/usr/lib/x86_64-linux-gnu/openmpi/lib/:/usr/local/cuda-12.6/lib64:\nNCCL_CUMEM_ENABLE=0\nTORCHINDUCTOR_COMPILE_THREADS=1\nCUDA_MODULE_LOADING=LAZY\n```\n\n</details>\n\n\n### \ud83d\udc1b Describe the bug\n\nBUG: unittest `tests/models/embedding/vision_language/test_phi3v.py` is failiing\n\nAfter installing vllm, run\n\n`pytest -sv tests/models/embedding/vision_language/test_phi3v.py::test_models_image[half-TIGER-Lab/VLM2Vec-Full]`\n\nA snippet of unittest failure log\n```\ntests/models/embedding/vision_language/test_phi3v.py:119:                                                                        \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\ntests/models/embedding/vision_language/test_phi3v.py:69: in _run_test                                                            \n    check_embeddings_close(                                                                                                      \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n                                                                                                                                 \n    def check_embeddings_close(                                                                                                  \n        *,                                                                                                                       \n        embeddings_0_lst: Sequence[list[float]],                                                                                 \n        embeddings_1_lst: Sequence[list[float]],                                                                                 \n        name_0: str,                                                                                                             \n        name_1: str,                                                                                                             \n        tol: float = 1e-3,                                                                                                       \n    ) -> None:                                                                                                                   \n        assert len(embeddings_0_lst) == len(embeddings_1_lst)                                                                    \n                                                                                                                                 \n        for prompt_idx, (embeddings_0, embeddings_1) in enumerate(                                                               \n                zip(embeddings_0_lst, embeddings_1_lst)):                                                                        \n            assert len(embeddings_0) == len(embeddings_1), (                                                                     \n                f\"Length mismatch: {len(embeddings_0)} vs. {len(embeddings_1)}\")                                                 \n                                                                                                                                 \n            sim = F.cosine_similarity(torch.tensor(embeddings_0),                                                                \n                                      torch.tensor(embeddings_1),                                                                \n                                      dim=0)                                                                                     \n                                                                                                                                 \n            fail_msg = (f\"Test{prompt_idx}:\"                                                                                     \n                        f\"\\n{name_0}:\\t{embeddings_0[:16]!r}\"                                                                    \n                        f\"\\n{name_1}:\\t{embeddings_1[:16]!r}\")   \n>           assert sim >= 1 - tol, fail_msg\nE           AssertionError: Test0:\nE           hf: [0.0005359649658203125, 0.0028438568115234375, -0.033050537109375, 0.009765625, 0.003566741943359375, 0.004444122314453125, -0.0088958740234375, -0.032867431640625, -0.006267547607421875, -0.021881103515625, 0.021087646484375, 0.0010557174682617188, 0.0147247314453125, -0.004642486572265625, 0.0032863616943359375, 0.006305694580078125]\nE           vllm:       [0.0029010772705078125, 0.005504608154296875, -0.030792236328125, 0.00962066650390625, 0.0016222000122070312, 0.0036258697509765625, -0.00925445556640625, -0.03411865234375, -0.005634307861328125, -0.0216522216796875, 0.022430419921875, 0.0002880096435546875, 0.016082763671875, -0.00467681884765625, 0.004161834716796875, 0.004535675048828125]\n\ntests/models/embedding/utils.py:32: AssertionError\n------------------------------------------------------- Captured log call -------------------------------------------------------\nWARNING  transformers_modules.microsoft.Phi-3.5-vision-instruct.4a0d683eba9f1d0cbfb6151705d1ee73c25a80ca.modeling_phi3_v:logging.py:329 You are not running the flash-attention implementation, expect numerical differences.\n======================================================= warnings summary ========================================================\ntests/models/embedding/vision_language/test_phi3v.py::test_models_image[half-TIGER-Lab/VLM2Vec-Full]\n  /home/tan/miniconda3/envs/vllm073/lib/python3.12/site-packages/transformers/models/auto/image_processing_auto.py:594: FutureWarning: The image_processor_class argument is deprecated and will be removed in v4.42. Please use `slow_image_processor_class`, or `fast_image_processor_class` instead\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n==================================================== short test summary info ====================================================\nFAILED tests/models/embedding/vision_language/test_phi3v.py::test_models_image[half-TIGER-Lab/VLM2Vec-Full] - AssertionError: Test0:\n=========================================== 1 failed, 1 warning in 311.72s (0:05:11) ============================================\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "bug",
+      "help wanted",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-12T11:49:15+00:00",
+    "closed_at": "2025-03-30T09:01:36+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14677/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14677"
+  },
+  {
+    "number": 2149,
+    "title": "GPTQ does not support bfloat16",
+    "body": "Currently, our GPTQ kernels only support the float16 precision.",
+    "labels": [
+      "help wanted",
+      "feature request",
+      "quantization",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-12-17T06:06:30+00:00",
+    "closed_at": "2024-11-30T02:03:24+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2149/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2149"
+  },
+  {
+    "number": 9499,
+    "title": "[Bug]: When reading the content from the configuration file specified by the --config parameter, the parameter type was not considered.",
+    "body": "### Your current environment\n\n<details>\r\nThis bug is environment-independent.\r\n</details>\r\n\n\n### Model Input Dumps\n\n_No response_\n\n### \ud83d\udc1b Describe the bug\n\nThe code in the method '_load_config_file' of vllm/vllm/utils.py which reads the config file from the parameter --config has a bug.\r\n\r\n```python\r\n# only expecting a flat dictionary of atomic types\r\nprocessed_args: List[str] = []\r\n\r\nconfig: Dict[str, Union[int, str]] = {}\r\ntry:\r\n    with open(file_path, 'r') as config_file:\r\n        config = yaml.safe_load(config_file)\r\nexcept Exception as ex:\r\n    logger.error(\r\n        \"Unable to read the config file at %s. \\\r\n        Make sure path is correct\", file_path)\r\n    raise ex\r\n\r\nfor key, value in config.items():\r\n    processed_args.append('--' + key)\r\n    processed_args.append(str(value))\r\n\r\nreturn processed_args\r\n```\r\nThe code here simply spans the key-value pairs in the config file. So, if I want to store a 'store_true' parameter like '--trust-remote-code', I cannot put it in the config file.\r\n\r\nFor example, I had test 'trust-remote-code:',  'trust-remote-code: \"\"', 'trust-remote-code: yes', 'trust-remote-code: true'. When the key-value pairs were spanned, the cli parameters will be like 'vllm server model_name --trust-remote-code true'. Then an error be like saying 'there is no parameter named \"true\"' will happened.\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "bug",
+      "help wanted",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-18T10:22:37+00:00",
+    "closed_at": "2024-10-27T17:46:42+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/9499/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/9499"
+  },
+  {
+    "number": 3219,
+    "title": "Performance issue when loading lora modules",
+    "body": "I compared two ways to launch the server.\n\nThe model is vicuna-7b, and GPU is 2 \\* A30.\n\nand the 1st way is\n\n```\npython -m vllm.entrypoints.openai.api_server \\\n            --model /data/models/vicuna-7b-v1.5/ \\\n            --tensor-parallel-size 2  --gpu-memory-utilization 0.9 --enforce-eager --disable-log-requests\n```\n\nThe 2nd way is:\n\n```\npython -m vllm.entrypoints.openai.api_server \\\n            --model /data/models/vicuna-7b-v1.5/ \\\n            --max-loras 16 --tensor-parallel-size 2  --max-lora-rank 64 --gpu-memory-utilization 0.9 \\\n            --enable-lora --enforce-eager --disable-log-requests --lora-modules lora1=/root/path1/  lora2=/root/path2/ ...\n```\n\nIn both tests, I send the same request, which sets the model as `/data/models/vicuna-7b-v1.5/`.\n\nBut the performance differs a lot.\n\n![image](https://uploads.linear.app/342cff15-f40f-4cf7-8bee-343d25adb534/0421c1bd-2196-4601-80e3-62d2f9769277/83c5b379-57ba-4acd-a1ce-a9004ddf41bf?signature=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXRoIjoiLzM0MmNmZjE1LWY0MGYtNGNmNy04YmVlLTM0M2QyNWFkYjUzNC8wNDIxYzFiZC0yMTk2LTQ2MDEtODBlMy02MmQyZjk3NjkyNzcvODNjNWIzNzktNTdiYS00YWNkLWExY2UtYTkwMDRkZGY0MWJmIiwiaWF0IjoxNzEwMzUyODIwLCJleHAiOjMzMjgwOTEyODIwfQ.EldgJUs7c_4w7DsWm5od4iLrtv_T9FeDlkJ1lH7EYXE)",
+    "labels": [
+      "help wanted",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-06T03:55:08+00:00",
+    "closed_at": "2024-11-30T02:02:10+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3219/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3219"
+  },
+  {
+    "number": 16191,
+    "title": "[Usage]: How can I quickly obtain the number of prompt tokens containing multimodal data?",
+    "body": "### Your current environment\n\n```text\nThe output of `python collect_env.py`\n```\n\n\n### How would you like to use vllm\n\nThe /tokenize API can only return the number of prompt tokens that contain text and multimodal placeholders, but cannot return the actual number of prompt tokens. @DarkLight1337 \n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "usage",
+      "multi-modality"
+    ],
+    "state": "open",
+    "created_at": "2025-04-07T14:45:08+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/16191/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/16191"
+  },
+  {
+    "number": 3148,
+    "title": "Support `response_format: json_object` in OpenAI server",
+    "body": "We just merged the support for structured generation support with Outlines. The next step is to integreate with Grammar based finite state machine https://github.com/outlines-dev/outlines/pull/541 into vLLM to support arbitrary JSON format. ",
+    "labels": [
+      "help wanted",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-01T19:12:00+00:00",
+    "closed_at": "2024-03-16T20:35:28+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3148/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3148"
+  },
+  {
+    "number": 14083,
+    "title": "[Feature]: Improve Logging for Error Messages",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nImprove logging on VLLM V1 for common errors in initialization.\n\nFor example:\n- not enough memory to fit the model\n- not enough kv cache space to fit the model\n- ...\n\nCurrently we have decently logging of the exceptions that arise. It would be better however if we could explicitly catch these issues and return clearer error messages\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "feature request"
+    ],
+    "state": "open",
+    "created_at": "2025-03-01T17:14:04+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14083/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14083"
+  },
+  {
+    "number": 10189,
+    "title": "[help wanted]: why cmake 3.31 breaks vllm and how to fix it ",
+    "body": "### Anything you want to discuss about vllm.\n\nwe need to figure it out and revert https://github.com/vllm-project/vllm/pull/10188 in the end.\r\n\r\nthe recent cmake 3.31 release breaks the release pipeline.\r\nthis successful release https://buildkite.com/vllm/release/builds/1745#019311b9-49d5-4f13-8064-df14308bd9ae uses cmake 3.30\r\nand this failed release https://buildkite.com/vllm/release/builds/1746#01931327-c49b-4e52-8c0b-95fb95140ea4 uses cmake 3.31, and we get `CMake Error: Could not find CMAKE_ROOT !!! .`\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "misc"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-10T01:15:52+00:00",
+    "closed_at": "2024-11-12T23:06:49+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/10189/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/10189"
+  },
+  {
+    "number": 13351,
+    "title": "[Feature]: Consolidate performance benchmark datasets",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nOn vLLM we have two main benchmark scripts ([benchmark_throughput.py](https://github.com/vllm-project/vllm/blob/main/benchmarks/benchmark_throughput.py) and [benchmark_serving.py](https://github.com/vllm-project/vllm/blob/main/benchmarks/benchmark_serving.py)) to measure the performance of vLLM. \n\nHowever, the dataset sampling functions are defined within each script itself and over time it'll be hard to maintain these and to add new datasets to both scripts as we want to have the flexibility to run benchmark on different datasets.\n\n### Alternatives\n\nIdeally the dataset sampling should be defined in a separate file (e.g, `benchmark_dataset.py`) where we define the sampling functions for different datasets (sharegpt, sonnet, random, vision arena, etc), and the benchmark scripts themselves can simply import from benchmark_dataset depending on which dataset is specified at command line. \n\nThis modularization brings us a number of benefits:\n- Ensure the alignment of dataset sampling between the two benchmarks in case we want to compare the performance between online serving and offline inference.\n- Ease the process of adding new types of benchmark datasets.\n- Open up the opportunity to support user-defined custom datasets as long as they conform to a format that we pre-define.\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-16T09:04:02+00:00",
+    "closed_at": "2025-03-15T05:49:45+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13351/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13351"
+  },
+  {
+    "number": 10137,
+    "title": "[Feature]: Support for predicted outputs",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\r\n\r\nhttps://platform.openai.com/docs/guides/latency-optimization#use-predicted-outputs\r\n\r\nReminds me on:\r\nhttps://github.com/FasterDecoding/REST\r\nhttps://arxiv.org/html/2311.08252v2\r\n\r\n### Alternatives\r\n\r\n_No response_\r\n\r\n### Additional context\r\n\r\nI could give it a try to implement it based on ngram speculation \r\n\r\n### Before submitting a new issue...\r\n\r\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-08T01:01:42+00:00",
+    "closed_at": "2025-05-09T02:10:30+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/10137/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/10137"
+  },
+  {
+    "number": 7883,
+    "title": "[Performance]: Prefix-caching aware scheduling",
+    "body": "### Proposal to improve performance\r\n\r\nThe current execution flow with prefix caching is as follows:\r\n1. Scheduler takes the next prefill sequence:\r\n    a. Calculate how many blocks it needs.\r\n    b. Check whether we have sufficient number of blocks in the block manager.\r\n    c. If so, determine the number of tokens to be prefilled in this batch (it is equal to the prompt length without chunked prefill, or at maximum the chunked size otherwise).\r\n    d. Update the batch token budget by subtracting the tokens to be prefilled.\r\n    e. Allocate all (regardless how many tokens to prefill in this batch) blocks.\r\n    f. Match allocated block IDs with prefix cache, and list them in `computed_block_nums`.\r\n2. Prepare input:\r\n    a. Get the number of tokens to prefill for this sequence in this batch.\r\n    b. Setup input token IDs and positions.\r\n    c. If `computed_block_nums` is not none, then remove the cached tokens from input tokens, and adjust input positions, query length and context length accordingly.\r\n3. Execute the model.\r\n\r\nThe inefficiencies are then:\r\n1. In Step 1.b, we now don't consider prefix caching. Taking a sequence with 16 blocks in prompt as an example, it now requires block manager to have 16 free blocks to be scheduled. However, assuming 12 of 16 blocks are already cached, we actually only need free 4 blocks to schedule this sequence.\r\n2. In Step 1.d, we now don't consider prefix caching. Assuming the number of batched tokens is set to 2048, and we scheduled 2 sequences with 1024 tokens each. However, if the first 512 prefix tokens are already cached, then the batch size is actually 1024 instead of 2048.\r\n\r\nThe above inefficiencies come from the fact that we know which blocks are cached starting from Step 1.f. Thus, we propose the following changes:\r\n1. Improve `can_allocate` in block manager at Step 1.b to consider prefix caching. For example, although a sequence needs 16 blocks for its prompt, `can_allocate` could still return True even the block manager only has 4 blocks left when 12 of 16 blocks are already cached.\r\n2. Improve Step 1.c in the scheduler to consider prefix caching. Specifically, this step should guarantee the number of new tokens to prefill are not cached. If an entire prompt of a sequence is cached, we should only compute the last token.\r\n\r\ncc @rkooo567 @sighingnow @Juelianqvq @zhuohan123 \r\n\r\n### Before submitting a new issue...\r\n\r\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-26T21:30:38+00:00",
+    "closed_at": "2024-12-20T02:18:05+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/7883/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/7883"
+  },
+  {
+    "number": 4569,
+    "title": "[CI][Contribution Welcomed] Conditional Testing",
+    "body": "### Anything you want to discuss about vllm.\r\n\r\nCurrently we run all CI tests matrix on every single commit in pull requests. The CI cost of the vLLM has been doubling each week as we add more tests and receiving many PRs from the community. \r\n\r\nA good first step would be to only run some tests when relevant code is changed. For example, do not run unit/integration tests when docs or examples are changed. ",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-02T23:15:11+00:00",
+    "closed_at": "2024-10-28T03:06:34+00:00",
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4569/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4569"
+  },
+  {
+    "number": 14003,
+    "title": "[Feature]: Implement Concurrent Partial Prefills In V1 Engine",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nIn V0, we support concurrent partial prefills to avoid TTFT latency with long requests. Implement it in V1\n\ncc @WoosukKwon \n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "feature request"
+    ],
+    "state": "open",
+    "created_at": "2025-02-28T01:34:31+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14003/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14003"
+  }
+]

@@ -1,0 +1,667 @@
+[
+  {
+    "number": 10932,
+    "title": "examples : add configuration presets",
+    "body": "## Description\n\nI was recently looking for ways to demonstrate some of the functionality of the `llama.cpp` examples and some of the commands can become very cumbersome. For example, here is what I use for the `llama.vim` FIM server:\n\n```bash\nllama-server \\\n    -m ./models/qwen2.5-7b-coder/ggml-model-q8_0.gguf \\\n    --log-file ./service-vim.log \\\n    --host 0.0.0.0 --port 8012 \\\n    --ctx-size 0 \\\n    --cache-reuse 256 \\\n    -ub 1024 -b 1024 -ngl 99 -fa -dt 0.1\n```\n\nIt would be much cleaner if I could just run, for example:\n\n```bash\nllama-server --cfg-fim-7b\n```\n\nOr if I could turn this embedding server command into something simpler:\n\n```bash\n# llama-server \\\n#     --hf-repo ggml-org/bert-base-uncased \\\n#     --hf-file          bert-base-uncased-Q8_0.gguf \\\n#     --port 8033 -c 512 --embeddings --pooling mean\n\nllama-server --cfg-embd-bert --port 8033\n```\n\n## Implementation\n\nThere is already an initial example of how we can create such configuration presets:\n\n```bash\nllama-tts --tts-oute-default -p \"This is a TTS preset\"\n\n# equivalent to\n# \n# llama-tts \\\n#    --hf-repo   OuteAI/OuteTTS-0.2-500M-GGUF \\\n#    --hf-file          OuteTTS-0.2-500M-Q8_0.gguf \\\n#    --hf-repo-v ggml-org/WavTokenizer \\\n#    --hf-file-v          WavTokenizer-Large-75-F16.gguf -p \"This is a TTS preset\"\n```\n\n<details>\n\nhttps://github.com/ggerganov/llama.cpp/blob/5cd85b5e008de2ec398d6596e240187d627561e3/common/arg.cpp#L2208-L2220\n\n</details>\n\nThis preset configures the model urls so that they would be automatically downloaded from HF when the example runs and thus simplifies the command significantly. It can additionally set various default values, such as context size, batch size, pooling type, etc.\n\n## Goal\n\nThe goal of this issue is to create such presets for various common tasks:\n\n- [x] Run a basic TTS generation (see above)\n- [ ] Start a chat server with a commonly used model\n- [ ] Start a speculative-decoding-enabled chat server with a commonly used model\n- [ ] Start a FIM server for plugins such as `llama.vim`\n- [x] Start an embedding server with a commonly used embedding model\n- [ ] Start a reranking server with a commonly used reranking model\n- And many more ..\n\nThe list of configuration presets would require curation and proper documentation.\n\nI think this is a great task for new contributors to help and to get involved in the project.",
+    "labels": [
+      "documentation",
+      "enhancement",
+      "help wanted",
+      "good first issue",
+      "examples"
+    ],
+    "state": "open",
+    "created_at": "2024-12-21T09:10:47+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10932/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10932"
+  },
+  {
+    "number": 9291,
+    "title": "changelog : `llama-server` REST API",
+    "body": "# Overview\n\nThis is a list of changes to the public HTTP interface of the `llama-server` example. Collaborators are encouraged to edit this post in order to reflect important changes to the API that end up merged into the `master` branch.\n\nIf you are building a 3rd party project that relies on `llama-server`, it is recommended to follow this issue and check it carefully before upgrading to new versions.\n\nSee also:\n\n- [Changelog for `libllama` API](https://github.com/ggerganov/llama.cpp/issues/9289)\n\n## Recent API changes (most recent at the top)\n\n| version | PR  | desc |\n| ---     | --- | ---  |\n| TBD.  | #13660 | Remove `/metrics` fields related to KV cache tokens and cells` |\n| b5223 | #13174 | For chat competion, if last message is assistant, it will be a prefilled message |\n| b4599 | #9639 | `/v1/chat/completions` now supports `tools` & `tool_choice` |\n| TBD.  | #10974 | `/v1/completions` is now OAI-compat |\n| TBD.  | #10783 | `logprobs` is now OAI-compat, default to pre-sampling probs |\n| TBD.  | #10861 | `/embeddings` supports pooling type `none` |\n| TBD.  | #10853 | Add optional `\"tokens\"` output to `/completions` endpoint |\n| b4337 | #10803 | Remove `penalize_nl` |\n| b4265 | #10626 | CPU docker images working directory changed to /app |\n| b4285 | #10691 | (Again) Change `/slots` and `/props` responses |\n| b4283 | #10704 | Change `/slots` and `/props` responses |\n| b4027 | #10162 | `/slots` endpoint: remove `slot[i].state`, add `slot[i].is_processing` |\n| b3912 | #9865 | Add option to time limit the generation phase |\n| b3911 | #9860 | Remove self-extend support |\n| b3910 | #9857 | Remove legacy system prompt support |\n| b3897 | #9776 | Change default security settings, `/slots` is now disabled by default<br/>Endpoints now check for API key if it's set |\n| b3887 | #9510 | Add `/rerank` endpoint |\n| b3754 | #9459 | Add `[DONE]\\n\\n` in OAI stream response to match spec |\n| b3721 | #9398 | Add `seed_cur` to completion response |\n| b3683 | #9308 | Environment variable updated |\n| b3599 | #9056 | Change `/health` and `/slots` |\n\n*For older changes, use:*\n\n```bash\ngit log --oneline -p b3599 -- examples/server/README.md\n```\n\n## Upcoming API changes\n\n- TBD",
+    "labels": [
+      "documentation",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2024-09-03T06:56:11+00:00",
+    "closed_at": null,
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9291/reactions",
+      "total_count": 16,
+      "+1": 16,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9291"
+  },
+  {
+    "number": 9289,
+    "title": "changelog : `libllama` API",
+    "body": "# Overview\n\nThis is a list of changes to the public interface of the `llama` library. Collaborators are encouraged to edit this post in order to reflect important changes to the API that end up merged into the `master` branch.\n\nIf you are building a 3rd party project that relies on `libllama`, it is recommended to follow this issue and check it before upgrading to new versions.\n\nSee also:\n\n- [Changelog for `llama-server` REST API](https://github.com/ggerganov/llama.cpp/issues/9291)\n\n## Recent API changes (most recent at the top)\n\n| version | PR  | desc |\n| ---     | --- | ---  |\n| TBD.  | #14363 | Update `llama_context_params` - add `bool kv_unified` |\n| b5740 | #13037 | Update `llama_model_quantize_params` |\n| b5870 | #14631 | Remove `enum llama_vocab_pre_type` |\n| b5435 | #13653 | Remove `llama_kv_cache_view_*` API |\n| b5429 | #13194 | Update `llama_context_params` - add `bool swa_full` |\n| b5311 | #13284 | Update `llama_context_params` - remove `logits_all` + rearrange flags |\n| b5125 | #12511 | Update `llama_model_quantize_params` |\n| b5028 | #11397 | Update `llama_model_params` |\n| b4882 | #12181 | Change `llama_kv_cache_...` -> `llama_kv_self_...` |\n| b4599 | #9639 | Add llama_sampler_init_grammar_lazy to support lazy grammars w/ trigger words & tokens |\n| b4524 | #11016 | Add name parameter to llama_model_chat_template (uses default template if NULL) |\n| b4501  | #11262 | Remove `rpc_servers` from `llama_model` and `llama_model_params` |\n| b4464 | #11110 | Add `llama_vocab` and rename various structs and calls |\n| b4424 | #11063 | Update `llama_model` API naming | \n| b4357 | #10784 | Remove `llama_model_get_tensor()` |\n| b4337 | #10803 | Change `llama_sampler_init_penalties()` |\n| b4282 | #10446 | Remove support for `Q4_0_N_M` model files in favor of automatic repacking of `Q4_0` |\n| b4167 | #10497 | Add `devices` to `llama_model_params` |\n| b3948 | #9897 | Deprecate `softmax` sampler and update `dist` sampler` |\n| b3988 | #10071 | Remove Tail-Free sampling |\n| b3943 | #9745 | Remove `all_pos_0, all_pos_1, all_seq_id` from `llama_batch` |\n| b3908 | #9798 | Update FIM-related API |\n| b3841 | #9510 | Add `LLAMA_POOLING_TYPE_RANK` |\n| b3774 | #9512 | Add `llama_n_head()` |\n| b3750 | #9355 | Add `llama_perf` API + param to disable internal profiling |\n| b3749 | #9445 | Add `llama_sampler_chain_remove()` |\n| b3681 | #9294 | Major changes to the sampling API (see PR for more info)|\n| b3651 | #8980 | Add `LLAMA_VOCAB_TYPE_RWKV` enum value |\n| b3644 | #8672 | Add `llama_threadpool` API + change `uint32_t` -> `int32_t` |\n| b3614 | #8526 | Add `llama_model_is_recurrent` |\n\n*For older changes, use:*\n\n```bash\ngit log --oneline -p b3614 -- include/llama.h\n```\n\n(For collaborators) To link between PR number vs Build number:\n\n```bash\ngit log --oneline | tail -r | nl\n```\n\n## Upcoming API changes\n\n- TBD\n",
+    "labels": [
+      "documentation",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2024-09-03T06:48:45+00:00",
+    "closed_at": null,
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9289/reactions",
+      "total_count": 14,
+      "+1": 10,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 4,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9289"
+  },
+  {
+    "number": 7720,
+    "title": "Bug: Grammar readme seems incorrect",
+    "body": "### What happened?\r\n\r\n[This bit on the grammar readme](https://github.com/ggerganov/llama.cpp/blob/master/grammars/README.md#non-terminals-and-terminals) states:\r\n\r\n> Non-terminal symbols (rule names) ... are required to be a dashed lowercase word, like `move`, `castle`, or `check-mate`.\r\n\r\nHowever, the [`c.gbnf` defines a `dataType` rule](https://github.com/ggerganov/llama.cpp/blob/master/grammars/c.gbnf#L5) (which features a non-lower-case letter) and this grammar appears to be valid.\r\n\r\nI'm not sure what the intended behavior is. I would be happy to update the README if uppercase variables are supported.\r\n\r\n### Name and Version\r\n\r\nN/A\r\n\r\n### What operating system are you seeing the problem on?\r\n\r\n_No response_\r\n\r\n### Relevant log output\r\n\r\n_No response_",
+    "labels": [
+      "bug",
+      "documentation",
+      "low severity"
+    ],
+    "state": "open",
+    "created_at": "2024-06-03T20:48:22+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7720/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7720"
+  },
+  {
+    "number": 7658,
+    "title": "Why is convert.py missing?",
+    "body": "### What happened?\n\nCritical \"non llama3\" convert.py and change NOT in download of files.\r\n\r\nALSO:\r\nIt is unclear if \"convert-hf-to-gguf.py\"  supports what \"convert.py\" did . \r\n\r\nDoes it convert llama, llama2, mistral or is \"convert-legacy-llama.py\" required?\r\nSafetensor files are EVERYWHERE. (?)  [ RE: https://github.com/ggerganov/llama.cpp/pull/7430 ]\r\n\r\nThis critical action DID NOT OCCUR:\r\n\"Move convert.py to examples/convert-legacy-llama.py\"\r\n\r\n\"examples/convert-legacy-llama.py\" does not exist. \r\n(when downloading the zip files).\r\n\r\nOn another note why remove \"convert.py\" at all? \r\n\r\n-This breaks \"bat files\" and automation generation.\r\n-This will break all colabs too.\r\n-This will break any HF spaces that create GGUF files as well.\r\n-This will create needless confusion.\r\n\r\nIf \"convert-hf-to-gguf.py\" (llama3) does everything convert.py did , just keep it as \"convert.py\" ?\r\n\r\n\r\n\r\n\n\n### Name and Version\n\nthis is not applicable - core files missing.\n\n### What operating system are you seeing the problem on?\n\n_No response_\n\n### Relevant log output\n\n```shell\nthis is not applicable - core files missing.\n```\n",
+    "labels": [
+      "documentation",
+      "script",
+      "python",
+      "high severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-31T05:46:36+00:00",
+    "closed_at": "2024-06-10T19:58:23+00:00",
+    "comments": 15,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7658/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7658"
+  },
+  {
+    "number": 7657,
+    "title": "Refactor: Add CONTRIBUTING.md and/or update PR template with [no ci] tips",
+    "body": "### Background Description\r\n\r\nDiscussion in https://github.com/ggerganov/llama.cpp/pull/7650 pointed out a need to add a CONTRIBUTING.md and maybe add a PR template to encourage contributors to add [no ci] tag to documentation only changes.\r\n\r\nhttps://docs.github.com/en/actions/managing-workflow-runs/skipping-workflow-runs\r\n\r\n(If anyone wants to tackle this, feel free to)\r\n\r\n### Possible Refactor Approaches\r\n\r\nAdd info about\r\n\r\n- doc only changes should have [no ci] in commit title to skip the unneeded CI checks.\r\n- squash on merge with commit title format: \"module : some commit title (`#1234`)\"",
+    "labels": [
+      "documentation",
+      "enhancement",
+      "help wanted",
+      "devops",
+      "low severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-30T23:56:20+00:00",
+    "closed_at": "2024-06-09T15:25:57+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7657/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7657"
+  },
+  {
+    "number": 6361,
+    "title": "Working Fine-Tune Example?",
+    "body": "I am trying to find a working example of fine-tuning. \r\n\r\n- If I run the example from `https://github.com/ggerganov/llama.cpp/tree/master/examples/finetune`, the script can't find the model.\r\nhere is the error\r\n```\r\nmain: seed: 1711608198\r\nmain: model base = 'open-llama-3b-v2-q8_0.gguf'\r\nllama_model_load: error loading model: llama_model_loader: failed to load model from open-llama-3b-v2-q8_0.gguf\r\n\r\nllama_load_model_from_file: failed to load model\r\nllama_new_context_with_model: model cannot be NULL\r\nSegmentation fault: 11\r\n```\r\n\r\n- If I try to use a model in `/models` folder such as \r\n```\r\n./finetune \\\r\n        --model-base ./models/ggml-vocab-llama.gguf \\\r\n        --checkpoint-in  chk-lora-open-llama-3b-v2-q8_0-shakespeare-LATEST.gguf \\\r\n        --checkpoint-out chk-lora-open-llama-3b-v2-q8_0-shakespeare-ITERATION.gguf \\\r\n        --lora-out lora-open-llama-3b-v2-q8_0-shakespeare-ITERATION.bin \\\r\n        --train-data \"shakespeare.txt\" \\\r\n        --save-every 10 \\\r\n        --threads 6 --adam-iter 30 --batch 4 --ctx 64 \\\r\n        --use-checkpointing\r\n```\r\n\r\nIt returns error still\r\n```\r\n...\r\nllm_load_tensors: ggml ctx size =    0.00 MiB\r\nllama_model_load: error loading model: create_tensor: tensor 'token_embd.weight' not found\r\nllama_load_model_from_file: failed to load model\r\nllama_new_context_with_model: model cannot be NULL\r\nWARNING: Behavior may be unexpected when allocating 0 bytes for ggml_malloc!\r\nSegmentation fault: 11\r\n```\r\n\r\nWhat should I do?",
+    "labels": [
+      "documentation",
+      "demo",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-28T06:44:04+00:00",
+    "closed_at": "2024-06-21T01:07:11+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6361/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6361"
+  },
+  {
+    "number": 6293,
+    "title": "server: doc: document the `--defrag-thold` option",
+    "body": "### Context\r\n\r\nThe `--defrag-thold` has been added in:\r\n\r\n- https://github.com/ggerganov/llama.cpp/pull/5941#issuecomment-1986947067\r\n\r\nBut it might be documented in the server README.md",
+    "labels": [
+      "documentation",
+      "enhancement",
+      "help wanted",
+      "server/webui"
+    ],
+    "state": "open",
+    "created_at": "2024-03-25T06:40:20+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6293/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6293"
+  },
+  {
+    "number": 6230,
+    "title": "server: comment --threads option behavior",
+    "body": "As we are using batching, I am wondering what is the purpose of `--threads N` parameter in the `server`.\r\n\r\nShould we remove it ?",
+    "labels": [
+      "documentation",
+      "enhancement",
+      "server/webui"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-22T08:56:45+00:00",
+    "closed_at": "2024-03-23T17:00:39+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6230/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6230"
+  },
+  {
+    "number": 647,
+    "title": "Confusion about the model versioning",
+    "body": "So back when project started, we had the first \"unversioned\" model format without the embedded tokens, with the magic 0x67676d6c (ggml).\r\n\r\nProblem with that was that it didn't have any versioning support, so newer/older versions would just think \"I don't know what this is, this is not a model file\".\r\n\r\nThen on this commit https://github.com/ggerganov/llama.cpp/commit/074bea2eb1f1349a0118239c4152914aecaa1be4, adding the embedded the tokens we got a new versioned model format, with magic 0x67676d66 (ggmf), along with **versioning**, so it could now say \"this is definitely a model file, but a wrong version\" as shown here:\r\nhttps://github.com/ggerganov/llama.cpp/blob/3bcc129ba881c99795e850b0a23707a4dfdabe9d/llama.h#L22\r\n\r\nThat was definitely a good move towards future proofing. Any breaking changes could just add +1 to that version and all would be fine and dandy for the next 4294967295 versions of the model format.\r\n\r\nBut then came this commit: https://github.com/ggerganov/llama.cpp/commit/78ca9838ee36660a776e97e3391b6fb5dcaacf7f\r\nWhich for absolutely no good reason changed the magic to 0x67676a74 (ggjt), kept the version at 1, completely breaking the whole versioning system and made it worthless.\r\n\r\nNow we're back to the system where the different versions of `llama.cpp` don't understand that \"yes , these are indeed models but older/newer versions\". We already fixed this problem, why the absolute f the need to break something that is already perfectly fine?\r\n\r\nI just cannot understand the reasoning behind this except maybe vanity, I guess (as the new magic uses the initials of the one who did the commit as the magic) ? Absolutely ridiculous to break a perfectly functional system. Or is there actually some proper reason for this that I'm completely missing?\r\n\r\nIt is already a struggle since various older forks like alpaca.cpp / gpt4all uses the unversioned format, then the move to the versioned format already fractured the community a bit, but was a good and necessary change overall and fixed the version confusion problem for the future versions. But now the third format change, which is made *intentionally worse* by changing the magic instead of doing it properly and using the versioning system put in place back then and causing even more confusion as now all the commits since https://github.com/ggerganov/llama.cpp/commit/074bea2eb1f1349a0118239c4152914aecaa1be4 , where this whole problem was already fixed, is now broken again and those versions would say \"I do now know what this is, it is not a model file\" of the new format. **WHY?**\r\n\r\nAgain, the proper way of updating the model as envisioned by the versioning system is to:\r\n```diff\r\n-#define LLAMA_FILE_VERSION 1\r\n+#define LLAMA_FILE_VERSION 2\r\n#define LLAMA_FILE_MAGIC 0x67676d66 // 'ggmf' in hex\r\n```\r\nand not\r\n```diff\r\n#define LLAMA_FILE_VERSION 1\r\n-#define LLAMA_FILE_MAGIC 0x67676d66 // 'ggmf' in hex\r\n+#define LLAMA_FILE_MAGIC 0x67676a74 // 'ggjt' in hex\r\n```\r\nlike it was committed https://github.com/ggerganov/llama.cpp/commit/78ca9838ee36660a776e97e3391b6fb5dcaacf7f.\r\n\r\nWhat is actually the line of thinking here, we just going to keep the version at 1, completely disuse the versioning system and keep changing the magic to whoever's initials who is doing that change? How the everliving F does that make *any* sense?!\r\n\r\nIf this actually was done by accident, not understanding the versioning system and not by intention, sorry for my scathing remarks. If it's intentional and breaking a perfectly functional system for vanity's sake, all the scathe is well deserved.\r\n\r\nPulling dumb shit like this is a good way to make a fantastic open-source project fall apart quickly.\r\n",
+    "labels": [
+      "documentation",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-31T07:20:01+00:00",
+    "closed_at": "2023-05-03T18:46:36+00:00",
+    "comments": 21,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/647/reactions",
+      "total_count": 17,
+      "+1": 17,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/647"
+  },
+  {
+    "number": 644,
+    "title": "Create clear instructions for downloading and converting the models",
+    "body": "Clear instructions are needed to allow new arrivals to download and convert the models, in spite of the multiple format versions (non quantised, quantised, various llama versions etc) .\r\n\r\nI would suggest that each llama or alpaca etc print a version on startup, and that the conversions scripts have this in their name, and also that a program reading a file and figuring out what it is from a magic print the version read and the version expected even if it aborts.  \r\n\r\nEdmund\r\n\r\n",
+    "labels": [
+      "documentation",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-31T02:23:32+00:00",
+    "closed_at": "2023-05-03T18:43:16+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/644/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/644"
+  },
+  {
+    "number": 573,
+    "title": "--help may show the wrong default values when used after other arguments",
+    "body": "For example, running `./main -b 512 --help` will show the help and say that 512 is the default batch size, which is wrong. This may lead to confusion.",
+    "labels": [
+      "bug",
+      "documentation"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-28T13:26:10+00:00",
+    "closed_at": "2023-04-02T02:41:14+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/573/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/573"
+  },
+  {
+    "number": 518,
+    "title": "Help populating the examples README.md files",
+    "body": "For now I just added empty README.md files:\r\n\r\n- https://github.com/ggerganov/llama.cpp/tree/master/examples/main\r\n- https://github.com/ggerganov/llama.cpp/tree/master/examples/quantize\r\n- https://github.com/ggerganov/llama.cpp/tree/master/examples/perplexity\r\n- https://github.com/ggerganov/llama.cpp/tree/master/examples/embedding\r\n- etc.\r\n\r\nIt would be great to add usage instructions and various tips and tricks for better experience for each example.\r\n\r\nGreat task for initial contributions",
+    "labels": [
+      "documentation",
+      "help wanted",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-26T07:25:05+00:00",
+    "closed_at": "2023-07-28T19:21:19+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/518/reactions",
+      "total_count": 3,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 3,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/518"
+  },
+  {
+    "number": 449,
+    "title": "Change ./main help output to better reflect context size's affect on generation length",
+    "body": "### Discussed in https://github.com/ggerganov/llama.cpp/discussions/446\r\n\r\n<div type='discussions-op-text'>\r\n\r\n<sup>Originally posted by **cmp-nct** March 24, 2023</sup>\r\nI've been testing alpaca 30B (-t 24 -n 2000 --temp 0.2 -b 32 --n_parts 1 --ignore-eos --instruct)\r\nI've consistently have it \"stop\" after 300-400 tokens output (30-40 tokens input)\r\nNo error message, no crash and given the -n 2000 and the ignore-eos no reason to stop so early\r\n\r\nI guess it would be useful if the program provides a verbose quit reason, though in my case I can't see any reason for it to stop before token max is reached.\r\n\r\n\r\nI'm not sure if that's a bug to report or if I am missing something.</div>",
+    "labels": [
+      "documentation",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-24T01:38:43+00:00",
+    "closed_at": "2023-07-28T19:40:24+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/449/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/449"
+  },
+  {
+    "number": 432,
+    "title": "How to output text to a file?",
+    "body": "I really, really tried hard to understand and modify the code but I am not an expert on C++ and so I find it a little bit difficult to change parts of this software. Is there a way to simply execute a command and get the output without all of that verbosity?",
+    "labels": [
+      "documentation"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-23T17:06:06+00:00",
+    "closed_at": "2023-03-24T15:19:36+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/432/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/432"
+  },
+  {
+    "number": 384,
+    "title": "[Documentation] C API examples",
+    "body": "Hey!\r\n\r\nThere should be a simple example on how to use the new C API (like one that simply takes a hardcoded string and runs llama on it until \\n or something like that).\r\nNot sure the the `/examples/` directory is appropriate for this.\r\n\r\nThanks\r\nNiansa",
+    "labels": [
+      "documentation"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-22T08:08:14+00:00",
+    "closed_at": "2023-06-16T18:58:42+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/384/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/384"
+  },
+  {
+    "number": 382,
+    "title": "Add proper instructions for using Alpaca models",
+    "body": "So I am looking at https://github.com/antimatter15/alpaca.cpp and I see they are already running 30B Alpaca models, while we are struggling to run 7B due to the recent tokenizer updates.\r\n\r\nI also see that the models are now even floating on Hugging Face - I guess license issues are no longer a problem?\r\n\r\nWe should add detailed instructions for obtaining the Alpaca models and a temporary explanation how to use the following script to make the models compatible with the latest `master`:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/issues/324#issuecomment-1476227818\r\n\r\nThe bigger issue is that people keep producing the old version of the `ggml` models instead of migrating to the latest `llama.cpp` changes. And therefore, we now need this extra conversion step. It's best to figure out the steps for generating the Alpaca models and generate them in the correct format.\r\n\r\n**Edit: just don't post direct links to the models!**",
+    "labels": [
+      "documentation",
+      "help wanted",
+      "good first issue",
+      "high priority",
+      "\ud83e\udd99."
+    ],
+    "state": "closed",
+    "created_at": "2023-03-22T07:26:07+00:00",
+    "closed_at": "2023-07-28T19:20:56+00:00",
+    "comments": 22,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/382/reactions",
+      "total_count": 21,
+      "+1": 21,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/382"
+  },
+  {
+    "number": 361,
+    "title": "Invalid model error : too old, regenerate your model files!",
+    "body": "Downloaded Alpaca 7B model successfully using the following command as mentioned in README.md:\r\n`curl -o ./models/ggml-alpaca-7b-q4.bin -C - https://gateway.estuary.tech/gw/ipfs/QmUp1UGeQFDqJKvtjbSYPBiZZKRjLp8shVP9hT8ZB9Ynv1`\r\n\r\nWhen I try to execute the command:\r\n`main -m ./models/ggml-alpaca-7b-q4.bin --color -f ./prompts/alpaca.txt -ins`\r\n\r\nThis is the error output:\r\nmain: seed = 1679417098\r\nllama_model_load: loading model from './models/ggml-alpaca-7b-q4.bin' - please wait ...\r\nllama_model_load: invalid model file './models/ggml-alpaca-7b-q4.bin' (too old, regenerate your model files!)\r\nmain: failed to load model from './models/ggml-alpaca-7b-q4.bin'\r\n\r\nHow to fix this? Is the downloaded model corrupted and should I download it again? What is the SHA1 hash of the model so that I can verify that the downloaded model is corrupted or not?",
+    "labels": [
+      "documentation",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-21T16:51:17+00:00",
+    "closed_at": "2023-03-22T05:54:53+00:00",
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/361/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/361"
+  },
+  {
+    "number": 239,
+    "title": "Create issue template for bug and enhancement issues",
+    "body": "The following is a proposed template for creating new issues. If people think the tone could be improved, I'd appreciate feedback!\r\n___\r\n\r\n# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [ ] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [ ] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [ ] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [ ] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\n\r\nPlease provide a detailed written description of what you were trying to do, and what you expected `lamma.cpp` to do.\r\n\r\n# Current Behavior\r\n\r\nPlease provide a detailed written description of what `lamma.cpp` did, instead. \r\n\r\n# Environment and Context \r\n\r\nPlease provide detailed information about your computer setup. This is important in case the issue is not reproducible except for under certain specific conditions.\r\n\r\n* Physical (or virtual) hardware you are using, e.g. for Linux:\r\n\r\n`$ lscpu`\r\n\r\n* Operating System, e.g. for Linux:\r\n\r\n`$ uname -a`\r\n\r\n* SDK version, e.g. for Linux:\r\n\r\n```\r\n$ python3 --version\r\n$ make --version\r\n$ g++ --version\r\n```\r\n\r\n# Models\r\n\r\n* The LLaMA models are officially distributed by Facebook and will never be provided through this repository. See this [pull request in Facebook's LLaMA repository](https://github.com/facebookresearch/llama/pull/73/files) if you need to obtain access to the model data.\r\n* If your issue is with model conversion please verify the `sha256sum` of each of your `consolidated*.pth` and `ggml-model-XXX.bin` files to confirm that you have the correct model data files before logging an issue. [Latest sha256 sums for your reference](https://github.com/ggerganov/llama.cpp/issues/238).\r\n* If your issue is with model generation quality then please at least scan the following links and papers to understand the limitations of LLaMA models. This is especially important when choosing an appropriate model size and appreciating both the significant and subtle differences between LLaMA models and ChatGPT:\r\n  * LLaMA:\r\n    * [Introducing LLaMA: A foundational, 65-billion-parameter large language model](https://ai.facebook.com/blog/large-language-model-llama-meta-ai/)\r\n    * [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971)\r\n  * GPT-3\r\n    * [Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)\r\n  * GPT-3.5 / InstructGPT / ChatGPT:\r\n    * [Aligning language models to follow instructions](https://openai.com/research/instruction-following)\r\n    * [Training language models to follow instructions with human feedback](https://arxiv.org/abs/2203.02155)\r\n\r\n# Failure Information (for bugs)\r\n\r\nPlease help provide information about the failure if this is a bug. If it is not a bug, please remove the rest of this template.\r\n\r\n# Steps to Reproduce\r\n\r\nPlease provide detailed steps for reproducing the issue. We are not sitting in front of your screen, so the more detail the better.\r\n\r\n1. step 1\r\n2. step 2\r\n3. step 3\r\n4. etc.\r\n\r\n# Failure Logs\r\n\r\nPlease include any relevant log snippets or files. If it works under one configuration but not under another, please provide logs for both configurations and their corresponding outputs so it is easy to see where behavior changes.\r\n\r\nAlso, please try to **avoid using screenshots** if at all possible. Instead, copy/paste the console output and use [Github's markdown](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) to cleanly format your logs for easy readability. e.g.\r\n\r\n```\r\nllama.cpp$ git log | head -1\r\ncommit 2af23d30434a677c6416812eea52ccc0af65119c\r\n\r\nllama.cpp$ lscpu | egrep \"AMD|Flags\"\r\nVendor ID:                       AuthenticAMD\r\nModel name:                      AMD Ryzen Threadripper 1950X 16-Core Processor\r\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid amd_dcm aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb hw_pstate ssbd ibpb vmmcall fsgsbase bmi1 avx2 smep bmi2 rdseed adx smap clflushopt sha_ni xsaveopt xsavec xgetbv1 xsaves clzero irperf xsaveerptr arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif overflow_recov succor smca sme sev\r\nVirtualization:                  AMD-V\r\n\r\nllama.cpp$ python3 --version\r\nPython 3.10.9\r\n\r\nllama.cpp$ pip list | egrep \"torch|numpy|sentencepiece\"\r\nnumpy                         1.24.2\r\nnumpydoc                      1.5.0\r\nsentencepiece                 0.1.97\r\ntorch                         1.13.1\r\ntorchvision                   0.14.1\r\n\r\nllama.cpp$ make --version | head -1\r\nGNU Make 4.3\r\n\r\n$ md5sum ./models/65B/ggml-model-q4_0.bin\r\ndbdd682cce80e2d6e93cefc7449df487  ./models/65B/ggml-model-q4_0.bin\r\n```\r\nHere's a run with the Linux command [perf](https://www.brendangregg.com/perf.html)\r\n\r\n```\r\nllama.cpp$ perf stat ./main -m ./models/65B/ggml-model-q4_0.bin -t 16 -n 1024 -p \"Please close your issue when it has been answered.\"\r\nmain: seed = 1679149377\r\nllama_model_load: loading model from './models/65B/ggml-model-q4_0.bin' - please wait ...\r\nllama_model_load: n_vocab = 32000\r\nllama_model_load: n_ctx   = 512\r\nllama_model_load: n_embd  = 8192\r\nllama_model_load: n_mult  = 256\r\nllama_model_load: n_head  = 64\r\nllama_model_load: n_layer = 80\r\nllama_model_load: n_rot   = 128\r\nllama_model_load: f16     = 2\r\nllama_model_load: n_ff    = 22016\r\nllama_model_load: n_parts = 8\r\nllama_model_load: ggml ctx size = 41477.73 MB\r\nllama_model_load: memory_size =  2560.00 MB, n_mem = 40960\r\nllama_model_load: loading model part 1/8 from './models/65B/ggml-model-q4_0.bin'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 2/8 from './models/65B/ggml-model-q4_0.bin.1'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 3/8 from './models/65B/ggml-model-q4_0.bin.2'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 4/8 from './models/65B/ggml-model-q4_0.bin.3'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 5/8 from './models/65B/ggml-model-q4_0.bin.4'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 6/8 from './models/65B/ggml-model-q4_0.bin.5'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 7/8 from './models/65B/ggml-model-q4_0.bin.6'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\nllama_model_load: loading model part 8/8 from './models/65B/ggml-model-q4_0.bin.7'\r\nllama_model_load: .......................................................................................... done\r\nllama_model_load: model size =  4869.09 MB / num tensors = 723\r\n\r\nsystem_info: n_threads = 16 / 32 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 1 | VSX = 0 | \r\n\r\nmain: prompt: 'Please close your issue when it has been answered.'\r\nmain: number of tokens in prompt = 11\r\n     1 -> ''\r\n 12148 -> 'Please'\r\n  3802 -> ' close'\r\n   596 -> ' your'\r\n  2228 -> ' issue'\r\n   746 -> ' when'\r\n   372 -> ' it'\r\n   756 -> ' has'\r\n  1063 -> ' been'\r\n  7699 -> ' answered'\r\n 29889 -> '.'\r\n\r\nsampling parameters: temp = 0.800000, top_k = 40, top_p = 0.950000, repeat_last_n = 64, repeat_penalty = 1.300000\r\n\r\n\r\nPlease close your issue when it has been answered.\r\n@duncan-donut: I'm trying to figure out what kind of \"support\" you need for this script and why, exactly? Is there a question about how the code works that hasn't already been addressed in one or more comments below this ticket, or are we talking something else entirely like some sorta bugfixing job because your server setup is different from mine??\r\nI can understand if your site needs to be running smoothly and you need help with a fix of sorts but there should really be nothing wrong here that the code itself could not handle. And given that I'm getting reports about how it works perfectly well on some other servers, what exactly are we talking? A detailed report will do wonders in helping us get this resolved for ya quickly so please take your time and describe the issue(s) you see as clearly & concisely as possible!!\r\n@duncan-donut: I'm not sure if you have access to cPanel but you could try these instructions. It is worth a shot! Let me know how it goes (or what error message, exactly!) when/if ya give that code a go? [end of text]\r\n\r\n\r\nmain: mem per token = 71159620 bytes\r\nmain:     load time = 19309.95 ms\r\nmain:   sample time =   168.62 ms\r\nmain:  predict time = 223895.61 ms / 888.47 ms per token\r\nmain:    total time = 246406.42 ms\r\n\r\n Performance counter stats for './main -m ./models/65B/ggml-model-q4_0.bin -t 16 -n 1024 -p Please close your issue when it has been answered.':\r\n\r\n        3636882.89 msec task-clock                #   14.677 CPUs utilized          \r\n             13509      context-switches          #    3.714 /sec                   \r\n              2436      cpu-migrations            #    0.670 /sec                   \r\n          10476679      page-faults               #    2.881 K/sec                  \r\n    13133115082869      cycles                    #    3.611 GHz                      (16.77%)\r\n       29314462753      stalled-cycles-frontend   #    0.22% frontend cycles idle     (16.76%)\r\n    10294402631459      stalled-cycles-backend    #   78.39% backend cycles idle      (16.74%)\r\n    23479217109614      instructions              #    1.79  insn per cycle         \r\n                                                  #    0.44  stalled cycles per insn  (16.76%)\r\n     2353072268027      branches                  #  647.002 M/sec                    (16.77%)\r\n        1998682780      branch-misses             #    0.08% of all branches          (16.76%)\r\n\r\n     247.802177522 seconds time elapsed\r\n\r\n    3618.573072000 seconds user\r\n      18.491698000 seconds sys\r\n```",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-17T13:38:57+00:00",
+    "closed_at": "2023-03-21T17:50:50+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/239/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/239"
+  },
+  {
+    "number": 238,
+    "title": "Document check sums of models so that we can confirm issues are not caused by bad downloads or conversion",
+    "body": "Can someone please confirm the following md5 sums are correct?  I regenerated them with the latest code.\r\n\r\n```\r\n$ md5sum ./models/*/*.pth | sort -k 2,2\r\n0804c42ca65584f50234a86d71e6916a  ./models/13B/consolidated.00.pth\r\n016017be6040da87604f77703b92f2bc  ./models/13B/consolidated.01.pth\r\nf856e9d99c30855d6ead4d00cc3a5573  ./models/30B/consolidated.00.pth\r\nd9dbfbea61309dc1e087f5081e98331a  ./models/30B/consolidated.01.pth\r\n2b2bed47912ceb828c0a37aac4b99073  ./models/30B/consolidated.02.pth\r\nea0405cdb5bc638fee12de614f729ebc  ./models/30B/consolidated.03.pth\r\n9deae67e2e7b5ccfb2c738f390c00854  ./models/65B/consolidated.00.pth\r\n0c4b00c30460c3818bd184ee949079ee  ./models/65B/consolidated.01.pth\r\n847194df776dd38f8ae9ddcede8829a1  ./models/65B/consolidated.02.pth\r\n3b6c8adcb5654fd36abab3206b46a0f1  ./models/65B/consolidated.03.pth\r\n68d61d1242597ad92616ec31b8cb6b4c  ./models/65B/consolidated.04.pth\r\n7f71259eaee2b906aa405d8edf39925f  ./models/65B/consolidated.05.pth\r\n0574e26b6891ab2cb0df7340d773fe9b  ./models/65B/consolidated.06.pth\r\ne5d9790df955270b836aec79462ead22  ./models/65B/consolidated.07.pth\r\n6efc8dab194ab59e49cd24be5574d85e  ./models/7B/consolidated.00.pth\r\n```\r\n\r\n\r\n<details>\r\n<summary>Edit: File format has changed. Don\u2019t use these collapsed weights!</summary>\r\n\r\n```\r\n$ md5sum ./models/*/ggml-model-f16* | sort -k 2,2\r\n0d851faaf144ff75ff9683685cbcbedc  ./models/13B/ggml-model-f16.bin\r\n5cde948c6a27f41dc822b1a8a0587e79  ./models/13B/ggml-model-f16.bin.1\r\nc80e0c824c7e853c3d5be915afb37eef  ./models/30B/ggml-model-f16.bin\r\n72da29fca244f2a64f85b2c14b20290d  ./models/30B/ggml-model-f16.bin.1\r\n16f07b182f44116fd72a9cc174dc0db2  ./models/30B/ggml-model-f16.bin.2\r\n2413e326c00b476e8cd13d5f1fe65854  ./models/30B/ggml-model-f16.bin.3\r\neb8f7835d1d7e716f96af02fefdd5c04  ./models/65B/ggml-model-f16.bin\r\n30f08121b86fe90db2497bd87f844d3b  ./models/65B/ggml-model-f16.bin.1\r\n98983c0e2338d2985a0d9bb8bd27efb5  ./models/65B/ggml-model-f16.bin.2\r\n635ebf87ef9053f7facccc665a0c826a  ./models/65B/ggml-model-f16.bin.3\r\n6ca89293e1a9c8ad96b476406739827c  ./models/65B/ggml-model-f16.bin.4\r\n696e4afe846ddfe2a2366db927a0dffa  ./models/65B/ggml-model-f16.bin.5\r\n39a7f52b968aa833212c027d6fd58ccf  ./models/65B/ggml-model-f16.bin.6\r\na8ac8b55c152565573b118b0a0109726  ./models/65B/ggml-model-f16.bin.7\r\n0fd0234fd08a7310f93f64faff7fda15  ./models/7B/ggml-model-f16.bin\r\n```\r\n\r\n\r\n```\r\n$ md5sum ./models/*/ggml-model-q4_0* | sort -k 2,2\r\nb405d83aff658379cc8b1b59b9a39668  ./models/13B/ggml-model-q4_0.bin\r\nb06456f82bbc9d1fd46afa635ce0eba4  ./models/13B/ggml-model-q4_0.bin.1\r\nc8bdc3fedd676b4c30bcc61812dab84f  ./models/30B/ggml-model-q4_0.bin\r\naad0750e54004014b65fa65aedacdf84  ./models/30B/ggml-model-q4_0.bin.1\r\n88876dca38cedf53ba0a915e817921ed  ./models/30B/ggml-model-q4_0.bin.2\r\n4063e11be83d342893ba4e3e299a4436  ./models/30B/ggml-model-q4_0.bin.3\r\ndbdd682cce80e2d6e93cefc7449df487  ./models/65B/ggml-model-q4_0.bin\r\n5d7c7e0e30b351af5237b81852e4b01b  ./models/65B/ggml-model-q4_0.bin.1\r\n2ca89995c8c17890b2935022aede929e  ./models/65B/ggml-model-q4_0.bin.2\r\n88e36f69163fe09da11531332410f4d4  ./models/65B/ggml-model-q4_0.bin.3\r\n4fe105f7d77d54d94daa33bbfd582733  ./models/65B/ggml-model-q4_0.bin.4\r\n1106d57cdf87ecbf83540f3a0027b480  ./models/65B/ggml-model-q4_0.bin.5\r\nc5759417ae123248bb2cecf85546680f  ./models/65B/ggml-model-q4_0.bin.6\r\ncedfc3b77578db761f871f8c8baa8323  ./models/65B/ggml-model-q4_0.bin.7\r\n919e4f8aee6ce4f3fbabb6cbcd7756db  ./models/7B/ggml-model-q4_0.bin\r\n```\r\n\r\n</details>",
+    "labels": [
+      "documentation",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-17T12:50:44+00:00",
+    "closed_at": "2023-05-02T13:41:32+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/238/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/238"
+  },
+  {
+    "number": 195,
+    "title": "Add the disk requirements",
+    "body": "Hi,\r\n\r\nI found all the infos about the models:\r\nhttps://cocktailpeanut.github.io/dalai/#/?id=_7b\r\n\r\nYou can put on readme the space requirements.\r\n\r\nThanks.",
+    "labels": [
+      "documentation",
+      "duplicate"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-16T03:23:50+00:00",
+    "closed_at": "2023-03-16T11:54:44+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/195/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/195"
+  },
+  {
+    "number": 103,
+    "title": "How to build on windows?",
+    "body": "Please give instructions. There is nothing in README but it says that it supports it ",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "windows"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-13T20:13:14+00:00",
+    "closed_at": "2023-07-28T19:20:41+00:00",
+    "comments": 22,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/103/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/103"
+  },
+  {
+    "number": 34,
+    "title": "benchmarks?",
+    "body": "Where are the benchmarks for various hardware - eg. apple silicon ",
+    "labels": [
+      "documentation",
+      "question",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-12T05:20:58+00:00",
+    "closed_at": "2024-04-09T01:10:24+00:00",
+    "comments": 57,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/34/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/34"
+  },
+  {
+    "number": 13,
+    "title": "[Q] Memory Requirements for Different Model Sizes",
+    "body": null,
+    "labels": [
+      "documentation",
+      "question"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-11T12:19:07+00:00",
+    "closed_at": "2023-03-18T21:02:00+00:00",
+    "comments": 18,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/13/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/13"
+  }
+]

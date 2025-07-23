@@ -1,0 +1,815 @@
+[
+  {
+    "number": 7332,
+    "title": "[RFC] Bi-weekly release",
+    "body": "After thorough internal discussions, the SGLang team has decided to standardize the release cycle as follows:\n\n- A new version will be released every two weeks under normal circumstances (e.g., v0.4.8, v0.4.9).\n\n- If urgent issues or high-priority features arise between regular releases, we may publish a patch release or an additional stable version as needed.\n\n- Bi-weekly releases will typically occur around the middle and end of each month.\n\n- Each release will aim to include a set of planned features, usually discussed and finalized by the SGLang team in advance.\n\n",
+    "labels": [
+      "high priority",
+      "collaboration"
+    ],
+    "state": "open",
+    "created_at": "2025-06-18T23:17:05+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7332/reactions",
+      "total_count": 16,
+      "+1": 11,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 5,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7332"
+  },
+  {
+    "number": 5962,
+    "title": "[Bug] sglang 0.4.4.post2 Latency greatly increases when tp=1 and dp > 1",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nNoticed that after bumping sglang to 0.4.4.post2+, when setting dp > 1, the latency would increase 10+ times, the more dp we set, the more latency would increase. The issue is not found in sglang version <= 0.4.4.post1.\n\nData size: 4k per prompt\nEndpoint: v1/completions\n\nWith max_token=1, latency for tp1 dp1 is ~40ms, but latency for tp1 dp8 is 1000ms+\n\n### Reproduction\n\npython -m sglang.launch_server --model-path /Llama-3.2-3B-Instruct --port 30000 --host 0.0.0.0 --tp-size 1 --dp-size 8\n\n### Environment\n\nPython: 3.10.14 (main, Jul 14 2024, 22:24:12) [GCC 11.2.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA H100 80GB HBM3\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.6, V12.6.77\nCUDA Driver Version: 550.54.15\nPyTorch: 2.5.1+cu124\nsglang: 0.4.4.post2\nsgl_kernel: 0.0.5.post3\nflashinfer: Module Not Found\ntriton: 3.1.0\ntransformers: 4.50.0\ntorchao: 0.10.0\nnumpy: 1.26.4\naiohttp: 3.11.14\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.30.2\ninteregular: 0.3.3\nmodelscope: 1.25.0\norjson: 3.10.18\noutlines: 0.1.11\npackaging: 24.2\npsutil: 7.0.0\npydantic: 2.11.1\nmultipart: Module Not Found\nzmq: Module Not Found\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.7.2\nxgrammar: 0.1.16\nopenai: 1.76.2\ntiktoken: 0.9.0\nanthropic: Module Not Found\nlitellm: Module Not Found\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    NIC0    NIC1    NIC2    NIC3    NIC4    NIC5    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    PIX     SYS     SYS     SYS     SYS     SYS     0-63,128-191    0               N/A\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    SYS     PHB     PHB     SYS     SYS     SYS     0-63,128-191    0               N/A\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    SYS     SYS     SYS     PIX     SYS     SYS     0-63,128-191    0               N/A\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    SYS     SYS     SYS     SYS     SYS     SYS     0-63,128-191    0               N/A\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    SYS     SYS     SYS     SYS     PIX     SYS     64-127,192-255  1               N/A\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    SYS     SYS     SYS     SYS     SYS     SYS     64-127,192-255  1               N/A\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    SYS     SYS     SYS     SYS     SYS     PIX     64-127,192-255  1               N/A\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      SYS     SYS     SYS     SYS     SYS     SYS     64-127,192-255  1               N/A\nNIC0    PIX     SYS     SYS     SYS     SYS     SYS     SYS     SYS      X      SYS     SYS     SYS     SYS     SYS\nNIC1    SYS     PHB     SYS     SYS     SYS     SYS     SYS     SYS     SYS      X      PIX     SYS     SYS     SYS\nNIC2    SYS     PHB     SYS     SYS     SYS     SYS     SYS     SYS     SYS     PIX      X      SYS     SYS     SYS\nNIC3    SYS     SYS     PIX     SYS     SYS     SYS     SYS     SYS     SYS     SYS     SYS      X      SYS     SYS\nNIC4    SYS     SYS     SYS     SYS     PIX     SYS     SYS     SYS     SYS     SYS     SYS     SYS      X      SYS\nNIC5    SYS     SYS     SYS     SYS     SYS     SYS     PIX     SYS     SYS     SYS     SYS     SYS     SYS      X \n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_0\n  NIC1: mlx5_1\n  NIC2: mlx5_2\n  NIC3: mlx5_3\n  NIC4: mlx5_4\n  NIC5: mlx5_5\n\n\nulimit soft: 10000000",
+    "labels": [
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-02T00:30:20+00:00",
+    "closed_at": "2025-05-11T01:58:01+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5962/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5962"
+  },
+  {
+    "number": 3142,
+    "title": "[Feature] Accuracy test of VLM",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nIn sglang, LLMs have accuracy tests with Hugging Face models:\n\nhttps://github.com/sgl-project/sglang/blob/main/test/srt/models/test_generation_models.py\n\nhttps://github.com/sgl-project/sglang/blob/main/test/srt/test_nightly_math_eval.py\n\nWe need similar one for VLM also.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "MLLM"
+    ],
+    "state": "open",
+    "created_at": "2025-01-26T06:25:40+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3142/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3142"
+  },
+  {
+    "number": 6753,
+    "title": "[Bug] PD Failed to register memory on H200",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n```\nroot@nccl-test-host-1:/diagnostic# python3 -m sglang.launch_server --model-path meta-llama/Meta-Llama-3-8B-Instruct --disaggregation-mode prefill --disaggregation-ib-device mlx5_0\nCuda graph is disabled for prefill server\n[2025-05-29 23:22:47] server_args=ServerArgs(model_path='meta-llama/Meta-Llama-3-8B-Instruct', tokenizer_path='meta-llama/Meta-Llama-3-8B-Instruct', tokenizer_mode='auto', skip_tokenizer_init=False, load_format='auto', trust_remote_code=False, dtype='auto', kv_cache_dtype='auto', quantization=None, quantization_param_path=None, context_length=None, device='cuda', served_model_name='meta-llama/Meta-Llama-3-8B-Instruct', chat_template=None, completion_template=None, is_embedding=False, enable_multimodal=None, revision=None, host='127.0.0.1', port=30000, mem_fraction_static=0.8717961202189594, max_running_requests=None, max_total_tokens=None, chunked_prefill_size=16384, max_prefill_tokens=16384, schedule_policy='fcfs', schedule_conservativeness=1.0, cpu_offload_gb=0, page_size=1, tp_size=1, pp_size=1, max_micro_batch_size=None, stream_interval=1, stream_output=False, random_seed=783536351, constrained_json_whitespace_pattern=None, watchdog_timeout=300, dist_timeout=None, download_dir=None, base_gpu_id=0, gpu_id_step=1, log_level='info', log_level_http=None, log_requests=False, log_requests_level=0, show_time_cost=False, enable_metrics=False, bucket_time_to_first_token=None, bucket_e2e_request_latency=None, bucket_inter_token_latency=None, collect_tokens_histogram=False, decode_log_interval=40, enable_request_time_stats_logging=False, kv_events_config=None, api_key=None, file_storage_path='sglang_storage', enable_cache_report=False, reasoning_parser=None, dp_size=1, load_balance_method='round_robin', ep_size=1, dist_init_addr=None, nnodes=1, node_rank=0, json_model_override_args='{}', preferred_sampling_params=None, lora_paths=None, max_loras_per_batch=8, lora_backend='triton', attention_backend=None, sampling_backend='flashinfer', grammar_backend='xgrammar', speculative_algorithm=None, speculative_draft_model_path=None, speculative_num_steps=None, speculative_eagle_topk=None, speculative_num_draft_tokens=None, speculative_accept_threshold_single=1.0, speculative_accept_threshold_acc=1.0, speculative_token_map=None, enable_double_sparsity=False, ds_channel_config_path=None, ds_heavy_channel_num=32, ds_heavy_token_num=256, ds_heavy_channel_type='qk', ds_sparse_decode_threshold=4096, disable_radix_cache=False, disable_cuda_graph=True, disable_cuda_graph_padding=False, enable_nccl_nvls=False, enable_tokenizer_batch_encode=False, disable_outlines_disk_cache=False, disable_custom_all_reduce=False, disable_overlap_schedule=False, enable_mixed_chunk=False, enable_dp_attention=False, enable_dp_lm_head=False, enable_two_batch_overlap=False, enable_ep_moe=False, enable_deepep_moe=False, deepep_mode='auto', ep_num_redundant_experts=0, ep_dispatch_algorithm='static', init_expert_location='trivial', enable_eplb=False, eplb_algorithm='auto', eplb_rebalance_num_iterations=1000, expert_distribution_recorder_mode=None, expert_distribution_recorder_buffer_size=1000, enable_expert_distribution_metrics=False, deepep_config=None, enable_torch_compile=False, torch_compile_max_bs=32, cuda_graph_max_bs=None, cuda_graph_bs=None, torchao_config='', enable_nan_detection=False, enable_p2p_check=False, triton_attention_reduce_in_fp32=False, triton_attention_num_kv_splits=8, num_continuous_decode_steps=1, delete_ckpt_after_loading=False, enable_memory_saver=False, allow_auto_truncate=False, enable_custom_logit_processor=False, tool_call_parser=None, enable_hierarchical_cache=False, hicache_ratio=2.0, hicache_size=0, hicache_write_policy='write_through_selective', flashinfer_mla_disable_ragged=False, warmups=None, moe_dense_tp_size=None, n_share_experts_fusion=0, disable_chunked_prefix_cache=False, disable_fast_image_processor=False, mm_attention_backend=None, debug_tensor_dump_output_folder=None, debug_tensor_dump_input_file=None, debug_tensor_dump_inject=False, disaggregation_mode='prefill', disaggregation_bootstrap_port=8998, disaggregation_transfer_backend='mooncake', disaggregation_ib_device='mlx5_0', pdlb_url=None)\n[2025-05-29 23:22:53] Attention backend not set. Use fa3 backend by default.\n[2025-05-29 23:22:53] Init torch distributed begin.\n[2025-05-29 23:22:53] Init torch distributed ends. mem usage=0.00 GB\n[2025-05-29 23:22:53] init_expert_location from trivial\n[2025-05-29 23:22:54] Load weight begin. avail mem=139.20 GB\n[2025-05-29 23:22:55] Using model weights format ['*.safetensors']\nLoading safetensors checkpoint shards:   0% Completed | 0/4 [00:00<?, ?it/s]\nLoading safetensors checkpoint shards:  25% Completed | 1/4 [00:00<00:02,  1.29it/s]\nLoading safetensors checkpoint shards:  50% Completed | 2/4 [00:01<00:01,  1.22it/s]\nLoading safetensors checkpoint shards:  75% Completed | 3/4 [00:01<00:00,  1.77it/s]\nLoading safetensors checkpoint shards: 100% Completed | 4/4 [00:02<00:00,  1.53it/s]\nLoading safetensors checkpoint shards: 100% Completed | 4/4 [00:02<00:00,  1.49it/s]\n\n[2025-05-29 23:22:58] Load weight end. type=LlamaForCausalLM, dtype=torch.bfloat16, avail mem=124.23 GB, mem usage=14.98 GB.\n[2025-05-29 23:22:58] KV Cache is allocated. #tokens: 871371, K size: 53.18 GB, V size: 53.18 GB\n[2025-05-29 23:22:58] Memory pool end. avail mem=17.66 GB\n[2025-05-29 23:22:58] max_total_num_tokens=871371, chunked_prefill_size=16384, max_prefill_tokens=16384, max_running_requests=4097, context_len=8192\nWARNING: Logging before InitGoogleLogging() is written to STDERR\nI0529 23:22:59.041800 67580 transfer_engine.cpp:350] Metrics reporting is disabled (set MC_TE_METRIC=1 to enable)\nI0529 23:22:59.041816 67580 transfer_engine.cpp:44] Transfer Engine starting. Server: 10.72.0.9, Metadata: P2PHANDSHAKE, ip_or_host_name: , rpc_port: 0\nI0529 23:22:59.041846 67580 transfer_engine.cpp:100] Transfer Engine RPC using P2P handshake, listening on 10.72.0.9:15360\nI0529 23:22:59.041899 67580 transfer_engine.cpp:112] Auto-discovering topology...\nI0529 23:22:59.042371 67580 transfer_engine.cpp:127] Topology discovery complete. Found 1 HCAs.\nI0529 23:22:59.047586 67580 rdma_context.cpp:125] RDMA device: mlx5_0, LID: 0, GID: (GID_Index 3) 00:00:00:00:00:00:00:00:00:00:ff:ff:c0:a8:01:03\nE0529 23:22:59.553362 67580 rdma_context.cpp:203] Failed to register memory 0x7c1cda000000: Bad address [14]\nE0529 23:22:59.553401 67580 rdma_context.cpp:203] Failed to register memory 0x7c1c6e000000: Bad address [14]\nE0529 23:22:59.553411 67580 rdma_context.cpp:203] Failed to register memory 0x7c1c02000000: Bad address [14]\nE0529 23:22:59.553417 67580 rdma_context.cpp:203] Failed to register memory 0x7c1b96000000: Bad address [14]\nE0529 23:22:59.553424 67580 rdma_context.cpp:203] Failed to register memory 0x7c1b2a000000: Bad address [14]\nE0529 23:22:59.553435 67580 rdma_context.cpp:203] Failed to register memory 0x7c1abe000000: Bad address [14]\nE0529 23:22:59.553443 67580 rdma_context.cpp:203] Failed to register memory 0x7c1a52000000: Bad address [14]\nE0529 23:22:59.553449 67580 rdma_context.cpp:203] Failed to register memory 0x7c19e6000000: Bad address [14]\nE0529 23:22:59.553457 67580 rdma_context.cpp:203] Failed to register memory 0x7c197a000000: Bad address [14]\nE0529 23:22:59.553462 67580 rdma_context.cpp:203] Failed to register memory 0x7c190e000000: Bad address [14]\nE0529 23:22:59.553467 67580 rdma_context.cpp:203] Failed to register memory 0x7c18a2000000: Bad address [14]\nE0529 23:22:59.553473 67580 rdma_context.cpp:203] Failed to register memory 0x7c1836000000: Bad address [14]\nE0529 23:22:59.553479 67580 rdma_context.cpp:203] Failed to register memory 0x7c17ca000000: Bad address [14]\nE0529 23:22:59.553486 67580 rdma_context.cpp:203] Failed to register memory 0x7c175e000000: Bad address [14]\nE0529 23:22:59.553491 67580 rdma_context.cpp:203] Failed to register memory 0x7c16f2000000: Bad address [14]\nE0529 23:22:59.553498 67580 rdma_context.cpp:203] Failed to register memory 0x7c1686000000: Bad address [14]\nE0529 23:22:59.553504 67580 rdma_context.cpp:203] Failed to register memory 0x7c161a000000: Bad address [14]\nE0529 23:22:59.553510 67580 rdma_context.cpp:203] Failed to register memory 0x7c15ae000000: Bad address [14]\nE0529 23:22:59.553517 67580 rdma_context.cpp:203] Failed to register memory 0x7c1542000000: Bad address [14]\nE0529 23:22:59.553526 67580 rdma_context.cpp:203] Failed to register memory 0x7c14d6000000: Bad address [14]\nE0529 23:22:59.553532 67580 rdma_context.cpp:203] Failed to register memory 0x7c146a000000: Bad address [14]\nE0529 23:22:59.553539 67580 rdma_context.cpp:203] Failed to register memory 0x7c13fe000000: Bad address [14]\nE0529 23:22:59.553544 67580 rdma_context.cpp:203] Failed to register memory 0x7c1392000000: Bad address [14]\nE0529 23:22:59.553550 67580 rdma_context.cpp:203] Failed to register memory 0x7c1326000000: Bad address [14]\nE0529 23:22:59.553556 67580 rdma_context.cpp:203] Failed to register memory 0x7c12ba000000: Bad address [14]\nE0529 23:22:59.553563 67580 rdma_context.cpp:203] Failed to register memory 0x7c124e000000: Bad address [14]\nE0529 23:22:59.553570 67580 rdma_context.cpp:203] Failed to register memory 0x7c11e2000000: Bad address [14]\nE0529 23:22:59.553576 67580 rdma_context.cpp:203] Failed to register memory 0x7c1176000000: Bad address [14]\nE0529 23:22:59.553586 67580 rdma_context.cpp:203] Failed to register memory 0x7c110a000000: Bad address [14]\nE0529 23:22:59.553599 67580 rdma_context.cpp:203] Failed to register memory 0x7c109e000000: Bad address [14]\nE0529 23:22:59.553608 67580 rdma_context.cpp:203] Failed to register memory 0x7c1032000000: Bad address [14]\nE0529 23:22:59.553618 67580 rdma_context.cpp:203] Failed to register memory 0x7c0fc6000000: Bad address [14]\nE0529 23:22:59.553624 67580 rdma_context.cpp:203] Failed to register memory 0x7c0f5a000000: Bad address [14]\nE0529 23:22:59.553632 67580 rdma_context.cpp:203] Failed to register memory 0x7c0eee000000: Bad address [14]\nE0529 23:22:59.553639 67580 rdma_context.cpp:203] Failed to register memory 0x7c0e82000000: Bad address [14]\nE0529 23:22:59.553644 67580 rdma_context.cpp:203] Failed to register memory 0x7c0e16000000: Bad address [14]\nE0529 23:22:59.553650 67580 rdma_context.cpp:203] Failed to register memory 0x7c0daa000000: Bad address [14]\nE0529 23:22:59.553658 67580 rdma_context.cpp:203] Failed to register memory 0x7c0d3e000000: Bad address [14]\nE0529 23:22:59.553664 67580 rdma_context.cpp:203] Failed to register memory 0x7c0cd2000000: Bad address [14]\nE0529 23:22:59.553671 67580 rdma_context.cpp:203] Failed to register memory 0x7c0c66000000: Bad address [14]\nE0529 23:22:59.553678 67580 rdma_context.cpp:203] Failed to register memory 0x7c0bfa000000: Bad address [14]\nE0529 23:22:59.553683 67580 rdma_context.cpp:203] Failed to register memory 0x7c0b8e000000: Bad address [14]\nE0529 23:22:59.553690 67580 rdma_context.cpp:203] Failed to register memory 0x7c0b22000000: Bad address [14]\nE0529 23:22:59.553695 67580 rdma_context.cpp:203] Failed to register memory 0x7c0ab6000000: Bad address [14]\nE0529 23:22:59.553701 67580 rdma_context.cpp:203] Failed to register memory 0x7c0a4a000000: Bad address [14]\nE0529 23:22:59.553707 67580 rdma_context.cpp:203] Failed to register memory 0x7c09de000000: Bad address [14]\nE0529 23:22:59.553714 67580 rdma_context.cpp:203] Failed to register memory 0x7c0972000000: Bad address [14]\nE0529 23:22:59.553719 67580 rdma_context.cpp:203] Failed to register memory 0x7c0906000000: Bad address [14]\nE0529 23:22:59.553725 67580 rdma_context.cpp:203] Failed to register memory 0x7c089a000000: Bad address [14]\nE0529 23:22:59.553730 67580 rdma_context.cpp:203] Failed to register memory 0x7c082e000000: Bad address [14]\nE0529 23:22:59.553736 67580 rdma_context.cpp:203] Failed to register memory 0x7c07c2000000: Bad address [14]\nE0529 23:22:59.553745 67580 rdma_context.cpp:203] Failed to register memory 0x7c0756000000: Bad address [14]\nE0529 23:22:59.553750 67580 rdma_context.cpp:203] Failed to register memory 0x7c06ea000000: Bad address [14]\nE0529 23:22:59.553756 67580 rdma_context.cpp:203] Failed to register memory 0x7c067e000000: Bad address [14]\nE0529 23:22:59.553763 67580 rdma_context.cpp:203] Failed to register memory 0x7c0612000000: Bad address [14]\nE0529 23:22:59.553771 67580 rdma_context.cpp:203] Failed to register memory 0x7c05a6000000: Bad address [14]\nE0529 23:22:59.553776 67580 rdma_context.cpp:203] Failed to register memory 0x7c053a000000: Bad address [14]\nE0529 23:22:59.553782 67580 rdma_context.cpp:203] Failed to register memory 0x7c04ce000000: Bad address [14]\nE0529 23:22:59.553788 67580 rdma_context.cpp:203] Failed to register memory 0x7c0462000000: Bad address [14]\nE0529 23:22:59.553794 67580 rdma_context.cpp:203] Failed to register memory 0x7c03f6000000: Bad address [14]\nE0529 23:22:59.553800 67580 rdma_context.cpp:203] Failed to register memory 0x7c038a000000: Bad address [14]\nE0529 23:22:59.553807 67580 rdma_context.cpp:203] Failed to register memory 0x7c031e000000: Bad address [14]\nE0529 23:22:59.553810 67580 rdma_context.cpp:203] Failed to register memory 0x7c02b2000000: Bad address [14]\nE0529 23:22:59.553815 67580 rdma_context.cpp:203] Failed to register memory 0x7c0246000000: Bad address [14]\n[2025-05-29 23:22:59] INFO:     Started server process [67238]\n[2025-05-29 23:22:59] INFO:     Waiting for application startup.\n[2025-05-29 23:22:59] INFO:     Application startup complete.\n[2025-05-29 23:22:59] INFO:     Uvicorn running on http://127.0.0.1:30000 (Press CTRL+C to quit)\n[2025-05-29 23:23:00] INFO:     127.0.0.1:55706 - \"GET /get_model_info HTTP/1.1\" 200 OK\n[2025-05-29 23:23:00] Start of prefill warmup ...\n[2025-05-29 23:23:00] FakeKVSender init with kv_indices: 4, aux_index: 0\n[2025-05-29 23:23:00] Prefill batch. #new-seq: 1, #new-token: 4, #cached-token: 0, token usage: 0.00, #running-req: 0, #unbootstrapped-req: 0, #queue-req: 0, #transferring-req: 0\n[2025-05-29 23:23:01] FakeKVSender send with kv_indices: [1 2 3 4]\n[2025-05-29 23:23:01] FakeKVSender poll success\n[2025-05-29 23:23:01] INFO:     127.0.0.1:55712 - \"POST /generate HTTP/1.1\" 200 OK\n[2025-05-29 23:23:01] End of prefill warmup with status 200, resp: [{'text': '%', 'meta_info': {'id': '494830e6c2fe459a89b96d31703b3cc1', 'finish_reason': {'type': 'length', 'length': 0}, 'prompt_tokens': 4, 'completion_tokens': 1, 'cached_tokens': 0, 'e2e_latency': 0.9215409755706787}}]\n[2025-05-29 23:23:01] The server is fired up and ready to roll!\n[2025-05-29 23:23:17] INFO:     127.0.0.1:49146 - \"GET /v1/models HTTP/1.1\" 200 OK\n[2025-05-29 23:23:23] INFO:     127.0.0.1:55356 - \"POST /v1/completions HTTP/1.1\" 200 OK\n[2025-05-29 23:23:23] Prefill batch. #new-seq: 1, #new-token: 16, #cached-token: 0, token usage: 0.00, #running-req: 0, #unbootstrapped-req: 0, #queue-req: 0, #transferring-req: 0\nE0529 23:23:23.432950 69588 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c1cda002800\nE0529 23:23:23.432989 69589 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c1c6e002800\nE0529 23:23:23.433007 69590 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c1c02002800\nE0529 23:23:23.433671 69590 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c1b96002800\nE0529 23:23:23.433724 69589 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c1b2a002800\nE0529 23:23:23.433776 69588 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c1abe002800\nE0529 23:23:23.433799 69588 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c1a52002800\nE0529 23:23:23.433817 69588 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c19e6002800\nE0529 23:23:23.433835 69588 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c197a002800\nE0529 23:23:23.433849 69588 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c190e002800\nE0529 23:23:23.433863 69588 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c18a2002800\nE0529 23:23:23.433880 69588 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c1836002800\nE0529 23:23:23.433909 69589 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c17ca002800\nE0529 23:23:23.433997 69590 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c175e002800\nE0529 23:23:23.434022 69588 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c16f2002800\nE0529 23:23:23.434060 69589 rdma_transport.cpp:323] Memory region not registered by any active device(s): 0x7c1686002800\n[2025-05-29 23:23:23] Session 10.72.0.9:16756 failed.\n[2025-05-29 23:23:23] Prefill transfer failed for request rank=0 req.rid='a5eda8e756dd4d19a913a469ce943fbc' req.bootstrap_room=3583236771377794168 with exception KVTransferError(bootstrap_room=3583236771377794168): Failed to send kv chunk of 3583236771377794168 to 10.72.0.9:44781\n```\n\n```\nroot@nccl-test-host-1:/diagnostic# python3 -m sglang.launch_server --model-path meta-llama/Meta-Llama-3-8B-Instruct --disaggregation-mode decode --port 30001 --base-gpu-id 1 --disaggregation-ib-device mlx5_0\nKV cache is forced as chunk cache for decode server\n[2025-05-29 23:22:47] server_args=ServerArgs(model_path='meta-llama/Meta-Llama-3-8B-Instruct', tokenizer_path='meta-llama/Meta-Llama-3-8B-Instruct', tokenizer_mode='auto', skip_tokenizer_init=False, load_format='auto', trust_remote_code=False, dtype='auto', kv_cache_dtype='auto', quantization=None, quantization_param_path=None, context_length=None, device='cuda', served_model_name='meta-llama/Meta-Llama-3-8B-Instruct', chat_template=None, completion_template=None, is_embedding=False, enable_multimodal=None, revision=None, host='127.0.0.1', port=30001, mem_fraction_static=0.8717961202189594, max_running_requests=None, max_total_tokens=None, chunked_prefill_size=16384, max_prefill_tokens=16384, schedule_policy='fcfs', schedule_conservativeness=1.0, cpu_offload_gb=0, page_size=1, tp_size=1, pp_size=1, max_micro_batch_size=None, stream_interval=1, stream_output=False, random_seed=787569464, constrained_json_whitespace_pattern=None, watchdog_timeout=300, dist_timeout=None, download_dir=None, base_gpu_id=1, gpu_id_step=1, log_level='info', log_level_http=None, log_requests=False, log_requests_level=0, show_time_cost=False, enable_metrics=False, bucket_time_to_first_token=None, bucket_e2e_request_latency=None, bucket_inter_token_latency=None, collect_tokens_histogram=False, decode_log_interval=40, enable_request_time_stats_logging=False, kv_events_config=None, api_key=None, file_storage_path='sglang_storage', enable_cache_report=False, reasoning_parser=None, dp_size=1, load_balance_method='round_robin', ep_size=1, dist_init_addr=None, nnodes=1, node_rank=0, json_model_override_args='{}', preferred_sampling_params=None, lora_paths=None, max_loras_per_batch=8, lora_backend='triton', attention_backend=None, sampling_backend='flashinfer', grammar_backend='xgrammar', speculative_algorithm=None, speculative_draft_model_path=None, speculative_num_steps=None, speculative_eagle_topk=None, speculative_num_draft_tokens=None, speculative_accept_threshold_single=1.0, speculative_accept_threshold_acc=1.0, speculative_token_map=None, enable_double_sparsity=False, ds_channel_config_path=None, ds_heavy_channel_num=32, ds_heavy_token_num=256, ds_heavy_channel_type='qk', ds_sparse_decode_threshold=4096, disable_radix_cache=True, disable_cuda_graph=False, disable_cuda_graph_padding=False, enable_nccl_nvls=False, enable_tokenizer_batch_encode=False, disable_outlines_disk_cache=False, disable_custom_all_reduce=False, disable_overlap_schedule=False, enable_mixed_chunk=False, enable_dp_attention=False, enable_dp_lm_head=False, enable_two_batch_overlap=False, enable_ep_moe=False, enable_deepep_moe=False, deepep_mode='auto', ep_num_redundant_experts=0, ep_dispatch_algorithm='static', init_expert_location='trivial', enable_eplb=False, eplb_algorithm='auto', eplb_rebalance_num_iterations=1000, expert_distribution_recorder_mode=None, expert_distribution_recorder_buffer_size=1000, enable_expert_distribution_metrics=False, deepep_config=None, enable_torch_compile=False, torch_compile_max_bs=32, cuda_graph_max_bs=None, cuda_graph_bs=None, torchao_config='', enable_nan_detection=False, enable_p2p_check=False, triton_attention_reduce_in_fp32=False, triton_attention_num_kv_splits=8, num_continuous_decode_steps=1, delete_ckpt_after_loading=False, enable_memory_saver=False, allow_auto_truncate=False, enable_custom_logit_processor=False, tool_call_parser=None, enable_hierarchical_cache=False, hicache_ratio=2.0, hicache_size=0, hicache_write_policy='write_through_selective', flashinfer_mla_disable_ragged=False, warmups=None, moe_dense_tp_size=None, n_share_experts_fusion=0, disable_chunked_prefix_cache=False, disable_fast_image_processor=False, mm_attention_backend=None, debug_tensor_dump_output_folder=None, debug_tensor_dump_input_file=None, debug_tensor_dump_inject=False, disaggregation_mode='decode', disaggregation_bootstrap_port=8998, disaggregation_transfer_backend='mooncake', disaggregation_ib_device='mlx5_0', pdlb_url=None)\n[2025-05-29 23:22:53] Attention backend not set. Use fa3 backend by default.\n[2025-05-29 23:22:53] Init torch distributed begin.\n[2025-05-29 23:22:53] Init torch distributed ends. mem usage=0.00 GB\n[2025-05-29 23:22:53] init_expert_location from trivial\n[2025-05-29 23:22:54] Load weight begin. avail mem=139.20 GB\n[2025-05-29 23:22:55] Using model weights format ['*.safetensors']\nLoading safetensors checkpoint shards:   0% Completed | 0/4 [00:00<?, ?it/s]\nLoading safetensors checkpoint shards:  25% Completed | 1/4 [00:00<00:02,  1.30it/s]\nLoading safetensors checkpoint shards:  50% Completed | 2/4 [00:01<00:01,  1.24it/s]\nLoading safetensors checkpoint shards:  75% Completed | 3/4 [00:01<00:00,  1.80it/s]\nLoading safetensors checkpoint shards: 100% Completed | 4/4 [00:02<00:00,  1.55it/s]\nLoading safetensors checkpoint shards: 100% Completed | 4/4 [00:02<00:00,  1.52it/s]\n\n[2025-05-29 23:22:58] Load weight end. type=LlamaForCausalLM, dtype=torch.bfloat16, avail mem=124.23 GB, mem usage=14.98 GB.\n[2025-05-29 23:22:58] KV Cache is allocated. #tokens: 871371, K size: 53.18 GB, V size: 53.18 GB\n[2025-05-29 23:22:58] Memory pool end. avail mem=17.66 GB\n[2025-05-29 23:22:58] Capture cuda graph begin. This can take up to several minutes. avail mem=17.56 GB\n[2025-05-29 23:22:58] Capture cuda graph bs [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256]\nCapturing batches (avail_mem=15.05 GB): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 35/35 [00:03<00:00,  8.79it/s]\n[2025-05-29 23:23:02] Capture cuda graph end. Time elapsed: 4.10 s. mem usage=2.51 GB. avail mem=15.05 GB.\n[2025-05-29 23:23:03] max_total_num_tokens=871371, chunked_prefill_size=16384, max_prefill_tokens=16384, max_running_requests=4097, context_len=8192\nWARNING: Logging before InitGoogleLogging() is written to STDERR\nI0529 23:23:03.621326 67574 transfer_engine.cpp:350] Metrics reporting is disabled (set MC_TE_METRIC=1 to enable)\nI0529 23:23:03.621340 67574 transfer_engine.cpp:44] Transfer Engine starting. Server: 10.72.0.9, Metadata: P2PHANDSHAKE, ip_or_host_name: , rpc_port: 0\nI0529 23:23:03.621372 67574 transfer_engine.cpp:100] Transfer Engine RPC using P2P handshake, listening on 10.72.0.9:16756\nI0529 23:23:03.621439 67574 transfer_engine.cpp:112] Auto-discovering topology...\nI0529 23:23:03.621906 67574 transfer_engine.cpp:127] Topology discovery complete. Found 1 HCAs.\nI0529 23:23:03.633222 67574 rdma_context.cpp:125] RDMA device: mlx5_0, LID: 0, GID: (GID_Index 3) 00:00:00:00:00:00:00:00:00:00:ff:ff:c0:a8:01:03\nE0529 23:23:04.135735 67574 rdma_context.cpp:203] Failed to register memory 0x7b46f6000000: Bad address [14]\nE0529 23:23:04.135766 67574 rdma_context.cpp:203] Failed to register memory 0x7b468a000000: Bad address [14]\nE0529 23:23:04.135774 67574 rdma_context.cpp:203] Failed to register memory 0x7b461e000000: Bad address [14]\nE0529 23:23:04.135782 67574 rdma_context.cpp:203] Failed to register memory 0x7b45b2000000: Bad address [14]\nE0529 23:23:04.135789 67574 rdma_context.cpp:203] Failed to register memory 0x7b4546000000: Bad address [14]\nE0529 23:23:04.135797 67574 rdma_context.cpp:203] Failed to register memory 0x7b44da000000: Bad address [14]\nE0529 23:23:04.135804 67574 rdma_context.cpp:203] Failed to register memory 0x7b446e000000: Bad address [14]\nE0529 23:23:04.135811 67574 rdma_context.cpp:203] Failed to register memory 0x7b4402000000: Bad address [14]\nE0529 23:23:04.135818 67574 rdma_context.cpp:203] Failed to register memory 0x7b4396000000: Bad address [14]\nE0529 23:23:04.135824 67574 rdma_context.cpp:203] Failed to register memory 0x7b432a000000: Bad address [14]\nE0529 23:23:04.135831 67574 rdma_context.cpp:203] Failed to register memory 0x7b42be000000: Bad address [14]\nE0529 23:23:04.135838 67574 rdma_context.cpp:203] Failed to register memory 0x7b4252000000: Bad address [14]\nE0529 23:23:04.135846 67574 rdma_context.cpp:203] Failed to register memory 0x7b41e6000000: Bad address [14]\nE0529 23:23:04.135854 67574 rdma_context.cpp:203] Failed to register memory 0x7b417a000000: Bad address [14]\nE0529 23:23:04.135862 67574 rdma_context.cpp:203] Failed to register memory 0x7b410e000000: Bad address [14]\nE0529 23:23:04.135870 67574 rdma_context.cpp:203] Failed to register memory 0x7b40a2000000: Bad address [14]\nE0529 23:23:04.135879 67574 rdma_context.cpp:203] Failed to register memory 0x7b4036000000: Bad address [14]\nE0529 23:23:04.135885 67574 rdma_context.cpp:203] Failed to register memory 0x7b3fca000000: Bad address [14]\nE0529 23:23:04.135892 67574 rdma_context.cpp:203] Failed to register memory 0x7b3f5e000000: Bad address [14]\nE0529 23:23:04.135900 67574 rdma_context.cpp:203] Failed to register memory 0x7b3ef2000000: Bad address [14]\nE0529 23:23:04.135905 67574 rdma_context.cpp:203] Failed to register memory 0x7b3e86000000: Bad address [14]\nE0529 23:23:04.135912 67574 rdma_context.cpp:203] Failed to register memory 0x7b3e1a000000: Bad address [14]\nE0529 23:23:04.135918 67574 rdma_context.cpp:203] Failed to register memory 0x7b3dae000000: Bad address [14]\nE0529 23:23:04.135924 67574 rdma_context.cpp:203] Failed to register memory 0x7b3d42000000: Bad address [14]\nE0529 23:23:04.135931 67574 rdma_context.cpp:203] Failed to register memory 0x7b3cd6000000: Bad address [14]\nE0529 23:23:04.135937 67574 rdma_context.cpp:203] Failed to register memory 0x7b3c6a000000: Bad address [14]\nE0529 23:23:04.135943 67574 rdma_context.cpp:203] Failed to register memory 0x7b3bfe000000: Bad address [14]\nE0529 23:23:04.135949 67574 rdma_context.cpp:203] Failed to register memory 0x7b3b92000000: Bad address [14]\nE0529 23:23:04.135957 67574 rdma_context.cpp:203] Failed to register memory 0x7b3b26000000: Bad address [14]\nE0529 23:23:04.135963 67574 rdma_context.cpp:203] Failed to register memory 0x7b3aba000000: Bad address [14]\nE0529 23:23:04.135972 67574 rdma_context.cpp:203] Failed to register memory 0x7b3a4e000000: Bad address [14]\nE0529 23:23:04.135978 67574 rdma_context.cpp:203] Failed to register memory 0x7b39e2000000: Bad address [14]\nE0529 23:23:04.135987 67574 rdma_context.cpp:203] Failed to register memory 0x7b3976000000: Bad address [14]\nE0529 23:23:04.135995 67574 rdma_context.cpp:203] Failed to register memory 0x7b390a000000: Bad address [14]\nE0529 23:23:04.136003 67574 rdma_context.cpp:203] Failed to register memory 0x7b389e000000: Bad address [14]\nE0529 23:23:04.136010 67574 rdma_context.cpp:203] Failed to register memory 0x7b3832000000: Bad address [14]\nE0529 23:23:04.136018 67574 rdma_context.cpp:203] Failed to register memory 0x7b37c6000000: Bad address [14]\nE0529 23:23:04.136024 67574 rdma_context.cpp:203] Failed to register memory 0x7b375a000000: Bad address [14]\nE0529 23:23:04.136044 67574 rdma_context.cpp:203] Failed to register memory 0x7b36ee000000: Bad address [14]\nE0529 23:23:04.136054 67574 rdma_context.cpp:203] Failed to register memory 0x7b3682000000: Bad address [14]\nE0529 23:23:04.136060 67574 rdma_context.cpp:203] Failed to register memory 0x7b3616000000: Bad address [14]\nE0529 23:23:04.136070 67574 rdma_context.cpp:203] Failed to register memory 0x7b35aa000000: Bad address [14]\nE0529 23:23:04.136076 67574 rdma_context.cpp:203] Failed to register memory 0x7b353e000000: Bad address [14]\nE0529 23:23:04.136083 67574 rdma_context.cpp:203] Failed to register memory 0x7b34d2000000: Bad address [14]\nE0529 23:23:04.136091 67574 rdma_context.cpp:203] Failed to register memory 0x7b3466000000: Bad address [14]\nE0529 23:23:04.136098 67574 rdma_context.cpp:203] Failed to register memory 0x7b33fa000000: Bad address [14]\nE0529 23:23:04.136106 67574 rdma_context.cpp:203] Failed to register memory 0x7b338e000000: Bad address [14]\nE0529 23:23:04.136111 67574 rdma_context.cpp:203] Failed to register memory 0x7b3322000000: Bad address [14]\nE0529 23:23:04.136118 67574 rdma_context.cpp:203] Failed to register memory 0x7b32b6000000: Bad address [14]\nE0529 23:23:04.136124 67574 rdma_context.cpp:203] Failed to register memory 0x7b324a000000: Bad address [14]\nE0529 23:23:04.136132 67574 rdma_context.cpp:203] Failed to register memory 0x7b31de000000: Bad address [14]\nE0529 23:23:04.136140 67574 rdma_context.cpp:203] Failed to register memory 0x7b3172000000: Bad address [14]\nE0529 23:23:04.136147 67574 rdma_context.cpp:203] Failed to register memory 0x7b3106000000: Bad address [14]\nE0529 23:23:04.136154 67574 rdma_context.cpp:203] Failed to register memory 0x7b309a000000: Bad address [14]\nE0529 23:23:04.136161 67574 rdma_context.cpp:203] Failed to register memory 0x7b302e000000: Bad address [14]\nE0529 23:23:04.136171 67574 rdma_context.cpp:203] Failed to register memory 0x7b2fc2000000: Bad address [14]\nE0529 23:23:04.136179 67574 rdma_context.cpp:203] Failed to register memory 0x7b2f56000000: Bad address [14]\nE0529 23:23:04.136188 67574 rdma_context.cpp:203] Failed to register memory 0x7b2eea000000: Bad address [14]\nE0529 23:23:04.136195 67574 rdma_context.cpp:203] Failed to register memory 0x7b2e7e000000: Bad address [14]\nE0529 23:23:04.136204 67574 rdma_context.cpp:203] Failed to register memory 0x7b2e12000000: Bad address [14]\nE0529 23:23:04.136209 67574 rdma_context.cpp:203] Failed to register memory 0x7b2da6000000: Bad address [14]\nE0529 23:23:04.136217 67574 rdma_context.cpp:203] Failed to register memory 0x7b2d3a000000: Bad address [14]\nE0529 23:23:04.136225 67574 rdma_context.cpp:203] Failed to register memory 0x7b2cce000000: Bad address [14]\nE0529 23:23:04.136234 67574 rdma_context.cpp:203] Failed to register memory 0x7b2c62000000: Bad address [14]\n[2025-05-29 23:23:04] INFO:     Started server process [67302]\n[2025-05-29 23:23:04] INFO:     Waiting for application startup.\n[2025-05-29 23:23:04] INFO:     Application startup complete.\n[2025-05-29 23:23:04] INFO:     Uvicorn running on http://127.0.0.1:30001 (Press CTRL+C to quit)\n[2025-05-29 23:23:05] INFO:     127.0.0.1:49286 - \"GET /get_model_info HTTP/1.1\" 200 OK\n[2025-05-29 23:23:05] Start of prefill warmup ...\n[2025-05-29 23:23:05] FakeKVReceiver init with kv_indices: [1 2 3 4], aux_index: 0\n[2025-05-29 23:23:05] FakeKVReceiver poll success\n[2025-05-29 23:23:05] INFO:     127.0.0.1:49288 - \"POST /generate HTTP/1.1\" 200 OK\n[2025-05-29 23:23:05] End of prefill warmup with status 200, resp: [{'text': '!.Sep 12, 201', 'meta_info': {'id': '4751d88f75eb40e78683311f4dcf0861', 'finish_reason': {'type': 'length', 'length': 8}, 'prompt_tokens': 4, 'completion_tokens': 8, 'cached_tokens': 0, 'e2e_latency': 0.8205685615539551}}]\n[2025-05-29 23:23:05] The server is fired up and ready to roll!\n[2025-05-29 23:23:23] INFO:     127.0.0.1:55580 - \"POST /v1/completions HTTP/1.1\" 200 OK\n[2025-05-29 23:23:23] Decode transfer failed for request rank=0 decode_req.req.rid='06a4dea161644533872e81c5c0ddf9d7' decode_req.req.bootstrap_room=3583236771377794168 with exception KVTransferError(bootstrap_room=3583236771377794168): Failed to get kvcache from prefill instance, it might be dead\n```\n\n```\nroot@nccl-test-host-1:/diagnostic# python3 -m sglang.srt.disaggregation.mini_lb --prefill http://127.0.0.1:30000 --decode http://127.0.0.1:30001 --host 0.0.0.0 --port 8000\nINFO:     Started server process [68774]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)\nINFO:     127.0.0.1:57752 - \"GET /v1/models HTTP/1.1\" 200 OK\nINFO:     127.0.0.1:45502 - \"POST /v1/completions HTTP/1.1\" 200 OK\n```\n\n```\nroot@nccl-test-host-1:/diagnostic# python3 -m sglang.bench_serving --backend sglang-oai --port 8000\nbenchmark_args=Namespace(backend='sglang-oai', base_url=None, host='0.0.0.0', port=8000, dataset_name='sharegpt', dataset_path='', model=None, tokenizer=None, num_prompts=1000, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=1024, random_output_len=1024, random_range_ratio=0.0, request_rate=inf, max_concurrency=None, output_file=None, output_details=False, disable_tqdm=False, disable_stream=False, return_logprob=False, seed=1, disable_ignore_eos=False, extra_request_body=None, apply_chat_template=False, profile=False, lora_name=None, prompt_suffix='', pd_separated=False, flush_cache=False, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256)\nNamespace(backend='sglang-oai', base_url=None, host='0.0.0.0', port=8000, dataset_name='sharegpt', dataset_path='', model='meta-llama/Meta-Llama-3-8B-Instruct', tokenizer=None, num_prompts=1000, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=1024, random_output_len=1024, random_range_ratio=0.0, request_rate=inf, max_concurrency=None, output_file=None, output_details=False, disable_tqdm=False, disable_stream=False, return_logprob=False, seed=1, disable_ignore_eos=False, extra_request_body=None, apply_chat_template=False, profile=False, lora_name=None, prompt_suffix='', pd_separated=False, flush_cache=False, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256)\n\n#Input tokens: 296523\n#Output tokens: 186737\nStarting warmup with 1 sequences...\nTraceback (most recent call last):\n  File \"/usr/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.10/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)\n  File \"/diagnostic/sglang/python/sglang/bench_serving.py\", line 1866, in <module>\n    run_benchmark(args)\n  File \"/diagnostic/sglang/python/sglang/bench_serving.py\", line 1616, in run_benchmark\n    return asyncio.run(\n  File \"/usr/lib/python3.10/asyncio/runners.py\", line 44, in run\n    return loop.run_until_complete(main)\n  File \"/usr/lib/python3.10/asyncio/base_events.py\", line 649, in run_until_complete\n    return future.result()\n  File \"/diagnostic/sglang/python/sglang/bench_serving.py\", line 1232, in benchmark\n    raise ValueError(\nValueError: Warmup failed - Please make sure benchmark arguments are correctly specified. Error: Traceback (most recent call last):\n  File \"/diagnostic/sglang/python/sglang/bench_serving.py\", line 222, in async_request_openai_completions\n    if data[\"choices\"][0][\"text\"]:\nKeyError: 'choices'\n```\n\n### Reproduction\n\n```\npython3 -m sglang.launch_server --model-path meta-llama/Meta-Llama-3-8B-Instruct --disaggregation-mode prefill --disaggregation-ib-device mlx5_0\npython3 -m sglang.launch_server --model-path meta-llama/Meta-Llama-3-8B-Instruct --disaggregation-mode decode --port 30001 --base-gpu-id 1 --disaggregation-ib-device mlx5_0\npython3 -m sglang.srt.disaggregation.mini_lb --prefill http://127.0.0.1:30000 --decode http://127.0.0.1:30001 --host 0.0.0.0 --port 8000\npython3 -m sglang.bench_serving --backend sglang-oai --port 8000\n```\n\n### Environment\n\n```\nroot@nccl-test-host-1:/diagnostic# ifconfig\neth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1460\n        inet 10.72.0.9  netmask 255.255.255.0  broadcast 10.72.0.255\n        ether 76:4c:cb:b9:7e:bc  txqueuelen 0  (Ethernet)\n        RX packets 4573150  bytes 46775778978 (46.7 GB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 2239792  bytes 167302216 (167.3 MB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\neth2: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 8896\n        inet 192.168.1.3  netmask 255.255.255.255  broadcast 0.0.0.0\n        ether c2:e0:73:df:b9:01  txqueuelen 1000  (Ethernet)\n        RX packets 11526  bytes 733798 (733.7 KB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 11355  bytes 723978 (723.9 KB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\neth3: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 8896\n        inet 192.168.2.3  netmask 255.255.255.255  broadcast 0.0.0.0\n        ether be:71:a0:05:d0:04  txqueuelen 1000  (Ethernet)\n        RX packets 10953  bytes 659154 (659.1 KB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 11026  bytes 665102 (665.1 KB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\neth4: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 8896\n        inet 192.168.3.3  netmask 255.255.255.255  broadcast 0.0.0.0\n        ether fe:ab:97:d2:02:07  txqueuelen 1000  (Ethernet)\n        RX packets 10953  bytes 659154 (659.1 KB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 11026  bytes 665176 (665.1 KB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\neth5: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 8896\n        inet 192.168.4.3  netmask 255.255.255.255  broadcast 0.0.0.0\n        ether 42:e3:56:2b:76:0a  txqueuelen 1000  (Ethernet)\n        RX packets 10953  bytes 659154 (659.1 KB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 11021  bytes 664746 (664.7 KB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\neth6: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 8896\n        inet 192.168.5.3  netmask 255.255.255.255  broadcast 0.0.0.0\n        ether 5e:d6:47:c8:c4:0d  txqueuelen 1000  (Ethernet)\n        RX packets 10953  bytes 659154 (659.1 KB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 11015  bytes 664120 (664.1 KB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\neth7: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 8896\n        inet 192.168.6.3  netmask 255.255.255.255  broadcast 0.0.0.0\n        ether 2a:ee:0b:71:1c:10  txqueuelen 1000  (Ethernet)\n        RX packets 10953  bytes 659154 (659.1 KB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 11021  bytes 664766 (664.7 KB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\neth8: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 8896\n        inet 192.168.7.3  netmask 255.255.255.255  broadcast 0.0.0.0\n        ether 82:fa:1e:d1:9e:13  txqueuelen 1000  (Ethernet)\n        RX packets 10953  bytes 659154 (659.1 KB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 11016  bytes 664230 (664.2 KB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\neth9: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 8896\n        inet 192.168.8.3  netmask 255.255.255.255  broadcast 0.0.0.0\n        ether ca:52:0a:55:15:16  txqueuelen 1000  (Ethernet)\n        RX packets 10952  bytes 659094 (659.0 KB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 11016  bytes 664240 (664.2 KB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\nlo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536\n        inet 127.0.0.1  netmask 255.0.0.0\n        loop  txqueuelen 1000  (Local Loopback)\n        RX packets 410600179  bytes 39325030589 (39.3 GB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 410600179  bytes 39325030589 (39.3 GB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n```\n```\nroot@nccl-test-host-1:/diagnostic# rdma link\nlink mlx5_0/1 state ACTIVE physical_state LINK_UP netdev eth2\nlink mlx5_1/1 state ACTIVE physical_state LINK_UP netdev eth3\nlink mlx5_2/1 state ACTIVE physical_state LINK_UP netdev eth4\nlink mlx5_3/1 state ACTIVE physical_state LINK_UP netdev eth5\nlink mlx5_4/1 state ACTIVE physical_state LINK_UP netdev eth6\nlink mlx5_5/1 state ACTIVE physical_state LINK_UP netdev eth7\nlink mlx5_6/1 state ACTIVE physical_state LINK_UP netdev eth8\nlink mlx5_7/1 state ACTIVE physical_state LINK_UP netdev eth9\n```\n```\nroot@nccl-test-host-1:/diagnostic# ibv_devices\n    device          \t   node GUID\n    ------          \t----------------\n    mlx5_0          \tc2e073fffedfb901\n    mlx5_1          \tbe71a0fffe05d004\n    mlx5_2          \tfeab97fffed20207\n    mlx5_3          \t42e356fffe2b760a\n    mlx5_4          \t5ed647fffec8c40d\n    mlx5_5          \t2aee0bfffe711c10\n    mlx5_6          \t82fa1efffed19e13\n    mlx5_7          \tca520afffe551516\n```\n```\nroot@nccl-test-host-1:/diagnostic# nvidia-smi\nThu May 29 23:20:05 2025\n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 570.124.06             Driver Version: 570.124.06     CUDA Version: 12.8     |\n|-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA H200                    Off |   00000000:8F:00.0 Off |                    0 |\n| N/A   35C    P0             78W /  700W |       1MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n|   1  NVIDIA H200                    Off |   00000000:90:00.0 Off |                    0 |\n| N/A   37C    P0             78W /  700W |       1MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n|   2  NVIDIA H200                    Off |   00000000:96:00.0 Off |                    0 |\n| N/A   35C    P0             78W /  700W |       1MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n|   3  NVIDIA H200                    Off |   00000000:97:00.0 Off |                    0 |\n| N/A   38C    P0             78W /  700W |       1MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n|   4  NVIDIA H200                    Off |   00000000:C4:00.0 Off |                    0 |\n| N/A   35C    P0             77W /  700W |       1MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n|   5  NVIDIA H200                    Off |   00000000:C5:00.0 Off |                    0 |\n| N/A   37C    P0             77W /  700W |       1MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n|   6  NVIDIA H200                    Off |   00000000:CB:00.0 Off |                    0 |\n| N/A   34C    P0             77W /  700W |       1MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n|   7  NVIDIA H200                    Off |   00000000:CC:00.0 Off |                    0 |\n| N/A   35C    P0             78W /  700W |       1MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n```",
+    "labels": [
+      "bug",
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2025-05-29T23:27:04+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6753/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6753"
+  },
+  {
+    "number": 5249,
+    "title": "[Feature] add more CIs for VLM",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\nhttps://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct\nhttps://huggingface.co/google/gemma-3-27b-it\nhttps://huggingface.co/meta-llama/Llama-3.2-11B-Vision-Instruct\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "MLLM"
+    ],
+    "state": "open",
+    "created_at": "2025-04-10T18:44:02+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5249/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5249"
+  },
+  {
+    "number": 7427,
+    "title": "\ud83d\udea7  RFC: Redesign Batch Processing as an Offline Workflow",
+    "body": "### **Summary**\nThis RFC proposes removing the existing `/v1/batches` and `/v1/files` endpoints from the main OpenAI-compatible server and replacing them with a standalone offline batch processing service.\n\n> **Note:** As part of the ongoing OpenAI API refactor, the batch support has already been removed from the main server. This RFC serves to document the rationale and formalize the replacement plan.\n\n\n---\n\n### Problem\n\n#### 7.1 Fundamental Issues with the Current Batch API (#7068 )\n\nThe current design for online batch processing is flawed and not production-safe. Key issues include:\n\n- **Server Stability Risk**: Uploading and processing thousands of requests at once can overwhelm online API servers.\n- **Timing Constraints**: Difficult to enforce `completion_window` in a real-time environment.\n- **Resource Contention**: Batch jobs run alongside latency-sensitive requests without proper isolation.\n- **Architecture Mismatch**: Batch workloads are inherently asynchronous/offline, conflicting with the synchronous nature of standard OpenAI endpoints.\n\n---\n\n### Proposed Solution\n\n#### 1. **Simplify Online Endpoints**\n- Remove logic for handling list-wrapped input in `/v1/chat/completions`, `/v1/embeddings`, etc.\n- Accept only single request per HTTP call (OpenAI spec-compliant).\n- Cleaner code and better performance for common-case usage.\n\n#### 2. **Split Out Batch Service**\nImplement batch processing as a **separate offline job runner**, modeled after how vLLM does it.\n\nThis batch runner will:\n- Accept batch jobs in OpenAI-compatible `.jsonl` format\n- Spawn a new process/container to handle the job\n- Stream output to a results file (local or presigned S3 URLs)\n- Optionally enforce `completion_window` guarantees in the background\n\n#### 3. **Remove from Main Server**\n- Remove `/v1/batches` and `/v1/files` routes from the main OpenAI-compatible HTTP server.\n- These should live in a separate service (`batch-runner`) to enforce separation of concerns.\n\n---\n\n### \ud83d\udccc Action Items\n\n- [ ] Finalize and approve this RFC\n- [ ] Implement batch runner\n- [x] Deprecate online batch endpoints\n- [ ] Update docs and integration tests\n",
+    "labels": [
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2025-06-21T18:23:45+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7427/reactions",
+      "total_count": 8,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 1,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 1
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7427"
+  },
+  {
+    "number": 3942,
+    "title": "Why are there a group of processes concentrated on a single GPU?",
+    "body": "I deployed DeepSeek - R1 on a 8*H20-96G server using the following command.\n\n```\npython3 -m sglang.launch_server --model-path DeepSeek-R1 --tp 8 --trust-remote-code --mem-fraction-static 0.9 --host 0.0.0.0 --port 50050 --max-running-requests 128 --context-length 32768 --enable-flashinfer-mla --attention-backend flashinfer\n```\n\nHowever, when using the following command to initiate a request on the H20 server, eight processes will be concentrated on GPU0, as shown in the following screenshot.\n\n```\ncurl -k -X 'POST' \\\n    'http://localhost:50050/v1/chat/completions' \\\n    -H 'accept: application/json' \\\n    -H 'Content-Type: application/json' \\\n    -d '{\n\"model\": \"DeepSeek-R1\",\n\"messages\": [{\"role\": \"user\", \"content\": \"Hello\uff0cWho are you?\"}],\n\"stream\": false\n}'\n```\n\n<img width=\"1280\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/e44e0c0e-52d2-4c4d-8a58-6224da273e9d\" />\n\nIs this normal? Is there any way to distribute these processes across all GPUs to prevent GPU0 from running out of memory?",
+    "labels": [
+      "high priority",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-28T03:50:01+00:00",
+    "closed_at": "2025-05-01T00:21:11+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3942/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3942"
+  },
+  {
+    "number": 922,
+    "title": "TTFT latency for long context (16K) is very high around 15 seconds for llama3.1 70b model. (same or worse than vLLM)",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n\n### Describe the bug\n\nI am experimenting with SGLang and vLLM for long context(16K) RAG application which requires real time responses.\r\nI am using single Nvidia A6000 48GB GPU and llaam3.1 70b awq 4 bit model.\r\n\r\nCurrently I am seeing Time for first token latency is around 15 seconds which is very high.\r\nExperimented with parameters like --chunked-prefill-size , --mem-frac etc\r\n\r\ncan you please suggest what are the parameters I need to mainly focus on to get the optimal TTFT for long context ?\n\n### Reproduction\n\nna\n\n### Environment\n\n```Shell\nna\n```\n",
+    "labels": [
+      "high priority",
+      "inactive",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-04T23:14:23+00:00",
+    "closed_at": "2024-10-09T01:10:58+00:00",
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/922/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/922"
+  },
+  {
+    "number": 4384,
+    "title": "[Feature] integrate FlashMLA",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nSince SGLang now supports page sizes greater than 1, we should integrate FlashMLA https://github.com/deepseek-ai/FlashMLA.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-13T10:43:57+00:00",
+    "closed_at": "2025-03-25T04:14:02+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4384/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4384"
+  },
+  {
+    "number": 3106,
+    "title": "[Bug] Qwen2-VL-7B with sglang has significant numerical calculation errors compared to HF Transformers",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nIn practice, we found that sglang Qwen2-VL model has numerical calculation errors compared to HF Transformers model in both Qwen2VisionTransformer and Qwen2Model parts.\nOur input image has 720 tokens input to Vit encoding, and the lowest embedded cosine similarity in the output is 0.1775. In addition, we directly feed the Vit output and text embedding of Transformers to the LLM part. The cosine similarity of the lowest among the 830 HS outputs in the Prefill stage is reduced to 0.9499, and in the generation stage, as the output increases, the cosine similarity may further decrease to 0.580.\n\nHere are the code blocks we found that caused the differences\uff1a\nRMSNorm's CUDA Kernel and PyTorch Native\nResidual Sum Precision in Transformer Blocks\nQKVParallelLinear vs nn.Linear in Transformer Blocks\nSilu in Qwen2MLP\nCalculation of sin/cos cache in RotaryEmbedding\n\nAfter eliminating the above differences, we achieved precision alignment. But for performance reasons, is there a repair plan for the above issues\uff1f\n\n\n\n### Reproduction\n\nQwen2-VL\n\n### Environment\n\nPython: 3.10.16 (main, Dec  4 2024, 08:53:37) [GCC 9.4.0]\nCUDA available: True\nGPU 0: NVIDIA GeForce RTX 4090 D\nGPU 0 Compute Capability: 8.9\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.1, V12.1.105\nCUDA Driver Version: 550.90.12\nPyTorch: 2.5.1+cu124\nsglang: 0.4.0.post1\nflashinfer: 0.1.6\ntriton: 3.1.0\ntransformers: 4.45.2\ntorchao: 0.7.0\nnumpy: 1.26.4\naiohttp: 3.11.11\nfastapi: 0.115.6\nhf_transfer: 0.1.8\nhuggingface_hub: 0.27.0\ninteregular: 0.3.3\nmodelscope: 1.18.1\norjson: 3.10.12\npackaging: 24.2\npsutil: 6.1.1\npydantic: 2.10.4\nmultipart: 0.0.20\nzmq: 26.2.0\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.6.4.post1\nopenai: 1.58.1\nanthropic: 0.42.0\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    NIC0    NIC1    NIC2    NIC3    NIC4    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      SYS     SYS     SYS     SYS     SYS                             N/A\nNIC0    SYS      X      PHB     PHB     PHB     PHB\nNIC1    SYS     PHB      X      PHB     PHB     PHB\nNIC2    SYS     PHB     PHB      X      PHB     PHB\nNIC3    SYS     PHB     PHB     PHB      X      PHB\nNIC4    SYS     PHB     PHB     PHB     PHB      X \n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_0\n  NIC1: mlx5_1\n  NIC2: mlx5_2\n  NIC3: mlx5_3\n  NIC4: mlx5_4\n\n\nHypervisor vendor: KVM\nulimit soft: 1048576",
+    "labels": [
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-24T11:32:46+00:00",
+    "closed_at": "2025-01-28T06:04:43+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3106/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3106"
+  },
+  {
+    "number": 7070,
+    "title": "[Bug] sglang[all]>=0.4.7",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nAlmost half the performance drop when running 0.4.7 vs 0.4.6\n\nTested two models\nQwen3-32B-FP8 75T/s (4xAda 6000s) to 45T/s\nQwen3-30B-A3B - 160T/s  (4x3090s) BF16 to 80T/s with 0.4.7\n\n\n### Reproduction\n\npython -m sglang.launch_server --model-path models/Qwen3-32B-FP8 \\\n--context-length 131072 \\\n--json-model-override-args '{\"rope_scaling\":{\"type\":\"yarn\",\"factor\":4.0,\"original_max_position_embeddings\":32768}}' \\\n--tool-call-parser qwen25 \\\n--reasoning-parser qwen3 \\\n--tp-size 4\n\n### Environment\n\npython -m sglang.launch_server --model-path models/Qwen3-32B-FP8 \\\n--context-length 131072 \\\n--json-model-override-args '{\"rope_scaling\":{\"type\":\"yarn\",\"factor\":4.0,\"original_max_position_embeddings\":32768}}' \\\n--tool-call-parser qwen25 \\\n--reasoning-parser qwen3 \\\n--tp-size 4",
+    "labels": [
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2025-06-10T23:10:43+00:00",
+    "closed_at": null,
+    "comments": 25,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7070/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7070"
+  },
+  {
+    "number": 2653,
+    "title": "[Feature] Support DeepSeek VL 2",
+    "body": "### Motivation\r\n\r\ndeepseek-vl2 is one of the best vision language models. We would like to support it.\r\n\r\nhttps://huggingface.co/deepseek-ai/deepseek-vl2\r\nhttps://github.com/deepseek-ai/DeepSeek-VL2\r\n\r\n### Related resources\r\n\r\nYou can learn from the existing implementations and usage examples of other vision language models.\r\nhttps://sgl-project.github.io/references/supported_models.html#how-to-support-a-new-model\r\nhttps://github.com/sgl-project/sglang/blob/main/python/sglang/srt/models/llava.py\r\nhttps://github.com/sgl-project/sglang/blob/main/test/srt/test_vision_openai_server.py\r\nhttps://sgl-project.github.io/references/sampling_params.html#multi-modal",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-30T06:45:23+00:00",
+    "closed_at": "2025-03-25T04:11:43+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2653/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2653"
+  },
+  {
+    "number": 6027,
+    "title": "[Bug] CUDA OOM when DP attention enabled, maybe due to incorrect acceptable length estimation.",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nIn my understanding, sglang should estimate max acceptable length with the calculation result of remaining VRAM and kvcache size, for instance server log shows:\n\n```\n[2025-05-05 03:55:08 TP0] KV Cache is allocated. #tokens: 274934, KV size: 17.99 GB\n```\n\nHowever, a single 64k-length input can consistently cause the server to crash due to OOM on my H100*8 (2 Node) environment.\n\nI also tried 64k-length input on same machine with out dp-attn. This time, the scheduler has processed the input request normally.\n\n### Reproduction\n\nI'm using LWS in K8s,\n\n```\n        containers:\n          - name: sglang-leader\n            image: lmsysorg/sglang:latest\n            env:\n              - name: LWS_WORKER_INDEX\n                valueFrom:\n                  fieldRef:\n                    fieldPath: metadata.labels['leaderworkerset.sigs.k8s.io/worker-index']\n            command:\n              - /bin/sh\n              - -c\n              - |\n                cd /sgl-workspace/sglang/\n                git pull\n                pip install -e python[all]\n\n                python3 -m sglang.compile_deep_gemm --model-path /tmp/scratch-space/DeepSeek-V3-0324 --tp 16 --trust-remote-code \\\n                  --dist-init-addr $(LWS_LEADER_ADDRESS):5000 --nnodes 2 --node-rank $(LWS_WORKER_INDEX)\n\n                python3 -m sglang.launch_server  --model-path /tmp/scratch-space/DeepSeek-V3-0324  --trust-remote-code  --tp 16 --dp 16 \\\n                    --dist-init-addr $(LWS_LEADER_ADDRESS):5000 --nnodes 2 --node-rank $(LWS_WORKER_INDEX) \\\n                    --trust-remote-code --show-time-cost --enable-dp-attention\n```\nThen send request with `python3 -m sglang.bench_serving --backend sglang --num-prompts 1 --dataset-name random --random-input 64000 --random-output 1 --max-concurrency 1`\n\nThe server crash with:\n```\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker_overlap_thread.py\", line 148, in forward_thread_func_\n    logits_output, next_token_ids = self.worker.forward_batch_generation(\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker.py\", line 206, in forward_batch_generation\n    logits_output = self.model_runner.forward(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 1097, in forward\n    return self.forward_extend(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 1056, in forward_extend\n    return self.model.forward(\n  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\n    return func(*args, **kwargs)\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 1522, in forward\n    hidden_states = self.model(input_ids, positions, forward_batch, input_embeds)\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 1442, in forward\n    hidden_states, residual = layer(\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 1224, in forward\n    return self.forward_ffn_with_full_input(\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 1253, in forward_ffn_with_full_input\n    hidden_states = self.self_attn(\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 635, in forward\n    return self.forward_normal_chunked_kv(\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 1089, in forward_normal_chunked_kv\n    attn_output = self._chunked_prefix_attn_mha(\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 1008, in _chunked_prefix_attn_mha\n    k = torch.empty(\ntorch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.63 GiB. GPU 2 has a total capacity of 79.11 GiB of which 2.61 GiB is free. Process 3596736 has 76.49 GiB memory in use. Of the allocated memory 71.19 GiB is allocated by PyTorch, with 3.63 GiB allocated in private pools (e.g., CUDA Graphs), and 1.30 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n```\n\n### Environment\n\n```\nPython: 3.10.12 (main, Feb  4 2025, 14:57:36) [GCC 11.4.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA H100 80GB HBM3\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\nCUDA Driver Version: 535.161.07\nPyTorch: 2.6.0+cu124\nsglang: 0.4.6.post2\nsgl_kernel: 0.1.1\nflashinfer_python: 0.2.5+cu124torch2.6\ntriton: 3.2.0\ntransformers: 4.51.1\ntorchao: 0.10.0\nnumpy: 2.2.5\naiohttp: 3.11.18\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.30.2\ninteregular: 0.3.3\nmodelscope: 1.25.0\norjson: 3.10.18\noutlines: 0.1.11\npackaging: 25.0\npsutil: 7.0.0\npydantic: 2.11.4\npython-multipart: 0.0.20\npyzmq: 26.4.0\nuvicorn: 0.34.2\nuvloop: 0.21.0\nvllm: Module Not Found\nxgrammar: 0.1.17\nopenai: 1.76.2\ntiktoken: 0.9.0\nanthropic: 0.50.0\nlitellm: 1.67.5\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    NIC0    NIC1    NIC2    NIC3    NIC4    NIC5    NIC6    NIC7    NIC8    NIC9    NIC10   NIC11   NIC12   NIC13   NIC14   NIC15   NIC16   NIC17   NIC18   CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    PIX     NODE    NODE    NODE    NODE    NODE    SYS     SYS     SYS     PIX     NODE    SYS     NODE    SYS     SYS     NODE    SYS     SYS     SYS     0-55,112-167    0               N/A\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    NODE    PIX     NODE    NODE    NODE    NODE    SYS     SYS     SYS     NODE    PIX     SYS     NODE    SYS     SYS     NODE    SYS     SYS     SYS     0-55,112-167    0               N/A\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    NODE    NODE    PIX     NODE    NODE    NODE    SYS     SYS     SYS     NODE    NODE    SYS     NODE    SYS     SYS     PIX     SYS     SYS     SYS     0-55,112-167    0               N/A\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    NODE    NODE    NODE    NODE    NODE    PIX     SYS     SYS     SYS     NODE    NODE    SYS     PIX     SYS     SYS     NODE    SYS     SYS     SYS     0-55,112-167    0               N/A\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    SYS     SYS     SYS     SYS     SYS     SYS     PIX     NODE    NODE    SYS     SYS     NODE    SYS     PIX     NODE    SYS     NODE    NODE    NODE    56-111,168-223  1               N/A\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    SYS     SYS     SYS     SYS     SYS     SYS     NODE    PIX     NODE    SYS     SYS     NODE    SYS     NODE    NODE    SYS     PIX     NODE    NODE    56-111,168-223  1               N/A\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    SYS     SYS     SYS     SYS     SYS     SYS     NODE    NODE    PIX     SYS     SYS     NODE    SYS     NODE    NODE    SYS     NODE    PIX     NODE    56-111,168-223  1               N/A\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      SYS     SYS     SYS     SYS     SYS     SYS     NODE    NODE    NODE    SYS     SYS     PIX     SYS     NODE    PIX     SYS     NODE    NODE    NODE    56-111,168-223  1               N/A\nNIC0    PIX     NODE    NODE    NODE    SYS     SYS     SYS     SYS      X      NODE    NODE    NODE    NODE    NODE    SYS     SYS     SYS     PIX     NODE    SYS     NODE    SYS     SYS     NODE    SYS     SYS     SYS\nNIC1    NODE    PIX     NODE    NODE    SYS     SYS     SYS     SYS     NODE     X      NODE    NODE    NODE    NODE    SYS     SYS     SYS     NODE    PIX     SYS     NODE    SYS     SYS     NODE    SYS     SYS     SYS\nNIC2    NODE    NODE    PIX     NODE    SYS     SYS     SYS     SYS     NODE    NODE     X      NODE    NODE    NODE    SYS     SYS     SYS     NODE    NODE    SYS     NODE    SYS     SYS     PIX     SYS     SYS     SYS\nNIC3    NODE    NODE    NODE    NODE    SYS     SYS     SYS     SYS     NODE    NODE    NODE     X      PIX     NODE    SYS     SYS     SYS     NODE    NODE    SYS     NODE    SYS     SYS     NODE    SYS     SYS     SYS\nNIC4    NODE    NODE    NODE    NODE    SYS     SYS     SYS     SYS     NODE    NODE    NODE    PIX      X      NODE    SYS     SYS     SYS     NODE    NODE    SYS     NODE    SYS     SYS     NODE    SYS     SYS     SYS\nNIC5    NODE    NODE    NODE    PIX     SYS     SYS     SYS     SYS     NODE    NODE    NODE    NODE    NODE     X      SYS     SYS     SYS     NODE    NODE    SYS     PIX     SYS     SYS     NODE    SYS     SYS     SYS\nNIC6    SYS     SYS     SYS     SYS     PIX     NODE    NODE    NODE    SYS     SYS     SYS     SYS     SYS     SYS      X      NODE    NODE    SYS     SYS     NODE    SYS     PIX     NODE    SYS     NODE    NODE    NODE\nNIC7    SYS     SYS     SYS     SYS     NODE    PIX     NODE    NODE    SYS     SYS     SYS     SYS     SYS     SYS     NODE     X      NODE    SYS     SYS     NODE    SYS     NODE    NODE    SYS     PIX     NODE    NODE\nNIC8    SYS     SYS     SYS     SYS     NODE    NODE    PIX     NODE    SYS     SYS     SYS     SYS     SYS     SYS     NODE    NODE     X      SYS     SYS     NODE    SYS     NODE    NODE    SYS     NODE    PIX     NODE\nNIC9    PIX     NODE    NODE    NODE    SYS     SYS     SYS     SYS     PIX     NODE    NODE    NODE    NODE    NODE    SYS     SYS     SYS      X      NODE    SYS     NODE    SYS     SYS     NODE    SYS     SYS     SYS\nNIC10   NODE    PIX     NODE    NODE    SYS     SYS     SYS     SYS     NODE    PIX     NODE    NODE    NODE    NODE    SYS     SYS     SYS     NODE     X      SYS     NODE    SYS     SYS     NODE    SYS     SYS     SYS\nNIC11   SYS     SYS     SYS     SYS     NODE    NODE    NODE    PIX     SYS     SYS     SYS     SYS     SYS     SYS     NODE    NODE    NODE    SYS     SYS      X      SYS     NODE    PIX     SYS     NODE    NODE    NODE\nNIC12   NODE    NODE    NODE    PIX     SYS     SYS     SYS     SYS     NODE    NODE    NODE    NODE    NODE    PIX     SYS     SYS     SYS     NODE    NODE    SYS      X      SYS     SYS     NODE    SYS     SYS     SYS\nNIC13   SYS     SYS     SYS     SYS     PIX     NODE    NODE    NODE    SYS     SYS     SYS     SYS     SYS     SYS     PIX     NODE    NODE    SYS     SYS     NODE    SYS      X      NODE    SYS     NODE    NODE    NODE\nNIC14   SYS     SYS     SYS     SYS     NODE    NODE    NODE    PIX     SYS     SYS     SYS     SYS     SYS     SYS     NODE    NODE    NODE    SYS     SYS     PIX     SYS     NODE     X      SYS     NODE    NODE    NODE\nNIC15   NODE    NODE    PIX     NODE    SYS     SYS     SYS     SYS     NODE    NODE    PIX     NODE    NODE    NODE    SYS     SYS     SYS     NODE    NODE    SYS     NODE    SYS     SYS      X      SYS     SYS     SYS\nNIC16   SYS     SYS     SYS     SYS     NODE    PIX     NODE    NODE    SYS     SYS     SYS     SYS     SYS     SYS     NODE    PIX     NODE    SYS     SYS     NODE    SYS     NODE    NODE    SYS      X      NODE    NODE\nNIC17   SYS     SYS     SYS     SYS     NODE    NODE    PIX     NODE    SYS     SYS     SYS     SYS     SYS     SYS     NODE    NODE    PIX     SYS     SYS     NODE    SYS     NODE    NODE    SYS     NODE     X      NODE\nNIC18   SYS     SYS     SYS     SYS     NODE    NODE    NODE    NODE    SYS     SYS     SYS     SYS     SYS     SYS     NODE    NODE    NODE    SYS     SYS     NODE    SYS     NODE    NODE    SYS     NODE    NODE     X \n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_0\n  NIC1: mlx5_1\n  NIC2: mlx5_2\n  NIC3: mlx5_3\n  NIC4: mlx5_4\n  NIC5: mlx5_5\n  NIC6: mlx5_6\n  NIC7: mlx5_7\n  NIC8: mlx5_8\n  NIC9: mlx5_9\n  NIC10: mlx5_10\n  NIC11: mlx5_11\n  NIC12: mlx5_12\n  NIC13: mlx5_13\n  NIC14: mlx5_14\n  NIC15: mlx5_15\n  NIC16: mlx5_16\n  NIC17: mlx5_17\n  NIC18: mlx5_bond_0\n\n\nulimit soft: 1048576\n```\n\n### Takeaway\n\nPreviously, It was reported that DP attention did not support DP>4 in https://github.com/sgl-project/sglang/issues/4616 (illegal memory access), I also sometimes met illegal memory access with DP=16 when input concurrency is very high (usually appears when >1024). Not sure whether it's still not suggested to use DP>4 at current time.\n\nI sincerely request the team to provide some guidance on the DP attention settings, specifically what results larger / smaller values would lead to.",
+    "labels": [
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2025-05-05T11:34:01+00:00",
+    "closed_at": null,
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6027/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6027"
+  },
+  {
+    "number": 3956,
+    "title": "DeepSeek-R1 Optimization Option Ablations",
+    "body": "Updated on **2025-03-20**: #4616\n\nUpdated on **2025-03-04**:\n# DeepSeek Optimization Ablations\n\n## Overview\n\nWe sincerely thanks for the help from [M0gician](http://m0gician.github.io/) for the massive experiments.\n\n**As of 2025-03-04**, SGLang provides the following optimizations for DeepSeek V3/R1 models:\n\n| Name                                        | Description                                                                                                                                                                                                                                     | Enabled by Default | Enable/Disable Argument                                                                                                                                   |\n|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|\n| MLA Optimization                            | SGLang custom tailored optimizations, including<br>  - *Weight Absorption*,<br>- *Flashinfer MLA Wrapper*,<br> - *FP8 Quantization*,<br> - *CUDA Graph & Torch.compile suuport*                                                                 | \u2705               | `--disable-mla`                                                                                                                                           |\n| CUDA Graph                                  | Capturing and replaying entire sequences of GPU operations as a single graph, thereby reducing kernel launch overhead and synchronization delays                                                                                                | \u2705               | `--disable-cuda-graph`                                                                                                                                    |\n| Torch Compile                               | Dynamically converting PyTorch models into optimized execution graphs, reducing runtime overhead and enhancing GPU performance                                                                                                                  | \u274c              | `--enable-torch-compile`                                                                                                                                 |\n| Radix Cache                                 | Organizes the KV cache in a radix tree, enabling automatic detection and reuse of shared prompt prefixes across multiple generation calls, thereby reducing redundant computations                                                              | \u2705               | `--disable-radix-cache`                                                                                                                                   |\n| Flashinfer MLA                              | Multi-latent Attention implemented by Flashinfer that replaces the default Triton backend                                                                                                                                                       | \u274c              | `--enable-flashinfer-mla`                                                                                                                                 |\n| Speculative Decoding (`Next-N`)             | Dynamically generating a context-aware draft token tree with a smaller, well-calibrated model and then verifying these tokens in parallel with the original LLM, thereby reducing expensive forward passes while preserving output quality.     | \u274c              | `--speculative-algorithm`,<br> `--speculative-draft`,<br> `--speculative-num-steps`,<br> `--speculative-eagle-topk`,<br> `--speculative-num-draft-tokens` |\n| Tensor Parallelism (`tp`)                   | Splitting the heavy tensor operations\u2014such as the matrix multiplications in self-attention and feedforward layers\u2014across multiple GPUs, thereby lowering the per-device memory burden and enabling simultaneous computation for reduced latency | \u2705 (=1)         | `--tp-size`                                                                                                                                               |\n| Expert Parallelism (`EP-MoE`)               | Distributing the computation of different expert subnetworks across multiple devices, thereby reducing memory constraints and communication overhead while enabling simultaneous, efficient processing of input tokens.                         | \u274c              | `--enable-ep-moe`,<br> `--ep-size`                                                                                                                        |\n| Data Parallelism Attention (`DP-Attention`) | Partitioning the MLA attention across DP workers\u2014each handling independent prefill, decode, and idle batches\u2014to significantly reduce per-worker KV cache size and enable larger, more efficient batch processing                                | \u274c              | `--enable-dp-attention`                                                                                                                                   |\n\n## General Advice\n\n* Speculative Decoding is great for small concurrency (less than 32), but its performance degrades quickly as the concurrency increases.\n* `CUDA Graph` boosts inference performance significantly, at the cost of increased memory usage. Sometimes it's a good trade-off to disable `CUDA Graph` to further increase concurrency to get better throughput.\n* `DP-Attention` is a must for large concurrency (greater than 256), but it hurts per-request decoding speed.\n\n## Known Issues\n\n* Speculative Decoding is not compatible with:\n  - `Flashinfer-mla`\n  - `Radix Cache`\n  - `DP-Attention`\n  - Both `CUDA Graph` and `Torch Compile` enabled simultaneously\n* `EP-MoE` is not supported with both `CUDA Graph` and `Torch Compile` enabled\n* To run `DP-Attention` with large concurrency, you must first run a warmup phase with small concurrency (e.g. `bs=16`, `total req=32`) to avoid CUDA out of memory error.\n\n## Optimization Ablations\n\n### Test Environment\n\n* SGLang version: 0.4.3.post2@[110e006](https://github.com/sgl-project/sglang/commit/110e0066735a3bd431c2640ae168fc040d7c0806)\n* Flashinfer version: 0.2.2.post1\n* Hardware: 2 nodes of H20 (AMD EPYC 9K84 * 2, 2.20 TiB memory, 8 * H20 96GiB each)\n* Model: DeepSeek-R1\n* Model Max Length: 3200 (modified in both model and NextN's `tokenizer_config.json`)\n* CUDA Version: 12.2\n* Operating System: Rocky Linux release 9.2 (Blue Onyx)\n\n### Single Query Performance\n\n* Test query: `\u4e00\u4e2a\u6c49\u5b57\u5177\u6709\u5de6\u53f3\u7ed3\u6784\uff0c\u5de6\u8fb9\u662f\u6728\uff0c\u53f3\u8fb9\u662f\u4e5e\u3002\u8fd9\u4e2a\u5b57\u662f\u4ec0\u4e48\uff1f\u53ea\u9700\u56de\u7b54\u8fd9\u4e2a\u5b57\u5373\u53ef\u3002`\n* Expected output: `\u675a`[^1]\n\n| Runnable           | TPS@1[^2] | Torch Compile | Cuda Graph | Radix Cache | Flashinfer-mla | Next-N | EP-MoE | DP-Attention |\n|--------------------|-----------|---------------|------------|-------------|----------------|--------|--------|--------------|\n| \u2705                 | *37.0<sub>tuned kernel</sub>[^11] |       \u2705       |      \u2705     |      \u2705      |        \u2796       |    \u2796   |    \u2796   |       \u2796      |\n| \u2705                 | 33.6     |       \u2705       |      \u2705     |      \u2705      |        \u2705       |    \u2796   |    \u2796   |       \u2796      |\n| \u2705                 | 19.1     |       \u2705       |      \u2705     |      \u2705      |        \u2705       |    \u2796   |    \u2796   |       \u2705      |\n| \u274c[^3]            | N/A      |       \u2705       |      \u2705     |      \u2705      |        \u2705       |    \u2796   |    \u2705   |       \u2705      |\n| \u274c[^3]            | N/A      |       \u2705       |      \u2705     |      \u2705      |        \u2796       |    \u2796   |    \u2705   |       \u2796      |\n| \u2705                 | 6.5      |       \u2705       |      \u2796     |      \u2705      |        \u2796       |    \u2796   |    \u2705   |       \u2796      |\n| \u2705                 | 24.4     |       \u2796       |      \u2705     |      \u2705      |        \u2796       |    \u2796   |    \u2705   |       \u2796      |\n| \u2705                 | 23.6     |       \u2796       |      \u2705     |      \u2705      |        \u2705       |    \u2796   |    \u2705   |       \u2796      |\n| \u2705                 | 13.0     |       \u2796       |      \u2796     |      \u2796      |        \u2796       |    \u2705   |    \u2705   |       \u2796      |\n| \u274c[^4] <br> \u2705[^5] | 41.0     |       \u2796       |      \u2705     |      \u2796      |        \u2796       |    \u2705   |    \u2705   |       \u2796      |\n| \u274c[^3]            | N/A      |       \u2705       |      \u2705     |      \u2796      |        \u2796       |    \u2705   |    \u2705   |       \u2796      |\n| \u2705[^5]            | 16.0     |       \u2796       |      \u2705     |      \u2705      |        \u2796       |    \u2796   |    \u2705   |       \u2705      |\n| \u274c[^3]            | N/A      |       \u2705       |      \u2705     |      \u2705      |        \u2796       |    \u2796   |    \u2705   |       \u2705      |\n| \u2705[^5]            | 15.8     |       \u2796       |      \u2705     |      \u2705      |        \u2705       |    \u2796   |    \u2705   |       \u2705      |\n| \u274c[^3]            | N/A      |       \u2796       |      \u2705     |      \u2705      |        \u2796       |    \u2705   |    \u2705   |       \u2705      |\n| \u274c[^6]            | N/A      |       \u2796       |      \u2796     |      \u2796      |        \u2796       |    \u2705   |    \u2796   |       \u2705      |\n\n### Batched Performance\n\n* Test bench: ThreadPool with AsyncOpenAI client\n* Avg input length = 760 tokens\n* Avg output length = 460 tokens\n\n| Runnable | Torch Compile | Cuda Graph  | Radix Cache  | Flashinfer-mla | Next-N |  EP-MoE  | DP-Attn | Client Concurrency [^7]        | Avg Throughput<br><sub><sup>(p+d, token/s)</sup></sub> [^8]                 | Per-req Throughput<br><sub><sup>(d, token/s)</sup></sub> [^9] |   Total Req    | Max-running-req [^10] |\n|----------|---------------|-------------|--------------|----------------|---------|---------|--------------|--------------------------------|----------------------------------------------------|-----------------------------------------------|---------------------|--------------------------|\n| \u2705       |       \u2705       |      \u2705     |      \u2705      |        \u2705       |    \u2796   |    \u2796   |       \u2796      | 768                            | 3909.04                                            | 3.28                                          | 1024                | 768                      |\n| \u2705       |       \u2705       |      \u2705     |      \u2705      |        \u2705       |    \u2796   |    \u2796   |       \u2705      | 16<br>512<br>768               | 306.18<br>4329.32<br>5457.14                       | 12.96<br>5.69<br>5.38                         | 32<br>1024<br>1024  | 768                      |\n| \u274c[^3]  |       \u2705       |      \u2705     |      \u2705      |        \u2705       |    \u2796   |    \u2705   |       \u2705      | N/A                            | N/A                                                | N/A                                           | N/A                 | 768                      |\n| \u274c[^3]  |       \u2705       |      \u2705     |      \u2705      |        \u2796       |    \u2796   |    \u2705   |       \u2796      | N/A                            | N/A                                                | N/A                                           | N/A                 | 768                      |\n| \u2705       |       \u2705       |      \u2796     |      \u2705      |        \u2796       |    \u2796   |    \u2705   |       \u2796      | 768                            | 2100.85                                            | 2.79                                          | 1024                | 768                      |\n| \u2705       |       \u2796       |      \u2705     |      \u2705      |        \u2796       |    \u2796   |    \u2705   |       \u2796      | 256<br>512<br>768              | 2134.99<br>3842.52<br>3453.49                      | 5.16<br>4.05<br>3.15                          | 512<br>1024<br>1024 | 768                      |\n| \u2705       |       \u2796       |      \u2705     |      \u2705      |        \u2705       |    \u2796   |    \u2705   |       \u2796      | 256<br>512<br>768              | 2220.56<br>3583.08<br>3556.76                      | 5.12<br>4.07<br>3.52                          | 512<br>1024<br>1024 | 768                      |\n| \u2705       |       \u2796       |      \u2796     |      \u2796      |        \u2796       |    \u2705   |    \u2705   |       \u2796      | N/A                            | N/A                                                | N/A                                           | N/A                 | 768                      |\n| \u2705[^5]  |       \u2796       |      \u2705     |      \u2796      |        \u2796       |    \u2705   |    \u2705   |       \u2796      | 16<br>32                       | 732.22<br>1227.72                                  | 19.93<br>15.14                                | 256                 | 768                      |\n| \u274c[^3]  |       \u2705       |      \u2705     |      \u2796      |        \u2796       |    \u2705   |    \u2705   |       \u2796      | N/A                            | N/A                                                | N/A                                           | N/A                 | 768                      |\n| \u2705[^5]  |       \u2796       |      \u2705     |      \u2705      |        \u2796       |    \u2796   |    \u2705   |       \u2705      | 16<br>128<br>256<br>512<br>768 | 862.10<br>1598.17<br>2664.40<br>4098.18<br>\u274c[^4] | 9.20<br>8.22<br>6.70<br>5.48<br>\u274c[^4]        | 128<br>256<br>512<br>1024<br>1024 | 768        |\n| \u274c[^3]  |       \u2705       |      \u2705     |      \u2705      |        \u2796       |    \u2796   |    \u2705   |       \u2705      | N/A                            | N/A                                                | N/A                                           | N/A                 | 768                      |\n| \u2705[^5]  |       \u2796       |      \u2705     |      \u2705      |        \u2705       |    \u2796   |    \u2705   |       \u2705      | 16<br>512<br>768               | 406.29<br>3633.20<br>\u274c[^4]                       | 12.29<br>5.74<br>\u274c[^4]                       | 32<br>1024<br>1024  | 768                     |\n| \u274c[^3]  |       \u2796       |      \u2705     |      \u2796      |        \u2796       |    \u2705   |    \u2705   |       \u2705      | N/A                            | N/A                                                | N/A                                           | N/A                 | 768                      |\n| \u274c[^6]  |       \u2796       |      \u2796     |      \u2796      |        \u2796       |    \u2705   |    \u2796   |       \u2705      | N/A                            | N/A                                                | N/A                                           | N/A                 | 768                      |\n\n\n[^1]: DeepSeek-R1 cannot give the correct output if quantization is used or has precision issues (fixed in [b110084](https://github.com/sgl-project/sglang/commit/b110084654a1986f0148901190e2f280c605476f))\n[^2]: TPS@1 (Tokens Per Second for single request) is read directly from SGLang's logging.\n[^3]: CUDA error at graph capture.\n[^4]: CUDA out of memory.\n[^5]: Requires setting `mem-fraction-static=0.7` to avoid OOM errors.\n[^6]: TypeError: object of type 'NoneType' has no len().\n[^7]: All statistics are collected from the test bench. Token count is calculated using the same tokenizer used in inference.\n[^8]: Average Throughput(prefill+decode, token/s) = (total tokens)/(total time).\n[^9]: Average Decoding Throughput = (sum of (output tokens/duration) for each successful request)/(number of successful requests).\n[^10]: The maximum number of requests to run concurrently at a SGLang backend, controlled by `--max-running-requests`.\n[^11]: Tested by [Lzhang-Hub](https://github.com/sgl-project/sglang/issues/3956#issuecomment-2700514223), after tuning **block wise fp8** and **fused-moe** triton kernel on H20\n\n<details>\n<summary>Updated on 2025-02-28:</summary>\nSGLang version: 0.4.3@the latest master branch (2025-02-28).\nMachine: 2 nodes of H20 (8 * H20 96G each)\n`model_max_length` in tokenizer_config.json from DeepSeek-R1 and DeepSeek-R1-NextN are modified to `3200`\n\nTest query:  `\u4e00\u4e2a\u6c49\u5b57\u5177\u6709\u5de6\u53f3\u7ed3\u6784\uff0c\u5de6\u8fb9\u662f\u6728\uff0c\u53f3\u8fb9\u662f\u4e5e\u3002\u8fd9\u4e2a\u5b57\u662f\u4ec0\u4e48\uff1f\u53ea\u9700\u56de\u7b54\u8fd9\u4e2a\u5b57\u5373\u53ef\u3002`\nExpected output: `\u675a` \n* the model cannot give the correct output if quantization is used or has precision issue (found in the previous implementation of Flashinfer-mla)\n\n| Runnable                             | TPS@1 | Torch Compile | Cuda Graph | Radix Cache | Flashinfer-mla | Next-N | EP-MoE | DP-Attention |\n|--------------------------------------|-------|---------------|------------|-------------|----------------|--------|--------|--------------|\n| \u274c (gibberish)                             |   28.5   |       \u2705       |      \u2705     |      \u2705      |        \u2705       |    \u274c   |    \u274c   |       \u274c      |\n| \u274c (gibberish)                             |   -   |       \u2705       |      \u2705     |      \u274c      |        \u2705       |    \u274c   |    \u274c   |       \u274c      |\n| \u2705                                    |  22.4 |       \u2705       |      \u2705     |      \u2705      |        \u274c       |    \u274c   |    \u274c   |       \u274c      |\n| \u274c (EAGLE not support Flashinfer)     |   -   |       \u274c       |      \u2705     |      \u274c      |        \u2705       |    \u2705   |    \u274c   |       \u274c      |\n| \u274c (CUDA error at graph capture)      |   -   |       \u2705       |      \u2705     |      \u2705      |        \u274c       |    \u274c   |    \u2705   |       \u274c      |\n| \u2705                                    |  6.5  |       \u2705       |      \u274c     |      \u2705      |        \u274c       |    \u274c   |    \u2705   |       \u274c      |\n| \u2705                                    |  24.4 |       \u274c       |      \u2705     |      \u2705      |        \u274c       |    \u274c   |    \u2705   |       \u274c      |\n| \u2705                                    |  21.3 |       \u274c       |      \u2705     |      \u2705      |        \u2705       |    \u274c   |    \u2705   |       \u274c      |\n| \u274c (OOM)<br>  \u2705 (mem-fraction-static=0.7) |  40.0 |       \u274c       |      \u2705     |      \u274c      |        \u274c       |    \u2705   |    \u2705   |       \u274c      |\n| \u274c (Capture cuda graph failed)        |   -   |       \u274c       |      \u2705     |      \u274c      |        \u274c       |    \u2705   |    \u2705   |       \u2705      |\n| \u274c (Error)                            |   -   |       \u274c       |      \u274c     |      \u274c      |        \u274c       |    \u2705   |    \u2705   |       \u2705      |\n| \u2705                                    |  15.5 |       \u274c       |      \u2705     |      \u2705      |        \u274c       |    \u274c   |    \u2705   |       \u2705      |\n| \u274c (CUDA error at graph capture)      |   -   |       \u2705       |      \u2705     |      \u2705      |        \u274c       |    \u274c   |    \u2705   |       \u2705      |\n</details>",
+    "labels": [
+      "high priority",
+      "inactive",
+      "deepseek",
+      "speculative-decoding"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-28T09:33:38+00:00",
+    "closed_at": "2025-07-06T00:22:09+00:00",
+    "comments": 36,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3956/reactions",
+      "total_count": 40,
+      "+1": 39,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3956"
+  },
+  {
+    "number": 7450,
+    "title": "[Bug] 2 * 8 * H20 image : lmsysorg/sglang:deepep run error",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n\n/sgl-workspace/nvshmem/src/modules/transport/ibrc/ibrc.cpp:418: non-zero status: 22 ibv_modify_qp failed\n\n/sgl-workspace/nvshmem/src/modules/transport/ibrc/ibrc.cpp:1433: non-zero status: 7 ep_connect failed\n\n/sgl-workspace/nvshmem/src/modules/transport/ibrc/ibrc.cpp:1500: non-zero status: 7 transport create connect failed\n\n/sgl-workspace/nvshmem/src/host/transport/transport.cpp:400: non-zero status: 7 connect EPS failed\n\n/sgl-workspace/nvshmem/src/host/init/init.cu:1007: non-zero status: 7 nvshmem setup connections failed\n\n/sgl-workspace/nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed\n\n/sgl-workspace/nvshmem/src/modules/transport/ibrc/ibrc.cpp:418: non-zero status: 22 ibv_modify_qp failed\n\n/sgl-workspace/nvshmem/src/modules/transport/ibrc/ibrc.cpp:1433: non-zero status: 7 ep_connect failed\n\n/sgl-workspace/nvshmem/src/modules/transport/ibrc/ibrc.cpp:1500: non-zero status: 7 transport create connect failed\n\n/sgl-workspace/nvshmem/src/host/transport/transport.cpp:400: non-zero status: 7 connect EPS failed\n\n/sgl-workspace/nvshmem/src/host/init/init.cu:1007: non-zero status: 7 nvshmem setup connections failed\n\n/sgl-workspace/nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed\n\nbm-22093bn:606:9375 [2] NCCL INFO [Service thread] Connection closed by localRank 4\nbm-22093bn:604:9382 [0] NCCL INFO [Service thread] Connection closed by localRank 4\nbm-22093bn:605:9383 [1] NCCL INFO [Service thread] Connection closed by localRank 4\nbm-22093bn:609:9374 [5] NCCL INFO [Service thread] Connection closed by localRank 4\nbm-22093bn:605:2576 [1] NCCL INFO [Service thread] Connection closed by localRank 4\nbm-22093bn:606:2580 [2] NCCL INFO [Service thread] Connection closed by localRank 4\nbm-22093bn:609:2571 [5] NCCL INFO [Service thread] Connection closed by localRank 4\nbm-22093bn:604:2583 [0] NCCL INFO [Service thread] Connection closed by localRank 4\nbm-22093bn:606:9375 [2] NCCL INFO [Service thread] Connection closed by localRank 6\nbm-22093bn:609:9374 [5] NCCL INFO [Service thread] Connection closed by localRank 6\nbm-22093bn:605:9383 [1] NCCL INFO [Service thread] Connection closed by localRank 6\nbm-22093bn:604:9382 [0] NCCL INFO [Service thread] Connection closed by localRank 6\nbm-22093bn:606:2580 [2] NCCL INFO [Service thread] Connection closed by localRank 6\nbm-22093bn:605:2576 [1] NCCL INFO [Service thread] Connection closed by localRank 6\nbm-22093bn:609:2571 [5] NCCL INFO [Service thread] Connection closed by localRank 6\nbm-22093bn:604:2583 [0] NCCL INFO [Service thread] Connection closed by localRank 6\n/sgl-workspace/nvshmem/src/modules/bootstrap/uid/ncclSocket/ncclsocket_socket.cpp:socketStartConnect:479: socketStartConnect: exceeded retries (20000)\n/sgl-workspace/nvshmem/src/modules/bootstrap/uid/bootstrap_uid.cpp:bootstrap_send:421: non-zero status: -6\n/sgl-workspace/nvshmem/src/modules/bootstrap/uid/bootstrap_uid.cpp:571: non-zero status: -6 /sgl-workspace/nvshmem/src/host/transport/transport.cpp:402: non-zero status: -6 barrier failed\n\n/sgl-workspace/nvshmem/src/host/init/init.cu:1007: non-zero status: 7 nvshmem setup connections failed\n\n/sgl-workspace/nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed\n\n/sgl-workspace/nvshmem/src/modules/bootstrap/uid/ncclSocket/ncclsocket_socket.cpp:socketStartConnect:479: socketStartConnect: exceeded retries (20000)\n/sgl-workspace/nvshmem/src/modules/bootstrap/uid/bootstrap_uid.cpp:bootstrap_send:421: non-zero status: -6\n/sgl-workspace/nvshmem/src/modules/bootstrap/uid/bootstrap_uid.cpp:571: non-zero status: -6 /sgl-workspace/nvshmem/src/host/transport/transport.cpp:402: non-zero status: -6 barrier failed\n\n/sgl-workspace/nvshmem/src/host/init/init.cu:1007: non-zero status: 7 nvshmem setup connections failed\n\n/sgl-workspace/nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed\n\n/sgl-workspace/nvshmem/src/modules/bootstrap/uid/ncclSocket/ncclsocket_socket.cpp:socketStartConnect:479: socketStartConnect: exceeded retries (20000)\n/sgl-workspace/nvshmem/src/modules/bootstrap/uid/bootstrap_uid.cpp:bootstrap_send:421: non-zero status: -6\n/sgl-workspace/nvshmem/src/modules/bootstrap/uid/bootstrap_uid.cpp:571: non-zero status: -6 /sgl-workspace/nvshmem/src/host/transport/transport.cpp:402: non-zero status: -6 barrier failed\n\n/sgl-workspace/nvshmem/src/host/init/init.cu:1007: non-zero status: 7 nvshmem setup connections failed\n\n/sgl-workspace/nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed\n\n### Reproduction\n\nsudo docker run --gpus all\n--shm-size 512g\n--network host\n--privileged\n-v /dev/infiniband:/dev/infiniband -e NCCL_IB_HCA=mlx5\n--env \"GLOO_SOCKET_IFNAME=bond0\"\n--env \"NCCL_SOCKET_IFNAME=bond0\"\n--env \"NCCL_DEBUG=INFO\"\n--env \"MC_TE_METRIC=true\"\n--env \"SGLANG_TBO_DEBUG=1\"\n--env \"SGL_ENABLE_JIT_DEEPGEMM=1\"\n--env \"SGLANG_NUM_RESERVED_DECODE_TOKENS=102\"\n--env \"NCCL_IB_GID_INDEX=3\"\n--env \"NVSHMEM_IB_GID_INDEX=3\"\n--env \"NCCL_NET=IB\"\n-v /mnt/share/deepseek-ai:/deepseek\n--name sglang_node\n-it\n--rm\n--ipc=host\nlmsysorg/sglang:deepep\npython3 -m sglang.launch_server --model-path /deepseek/DeepSeek-R1/\n--disaggregation-ib-device mlx5_0 --disaggregation-mode decode\n--dist-init-addr 10.88.0.105:5757 --nnodes 2 --node-rank 0 --tp-size 16 --dp-size 16 --enable-dp-attention\n--decode-log-interval 1 --enable-deepep-moe --page-size 1 --host 0.0.0.0 --trust-remote-code --moe-dense-tp-size 1\n--enable-dp-lm-head --disable-radix-cache --watchdog-timeout 1000000 --enable-two-batch-overlap --deepep-mode low_latency\n--mem-fraction-static 0.8 --max-running-requests 18432 --context-length 4500\n--ep-num-redundant-experts 32 --cuda-graph-bs 256 --stream-output\n\n### Environment\n\nsudo docker run --gpus all\n--shm-size 512g\n--network host\n--privileged\n-v /dev/infiniband:/dev/infiniband -e NCCL_IB_HCA=mlx5\n--env \"GLOO_SOCKET_IFNAME=bond0\"\n--env \"NCCL_SOCKET_IFNAME=bond0\"\n--env \"NCCL_DEBUG=INFO\"\n--env \"MC_TE_METRIC=true\"\n--env \"SGLANG_TBO_DEBUG=1\"\n--env \"SGL_ENABLE_JIT_DEEPGEMM=1\"\n--env \"SGLANG_NUM_RESERVED_DECODE_TOKENS=102\"\n--env \"NCCL_IB_GID_INDEX=3\"\n--env \"NVSHMEM_IB_GID_INDEX=3\"\n--env \"NCCL_NET=IB\"\n-v /mnt/share/deepseek-ai:/deepseek\n--name sglang_node\n-it\n--rm\n--ipc=host\nlmsysorg/sglang:deepep\npython3 -m sglang.launch_server --model-path /deepseek/DeepSeek-R1/\n--disaggregation-ib-device mlx5_0 --disaggregation-mode decode\n--dist-init-addr 10.88.0.105:5757 --nnodes 2 --node-rank 0 --tp-size 16 --dp-size 16 --enable-dp-attention\n--decode-log-interval 1 --enable-deepep-moe --page-size 1 --host 0.0.0.0 --trust-remote-code --moe-dense-tp-size 1\n--enable-dp-lm-head --disable-radix-cache --watchdog-timeout 1000000 --enable-two-batch-overlap --deepep-mode low_latency\n--mem-fraction-static 0.8 --max-running-requests 18432 --context-length 4500\n--ep-num-redundant-experts 32 --cuda-graph-bs 256 --stream-output",
+    "labels": [
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2025-06-23T01:42:34+00:00",
+    "closed_at": null,
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7450/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 2
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7450"
+  },
+  {
+    "number": 4324,
+    "title": "[Bug] fix gemma-2-2b-it-FP8 accuracy",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nThe accuracy of `neuralmagic/gemma-2-2b-it-FP8` drops from 0.62 to 0.52 in the main branch. It was detected by our nightly CI run. We need to fix this.\n\n```\nneuralmagic/gemma-2-2b-it-FP8 | 0.512 | 0.6\n```\nhttps://github.com/sgl-project/sglang/actions/runs/13800885290\n\n### Reproduction\n\nN/A\n\n### Environment\n\nN/A",
+    "labels": [
+      "bug",
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-12T01:27:58+00:00",
+    "closed_at": "2025-05-21T09:30:43+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4324/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4324"
+  },
+  {
+    "number": 4296,
+    "title": "[Bug] missing allreduce from sgl_kernel module on mi30x GPUs",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nin latest main branch to run on MI30x GPUs,  allreduce kernel is missed from sgl_kernel, may need a track\n\n```yml\n  File \"/workspace/github/sglang/python/sglang/srt/_custom_ops.py\", line 96, in meta_size\n    return sgl_kernel.allreduce.meta_size()\n           ^^^^^^^^^^^^^^^^^^^^\nAttributeError: module 'sgl_kernel' has no attribute 'allreduce'\n``` \n\n### Reproduction\n\n```sh\npython -m sglang.bench_one_batch --model-path /data/DeepSeek-V3  --correct --trust-remote-code --tp 8 --disable-radix-cache --enable-ep-moe\n```\n\n### Environment\n\nMI30X GPU without aiter kernels",
+    "labels": [
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-11T08:00:00+00:00",
+    "closed_at": "2025-03-11T11:11:48+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4296/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4296"
+  },
+  {
+    "number": 4907,
+    "title": "rewrite test_trt_allreduce",
+    "body": "as titled https://github.com/sgl-project/sglang/blob/main/sgl-kernel/tests/test_trt_allreduce.py @yizhang2077 ",
+    "labels": [
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-30T02:00:42+00:00",
+    "closed_at": "2025-03-30T08:02:00+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4907/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4907"
+  },
+  {
+    "number": 7736,
+    "title": "Development Roadmap (2025 H2)",
+    "body": "The SGLang team is expected to complete planning for the H2 roadmap within the next two weeks. Stay tuned\u2014exciting things are on the way!\n",
+    "labels": [
+      "high priority",
+      "collaboration"
+    ],
+    "state": "open",
+    "created_at": "2025-07-03T06:04:23+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7736/reactions",
+      "total_count": 52,
+      "+1": 24,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 11,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 10,
+      "eyes": 7
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7736"
+  },
+  {
+    "number": 4221,
+    "title": "[Feature] SGLang Support for TileLang",
+    "body": "We recently came across an interesting project: [TileLang](https://github.com/tile-ai/tilelang). It appears to offer significant advantages over Triton in many cases while maintaining a clean dataflow and simple syntax.\n\nDo we have any plans to support a TileLang backend in SGLang?\n\nFor instance, TileLang has demonstrated up to **5x speedup** over Triton\u2019s Flash MLA implementations on H100, with a kernel implementation of just **80 lines of code (see document:** https://github.com/tile-ai/tilelang/tree/main/examples/deepseek_mla). Given these promising results, it would be valuable to explore its potential integration.\n\nWould love to hear thoughts on this!\n",
+    "labels": [
+      "help wanted",
+      "high priority",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-09T05:34:49+00:00",
+    "closed_at": "2025-05-27T00:18:53+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4221/reactions",
+      "total_count": 9,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 5,
+      "eyes": 4
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4221"
+  },
+  {
+    "number": 7365,
+    "title": "[Bug] Deepseek FP4 doesn't support MTP",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nCurrently when using MTP with FP4 Deepseek, the server will crash with\n\n```\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_loader/loader.py\", line 381, in load_model\n    self.load_weights_and_postprocess(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_loader/loader.py\", line 389, in load_weights_and_postprocess\n    model.load_weights(weights)\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_nextn.py\", line 161, in load_weights\n    super().load_weights(weights, is_nextn=True)\n  File \"/sgl-workspace/sglang/python/sglang/srt/models/deepseek_v2.py\", line 2099, in load_weights\n    weight_loader(\n  File \"/sgl-workspace/sglang/python/sglang/srt/layers/moe/fused_moe_triton/layer.py\", line 594, in weight_loader\n    self._load_model_weight_or_group_weight_scale(\n  File \"/sgl-workspace/sglang/python/sglang/srt/layers/moe/fused_moe_triton/layer.py\", line 401, in _load_model_weight_or_group_weight_scale\n    self._load_w13(\n  File \"/sgl-workspace/sglang/python/sglang/srt/layers/moe/fused_moe_triton/layer.py\", line 455, in _load_w13\n    expert_data.copy_(loaded_weight)\nRuntimeError: The size of tensor a (3584) must match the size of tensor b (7168) at non-singleton dimension 1\n```\n\nI think the reason is MTP module in FP4 model is not quantized, or not stored in the same way, but the same quant config is reused for both MTP and main model.  \n\nAfter switching linear and MoE quant method to `UnquantizedLinearMethod` and `UnquantizedFusedMoEMethod`. Something like https://github.com/pyc96/sglang/blob/7c8ce7870ab4a7ab918b288e661ad182e9e21e13/python/sglang/srt/layers/quantization/modelopt_quant.py#L348\n\nI am not sure if this is the right solution. Maybe need to consult NV folks on what is the exact format for MTP in FP4 ckpt.\n\n\n### Reproduction\n\n```\npython3 -m sglang.launch_server --port=7080 --model-path=/root/.cache/huggingface/hub/models--nvidia--DeepSeek-R1-0528-FP4/snapshots/91cfc7c35acd8ecfc769205989310208b8b81c9c/  --trust-remote-code --tp=4 --host=0.0.0.0 --speculative-algorithm=EAGLE --speculative-num-steps=3 --speculative-eagle-topk=1 --speculative-num-draft-tokens=4\n```\n\n### Environment\n\nroot@predictor-resource-pool-1907436070400688128-bcc64d749-kccns:/sgl-workspace/sglang# python3 -m sglang.check_env\nPython: 3.12.3 (main, Feb  4 2025, 14:48:35) [GCC 13.3.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA B200\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 10.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.9, V12.9.41\nCUDA Driver Version: 570.124.06\nPyTorch: 2.7.1+cu128\nsglang: 0.4.7.post1\nsgl_kernel: 0.1.9\nflashinfer_python: 0.2.6.post1\ntriton: 3.3.1\ntransformers: 4.52.3\ntorchao: 0.9.0\nnumpy: 2.1.2\naiohttp: 3.12.12\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.33.0\ninteregular: 0.3.3\nmodelscope: 1.27.0\norjson: 3.10.18\noutlines: 0.1.11\npackaging: 25.0\npsutil: 7.0.0\npydantic: 2.11.5\npython-multipart: 0.0.20\npyzmq: 26.4.0\nuvicorn: 0.34.3\nuvloop: 0.21.0\nvllm: Module Not Found\nxgrammar: 0.1.19\nopenai: 1.88.0\ntiktoken: 0.9.0\nanthropic: Module Not Found\nlitellm: Module Not Found\ndecord: Module Not Found\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    0-55,112-167    0               N/A\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    0-55,112-167    0               N/A\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    0-55,112-167    0               N/A\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    0-55,112-167    0               N/A\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    56-111,168-223  1               N/A\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    56-111,168-223  1               N/A\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    56-111,168-223  1               N/A\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      56-111,168-223  1               N/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nHypervisor vendor: KVM\nulimit soft: 1048576",
+    "labels": [
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2025-06-19T18:40:58+00:00",
+    "closed_at": "2025-06-25T18:27:55+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7365/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7365"
+  },
+  {
+    "number": 5250,
+    "title": "[Feature] support and turn on chunked prefill by default for VLM",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\nhttps://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "MLLM"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-10T18:45:57+00:00",
+    "closed_at": "2025-05-26T16:56:01+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5250/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5250"
+  },
+  {
+    "number": 5329,
+    "title": "[Feature] support minference attention backend",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled @minminsun @yinfan98 @ZhangJianwei0311\n\nref https://github.com/sgl-project/sglang/pull/5327\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-12T19:02:15+00:00",
+    "closed_at": "2025-06-12T00:19:28+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5329/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5329"
+  },
+  {
+    "number": 1715,
+    "title": "[Feature] Cascade attention kernels ",
+    "body": "We would like to integrate the [cascade attention kernel](https://flashinfer.ai/2024/02/02/cascade-inference.html) from flashinfer.\r\n\r\nCode pointers:\r\n- Attention backend in sglang: https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/layers/attention/flashinfer_backend.py\r\n- Usage of cascade: https://docs.flashinfer.ai/api/python/cascade.html\r\n",
+    "labels": [
+      "good first issue",
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2024-10-19T16:30:29+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1715/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1715"
+  },
+  {
+    "number": 1384,
+    "title": "[Feature] Support RM API",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nDoes SGLang support rapid deployment of RM services?\r\nOr convenient custom APIs? It seems that currently there are only chat/completion/embedding APIs. As a newcomer to inference acceleration, any help would be beneficial.\n\n### Related resources\n\ncopied from https://github.com/vllm-project/vllm/issues/6620, same demand",
+    "labels": [
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-11T04:27:29+00:00",
+    "closed_at": "2024-10-19T14:52:16+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1384/reactions",
+      "total_count": 6,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 5
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1384"
+  },
+  {
+    "number": 2347,
+    "title": "[Bug] Re-enable fused_moe_triton on AMD",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nTo fix some code miss outs from migration\n\n### Reproduction\n\nFunctional test\n\n### Environment\n\nROCm container",
+    "labels": [
+      "bug",
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-04T09:53:34+00:00",
+    "closed_at": "2024-12-07T13:44:00+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2347/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2347"
+  },
+  {
+    "number": 4035,
+    "title": "Development Roadmap (2025 H1)",
+    "body": "Here is the development roadmap for 2025 Q1 and Q2. Contributions and feedback are welcome ([**Join Bi-weekly Development Meeting**](https://docs.google.com/document/d/1xEow4eIM152xNcRxqZz9VEcOiTQo8-CEuuQ5qTmkt-E/edit?tab=t.0#heading=h.ito5nvp7oasg)). Previous 2024 Q4 roadmap can be found in #1487.\n\n### DeepSeek R1 optimization\n@zhyncs @ispobock \nTBD\n\n## Performance\n- [ ] Support speculative decoding\n  - Eagle Optimization #3822 \n  - Reference-based. #3269 \n  - Align with the speed of grok\n- [ ] P/D Disaggregation\n  - Bump internal codes\n  - Mooncake Integration\n\n## Parallelism\n- [ ] Support sequence parallelism #1436. Related [paper](https://www.arxiv.org/pdf/2411.01783)\n- [ ] Support pipeline parallelism.\n- [ ] Optimize expert parallelism + data parallelism for DeepSeekmodels.\n- [ ] Optimize expert parallelism for Qwen Models.\n- [ ] Overlap communication in tensor parallelsim. @zhuohaol @fzyzcjy \n\n## Hardware Optimizations\n- [ ] AMD optimizations. @HaiShaw @yiakwy-xpu-ml-framework-team \n- [ ] Intel XPU optimization. @shanyu-sys \n\n## Model Coverage\n- [ ] Multi-modal models\n  - merge all the PRs from @mickqian @yizhang2077 \n  - support streaming models @yiranyyu \n  - VLM optimization @Lyken17\n- [ ] Embed models\n  -  encoder models @yichuan520030910320 \n\n## New features\n- [ ] Performance optimizations for multi-LoRA serving @Fridge003 \n- [ ] RLHF support with veRL team @zhaochenyang20 \n- [ ] GRPO of trl @jhinpan \n- [ ] Optimize funciton calling and constraint decoding @minleminzui \n\n## Quantization \n- [ ] unsloth model support @guapisolo @XueyingJia\n\n## Server API\n- [ ] Support directly taking embedding as inputs. #745\n- [x] Add APIs for using the inference engine in a single script without launching a separate server. See also [examples](https://docs.vllm.ai/en/latest/getting_started/examples/offline_inference.html).\n  - #1567\n- [ ] Support endpoint other than OpenAI (Anthropic, Mistral) in the language frontend.\n\n\n\n## Observability\n- [ ] Open-to-use Grafana / Prometheus @PopSoda2002 @ziliangpeng\n\n## Others\n- [ ] VLM refactor @mickqian \n- [ ] VLM RLHF @yiranyyu @shuaills ",
+    "labels": [
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-03T18:26:58+00:00",
+    "closed_at": "2025-03-03T19:11:15+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4035/reactions",
+      "total_count": 4,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 4,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4035"
+  },
+  {
+    "number": 5251,
+    "title": "[Feature] use modelopt for fp8 and fp4 by default",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\nhttps://github.com/NVIDIA/TensorRT-Model-Optimizer is the **de facto** LLM quant library for fp8 and fp4, supported in both TensorRT LLM and SGLang. We will consider changing all current fp8, fp4 doc, CI, unit test, etc. to default to ModelOpt's checkpoint\n\nref https://huggingface.co/nvidia\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted",
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2025-04-10T18:53:53+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5251/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5251"
+  },
+  {
+    "number": 4734,
+    "title": "[Roadmap] EP Enhancement",
+    "body": "- [x] Support normal DeepEP buffer @liz-badada  #4232 \n- [x] Support DeepEP with async transfer @fzyzcjy #4610 \n- [x] Support low-latency DeepEP buffer\n  - [x] Single-node TP @liz-badada #4767 \n    - MaskedDeepGeMM is implemented by @laixinn @sleepcoo \n    - Improved by @yuleil #5277 \n  - [x] Multi-node TP @liz-badada #5068 \n  - [x] Support PD disaggregation @ch-wan  #5435 \n- [ ] Integrate pplx-kernels @ruizhang1230 #5010 \n- [ ] Optimize permutation overhead\n  - [x] Implement Titon kernels @xutizhou #4643 \n  - [ ] Fuse permutation with GroupedGeMM\n- [x] Extend parallelism paradigm\n  - [x] Extend DeepEP to a general TP paradigm @ch-wan @tarinkk #4770 \n    - Fixed by @fzyzcjy #4883 \n  - [x] Support `tp_size < ep_size`\n    - `tp_size=1` @fzyzcjy #4836\n- [x] Overlap two batches @fzyzcjy #4068 \n- [x] Integrate continuous DeepGeMM @sleepcoo @xutizhou  #5626 \n- [x] Record expert distribution @yuhsuan-t #4435 \n  - Improved by @fzyzcjy #4957  \n- [ ] Overlap communication with shared experts\u2019 computation @liz-badada  #5829 \n- [x] Integrate EPLB @fzyzcjy  #5295 \n\nOthers\n- The DeepSeek team is going to release a permutation kernel shortly. We may need to check their update https://github.com/deepseek-ai/DeepGEMM/issues/57#issuecomment-2720514270",
+    "labels": [
+      "high priority",
+      "collaboration"
+    ],
+    "state": "open",
+    "created_at": "2025-03-24T18:48:57+00:00",
+    "closed_at": null,
+    "comments": 30,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4734/reactions",
+      "total_count": 45,
+      "+1": 30,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 9,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 6
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4734"
+  },
+  {
+    "number": 5437,
+    "title": "[Feature] optimize SegmentPackBits",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nCurrently `SegmentPackBits` is not performant, implement a performant one in sgl-kernel\n\nhttps://github.com/sgl-project/sglang/blob/8ec0bb7d558d1722be4efb8b3abf5e09c0e9c20e/sgl-kernel/csrc/speculative/packbit.cu#L39\n\nhttps://github.com/flashinfer-ai/flashinfer/blob/main/include/flashinfer/quantization.cuh#L98\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "inactive",
+      "speculative-decoding"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-15T23:03:41+00:00",
+    "closed_at": "2025-06-16T00:20:43+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5437/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5437"
+  }
+]

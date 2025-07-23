@@ -1,0 +1,827 @@
+[
+  {
+    "number": 3200,
+    "title": "[Bug] Tried to run DeepSeek V3 by amd instructions",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI tried to use [AMD instruction](https://www.amd.com/en/developer/resources/technical-articles/amd-instinct-gpus-power-deepseek-v3-revolutionizing-ai-development-with-sglang.html) but i have an error.\n\n### Reproduction\n\nAfter running in a container\n```\npython3 -m sglang.launch_server --model-path deepseek-ai/DeepSeek-V3 --port 30000 --tp 8 --trust-remote-code\n```\n\nLog:\n```\n/opt/conda/envs/py_3.9/lib/python3.9/site-packages/scipy/__init__.py:138: UserWarning: A NumPy version >=1.16.5 and <1.23.0 is required for this version of SciPy (detected version 1.26.4)\n  warnings.warn(f\"A NumPy version >={np_minversion} and <{np_maxversion} is required for this version of \"\n[2025-01-28 22:32:01 TP6] Process 97 gpu_id 6 is running on CPUs: [6, 14]\n[2025-01-28 22:32:01 TP2] Process 63 gpu_id 2 is running on CPUs: [2, 10]\n[2025-01-28 22:32:01 TP7] Process 113 gpu_id 7 is running on CPUs: [7, 15]\n[2025-01-28 22:32:02 TP5] Process 66 gpu_id 5 is running on CPUs: [5, 13]\n[2025-01-28 22:32:02 TP4] Process 65 gpu_id 4 is running on CPUs: [4, 12]\n[2025-01-28 22:32:02 TP3] Process 64 gpu_id 3 is running on CPUs: [3, 11]\n[2025-01-28 22:32:02 TP1] Process 62 gpu_id 1 is running on CPUs: [1, 9]\n[2025-01-28 22:32:03 TP0] Process 61 gpu_id 0 is running on CPUs: [0, 8]\n[2025-01-28 22:32:03 TP2] MLA optimization is turned on. Use triton backend.\n[2025-01-28 22:32:03 TP2] Init torch distributed begin.\n[2025-01-28 22:32:03 TP2] Scheduler hit an exception: Traceback (most recent call last):\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 1609, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 203, in __init__\n    self.tp_worker = TpWorkerClass(\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker_overlap_thread.py\", line 63, in __init__\n    self.worker = TpModelWorker(server_args, gpu_id, tp_rank, dp_rank, nccl_port)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker.py\", line 68, in __init__\n    self.model_runner = ModelRunner(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 159, in __init__\n    min_per_gpu_memory = self.init_torch_distributed()\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 197, in init_torch_distributed\n    torch.get_device_module(self.device).set_device(self.gpu_id)\n  File \"/opt/conda/envs/py_3.9/lib/python3.9/site-packages/torch/cuda/__init__.py\", line 478, in set_device\n    torch._C._cuda_setDevice(device)\nRuntimeError: HIP error: invalid device ordinal\nHIP kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing AMD_SERIALIZE_KERNEL=3\nCompile with `TORCH_USE_HIP_DSA` to enable device-side assertions.\n\n\nKilled\n```\n\n### Environment\n\n```\nPython: 3.9.19 (main, May  6 2024, 19:43:03) [GCC 11.2.0]\nROCM available: True\nGPU 0: AMD Radeon RX 6800 XT\nGPU 0 Compute Capability: 10.3\nROCM_HOME: /opt/rocm\nHIPCC: HIP version: 6.2.41133-dd7f95766\nROCM Driver Version: 6.12.10-zen1-1-zen\nPyTorch: 2.5.0a0+gitcedc116\nsglang: 0.4.1.post4\nflashinfer: Module Not Found\ntriton: 3.0.0\ntransformers: 4.46.1\ntorchao: 0.7.0\nnumpy: 1.26.4\naiohttp: 3.10.10\nfastapi: 0.115.4\nhf_transfer: 0.1.8\nhuggingface_hub: 0.26.2\ninteregular: 0.3.3\nmodelscope: 1.21.1\norjson: 3.10.13\npackaging: 24.1\npsutil: 6.1.0\npydantic: 2.9.2\nmultipart: 0.0.20\nzmq: 26.2.0\nuvicorn: 0.32.0\nuvloop: 0.21.0\nvllm: 0.6.3.post2.dev1+g1ef171e0\nopenai: 1.59.3\nanthropic: 0.42.0\ndecord: 0.6.0\nAMD Topology: \n\n\n============================ ROCm System Management Interface ============================\n=============================== Link Type between two GPUs ===============================\n       GPU0         \nGPU0   0            \n================================== End of ROCm SMI Log ===================================\n\nulimit soft: 1024\n```",
+    "labels": [
+      "documentation",
+      "help wanted",
+      "inactive",
+      "amd"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-28T22:33:58+00:00",
+    "closed_at": "2025-04-03T00:17:38+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3200/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3200"
+  },
+  {
+    "number": 3077,
+    "title": "[Feature] docs: Improve documentation on how to use EAGLE speculative docoding",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe recent addition of EAGLE speculative decoding in [here](https://github.com/SafeAILab/EAGLE/pull/173) is powerful. Thank you for creating and maintaining such a useful tool! The existing codebase gives insufficient examples of how it can be used (e.g for Llama3 models, for example) together with `docker compose`. It would be great if another file like https://github.com/sgl-project/sglang/blob/main/docker/compose.yaml can be added to illustrate how the feature can be used in docker environments. Thanks for looking into this issue!",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-23T10:06:08+00:00",
+    "closed_at": "2025-05-24T15:47:25+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3077/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3077"
+  },
+  {
+    "number": 2661,
+    "title": "[Feature] Add docs for pass in token ids directly",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nIn most of RLHF frameworks, the prompts are pre-tokenized when data processing, so they can directly pass in token ids to the sglang engine rather than the prompts. So we should add docs on how to do this and how to get tokens directly.\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "RLHF"
+    ],
+    "state": "open",
+    "created_at": "2024-12-30T07:51:00+00:00",
+    "closed_at": null,
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2661/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2661"
+  },
+  {
+    "number": 2662,
+    "title": "[Feature] Change contribution guide",
+    "body": "### Checklist\r\n\r\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [x] 2. Please use English, otherwise it will be closed.\r\n\r\n### Motivation\r\n\r\nhttps://sgl-project.github.io/references/contributor_guide.html\r\n\r\nThis has been outdated for long. We need to add guide on:\r\n\r\n1. How to run docs CI, build it locally, compile it and clean the output and make PR.\r\n2. How to do unit tests locally and add unit tests to CI.\r\n3. How to write elegant unit test following other tests.\r\n4. How to pre-commit.\r\n\r\n### Related resources\r\n\r\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-30T07:53:12+00:00",
+    "closed_at": "2025-04-29T16:22:21+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2662/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2662"
+  },
+  {
+    "number": 3770,
+    "title": "[Bug] Docs: Patch Failed for engine",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n```bash\n(sglang) chayenne@lmsys:/home/misc/chayenne$ ipy\nPython 3.11.7 (main, Dec 15 2023, 18:12:31) [GCC 11.2.0]\nType 'copyright', 'credits' or 'license' for more information\nIPython 8.32.0 -- An enhanced Interactive Python. Type '?' for help.\n\nIn [1]: # launch the offline engine\n   ...: from sglang.utils import stream_and_merge, async_stream_and_merge\n   ...: import sglang as sgl\n   ...: import asyncio\n   ...: from sglang.test.test_utils import is_in_ci\n   ...:\n   ...: if is_in_ci():\n   ...:     import patch\n   ...:\n   ...:\n   ...: llm = sgl.Engine(model_path=\"meta-llama/Meta-Llama-3.1-8B-Instruct\")\n\nINFO 02-21 17:16:55 __init__.py:190] Automatically detected platform cuda.\n2025-02-21 17:16:57,050 - INFO - flashinfer.jit: Prebuilt kernels not found, using JIT backend\n---------------------------------------------------------------------------\nValueError                                Traceback (most recent call last)\nCell In[1], line 11\n      7 if is_in_ci():\n      8     import patch\n---> 11 llm = sgl.Engine(model_path=\"meta-llama/Meta-Llama-3.1-8B-Instruct\")\n\nFile ~/.python/sglang/lib/python3.11/site-packages/sglang/api.py:43, in Engine(*args, **kwargs)\n     41 def Engine(*args, **kwargs):\n     42     # Avoid importing unnecessary dependency\n---> 43     from sglang.srt.entrypoints.engine import Engine\n     45     return Engine(*args, **kwargs)\n\nFile ~/.python/sglang/lib/python3.11/site-packages/sglang/srt/entrypoints/engine.py:52\n     50 from sglang.srt.managers.scheduler import run_scheduler_process\n     51 from sglang.srt.managers.tokenizer_manager import TokenizerManager\n---> 52 from sglang.srt.openai_api.adapter import load_chat_template_for_openai_api\n     53 from sglang.srt.server_args import PortArgs, ServerArgs\n     54 from sglang.srt.torch_memory_saver_adapter import TorchMemorySaverAdapter\n\nFile ~/.python/sglang/lib/python3.11/site-packages/sglang/srt/openai_api/adapter.py:32\n     29 from sglang.lang.chat_template import get_chat_template_by_model_path\n     31 try:\n---> 32     from outlines.fsm.json_schema import convert_json_schema_to_str\n     33 except ImportError:\n     34     # Before outlines 0.0.47, convert_json_schema_to_str is under\n     35     # outlines.integrations.utils\n     36     from outlines.integrations.utils import convert_json_schema_to_str\n\nFile ~/.python/sglang/lib/python3.11/site-packages/outlines/__init__.py:2\n      1 \"\"\"Outlines is a Generative Model Programming Framework.\"\"\"\n----> 2 import outlines.generate\n      3 import outlines.grammars\n      4 import outlines.models\n\nFile ~/.python/sglang/lib/python3.11/site-packages/outlines/generate/__init__.py:2\n      1 from .api import SequenceGenerator\n----> 2 from .cfg import cfg\n      3 from .choice import choice\n      4 from .format import format\n\nFile ~/.python/sglang/lib/python3.11/site-packages/outlines/generate/cfg.py:7\n      1 from functools import singledispatch\n      3 from outlines.generate.api import (\n      4     SequenceGeneratorAdapter,\n      5     VisionSequenceGeneratorAdapter,\n      6 )\n----> 7 from outlines.models import LlamaCpp, OpenAI, TransformersVision\n      8 from outlines.samplers import Sampler, multinomial\n     11 @singledispatch\n     12 def cfg(\n     13     model, cfg_str: str, sampler: Sampler = multinomial()\n     14 ) -> SequenceGeneratorAdapter:\n\nFile ~/.python/sglang/lib/python3.11/site-packages/outlines/models/__init__.py:14\n     12 from .llamacpp import LlamaCpp, llamacpp\n     13 from .mlxlm import MLXLM, mlxlm\n---> 14 from .openai import OpenAI, azure_openai, openai\n     15 from .transformers import Transformers, TransformerTokenizer, mamba, transformers\n     16 from .transformers_vision import TransformersVision, transformers_vision\n\nFile ~/.python/sglang/lib/python3.11/site-packages/outlines/models/openai.py:9\n      5 from typing import Callable, Dict, List, Optional, Tuple, Union\n      7 import numpy as np\n----> 9 from outlines.base import vectorize\n     10 from outlines.caching import cache\n     12 __all__ = [\"OpenAI\", \"openai\", \"azure_openai\"]\n\nFile ~/.python/sglang/lib/python3.11/site-packages/outlines/base.py:32\n     29 try:\n     30     import nest_asyncio\n---> 32     nest_asyncio.apply()\n     33 except ImportError:\n     34     print(\n     35         \"Couldn't patch nest_asyncio because it's not installed. Running in the notebook might be have issues\"\n     36     )\n\nFile ~/.python/sglang/lib/python3.11/site-packages/nest_asyncio.py:18, in apply(loop)\n     15 _patch_policy()\n     16 _patch_tornado()\n---> 18 loop = loop or asyncio.get_event_loop()\n     19 _patch_loop(loop)\n\nFile ~/.python/sglang/lib/python3.11/site-packages/nest_asyncio.py:40, in _patch_asyncio.<locals>._get_event_loop(stacklevel)\n     38 loop = events._get_running_loop()\n     39 if loop is None:\n---> 40     loop = events.get_event_loop_policy().get_event_loop()\n     41 return loop\n\nFile ~/.python/sglang/lib/python3.11/site-packages/nest_asyncio.py:67, in _patch_policy.<locals>.get_event_loop(self)\n     65 if self._local._loop is None:\n     66     loop = self.new_event_loop()\n---> 67     _patch_loop(loop)\n     68     self.set_event_loop(loop)\n     69 return self._local._loop\n\nFile ~/.python/sglang/lib/python3.11/site-packages/nest_asyncio.py:193, in _patch_loop(loop)\n    191     return\n    192 if not isinstance(loop, asyncio.BaseEventLoop):\n--> 193     raise ValueError('Can\\'t patch loop of type %s' % type(loop))\n    194 cls = loop.__class__\n    195 cls.run_forever = run_forever\n\nValueError: Can't patch loop of type <class 'uvloop.Loop'>\n\nTraceback (most recent call last):\n  File \"/data/chayenne/.python/sglang/bin/ipython\", line 8, in <module>\n    sys.exit(start_ipython())\n             ^^^^^^^^^^^^^^^\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/IPython/__init__.py\", line 130, in start_ipython\n    return launch_new_instance(argv=argv, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/traitlets/config/application.py\", line 1075, in launch_instance\n    app.start()\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/IPython/terminal/ipapp.py\", line 317, in start\n    self.shell.mainloop()\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/IPython/terminal/interactiveshell.py\", line 971, in mainloop\n    self.interact()\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/IPython/terminal/interactiveshell.py\", line 956, in interact\n    code = self.prompt_for_code()\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/IPython/terminal/interactiveshell.py\", line 899, in prompt_for_code\n    text = self.pt_app.prompt(\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/prompt_toolkit/shortcuts/prompt.py\", line 1035, in prompt\n    return self.app.run(\n           ^^^^^^^^^^^^^\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/prompt_toolkit/application/application.py\", line 1002, in run\n    return asyncio.run(coro)\n           ^^^^^^^^^^^^^^^^^\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/nest_asyncio.py\", line 26, in run\n    loop = asyncio.get_event_loop()\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/nest_asyncio.py\", line 40, in _get_event_loop\n    loop = events.get_event_loop_policy().get_event_loop()\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/nest_asyncio.py\", line 67, in get_event_loop\n    _patch_loop(loop)\n  File \"/data/chayenne/.python/sglang/lib/python3.11/site-packages/nest_asyncio.py\", line 193, in _patch_loop\n    raise ValueError('Can\\'t patch loop of type %s' % type(loop))\nValueError: Can't patch loop of type <class 'uvloop.Loop'>\n\nIf you suspect this is an IPython 8.32.0 bug, please report it at:\n    https://github.com/ipython/ipython/issues\nor send an email to the mailing list at ipython-dev@python.org\n\nYou can print a more detailed traceback right now with \"%tb\", or use \"%debug\"\nto interactively debug it.\n\nExtra-detailed tracebacks for bug-reporting purposes can be enabled via:\n    %config Application.verbose_crash=True\n\nsys:1: RuntimeWarning: coroutine 'Application.run_async' was never awaited\nRuntimeWarning: Enable tracemalloc to get the object allocation traceback\n```\n\nThe patch failed for ipython kernel. Should fix it ASAP. @shuaills Thanks so much.\n\n### Reproduction\n\nSee above.\n\n### Environment\n\nthe latest commit.",
+    "labels": [
+      "documentation",
+      "help wanted",
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-21T17:19:40+00:00",
+    "closed_at": "2025-02-21T21:30:52+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3770/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3770"
+  },
+  {
+    "number": 2743,
+    "title": "[Feature] Rewrite docs for LLama 405B and ModelSpace",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nhttps://sgl-project.github.io/backend/server_arguments.html#use-models-from-modelscope\r\n\r\nhttps://sgl-project.github.io/backend/server_arguments.html#example-run-llama-3-1-405b\r\n\r\nThese two docs have been out of date for long. We need to move it under `docs/reference` as two separate markdown and verify the content.\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-06T03:00:14+00:00",
+    "closed_at": "2025-05-16T02:58:35+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2743/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2743"
+  },
+  {
+    "number": 2953,
+    "title": "[Feature] Add docs for local accuracy tests",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nFollowing this https://github.com/sgl-project/sglang/pull/2951#issuecomment-2598764414\n\nIn our test files of backend, `/test/srt`, some of the tests take a great many of time and can't be triggered in our CI for every commits. But some contributors want to change some of the codes, directly related to accuracy. It's better for them to test accuracy that is not covered in CI and report the results. Related tests are:\n\n```bash\nexport models args\npython3 test/srt/test_eval_accuracy_mini.py\n```\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-17T17:26:41+00:00",
+    "closed_at": "2025-02-02T19:42:53+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2953/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2953"
+  },
+  {
+    "number": 3245,
+    "title": "[Docs] Add docs for running SGLang on AMD",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThat has long been waiting, we should add a docs on how to run SGLang on AMD devices.\n\nhttps://github.com/sgl-project/sglang/issues/3219\nhttps://github.com/sgl-project/sglang/issues/3243\nhttps://github.com/sgl-project/sglang/issues/3200\nhttps://github.com/sgl-project/sglang/pull/3208\nhttps://github.com/sgl-project/sglang/issues/3198\n\nHere is something related. To me, I think we should add a docs on how to:\n \n1. configure environment in AMD GPU;\n2. how to install sglang;\n3. how to run a llama model;\n4. how to run deepseek V3 models.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted",
+      "amd"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-01T00:23:16+00:00",
+    "closed_at": "2025-05-21T15:40:21+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3245/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3245"
+  },
+  {
+    "number": 2505,
+    "title": "[Feature] Add Tutorial for Constraint Decoding",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nA better document for constraint decoding.\n\n### Related resources\n\nhttps://sgl-project.github.io/backend/openai_api_completions.html#Structured-decoding-(JSON,-Regex)",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-17T22:40:23+00:00",
+    "closed_at": "2025-05-16T02:58:42+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2505/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2505"
+  },
+  {
+    "number": 3615,
+    "title": "[Feature] Parallelism Experiments on AIMO and LIMO",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nCan anyone help test @Simon V\u2019s branch? It\u2019s pretty complete, but we\u2019d like to run some parallel experiments \n\nhttps://github.com/sgl-project/sglang/pull/3532\n\nFeel free to submit a PR reporting the results of the parallel experiments, including std, var, etc. Thanks!\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-16T19:11:32+00:00",
+    "closed_at": "2025-02-20T19:11:38+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3615/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3615"
+  },
+  {
+    "number": 6505,
+    "title": "Potential improvements of docs",
+    "body": "Below I collect some things that should be fixed in the docs. \n \n \n* I remember the transformer issue was a while ago but there was a PR to fix it. I didn't observe it for long time so maybe we can remove this?\n\n<img width=\"798\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/eb148283-d052-41de-a99a-0a90896f4c6d\" />\n \n* The same text appears two times, I think we can remove one\n\n<img width=\"856\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/203e1bfc-7237-44b6-88ff-f9d1fd4f6edf\" />\n\n* The text should be adjusted, the roadmap issue is closed\n\n<img width=\"840\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/9c7b2752-4111-47e4-b452-bf74fe78bd66\" />\n\n* This should be rephrased\n\n<img width=\"823\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/c6ad31ae-ee7b-4913-ae66-74b24a5e2cb4\" />\n\n* The Backend Section is quiet large. maybe we can move the four markdowns here to a dedicated section as the other parts of section are more hands on.\n\n<img width=\"237\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/bfa90b0f-c100-46cd-8a63-c5e2734822ad\" />\n\n* This should be removed, the text and link to supported models section should be enough\n\n<img width=\"837\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/88c9d457-c023-44da-afad-4b7e59081917\" />\n\n* See above\n\n<img width=\"839\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/caa10be5-5b09-4b36-aea5-9b1edec63f01\" />\n\n* This section is not really about performance tuning, more about profiling and measuring accuracy\n\n<img width=\"290\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/50e2eb3a-388f-4183-bd19-768378d7e7a0\" />",
+    "labels": [
+      "documentation"
+    ],
+    "state": "open",
+    "created_at": "2025-05-21T19:00:55+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6505/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6505"
+  },
+  {
+    "number": 4259,
+    "title": "[Docs] Document how to configure shared memory for multi GPU deployments",
+    "body": "This is a copy of https://github.com/sgl-project/sgl-project.github.io/issues/5. I did not realize the documentation content is generated, so it seems more likely the request belongs here... (?)\n\nThe [documentation](https://docs.sglang.ai/backend/server_arguments.html#tensor-parallelism) states\n\n`python -m sglang.launch_server --model-path meta-llama/Meta-Llama-3-8B-Instruct --tp 2`\n\nis a way to enable multi-GPU tensor parallelism. However one must think how the processes (?) communicate together, usually there's a shared memory setup needed. And if this is not properly set, one might run into issues like:\n\n```\ntorch.distributed.DistBackendError: NCCL error in: ../torch/csrc/distributed/c10d/NCCLUtils.cpp:81, unhandled system error (run with NCCL_DEBUG=INFO for details), NCCL version 2.21.5\nncclSystemError: System call (e.g. socket, malloc) or external library call failed or device error.\nLast error:\nError while creating shared memory segment /dev/shm/nccl-vzIpS6 (size 9637888)\n```\nwhen running sglang server.\n\nThis means the size of shared memory is too low.\n\nWhen running in docker containers, this could be set up with `--shm-size` flag (see vllm's doc at https://docs.vllm.ai/en/latest/deployment/docker.html)\n\nWhen running in kubernetes, it's possible that the default size for shared memory will not be enough for your containers, so one might need to set up bigger size. Common way to do it is mount `/dev/shm` as emptyDir and set up proper `sizeLimit`. Like this:\n\n```\n    spec:\n      containers:\n      - command:\n        ... < your usual container setup > ...\n        volumeMounts:\n        - mountPath: /dev/shm\n          name: shared\n      volumes:\n      - emptyDir:\n          medium: Memory\n          sizeLimit: 1Gi\n        name: shared\n```\n\nI have found out that vllm project recommends 20Gi as a default value for the shared memory size, see https://github.com/vllm-project/production-stack/issues/44 and their helm chart value https://github.com/vllm-project/production-stack/pull/105/files#diff-7d931e53fe7db67b34609c58ca5e5e2788002e7f99657cc2879c7957112dd908R130\n\nHowever I'm not sure where does this number come from. I was testing on the node with 2 NVIDIA L40 GPU's with DeepSeek-R1-Distill-Qwen-32B model, and having 1GiB of shared memory seemed enough.",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-10T09:37:19+00:00",
+    "closed_at": "2025-03-27T16:35:57+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4259/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4259"
+  },
+  {
+    "number": 3182,
+    "title": "[Feature] Step-by-Step Guide to Use SGLang on NVIDIA Jetson Orin platform",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nHello Sglang team,\n\nGreat inference engine! \n\nJust FYI, I was able to successfully run SGLang on the NVIDIA Jetson AGX Orin Developer Kit. \n\nFor more details, please check here: https://github.com/shahizat/SGLang-Jetson\n\n\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-27T16:45:59+00:00",
+    "closed_at": "2025-02-21T12:45:13+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3182/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3182"
+  },
+  {
+    "number": 3165,
+    "title": "[Feature] Rewrite Sampling Parameter",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThis is redundant: https://docs.sglang.ai/references/sampling_params.html\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-27T03:31:18+00:00",
+    "closed_at": "2025-02-17T21:31:21+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3165/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3165"
+  },
+  {
+    "number": 3908,
+    "title": "[Docs]  Improve DPSK docs in dark mode",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\n<img width=\"1393\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/39d60ef8-c7fa-42e0-9961-5bd9c082209f\" />\n\nI use html to write this docs and it looks bad. So could someone fix it here?\n\nhttps://github.com/sgl-project/sglang/blob/main/docs/references/deepseek.md\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-27T05:00:48+00:00",
+    "closed_at": "2025-02-27T08:13:05+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3908/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3908"
+  },
+  {
+    "number": 3244,
+    "title": "[Feature] Add examples for running SGLang on Slurm",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThis has long been discussed. We want to add examples for how to run SGLang on slurm systems. Here is one example for dpsk model. But we need more definitely.\n\nhttps://github.com/sgl-project/sglang/issues/3206\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "open",
+    "created_at": "2025-01-31T23:55:35+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3244/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3244"
+  },
+  {
+    "number": 3595,
+    "title": "[Feature] Rewrite Supported Model Docs",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nhttps://docs.sglang.ai/references/supported_models.html\n\nThis doc is a bit chaotic. We should reorganize it.\n\n@simveit \n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-15T20:04:02+00:00",
+    "closed_at": "2025-04-30T22:14:54+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3595/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3595"
+  },
+  {
+    "number": 5251,
+    "title": "[Feature] use modelopt for fp8 and fp4 by default",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\nhttps://github.com/NVIDIA/TensorRT-Model-Optimizer is the **de facto** LLM quant library for fp8 and fp4, supported in both TensorRT LLM and SGLang. We will consider changing all current fp8, fp4 doc, CI, unit test, etc. to default to ModelOpt's checkpoint\n\nref https://huggingface.co/nvidia\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted",
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2025-04-10T18:53:53+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5251/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5251"
+  },
+  {
+    "number": 5104,
+    "title": "[Feature] Improve Native API docs",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\n<img width=\"876\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/edb0f5be-7875-4fa4-b6a3-b7742e5060b1\" />\n\n<img width=\"846\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/f322f548-e67a-466f-b9d2-e495b29af173\" />\n\nThe output of https://docs.sglang.ai/backend/native_api.html#Capture-expert-selection-distribution-in-MoE-models \n\nis too long, try to only print first 10 lines:\n\n```python\noutput_file = glob.glob(\"expert_distribution_*.csv\")[0]\nwith open(output_file, \"r\") as f:\n    print_highlight(\"Content of dumped record:\")\n    for line in f:\n        print_highlight(line.strip())\n```\n\n@simveit \n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "help wanted",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-06T22:22:22+00:00",
+    "closed_at": "2025-06-07T00:19:08+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5104/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5104"
+  },
+  {
+    "number": 2657,
+    "title": "[Feature] Add arguments mapping between SGLang / vllm / trt-llm",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThis is what I need to do for integrating SGLang into OpenRLHF. OpenRLHF already supports vllm. We need to add sglang. I need to map the server and sampling parameters from vllm to sglang. I think this is a good issue for us to let our users switch smoothly between mainstream engines.\r\n\r\n**I attached how I am doing right now. But it may be wrong.**\n\n### Related resources\n\n**The args Mapping from vllm to sglang**\r\n\r\nThese are the server parameters of vllm:\r\n\r\n```python\r\npretrain,\r\nnoset_visible_devices=noset_visible_devices,\r\ntrust_remote_code=True,\r\ntensor_parallel_size=tensor_parallel_size,\r\ndtype=\"bfloat16\",\r\nseed=seed + i,\r\nenable_prefix_caching=enable_prefix_caching,\r\nenforce_eager=enforce_eager,\r\nmax_model_len=max_model_len,\r\nbackend=backend,\r\n```        \r\n\r\nAmong them, pretrain is the model path, and this is my mapping in sglang:\r\n\r\n```python\r\n#! TODO chenyang check engine params\r\nsglang_params = {\r\n    \"model_path\": args[0],  # pretrain path\r\n    \"trust_remote_code\": kwargs.get(\"trust_remote_code\", True),\r\n    \"dtype\": kwargs.get(\"dtype\", \"auto\"),\r\n    \"tp_size\": kwargs.get(\"tensor_parallel_size\", 1),\r\n    \"device\": \"cuda\",\r\n    \"disable_radix_cache\": not kwargs.get(\"enable_prefix_caching\", False),\r\n    \"random_seed\": kwargs.get(\"seed\", 42),\r\n    \"disable_cuda_graph\": not kwargs.get(\"enforce_eager\", False),\r\n    \"disable_cuda_graph_padding\": not kwargs.get(\"enable_prefix_caching\", False),\r\n    \"context_length\": kwargs.get(\"max_model_len\", None),\r\n    \"log_level\": \"info\",\r\n    \"return_token_ids\": True,\r\n}\r\nself.llm = sglang.Engine(**sglang_params)\r\n```\r\n\r\n</details>\r\n\r\n**The Sampling Params Mapping from vllm to sglang**\r\n\r\n```python\r\nif self.backend == \"vllm\":\r\n    outputs = self.llm.generate(\r\n        sampling_params=kwargs[\"sampling_params\"], prompt_token_ids=kwargs[\"prompt_token_ids\"]\r\n    )\r\nelif self.backend == \"sglang\":\r\n    # Note that sglang sampling params are different from vllm\r\n    sampling_params = kwargs[\"sampling_params\"]\r\n    all_prompts = kwargs[\"all_prompts\"]\r\n\r\n    # min_tokens, include_stop_str_in_output is not used in sglang\r\n\r\n    sampling_params = dict(\r\n        max_new_tokens=sampling_params.max_tokens,\r\n        top_p=sampling_params.top_p,\r\n        top_k=sampling_params.top_k,\r\n        temperature=sampling_params.temperature,\r\n        repetition_penalty=sampling_params.repetition_penalty,\r\n        skip_special_tokens=sampling_params.skip_special_tokens,\r\n    )\r\n    outputs = self.llm.generate(all_prompts, sampling_params)\r\n```\r\n\r\nOf course, the sampling params passed in from the front end are as follows:\r\n\r\n```python\r\nsampling_params = SamplingParams(\r\n    temperature=kwargs.get(\"temperature\", 1.0),\r\n    top_p=kwargs.get(\"top_p\", 1.0),\r\n    top_k=kwargs.get(\"top_k\", -1),\r\n    max_tokens=kwargs.get(\"max_new_tokens\", 1024),\r\n    min_tokens=kwargs.get(\"min_new_tokens\", 1),\r\n    skip_special_tokens=kwargs.get(\"skip_special_tokens\", False),\r\n    include_stop_str_in_output=True,\r\n)\r\n```\r\n\r\n**There may be problems with my these mappings. We need documentation as a guide.** ",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted",
+      "RLHF"
+    ],
+    "state": "open",
+    "created_at": "2024-12-30T07:23:00+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2657/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2657"
+  },
+  {
+    "number": 4394,
+    "title": "[Feature] Add QWQ\u2019s Benchmark Code for Inference Performance Evaluation",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nReasoning models typically generate many tokens, making them suitable for evaluating the performance of inference frameworks. As a result, they serve as a valuable benchmark for performance comparisons.\n\nQWQ has open-sourced its benchmarking code, which could be integrated into the Sglang benchmark suite. This addition would help users compare the performance of different inference frameworks more conveniently when running inference models.\n\nWould it be possible to add support for this benchmark in Sglang?\n\nReference:\n\t\u2022\t[QWQ\u2019s benchmark code](https://github.com/QwenLM/QwQ/tree/main/eval)\n\nPotential Benefits:\n\t\u2022\tProvides a standardized way to evaluate reasoning performance.\n\t\u2022\tHelps users compare different inference frameworks more effectively.\n\t\u2022\tEnhances Sglang\u2019s benchmarking capabilities.",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-13T16:08:50+00:00",
+    "closed_at": "2025-04-02T06:04:44+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4394/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4394"
+  },
+  {
+    "number": 2659,
+    "title": "[Feature] Clear PAT_TOKEN in CI",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\n![image](https://github.com/user-attachments/assets/d62f4957-2802-4068-9c16-fbcaee2584f4)\r\n\r\n@shuaills Would you like to take this? Pretty easy.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-30T07:44:56+00:00",
+    "closed_at": "2025-03-01T00:18:50+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2659/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2659"
+  },
+  {
+    "number": 2744,
+    "title": "[Feature] Docs: Collect all the commands for DeepSeek in SGlang",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nSGLang has unique features for the deepseek model, but they are scattered across many blogs. We need to collect them and create a unique file under `docs/reference/deepseek.md`. This document should contain all the optimizations of the deepseek model in SGLang and provide links to the original files, just like what we did in the following URL:\r\n\r\nhttps://sgl-project.github.io/references/contribution_guide.html#running-unit-tests-adding-to-ci\n\n### Related resources\n\nhttps://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3\r\n\r\nhttps://lmsys.org/blog/2024-12-04-sglang-v0-4/#data-parallelism-attention-for-deepseek-models\r\n\r\nhttps://lmsys.org/blog/2024-09-04-sglang-v0-3/#deepseek-multi-head-latent-attention-mla-throughput-optimizations",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-06T03:07:32+00:00",
+    "closed_at": "2025-05-21T12:41:57+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2744/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2744"
+  },
+  {
+    "number": 2551,
+    "title": "[Bug] Link error in SGLang Sampling Docs",
+    "body": "### Checklist\r\n\r\n- [x] 1. I have searched related issues but cannot get the expected help.\r\n- [x] 2. The bug has not been fixed in the latest version.\r\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\r\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [x] 5. Please use English, otherwise it will be closed.\r\n\r\n### Describe the bug\r\n\r\nhttps://sgl-project.github.io/references/sampling_params.html\r\n\r\nThis link is an error and I am pondering why it should refer to.\r\n\r\n\r\n![image](https://github.com/user-attachments/assets/5401ab02-2cbd-476f-bef9-6ac0c7eda58e)\r\n\r\n\r\n\r\n### Reproduction\r\n\r\nno such\r\n\r\n### Environment\r\n\r\nno such",
+    "labels": [
+      "documentation"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-23T02:58:24+00:00",
+    "closed_at": "2024-12-26T15:12:28+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2551/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2551"
+  },
+  {
+    "number": 2912,
+    "title": "[Bug] [OpenAI compatible API] Chunks of tokens aren't being split into separate indexes when specifying n > 1 generations",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nThis code works as expected; we stream outputs like normal.\r\n\r\n```python\r\nfrom openai import OpenAI\r\n\r\nllm = OpenAI(...)\r\n\r\nr = llm.chat.completions.create(\r\n     model=\"...\",\r\n     messages=[...],\r\n     stream=True,\r\n     n=1\r\n)\r\n\r\nfor chunk in r:\r\n    print(chunk.choices[0].delta.content, end=\"\")\r\n```\r\n```txt\r\nThis is a normal response.\r\n```\r\n\r\nBut if we bump up `n`, we generate three streams, but both streams end up being dumped into the first index of the chunk:\r\n`chunk.choices[0]`, thus multiplexing the response tokens.\r\n\r\nIn other words the streams are mixed.\r\n```python\r\nr = llm.chat.completions.create(\r\n     model=\"...\",\r\n     messages=[...],\r\n     stream=True,\r\n     n=3 # <-----------------\r\n)\r\n\r\nfor chunk in r:\r\n    print(chunk.choices[0].delta.content, end=\"\")\r\n```\r\n```txt\r\nThThThis isisis aaa normnormlOkalal rereresppponsssee.\r\n```\r\n\r\nWe can prove this by un-multiplexing the response:\r\n\r\n```python\r\nfrom more_itertools import chunked\r\n\r\nfor stream1, stream2, stream3 in chunked(r, 3):\r\n    print(stream1.choices[0].delta.content, end=\"\")\r\n```\r\n```txt\r\nThis is a normal response.\r\n```\r\n\r\n---\r\n\r\nWe should expect each token chunk to end up in their respective indexes in the `chunk.choices` list.\n\n### Reproduction\n\npython -m sglang.launch_server --model-path /mnt/workspace3/NovaSky-AI/Sky-T1-32B-Preview/  --port 8000 --host 0.0.0.0 --tensor-parallel-size 4 --dtype float16\n\n### Environment\n\n                                                                                                                                                                                                                                                                                                                                 Python: 3.12.6 (main, Sep  9 2024, 22:11:19) [Clang 18.1.8 ]                                                                                                                                                                                                                                                                                                              \r\nCUDA available: True     \r\nCUDA available: True\r\nGPU 0,1,2,3: NVIDIA GeForce RTX 3090\r\nGPU 0,1,2,3 Compute Capability: 8.6\r\nCUDA_HOME: /usr/local/cuda-12.4\r\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\r\nCUDA Driver Version: 565.57.01\r\nPyTorch: 2.4.0+cu121\r\nsglang: 0.4.0.post1\r\nflashinfer: 0.2.0.post1+cu124torch2.4\r\ntriton: 3.0.0\r\ntransformers: 4.48.0\r\ntorchao: 0.7.0\r\nnumpy: 1.26.4\r\naiohttp: 3.11.11\r\nfastapi: 0.115.6\r\nhf_transfer: 0.1.9\r\nhuggingface_hub: 0.27.1\r\ninteregular: 0.3.3\r\nmodelscope: 1.22.2\r\norjson: 3.10.14\r\npackaging: 24.2\r\npsutil: 6.1.1\r\npydantic: 2.10.5\r\nmultipart: 0.0.20\r\nzmq: 26.2.0\r\nuvicorn: 0.34.0\r\nuvloop: 0.21.0\r\nvllm: 0.6.3.post1\r\nopenai: 1.59.7\r\nanthropic: 0.43.0\r\ndecord: 0.6.0\r\nNVIDIA Topology: \r\n        GPU0    GPU1    GPU2    GPU3    CPU Affinity    NUMA Affinity   GPU NUMA ID\r\nGPU0     X      PHB     PHB     PHB     0-53    0               N/A\r\nGPU1    PHB      X      PHB     PHB     0-53    0               N/A\r\nGPU2    PHB     PHB      X      PHB     0-53    0               N/A\r\nGPU3    PHB     PHB     PHB      X      0-53    0               N/A\r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n\r\nHypervisor vendor: KVM\r\nulimit soft: 1024",
+    "labels": [
+      "documentation",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-16T07:09:37+00:00",
+    "closed_at": "2025-03-24T00:18:31+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2912/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2912"
+  },
+  {
+    "number": 3164,
+    "title": "[Feature] fix docs in Streaming-Synchronous-Generation",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nFix this https://docs.sglang.ai/backend/offline_engine_api.html#Streaming-Synchronous-Generation\n\nTo long generated contents and it seems to be wrong.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-27T03:27:21+00:00",
+    "closed_at": "2025-05-24T15:48:12+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3164/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3164"
+  },
+  {
+    "number": 2698,
+    "title": "[Feature] Add docs for all the deepseek model ",
+    "body": "### Checklist\r\n\r\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [x] 2. Please use English, otherwise it will be closed.\r\n\r\n### Motivation\r\n\r\nAdd it under `https://sgl-project.github.io/references/`. Gather all the optimization, usage, and parameters in one doc and name it `deepseek.md`. This can be a markdown, but please verify it locally as what you can.\r\n\r\n### Related resources\r\n\r\nhttps://lmsys.org/blog/",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-01T23:03:55+00:00",
+    "closed_at": "2025-05-24T21:22:36+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2698/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2698"
+  },
+  {
+    "number": 3901,
+    "title": "[Docs] Remove redundant CI when docs merged into main",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\n<img width=\"640\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/4e7bc601-683f-494f-8d47-c3c80f71e309\" />\n\nThe execute notebook CI is to test the correctness of PRs. If one CI is merged into main, it should not be triggered, but just use execute-and-deploy. We should fix our CI workflow.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-26T23:20:18+00:00",
+    "closed_at": "2025-02-27T06:13:34+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3901/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3901"
+  },
+  {
+    "number": 2968,
+    "title": "[Feature] Add docs for Offline Engine token-in token-out",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nWe have token-in-token-out pipeline in Sever already. But we need it for engine also.\n\n```python\nclass SGLangLLMRayActor:\n    def __init__(self, *args, **kwargs):\n        self.llm = sglang.Engine(\n            model_path=args[0],\n            trust_remote_code=kwargs.get(\"trust_remote_code\", True),\n            dtype=kwargs.get(\"dtype\", \"auto\"),\n            tp_size=kwargs.get(\"tensor_parallel_size\", 1),\n            device=\"cuda\",\n            random_seed=kwargs.get(\"seed\", 42),\n            disable_radix_cache=not kwargs.get(\"enable_prefix_caching\", False),\n            disable_cuda_graph=not kwargs.get(\"enforce_eager\", False),\n            disable_cuda_graph_padding=not kwargs.get(\"enable_prefix_caching\", False),\n            context_length=kwargs.get(\"max_model_len\", None),\n            log_level=\"info\",\n            skip_tokenizer_init=True,\n        )\n\n    def generate(self, sampling_params, prompt_token_ids, stop_token_ids):\n\n        # min_tokens, include_stop_str_in_output is not used in sglang\n\n        sampling_params = dict(\n            max_new_tokens=sampling_params.get(\"max_tokens\", 1024),\n            top_p=sampling_params.get(\"top_p\", 1),\n            top_k=sampling_params.get(\"top_k\", 50),\n            temperature=sampling_params.get(\"temperature\", 1),\n            repetition_penalty=sampling_params.get(\"repetition_penalty\", 1),\n            skip_special_tokens=sampling_params.get(\"skip_special_tokens\", False),\n            stop_token_ids=stop_token_ids,\n        )\n\n        outputs = self.llm.generate(input_ids=prompt_token_ids, sampling_params=sampling_params)\n        return outputs\n```\n\nAlso, I added `skip_special_tokens=False`, but there is still no `eos` at the end.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-18T20:13:02+00:00",
+    "closed_at": "2025-05-26T02:22:39+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2968/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2968"
+  },
+  {
+    "number": 295,
+    "title": "Parallelism with `run_batch` vs `fork`",
+    "body": "First of all, great work!\r\n\r\nThe frontend seems to support two kinds of parallel processing: batching and forking.\r\n\r\nFrom the docs and paper, it is not entirely clear to me how they differ and how they are handled under the hood. Do they both launch separate threads that make requests to the server, which then does continuous batching? Or is there more to it?\r\n\r\nFrom a practical standpoint, what are the considerations when both `run_batch` and `fork` are possible for the use case? Are there advantages/disadvantages besides fork being more flexible?\r\n\r\nIs it safe to combine the two? Would the total number of threads be `num_threads * num_forks`?",
+    "labels": [
+      "documentation"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-13T20:35:36+00:00",
+    "closed_at": "2024-04-07T10:09:39+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/295/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/295"
+  }
+]

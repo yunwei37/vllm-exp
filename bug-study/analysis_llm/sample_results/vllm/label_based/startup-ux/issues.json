@@ -1,0 +1,193 @@
+[
+  {
+    "number": 20451,
+    "title": "[RFC]: vLLM-compile low-hanging fruit cold start improvements",
+    "body": "### Motivation.\n\nThis issue tracks potential low-hanging fruit for improving vLLM-compile cold start time. @anijain2305, @BoyuanFeng, and I sat down to look at some traces and noticed some things we can improve.\n\nThere are more longer-term projects for improving torch.compile cold start time, but those will probably take a bit to hit.\n\n### Proposed Change.\n\n- [ ] vLLM's [custom bytecode hook](https://github.com/vllm-project/vllm/blob/536fd330036b0406786c847f68e4f67cba06f421/vllm/compilation/wrapper.py#L77-L121) seems to take a long time (~7 seconds on llama-3.1-70b model). I'm not sure how much of this is actually needed for runtime execution. We should guard the decompilation step behind an envvar. If VLLM_COMPILE_DEPYF=0 (default), we write out a `transformed_code.py` that has a comment that says \"Please set VLLM_COMPILE_DEPYF=1 to populate this file\".\n- [ ] In llama-3.1-70b, with piecewise cudagraphs, we split a module into 80 different subgraphs. A lot of these subgraphs are literally the same. However, subgraphs 2-79 (approx) are cache-hitting in fx_graph_cache, but they are cache missing in AOTAutogradCache. This needs some more investigation as to why they are cache missing there.\n\n### Feedback Period.\n\n7/2-7/11, but really, anytime until these things are fixed.\n\n### CC List.\n\ncc @ProExpertProg @youkaichao @WoosukKwon @jamesjwu @zhxchen17\n\n### Any Other Things.\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "RFC",
+      "torch.compile",
+      "startup-ux"
+    ],
+    "state": "open",
+    "created_at": "2025-07-03T19:22:18+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/20451/reactions",
+      "total_count": 4,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 2,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/20451"
+  },
+  {
+    "number": 20402,
+    "title": "[RFC]: vLLM-compile (minus cudagraphs) warm-start time should be close to zero",
+    "body": "### Motivation.\n\n@BoyuanFeng did some benchmarks of vLLM cold vs warm start of a 70B model. In the warm start, compilation (ignoring cudagraphs) took 25 out of 132 seconds, almost 20% of the time. On warm start, all of the hard work (compiling artifacts) should have been already done.\n\nThe theoretical minimum amount of time that vLLM-compile needs to spend in warm start is the amount of time it takes to load all the compiled code.\n\n![Image](https://github.com/user-attachments/assets/b34204f8-5ad5-49d4-bdc6-6805610ac6be)\n\n### Proposed Change.\n\nThe following categories correspond to what is in the chart above.\n\nDynamo:\n- On warm start, vLLM always re-runs Dynamo. We don't need to do this: instead, we can directly serialize the bytecode that Dynamo produces and re-load it.\n- Originally I was planning on waiting until torch.compile implemented \"precompilation\", which will skip Dynamo on warm start. It might be worth figuring out how to get a simpler version of this into vLLM, especially because \"precompilation\" in torch is still a bit away. vLLM just needs to serialize the Dynamo-produced bytecode; we don't care about graph breaks or guards.\n\nInductor:\n- TL;DR: vLLM is doing some compute on loading the compiled artifact. It shouldn't need to do this compute. We should be able to fix this in vLLM\n- Details: With piecewise cudagraphs, there are N compiled artifacts. The way vLLM loads the compiled artifacts is that we do a full forward-pass through the model, using FakeTensors. When the forward pass hits one of these \"missing compiled artifacts\", then it loads it from disk.\n- We don't need to run the full forward pass. The full forward pass on FakeTensors is slow. it should be possible to record all of the compiled artifacts we need to load and just load them all together and construct the right objects for runtime.\n\nOther: this needs some more investigation.\n\n### Feedback Period.\n\n7/2 - 7/11\n\n### CC List.\n\n@ProExpertProg @youkaichao @WoosukKwon @robertgshaw2-redhat @jamesjwu @zhxchen17\n\n### Any Other Things.\n\nthank you\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "RFC",
+      "torch.compile",
+      "startup-ux"
+    ],
+    "state": "open",
+    "created_at": "2025-07-02T22:04:20+00:00",
+    "closed_at": null,
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/20402/reactions",
+      "total_count": 5,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/20402"
+  },
+  {
+    "number": 20283,
+    "title": "[RFC][UX][torch.compile][CUDAGraph]: Overhaul `CompilationConfig` and improve CLI `-O<n>`",
+    "body": "\n**tl;dr**: Improve the user experience around compilation and cudagraph capture by consolidating/overhauling `CompilationConfig` and defining more meaningful optimization levels `-O0`, `-O1`, `-O2`, `-O3` (and maybe more).\n\n## Motivation.\n\n`CompilationConfig` was born around December 2024 to enable configuring `torch.compile`-based compilation and piecewise cudagraph capture. Since then, a bunch more flags were added to support new features, all good in isolation but without a cohesive plan. As vLLM aims to provide great performance out-of-the-box, having to manually configure a bunch of flags is bad UX.\n\n`CompilationConfig` currently serves as both the user-facing and compiler-interfacing compilation configuration mechanism. What I mean by that is that it's used by CLI/Python API users to control compilation, as well as other parts of the codebase (model runner, vllm config, etc.). This has the benefit of good UX for developers to directly control compilation from the CLI and Python, but the downside of this weird second-state where defaults are inspected and adjusted. This was handled very poorly in V1 where a bunch of settings were hardcoded, making them impossible to change from the CLI.\n\nAdditionally, compilation levels 0-3 are currently not very intuitive and 1 and 2 are only meant for internal use. Instead, the convenience of `-O<n>` flag should be used for optimization levels, and compilation levels should be adjusted to reflect actual uses.\n\nFinally, there are concerns around vLLM startup time (#19824) and having different optimization levels `-O` progressively trade startup cost for performance seems like another improvement to startup UX.\n\n## Proposed Change.\n\nI am proposing an overhaul of many `CompilationConfig` fields. I've put them all into one RFC as some are very related, but they can be done as separate PRs.\n\n### Repurpose `-O` for optimization level\nI propose we start with 4 optimization levels, 0 through 3. Exact settings here should be determined later, but they could go something like this:\n1. `-O0`: No optimization. pretty much equivalent to `--enforce_eager`: no compilation, no cudagraphs, no other optimization, just starting up immediately\n2. `-O1`: Quick optimizations. Dynamo+Inductor compilation but no cudagraphs (or maybe lazy cudagraphs: #20098)\n3. `-O2`: Full optimizations. `-O1` as well as cudagraphs. This would be the default, and is most similar to the current default settings.\n4. `-O3`: Full (auto)tuning. `-O2` as well as `max-autotune`, compiling for additional static sizes, etc. - any other time-consuming optimizations.\n\nThese levels trade startup time cost for performance, with `-O0` having the best startup time and `-O3` having the best performance. We can decide exact settings for each levels after more in-depth benchmarking as proposed in #19824.\n\nWhile we should make sure each level is just a combination of fine-grained flags, I also believe we should not commit to not changing what each of the levels do for better flexibility. If users rely on certain features, they can specify them manually. But I know that either way users might come to rely on features being present in each level so that should be considered.\n\nI also propose `--enforce-eager` is deprecated, becoming equivalent to `-O0`. We can remove it later or keep it around.\n\n### Rename compilation level to mode\n\nBecause `-O<n>` now means optimization level and not compilation level, I propose renaming `CompilationLevel` to `CompilationMode`. This is mostly used by developers, specifically by Meta to debug vLLM's `torch.compile` integration, and the interface should better reflect the use. I propose the following \"modes\":\n- `CompilationMode.NONE` (same as current `NO_COMPILATION`)\n- `CompilationMode.STOCK_TORCH_COMPILE` (same as current `DYNAMO_AS_IS` except with Inductor by default). This can be useful to vLLM custom compilation issues from `torch.compile`. Looking for better name suggestions.\n- `CompilationMode.DYNAMO_TRACE_ONCE` (same as current `DYNAMO_ONCE`)\n- `CompilationMode.VLLM_COMPILE` (same as current `PIECEWISE`)\n\n### Other changes to compilation controls\n\u274c means removal, \u270f means change, \ud83c\udf31 means addition\n\n- \u274c `use_inductor`: this is fully redundant with `backend`\n- \u270f `backend`: this is currently not respected for compilation mode (level) 3 (PIECEWISE), and use_inductor is used in its place. We can instead just use this field and make mode 3 respect it. There are currently no uses for custom backends inside vLLM custom backend, so we can disallow custom backends (only allow `\"inductor\"` and `\"eager\"`/`\"\"`) for mode 3. If a use case is needed in the future, this can be extended. `\"inductor\"` becomes the default for this field.\n- \ud83c\udf31 `debug_mode: bool` - add additional checks to validate compilation & cudagraphs are running correctly. This could be shape checks for VLLM_COMPILE, cudagraph address checks, and more. Currently cudagraph addresses are checked if VLLM_LOGGING_LEVEL=DEBUG, but I think this would be better done explicitly. Open to name suggestions, and thanks to @zou3519 for the proposal! More details in #20394.\n- \u274c `use_cudagraph` and `full_cuda_graph`. These are replaced with `cudagraph_mode`.\n- \ud83c\udf31 `cudagraph_mode`: enum of type `CUDAGraphMode` with options `NONE`, `FULL`, `PIECEWISE`, later adding `FULL_AND_PIECEWISE` and `AUTO`. `PIECEWISE` obviously requires compilation mode `VLLM_COMPILE`. `FULL_AND_PIECEWISE` is for attention backends that only support cudagraphs in attention for some requests. `AUTO` can be used to mean `FULL` if supported, otherwise `FULL_AND_PIECEWISE`, otherwise `PIECEWISE`. This is assuming we want full cudagraphs by default when enabled (not yet confirmed that's the case). #20059 will add this enum for cudagraph execution, as well as the ability to run cudagraphs (only full) without any compilation. We can simply extend the enum and use it here.\n- \u270f `custom_ops`: default behavior for custom ops currently depends on `use_inductor` (getting removed) and `CompilationLevel` (renamed). Instead, this field should be the single source of truth for custom ops and we can set it to `\"all\"` or `\"none\"` as part of config initialization (allowing user-specified values to override).\n- \u270f `cudagraph_capture_sizes`: these are currently reversed, just for the model runner to unreverse them and then reverse them again. They can just be sorted ascending and model runner can iterate in reverse during capture.\n\n### Unchanged fields:\nFor visibility, below is the list of other fields this RFC does not seek to address. Please let me know if you think any of these fields should be adjusted as part of this RFC:\n- `debug_dump_path: str = \"\"`\n- `cache_dir: str = \"\"`\n- `splitting_ops: list[str] = []`\n- `compile_sizes: Optional[list[Union[int, str]]] = None`\n- `inductor_compile_config: dict = {}`\n- `inductor_passes: dict[str, str] = {}`\n- `cudagraph_num_of_warmups: int = 0`\n- `cudagraph_capture_sizes: Optional[list[int]] = None`\n- `cudagraph_copy_inputs: bool = False`\n- `pass_config: PassConfig = PassConfig()`\n- all fields that are excluded from `__init__`\n\n### Enabling logic\nThere are a lot off fields whose defaults depend on the values of other fields or the platform. Those fields should be uninitialized/`None` by default so that we can distinguish between it set explicitly from the CLI/Python and the default value. For example, `splitting_ops` is an empty list by default but in V1 piecewise compilation, it's set to attention ops, and it's set to empty otherwise. After #20059, splitting ops will not be required if full cudagraphs is enabled so the user must be able to overwrite it.\n\nThis logic is currently scattered around `config.py` and some other places; we should make sure it's consolidated inside a single function, likely `VllmConfig.__post_init__`.\n\n### Sunsetting period\nI believe that these are not user-facing enough to warrant standard deprecation procedures. Instead, I propose we perform the changes (including the swap from `CompilationLevel` to `OptimizationLevel`) in a single release. I believe that would be less painful than trying to support both at the same time. We would add explicit error messages about removal of `level` etc. instead of JSON parsing errors. I know that is a bold stance so please give feedback on it in the comments.\n\nAlternatively, we could deprecate `level` (and map it to `mode`) and create `optimization_level` and `mode` fields, and remove `level` in later releases. As a middle ground, \n\n### Out of scope for this RFC\n- Moving cudagraph capture config out of `CompilationConfig`\n- Configuration oracle to replace current platform-dependent configuration\n\n## Feedback Period.\n\n10 days, 6/30-7/9. I want to try to address this before my summer vacation 7/18-8/8\n\n## CC List.\n\n@youkaichao @simon-mo @mgoin @robertgshaw2-redhat @zou3519 @WoosukKwon\n\n## Any Other Things.\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "RFC",
+      "startup-ux"
+    ],
+    "state": "open",
+    "created_at": "2025-06-30T21:47:04+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/20283/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/20283"
+  },
+  {
+    "number": 20098,
+    "title": "[RFC]: Lazy CUDA Graph capture",
+    "body": "### Motivation.\n\nCurrently vLLM captures cudagraphs as part of the engine initialization significantly slowing down vLLM startup time. By default, vLLM captures 66 graphs, which depending on model size and GPU type, can take more than 10s. This is not great UX (see #19824 for details).\n\nIn addition, It's most unlikely that all 66 graphs are actually needed, wasting both time and space.  \n\n### Proposed Change.\n\nWe propose to capture cudagraphs lazily. Instead of performing dummy runs during the engine initialization phase, the idea is to do those runs somewhere in the CUDA piecewise backend, and only for the current runtime shape if not cached already.\n\nExact implementation needs to be worked out.\n\n### Feedback Period.\n\none week\n\n### CC List.\n\n@ProExpertProg @aarnphm @charlesfrye  \n\n### Any Other Things.\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "RFC",
+      "startup-ux"
+    ],
+    "state": "open",
+    "created_at": "2025-06-25T21:27:51+00:00",
+    "closed_at": null,
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/20098/reactions",
+      "total_count": 4,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 4,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/20098"
+  },
+  {
+    "number": 19824,
+    "title": "[Feature]: Improve startup time UX",
+    "body": "# \ud83d\ude80 The feature, motivation and pitch\n\nvLLM startup time has become a pain-point for certain use cases, like auto-scaling instances or model swapping. This leads to poor user experience or even users choosing to use `--enforce-eager`, sacrificing performance. I'm creating this parent issue to track our work on better understanding the startup time as well as the throughput tradeoffs from skipping certain steps.\n\n## \ud83d\udea7 [WIP] Startup heavy hitters (most time-consuming)\n\n1. P2P access check\n2. Weight loading\n3. Dynamo tracing\n4. Inductor compilation\n  a. Additional time spent on extra compile_sizes and max-autotune\n5. CUDAGraph capture\n6. PTX compilation\n\n### Other\n- @ywang96 mentioned LMMs take a long time generating dummy multi-modal data in the profile_run\n- \n\nRecent measurements from @robertgshaw2-redhat:\n> Llama-70B-Fp8 on TP=8. I see the following:\n> - ~60s to check for P2P access manually. We can disable this check with VLLM_SKIP_P2P_CHECK=1\n> - ~10s to load weights --- from hot page cache\n> - ~15s to convert dynamo bytecode\n> - ~70s to run torch.compile\n> - ~60s to capture the cudagraphs\n\nComment from #17280:\n> Furthermore the very first request after starting up vLLM takes 30-60 seconds.\n\nDue to #19336, we only build FA for SM80, SM90, and PTX. On another machine, PTX is compiled dynamically.\n\n## Proposed roadmap\n\n### 1. Enumerate use-cases and models we care about\n\nLarger models take longer to load and compile than smaller ones, so we should decide what models we want to look at. More on startup \"regimes\"/use-cases can come later.\n\n### 2. Measure time taken and performance tradeoffs\n\nWe do an end-to-end measurement of the startup time, and make sure we're not missing anything from the list of the heavy hitters. We might need to improve vLLMs time measurement infrastructure to have better visibility into startup time moving forward.\n\n### 3. Address heavy-hitters\n\nThe exact mitigation strategies should balance effort with measured benefit, e.g. I think Dynamo caching might be a bit hard infrastructure-wise and not provide much time savings. \n\n#### 1. P2P access check:\n  - per @njhill's suggestion this could be done async?\n  - @aarnphm suggested to use a hardware mapping instead\n#### 2. Weight loading: \u2753 \n#### 3. Dynamo tracing:\n  - AFAIK this is currently not cached, but we could try to manually cache it\n#### 4. Inductor compilation:\n  - This is fully cachable. We should first advertise this to users to make sure they're e.g. sharing the cache between auto-scaling deployments.\n  - It seems like the triton autotuning is not cached for explicit compile sizes (TODO @aarnphm create the issue)\n  - Depending on benefits provided this could be disabled, but I am strongly against recommending disabling this to users, as we rely on Inductor for custom passes for performance and there are more passes in progress.\n  - We can still improve the custom ops to make sure performance is as good as possible without Inductor: #19817\n  - Inductor can generate Triton kernels in parallel, we should make sure this actually happens.\n#### 5. CUDAGraph capture\n  - We could reduce the amount of sizes we capture cudagraphs for.\n    - Larger step, smaller max size, or even larger small size if we know that we'll only be hitting larger sizes due to high QPS.\n  - For larger models, I assume CUDA graphs provide less benefit, so we could also turn them off.\n  - If somebody was interested in a research project that tries to manually serialize `cudaGraph_t` and use `mmap` tricks for tensors to save and load cudagraphs from memory without capture, that would be amazing. But it's not clear this is possible. Perhaps we can get help from NVIDIA/AMD on this.\n  - @lionelvillard proposed \"lazy cudagraph capture\" where we only capture cudagraphs as needed. TODO write the RFC.\n\n#### 6. PTX compilation\nUntil pip package size is limited, we cannot bundle FA code for all architectures into the package. Perhaps we could invoke PTX compilation upon vllm installation? But that wouldn't work on a \"headless\" machine\n\n### 4. Add explicit performance \"regimes\"\n\nWe're starting to see a need for different regimes with prefill-disaggregation and throughput/latency optimized kernels for prefill/decode respectively. Similarly, we could have a \"faster startup\" regime that provides sensible defaults for skipping steps. Or, we use throughput and latency regimes and set different defaults (perhaps the prefill/throughput instance doesn't do cudagraph capture and the decode/latency instance does full cudagraphs and focuses on smaller sizes). This would not change our current ability to control every aspect of compilation through CompilationConfig (still necessary for developers), but users shouldn't need to tweak these settings for common use-cases.\n\n\n## Alternatives\n\n_No response_\n\n## Additional context\n\n_No response_\n\n## Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "startup-ux"
+    ],
+    "state": "open",
+    "created_at": "2025-06-19T00:41:47+00:00",
+    "closed_at": null,
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/19824/reactions",
+      "total_count": 14,
+      "+1": 14,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/19824"
+  },
+  {
+    "number": 19817,
+    "title": "[Feature]: `CustomOp` cleanup",
+    "body": "### \ud83d\ude80 Motivation\n\nCurrently, we do not have a consistent plan for \"light\" custom ops (subclasses of `CustomOp` with both torch-native and GPU implementations). As we work on improved performance on NVIDIA Blackwell and AMD, we should be more intentional with CompilationConfig defaults that control custom op dispatching. This is a parent issue that tracks smaller PRs addressing `CustomOp`s.\n\nIn vLLM, there are two kinds of custom kernels/ops:\n1. \"heavy\" ops like GEMMs, MoE, and attention, which will mostly use tuned custom kernels for maximum performance.\n2. \"light\" ops like `RMSNorm`, `SiluAndMul`, and `RoPE`, which have both torch-native and custom GPU implementations.\n\nThis issue only refers to \"light\" ops, which are (or should be) all subclasses of `CustomOp`.\n\nWhen we enabled `torch.compile` by default in V1, the plan was to reduce our reliance on custom kernels to reduce maintenance costs and code complexity, even with minor performance costs. Recent versions of `torch` actually produce Triton kernels faster than our custom op implementations anyway.\n\nHowever, with startup time concerns (#19824), it seems like we want good performance even with Inductor disabled (more discussion on startup times to come in a follow-up issue). Additionally, custom op performance has been reported to be better than torch.compile-generated Triton kernels on AMD.\n\n### \u2757 Issues\n\nThis is a list of current issues with custom ops. The following section tracks proposed and WIP solutions. Larger line items might have their own issue or get one in the future.\n\n1. [Perf] FP8 quantization not fused with rms_norm/silu_mul (because fp8 quant doesn't have a torch native implementation)\n2. [Perf] AMD uses custom ops but fusion for them is hardcoded to disabled.\n3. [Perf] We don't have good visibility into performance differences between GPU and torch native implementations of custom ops across different models and hardware platforms.\n4. [Perf][Code Quality] Fused and unfused custom ops currently reimplement the same code, and only some are vectorized.\n5. [Testing] Custom op tests either don't exist or reimplement Torch naive implementations\n6. [Compilation] Current custom passes rely on custom op pattern matching, which involves auto-functionalization (#14703) and requires custom ops to be enabled. If custom ops are slower than native impls, that means e.g. attention+quant fusion needs to take a hit on other quants to fuse the o-proj one. I'll create an RFC for this.\n\n### \u2705  Solutions\n\nOnce we have benchmarking numbers, we can set sensible defaults. Improving startup time will likely result in more explicit \"profiles\" with better config defaults.\n\nDetailed solution tracking:\n\n1. \u2705 @ProExpertProg: FP8 `CustomOp`s in #19830\n2. \u2705 #19181 removed hardcoded `enable_fusion=False`.\n3. \ud83d\udea7 WIP @gshtras and @SageMoore are collecting some benchmarking numbers for custom op performance. More benchmarking can be done as needed. Automating some of this would be great as well.\n4. \ud83d\udd50 TODO @yewentao256 is going to work on consolidating, vectorizing and cleaning up CUDA/HIP implementations of custom ops.\n5. \u2757 TODO add testing utilities for custom ops.\n6. \u2757 TODO @ProExpertProg will write RFC for pattern matching.\n\n#### \u2795 Other potential improvements\n\n- [ ] Simplify custom op enablement\n- [ ] Improve custom op documentation\n- [ ] Custom op microbenchmarks\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "startup-ux"
+    ],
+    "state": "open",
+    "created_at": "2025-06-18T20:10:27+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/19817/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/19817"
+  },
+  {
+    "number": 19318,
+    "title": "[Feature]: Add opentelemetry tracing for vLLM start up phases",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nThis FR asks for tracing through vLLM cold starts. This would include key phases, as trace spans, leading up to the FastAPI HTTP server is up and running. #17794 is related but asks for tracing requests.\n\nWhy would this be useful?\n\n* To facilitate cold start optimizations, both for vLLM users and contributors.\n  This is important for quick auto scaling of inference workloads in cloud\n  environments.\n* Users may want to tweak vLLM settings based on which phase is contributig to\n  high latency, e.g. changing how the model is loaded using `--load-format\n  runai_streamer`.\n* Contributors interested in performance optimization need this data to know\n  which area to focus on and the visual phase breakdown provided by traces is\n  much easier to interpret quickly than logs. This is how I noticed #19317.\n\nThe set of key spans and their attributes could be iterated on over time but I\nthink it'd be interesting to include at least\n\n* Python import time (which is non-trivial)\n* Model config loading\n* (Async)LLM init, including setting up tokenizer, output processor, etc.\n* Setting up the engine core\n  * Loading the model\n  * torch.compile\n  * CUDA graph capture\n  * KV cache init and profile run(s)\n\nSimilar to existing request tracing in v0 this feature could be opt-in toggled\nby a flag or environment variable (`VLLM_TRACE_START_UP=1`).\n\nWhat could the design of this look like?\n\n* A global opentelemetry trace provider would be initiated, similar to what v0\n  tracing does. Aim for a single trace with spans from the API server and engine\n  core processes.\n* Initialize a tracer per-module in which we'd want to capture trace spans,\n  similar to logging `logger` instances. This is a common otel pattern but\n  different from v0 request tracing that only exports a single span with many\n  attributes derived from a stats object passed around in vLLM.\n* Each span could set relevant span attributes, e.g.\n    * the top level `vllm-start-up` span could populate environment information, gpu model, cuda version, pytorch version, etc.\n    * the `load-model` span could set which model is loaded, the load format, the number of bytes loaded, etc.\n* To gracefully support otel being an optional dependency we might want to\n  implement a simple no-op trace provider that is used when otel is unavailable\n  , similar to what otel does when no provider is configured. This would avoid\n  constantly checking if otel is available.\n\nIf this is something vLLM would welcome then I'd be happy to polish up my PoC\nand send a PR.\n\nCC @markmc \n\n### Alternatives\n\nWhy not use prometheus metrics for capturing latency for the key phases?\n\nThat'd be complementary and useful to add as well. Personally I'd need to\nlearn about vLLM through iteration on trace spans before being able to suggest\na stable set of start up phases to add metric coverage for.\n\n### Additional context\n\nA rough WIP PoC to illustrate this: \n\n![Image](https://github.com/user-attachments/assets/d83c7cd2-b511-4293-9e89-4d0c0bc32fdc)\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "startup-ux"
+    ],
+    "state": "open",
+    "created_at": "2025-06-07T16:10:23+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/19318/reactions",
+      "total_count": 8,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/19318"
+  }
+]

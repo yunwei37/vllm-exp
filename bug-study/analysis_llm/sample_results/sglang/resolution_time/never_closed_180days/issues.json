@@ -1,0 +1,821 @@
+[
+  {
+    "number": 1190,
+    "title": "[Feature] Jamba 1.5 Support PLS",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nFirst SOTA ssm based model, vllm currently supports it but there is some parallel work in vllm to optimise it aswell\r\n- https://github.com/vllm-project/vllm/pull/7428\r\n- https://github.com/vllm-project/vllm/pull/7651\r\n\r\nhttps://huggingface.co/collections/ai21labs/jamba-15-66c44befa474a917fcf55251\n\n### Related resources\n\nvllm implementation\r\nhttps://github.com/vllm-project/vllm/pull/4115",
+    "labels": [
+      "good first issue",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2024-08-23T09:49:47+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1190/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1190"
+  },
+  {
+    "number": 2277,
+    "title": "[CI] Add accuracy test for multimodal models",
+    "body": "We want to add accuracy test for multimodal models, such as llama 3.2 and llava onevision.\r\n\r\n\r\n## Steps\r\n1. Learn the current multimodal model tests. https://github.com/sgl-project/sglang/blob/main/test/srt/test_vision_openai_server.py\r\n2. Learn the current accuracy test for text models. https://github.com/sgl-project/sglang/blob/main/test/srt/test_eval_accuracy_large.py\r\n3. Adapt the [lmms-eval](https://github.com/EvolvingLMMs-Lab/lmms-eval) framework for accuracy tests.",
+    "labels": [
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "open",
+    "created_at": "2024-11-30T07:35:49+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2277/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2277"
+  },
+  {
+    "number": 1932,
+    "title": "[Feature] Save cache from requests and load",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThis might be difficult to implement, but I am facing the following issue:\r\nWhen running Qwen2-VL on bigger images, the preprocessor takes a long time to convert the images to tokens.\r\n\r\nIt would be awesome if we could have a way (OpenAI API with extra parameters) to tell the backend to store the cache of a request and load it by ID for another request, which would make it possible to not reprocess every image (and prompt in general) on each call.\r\n\r\nIf my problem could be solved in an easier way I would be thankful for any input :)\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue"
+    ],
+    "state": "open",
+    "created_at": "2024-11-06T02:56:51+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1932/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1932"
+  },
+  {
+    "number": 2272,
+    "title": "[Kernel] cuDNN attention backend",
+    "body": "cuDNN provides very fast attention implementation and it is well maintained by NVIDIA. We would like to add a new attention backend based on cudnn.  \r\n\r\n## Steps\r\n1. Learn this cudnn paged attention python api. https://github.com/NVIDIA/cudnn-frontend/blob/v1.8.0/samples/python/52_scaled_dot_product_attention_with_paged_caches.ipynb\r\n2. Add a new attention backend \"cudnn\" here https://github.com/sgl-project/sglang/tree/main/python/sglang/srt/layers/attention\r\n3. We should be able to use it with `python3 -m sglang.launch_server --model meta-llama/Llama-3.1-8B-Instruct --attention-backend cudnn`",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2024-11-30T06:36:16+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2272/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2272"
+  },
+  {
+    "number": 2681,
+    "title": "[Feature] support ngram",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nref https://github.com/apoorvumang/prompt-lookup-decoding\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "open",
+    "created_at": "2024-12-31T07:03:24+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2681/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2681"
+  },
+  {
+    "number": 2661,
+    "title": "[Feature] Add docs for pass in token ids directly",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nIn most of RLHF frameworks, the prompts are pre-tokenized when data processing, so they can directly pass in token ids to the sglang engine rather than the prompts. So we should add docs on how to do this and how to get tokens directly.\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "RLHF"
+    ],
+    "state": "open",
+    "created_at": "2024-12-30T07:51:00+00:00",
+    "closed_at": null,
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2661/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2661"
+  },
+  {
+    "number": 1129,
+    "title": "[Feature] Support TRI-ML/prismatic-vlms",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nI'm trying to speed up inference for new VLM models on huggingface: https://huggingface.co/TRI-ML/prismatic-vlms/tree/main. I'm wondering if there are additional documentation on how to adapt new models? \n\n### Related resources\n\nThe model I'm trying to adapt is detailed here: https://arxiv.org/pdf/2402.07865. ",
+    "labels": [
+      "good first issue",
+      "feature",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2024-08-16T18:15:10+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1129/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1129"
+  },
+  {
+    "number": 1763,
+    "title": "[Feature] Request to 8-bit Quantization of Attention with SageAttention",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nAs https://github.com/thu-ml/SageAttention mentioned, the quantized 8-bit attention will improvement the speed of inference about 2x and more with the same accuracy, so shall we give it a try or do some verification?\n\n### Related resources\n\ngithub: https://github.com/thu-ml/SageAttention",
+    "labels": [
+      "good first issue"
+    ],
+    "state": "open",
+    "created_at": "2024-10-23T09:30:36+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1763/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1763"
+  },
+  {
+    "number": 2400,
+    "title": "[Feature] support llm_bench",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nuse `locust` as a benchmark option\r\nref https://github.com/fw-ai/benchmark/tree/main/llm_bench\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "backlog"
+    ],
+    "state": "open",
+    "created_at": "2024-12-08T11:02:20+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2400/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2400"
+  },
+  {
+    "number": 3050,
+    "title": "[Bug] Decode Throughput Inconsistency Between bench_serving and Engine Logs",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nHi, I encountered an inconsistency in decode throughput reporting. When benchmarking with the bench_serving script, the reported TPOT is **much lower** than the decode throughput logged by the engine. This gap is significant for **small models or high concurrency settings**.\n\n### Reproduction\n\n#### start the server\n```\npython -m sglang.launch_server \\\n  --model-path Qwen/Qwen2.5-0.5B \\\n  --trust-remote-code \\\n  --tp 1 \\\n  --load-format dummy \\\n  --port 30000 --host 127.0.0.1\n```\n\n#### benchmark (seqlens 2048 concurrency 16)\n```\npython3 -m sglang.bench_serving \\\n  --backend sglang \\\n  --dataset-name random \\\n  --random-range-ratio 1.0 \\\n  --random-input-len 2048 \\\n  --random-output-len 256 \\\n  --num-prompts 16 \\\n  --max-concurrency 16 \\\n  --host 127.0.0.1 \\\n  --port 30000\n```\n\nObserved Results:\n- The bench_serving script reports a median TPOT of 4.45 ms, equating to a token throughput of 224 $\\times$ 16 = 3584 tokens/second.\n- However, the engine logs show a decode throughput of 7026 tokens/second.\n\n<img width=\"1153\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/efb57721-72b7-4535-ad11-bb3137f4deff\" />\n\n<img width=\"406\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/7a5b94ad-fc97-4d51-84ee-4df1f182fad1\" />\n\nThe gap between these metrics is significant and raises concerns about potential discrepancies in throughput measurement.\n\nPlease let me know if you need additional details or logs to assist in troubleshooting.\n\n### Environment\n\nPython: 3.10.0 (default, Mar  3 2022, 09:58:08) [GCC 7.5.0]                                                                                                                                                                                                                                                   \nCUDA available: True                                                                                                                                                                                                                                                                                          \nNVIDIA H800 GPU                                                                                                                                                                                                                                                            \nCUDA_HOME: /usr/local/cuda                                                                                                                                                                                                                                                                                    \nNVCC: Cuda compilation tools, release 12.6, V12.6.85                                                                                                                                                                                                                                                          \nCUDA Driver Version: 535.129.03                                                                                                                                                                                                                                                                               \nPyTorch: 2.5.1+cu124                                                                                                                                                                                                                                                                                          \nsglang: 0.4.1.post5                                                                                                                                                                                                                                                                                           \nflashinfer: 0.1.6+cu124torch2.4                                                                                                                                                                                                                                                                               \ntriton: 3.1.0                                                                                                                                                                                                                                                                                                 \ntransformers: 4.48.0                                                                                                                                                                                                                                                                                          \ntorchao: 0.7.0                                                                                                                                                                                                                                                                                                \nnumpy: 1.26.4                                                                                                                                                                                                                                                                                                 \naiohttp: 3.11.11                                                                                                                                                                                                                                                                                              \nfastapi: 0.115.6                                                                                                                                                                                                                                                                                              \nhf_transfer: 0.1.9                                                                                                                                                                                                                                                                                            \nhuggingface_hub: 0.27.1                                                                                                                                                                                                                                                                                       \ninteregular: 0.3.3                                                                                                                                                                                                                                                                                            \nmodelscope: 1.22.1                                                                                                                                                                                                                                                                                            \norjson: 3.10.14                                                                                                                                                                                                                                                                                               \npackaging: 24.2                                                                                                                                                                                                                                                                                               \npsutil: 6.1.1                                                                                                                                                                                                                                                                                                 \npydantic: 2.10.5                                                                                                                                                                                                                                                                                              \nmultipart: 0.0.20\nzmq: 26.2.0\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.6.4.post1\nopenai: 1.59.7\nanthropic: 0.43.0\ndecord: 0.6.0",
+    "labels": [
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "open",
+    "created_at": "2025-01-22T11:32:09+00:00",
+    "closed_at": null,
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3050/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3050"
+  },
+  {
+    "number": 2807,
+    "title": "[Feature] RFC for adding CPU support for SGLang",
+    "body": "### Motivation\n\nHi, SGLang folks! This is Mingfei from intel pytorch team, our team helps optimize PyTorch performance on CPU. I am also the PyTorch module maintainer for cpu performance. We would like to contribute to SGLang for CPU enabling and performance optimization.\n\n### Targets\nOur primary target is to optimize SGLang performance on Intel Xeon Scalable Processors (x86 server CPUs).\n* Optimization will be focusing on Xeon with [Intel\u00ae Advanced Matrix Extensions](https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/advanced-matrix-extensions/overview.html) support, including Sapphire Rapids(4th gen), Emerald Rapids(5th gen), Granite Rapids(6th gen).\n* Native implementations or fallbacks will be provided for CPUs with other ISA to make it functional.\n* Providing good performance per dollar.\n\n### Limitations\n\n* Kernels written in **avx512** and **amx-bf16**, requires **GCC11** or above.\n* **BFloat16/Float16** will be enabled at the same time on CPU, but we only focus on **BFloat16** performance optimization at the current stage, **Float16** optimization will be added later on.\n\n### Schedule for 25Q1\nWe will focusing on DeepSeek series at the moment to align with our internal development requirements and extend the model coverage later on.\n\n#### Generic enabling/optimizations for sglang\n\n- [x] CPU device enabling. We intend to enable CPU device with torch native backend first and then gradually replace all the performance critical components with C++ intrinsics kernels. https://github.com/sgl-project/sglang/pull/2806\n- [x] fused kernels for `rms_norm`, `silu_and_mul`, sampling and so on.\n- [x] radix attention kernels for extend and decoding.\n\n#### DeepSeek performance optimizations\n(we are currently mapping the work from [DeepSeek Multi-head Latent Attention (MLA) Throughput Optimizations](https://lmsys.org/blog/2024-09-04-sglang-v0-3/#deepseek-multi-head-latent-attention-mla-throughput-optimizations))\n- [x] MLA decoding kernel optimization with head blocking.\n- [x] DeepSeekMoE (FusedMoE)\n- [x] fp8 kv cache (experimental)\n\n#### Tensor Parallel\n- [x] Map TP to the multiple sockets (numa nodes) on a single node CPU\n- [ ] EPMoE\n\nWe hope to help more customers to build better user experience with deploying with sglang on CPU devices. Welcome any feedbacks, thanks!\n\n",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "intel",
+      "cpu"
+    ],
+    "state": "open",
+    "created_at": "2025-01-09T07:58:45+00:00",
+    "closed_at": null,
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2807/reactions",
+      "total_count": 14,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2807"
+  },
+  {
+    "number": 2275,
+    "title": "[CI] Print nightly evaluation results to GITHUB_STEP_SUMMARY",
+    "body": "We would like to to have a nicer summary page on the nightly evaluation results. The summary should include the scores and thresholds of all models in a markdown table.\r\n\r\nAn example run: https://github.com/sgl-project/sglang/actions/runs/12060420843\r\n\r\n## Steps\r\n1. Learn `GITHUB_STEP_SUMMARY` at https://github.blog/news-insights/product-news/supercharging-github-actions-with-job-summaries/\r\n2. Print a summary of the [nightly eval](https://github.com/sgl-project/sglang/blob/main/.github/workflows/nightly-eval.yml) to `GITHUB_STEP_SUMMARY`\r\n\r\nSee also an example https://github.com/sgl-project/sglang/pull/2274 ",
+    "labels": [
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "open",
+    "created_at": "2024-11-30T07:14:29+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2275/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2275"
+  },
+  {
+    "number": 2788,
+    "title": "[Feature] Integration of TurboMind AWQ and GPTQ",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe AWQ and GPTQ of TurboMind should be among the best-performing open-source implementations currently available. We plan to integrate them into SGLang, and once the integration is complete, we can consider removing SGLang's dependency on vLLM's AWQ and GPTQ kernel.\r\n\r\nDuring development, we can initially install the wheel https://github.com/InternLM/turbomind/releases/tag/v0.0.1 manually for verification and later add the TurboMind repo as a dependency in [sgl-kernel](https://github.com/sgl-project/sglang/tree/main/sgl-kernel).\r\n\r\nref\r\nhttps://github.com/InternLM/turbomind\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "open",
+    "created_at": "2025-01-08T08:37:01+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2788/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2788"
+  },
+  {
+    "number": 2345,
+    "title": "[Feature] Serving VLM VILA",
+    "body": "### Checklist\r\n\r\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 2. Please use English, otherwise it will be closed.\r\n\r\n### Motivation\r\n\r\nHello,\r\n\r\nI want to deploy the VILA model for serving VILA1.5-3B-AWQ (https://github.com/NVlabs/VILA). Could you please guide me on how to get started? Are there any specific instructions or tools I should follow for setting up the serving environment?\r\n\r\n### Related resources\r\n\r\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "open",
+    "created_at": "2024-12-04T07:44:26+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2345/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2345"
+  },
+  {
+    "number": 2450,
+    "title": "[Feature]: Benchmarking H200",
+    "body": "### Checklist\r\n\r\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 2. Please use English, otherwise it will be closed.\r\n\r\n### Motivation\r\n\r\n#  Research Questions\r\n\r\n- Explore the tradeoffs of increasing the **number of chips** with more memory, H200, versus increasing the parallel inference **world size** when using less HBM GPUs, H100 (see [[Efficiently Scaling Transformer Inference](https://arxiv.org/abs/2211.05102)](https://arxiv.org/abs/2211.05102)). Reduce as much as possible **price/generation** at **scale.**\r\n- How can we leverage H200 **extra HBM** for efficient KV cache management?  Test long context window.\r\n- Measure the implications of faster GPU **memory bandwidth** while executing **parallel inference**.\r\n\r\n# Models of Interest\r\n\r\n- **Llama 3.3 70B**\r\n- **Llama 3.1 405B**\r\n- **DeepSeek Models:** Testing latest sglang `0.4` [data parallelism attention for MLA](https://lmsys.org/blog/2024-12-04-sglang-v0-4/#data-parallelism-attention-for-deepseek-models). Focus on:\r\n   - [deepseek-ai/DeepSeek-V2.5-1210](https://huggingface.co/deepseek-ai/DeepSeek-V2.5-1210).\r\n   - [ deepseek-ai/DeepSeek-Coder-V2-Instruct-0724\r\n](https://huggingface.co/deepseek-ai/DeepSeek-Coder-V2-Instruct-0724)\r\n# Preliminar Results\r\nFollowing the benchmarks from [sglang benchmarks](https://github.com/sgl-project/sglang/tree/main/benchmark/benchmark_vllm_060)\r\n\r\n## Environment Configuration\r\nUsing the latest Docker image `lmsysorg/sglang:latest` with SGLang `v0.4`\r\n\r\n```bash\r\nCollecting environment information...\r\nPyTorch version: 2.5.1+cu124\r\nIs debug build: False\r\nCUDA used to build PyTorch: 12.4\r\nROCM used to build PyTorch: N/A\r\n\r\nOS: Ubuntu 20.04.6 LTS (x86_64)\r\nGCC version: (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0\r\nClang version: Could not collect\r\nCMake version: Could not collect\r\nLibc version: glibc-2.31\r\n\r\nPython version: 3.10.16 (main, Dec  4 2024, 08:53:37) [GCC 9.4.0] (64-bit runtime)\r\nPython platform: Linux-5.15.0-124-generic-x86_64-with-glibc2.31\r\nIs CUDA available: True\r\nCUDA runtime version: 12.1.105\r\nCUDA_MODULE_LOADING set to: LAZY\r\nGPU models and configuration: \r\nGPU 0: NVIDIA H200\r\nGPU 1: NVIDIA H200\r\nGPU 2: NVIDIA H200\r\nGPU 3: NVIDIA H200\r\nGPU 4: NVIDIA H200\r\nGPU 5: NVIDIA H200\r\nGPU 6: NVIDIA H200\r\nGPU 7: NVIDIA H200\r\n\r\nNvidia driver version: 550.127.05\r\ncuDNN version: Could not collect\r\nHIP runtime version: N/A\r\nMIOpen runtime version: N/A\r\nIs XNNPACK available: True\r\n\r\nCPU:\r\nArchitecture:                         x86_64\r\nCPU op-mode(s):                       32-bit, 64-bit\r\nByte Order:                           Little Endian\r\nAddress sizes:                        52 bits physical, 57 bits virtual\r\nCPU(s):                               192\r\nOn-line CPU(s) list:                  0-191\r\nThread(s) per core:                   1\r\nCore(s) per socket:                   96\r\nSocket(s):                            2\r\nNUMA node(s):                         2\r\nVendor ID:                            AuthenticAMD\r\nCPU family:                           25\r\nModel:                                17\r\nModel name:                           AMD EPYC 9654 96-Core Processor\r\nStepping:                             1\r\nFrequency boost:                      enabled\r\nCPU MHz:                              1479.783\r\nCPU max MHz:                          3707.8120\r\nCPU min MHz:                          1500.0000\r\nBogoMIPS:                             4799.99\r\nVirtualization:                       AMD-V\r\nL1d cache:                            6 MiB\r\nL1i cache:                            6 MiB\r\nL2 cache:                             192 MiB\r\nL3 cache:                             768 MiB\r\nNUMA node0 CPU(s):                    0-95\r\nNUMA node1 CPU(s):                    96-191\r\nVulnerability Gather data sampling:   Not affected\r\nVulnerability Itlb multihit:          Not affected\r\nVulnerability L1tf:                   Not affected\r\nVulnerability Mds:                    Not affected\r\nVulnerability Meltdown:               Not affected\r\nVulnerability Mmio stale data:        Not affected\r\nVulnerability Reg file data sampling: Not affected\r\nVulnerability Retbleed:               Not affected\r\nVulnerability Spec rstack overflow:   Mitigation; safe RET\r\nVulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl and seccomp\r\nVulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization\r\nVulnerability Spectre v2:             Mitigation; Enhanced / Automatic IBRS; IBPB conditional; STIBP disabled; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected\r\nVulnerability Srbds:                  Not affected\r\nVulnerability Tsx async abort:        Not affected\r\n```\r\n\r\n## Online benchmark results\r\n\r\n### Llama 3.1 70B Instruct 4 x H200 141GB\r\n\r\n| RPS  | Num Prompts | Engine | Median E2E Latency | Median TTFT | Median TPOT | Median ITL |\r\n|------|-------------|--------|--------------------|-------------|-------------|------------|\r\n| 4    | 1200        | SGLang | 3005.24            | **65.72**   | 18.47       | **15.94**  |\r\n| 8    | 2400        | SGLang | 4064.98            | **73.70**   | 24.02       | **17.75**  |\r\n\r\n## Offline benchmark results\r\n\r\n### Llama 3.1 70B Instruct 4 x H200 141GB\r\n\r\n| RPS  | Num Prompts | Engine | Request throughput | Output token throughput |  Tensor Parallel  |\r\n|------|-------------|--------|--------------------|-------------------------|-------------------|\r\n| inf  | 5000        | SGLang | 25.14              | **4885.17**             |4                  |\r\n\r\n\r\n### Llama 3.1 70B Instruct 8 x H200 141GB\r\n\r\n| RPS  | Num Prompts | Engine | Request throughput | Output token throughput |  Tensor Parallel  |\r\n|------|-------------|--------|--------------------|-------------------------|-------------------|\r\n| inf  | 5000        | SGLang | 37.96              | **7376.03**             |8                  |\r\n\r\n\r\n### Llama 3.1 405B Instruct 8 x H200 141GB\r\n| RPS  | Num Prompts | Engine | Request throughput | Output token throughput |  Tensor Parallel  |\r\n|------|-------------|--------|--------------------|-------------------------|-------------------|\r\n| inf  | 5000        | SGLang | 9.16              | **1779.16**             |8                  |\r\n\r\n\r\nQ: Where should we place this benchmarking information, in existing docs or create a new one? @merrymercy @zhyncs \r\n\r\n### Related resources\r\n\r\n # Hopper GPU HW specs comparison: H100 & H200\r\n\r\n| **Technical Specifications** |              |              |\r\n| :--------------------------- | ------------ | ------------ |\r\n|                              | **H100 SXM** | **H200 SXM** |\r\n| **BFLOAT16**                 | 989.5 TFLOPS | 989.5 TFLOPS |\r\n| **FP16**                     | 989.5 TFLOPS | 989.5 TFLOPS |\r\n| **FP8**                      | 1979 TFLOPS  | 1979 TFLOPS  |\r\n| **INT8**                     | 1979 TFLOPS  | 1979 TFLOPS  |\r\n| **GPU Memory**               | 80 GB        | **144 GB**   |\r\n| **GPU Memory Bandwidth**     | 3.35 TB/s    | **4.8 TB/s** |\r\n\r\n- [H100 whitepaper](https://resources.nvidia.com/en-us-tensor-core/nvidia-tensor-core-gpu-datasheet)\r\n- [H200 whitepaper](https://resources.nvidia.com/en-us-data-center-overview-mc/en-us-data-center-overview/hpc-datasheet-sc23-h200)",
+    "labels": [
+      "good first issue",
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2024-12-11T14:11:42+00:00",
+    "closed_at": null,
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2450/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2450"
+  },
+  {
+    "number": 2007,
+    "title": "[Feature] Regex stop condition",
+    "body": "### Checklist\r\n\r\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 2. Please use English, otherwise it will be closed.\r\n\r\n### Motivation\r\n\r\nHi! This would be awesome, as it would address following problems:\r\n- most custom stopping conditions can be expressed as a regex\r\n- handling custom stopping in a streaming response does not work as quickly as a backend based stopping condition would\r\n\r\n(at least in my testing, a NodeJS client (with breaking the AsyncGenerator for await loop) can not stop the SGLang streaming generation the same way it works with the official OpenAI API)\r\n\r\nI hope this is easy to implement\r\n\r\n### Related resources\r\n\r\n_No response_",
+    "labels": [
+      "good first issue"
+    ],
+    "state": "open",
+    "created_at": "2024-11-11T23:54:02+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2007/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2007"
+  },
+  {
+    "number": 2929,
+    "title": "[Feature] Lora Development Roadmap",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Features \n\n- [x] triton kernel & benchmark #3161 @Fridge003 \n- [x] accuracy alignment #2671 #3413 @Fridge003 \n- [x] test cases enhancement #3414 #3652 #4492 #4925 @aoshen524 @jcbjcbjc\n- [x] support multi-rank adaptors #4492 @jcbjcbjc\n- [x] support tensor parallel #2931 #4274 @aoshen524 \n- [ ] compatibility with radix attention #2880 @Sunt-ing @jcbjcbjc\n- [x] compatibility with cuda graph #3282 #4115 @Qiaolin-Yu  @Beichen-Ma \n- [x] support phi4mm #6544 @lifuhuang \n- [ ] support lora for embedding layer #3438 @Beichen-Ma \n- [x] load/unload #7412 #7446 @lifuhuang  @Fridge003 \n- [ ] optimizing speed #2372 #3323 #6961 @jcbjcbjc @Fridge003 @lifuhuang \n- [ ] unified paging (support lora with different ranks) #3647 @Sunt-ing @jcbjcbjc\n- [ ] OpenAI compatible API\n- [x] Documentation #5521 @Fridge003 \n\n### Related resources\n\nPrior todo list can be referred to #1307 and #1728",
+    "labels": [
+      "help wanted",
+      "lora"
+    ],
+    "state": "open",
+    "created_at": "2025-01-16T21:30:56+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2929/reactions",
+      "total_count": 14,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 6,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2929"
+  },
+  {
+    "number": 2898,
+    "title": "[Feature] support MiniMax",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nref https://github.com/MiniMax-AI/MiniMax-01\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2025-01-15T06:36:10+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2898/reactions",
+      "total_count": 18,
+      "+1": 18,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2898"
+  },
+  {
+    "number": 1715,
+    "title": "[Feature] Cascade attention kernels ",
+    "body": "We would like to integrate the [cascade attention kernel](https://flashinfer.ai/2024/02/02/cascade-inference.html) from flashinfer.\r\n\r\nCode pointers:\r\n- Attention backend in sglang: https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/layers/attention/flashinfer_backend.py\r\n- Usage of cascade: https://docs.flashinfer.ai/api/python/cascade.html\r\n",
+    "labels": [
+      "good first issue",
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2024-10-19T16:30:29+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1715/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1715"
+  },
+  {
+    "number": 2880,
+    "title": "[Bug] Why can't I use multi-lora adapter and radix attention together?",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nWhy can't I use multi-lora adapter and radix attention together?\r\nIf I have multi-lora adapters, why not just insert the ID of the LoRA adapter before the first token?\r\n\r\nWhen using a multi-lora adapter, it is extremely slow because radix attention cannot be used.\n\n### Reproduction\n\nhttps://github.com/sgl-project/sglang/blob/v0.4.1.post5/python/sglang/srt/server_args.py#L876-L881\n\n### Environment\n\n```\r\nroot@33e74a81f115:/sglang/python# python3 -m sglang.check_env                                                                                                                                                         \r\n\r\nPython: 3.10.16 (main, Dec  4 2024, 08:53:37) [GCC 9.4.0]\r\nCUDA available: True\r\nGPU 0: NVIDIA A100-SXM4-80GB\r\nGPU 0 Compute Capability: 8.0\r\nCUDA_HOME: /usr/local/cuda\r\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\r\nCUDA Driver Version: 550.127.05\r\nPyTorch: 2.5.1+cu124\r\nsglang: 0.4.0.post2\r\nflashinfer: 0.1.6+cu124torch2.4\r\ntriton: 3.1.0\r\ntransformers: 4.47.0\r\ntorchao: 0.6.1\r\nnumpy: 1.26.4\r\naiohttp: 3.11.10\r\nfastapi: 0.115.6\r\nhf_transfer: 0.1.8\r\nhuggingface_hub: 0.26.3\r\ninteregular: 0.3.3\r\nmodelscope: 1.21.0\r\norjson: 3.10.12\r\npackaging: 24.2\r\npsutil: 6.1.0\r\npydantic: 2.10.3\r\nmultipart: 0.0.19\r\nzmq: 26.2.0\r\nuvicorn: 0.32.1\r\nuvloop: 0.21.0\r\nvllm: 0.6.4.post1\r\nopenai: 1.57.0\r\nanthropic: 0.40.0\r\ndecord: 0.6.0\r\n```",
+    "labels": [
+      "bug",
+      "lora"
+    ],
+    "state": "open",
+    "created_at": "2025-01-14T07:03:52+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2880/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2880"
+  },
+  {
+    "number": 2090,
+    "title": "[Bug] disk cache io error when simultaneously loading lots of  sglang offline engine",
+    "body": "### Checklist\r\n\r\n- [x] 1. I have searched related issues but cannot get the expected help.\r\n- [X] 2. The bug has not been fixed in the latest version.\r\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\r\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 5. Please use English, otherwise it will be closed.\r\n\r\n### Describe the bug\r\n\r\nwhen I use slurm to launch 32 or 192 jobs for offline batch inference, which simultaneously load sgl.engine. I met the following error although I set disable_disk_cache=True. If I only run one job for this, it will not meet this error.\r\n\r\n\r\nThe error is as follows:\r\n\r\n```Python\r\nTraceback (most recent call last):\r\n  File \"/home/xiaonan/mycode/code_data_synthesis/generate_python_docstring_slurm_task.py\", line 64, in <module>\r\n    llm = sgl.Engine(model_path=args.model_name, tp_size=args.tp_size, disable_disk_cache=True)\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/sglang/api.py\", line 48, in Engine\r\n    from sglang.srt.server import Engine\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/sglang/srt/server.py\", line 49, in <module>\r\n    from sglang.srt.managers.data_parallel_controller import (\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/sglang/srt/managers/data_parallel_controller.py\", line 24, in <module>\r\n    from sglang.srt.managers.io_struct import (\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/sglang/srt/managers/io_struct.py\", line 26, in <module>\r\n    from sglang.srt.managers.schedule_batch import BaseFinishReason\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/sglang/srt/managers/schedule_batch.py\", line 40, in <module>\r\n    from sglang.srt.constrained.grammar import Grammar\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/sglang/srt/constrained/__init__.py\", line 24, in <module>\r\n    from outlines.caching import cache as disk_cache\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/outlines/__init__.py\", line 2, in <module>\r\n    import outlines.generate\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/outlines/generate/__init__.py\", line 2, in <module>\r\n    from .cfg import cfg\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/outlines/generate/cfg.py\", line 3, in <module>\r\n    from outlines.fsm.guide import CFGGuide\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/outlines/fsm/guide.py\", line 109, in <module>\r\n    def create_states_mapping(\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/outlines/caching.py\", line 93, in decorator\r\n    memory = get_cache()\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/outlines/caching.py\", line 55, in get_cache\r\n    memory = Cache(\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/diskcache/core.py\", line 499, in __init__\r\n    sql(query, (key, value))\r\n  File \"/home/xiaonan/miniconda3/envs/llm_training_39/lib/python3.9/site-packages/diskcache/core.py\", line 666, in _execute_with_retry\r\n    return sql(statement, *args, **kwargs)\r\nsqlite3.OperationalError: disk I/O error\r\n```\r\n\r\n\r\n### Reproduction\r\n\r\nPython:\r\nslurm_task.py\r\n```Python\r\nimport sglang as sgl\r\nllm = sgl.Engine(model_path='Qwen/Qwen2.5-Coder-32B-Instruct', tp_size=2, disable_disk_cache=True)\r\n```\r\n\r\nSbatch Script:\r\n\r\n```Shell\r\n#!/bin/bash\r\n#SBATCH --job-name=task1  # job name\r\n#SBATCH --output=slurm_logs/%A_%a/output.txt     # output file \r\n#SBATCH --error=slurm_logs/%A_%a/error.txt       # error file\r\n#SBATCH --array=0-191%192\r\n#SBATCH --ntasks=1\r\n#SBATCH --gres=gpu:2\r\n#SBATCH --cpus-per-task=16            \r\n\r\nPython slurm_task.py\r\n```\r\n\r\n### Environment\r\n\r\n2024-11-19 08:47:37.576574: I tensorflow/stream_executor/platform/default/dso_loader.cc:53] Successfully opened dynamic library libcudart.so.11.0\r\nPython: 3.9.19 (main, May  6 2024, 19:43:03) [GCC 11.2.0]\r\nCUDA available: False\r\nPyTorch: 2.4.0\r\nsglang: 0.3.5\r\nflashinfer: 0.1.6+cu124torch2.4\r\ntriton: 3.0.0\r\ntransformers: 4.46.2\r\nrequests: 2.32.3\r\ntqdm: 4.67.0\r\nnumpy: 1.23.0\r\naiohttp: 3.10.5\r\nfastapi: 0.115.4\r\nhf_transfer: 0.1.8\r\nhuggingface_hub: 0.24.6\r\ninteregular: 0.3.3\r\npackaging: 24.1\r\nPIL: 10.4.0\r\npsutil: 6.0.0\r\npydantic: 2.9.2\r\nuvicorn: 0.32.0\r\nuvloop: 0.21.0\r\nzmq: 26.2.0\r\nvllm: 0.6.3.post1\r\nmultipart: 0.0.17\r\nopenai: 1.54.4\r\nanthropic: 0.39.0\r\nHypervisor vendor: KVM\r\nulimit soft: 1024",
+    "labels": [
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "open",
+    "created_at": "2024-11-19T08:46:49+00:00",
+    "closed_at": null,
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2090/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2090"
+  },
+  {
+    "number": 1608,
+    "title": "[Feature] Log input text instead of input_ids when using openai chat apis",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n\r\nI checked the docker logs and tried to find the request text in the logs, but the logs showed text=None, but input_ids was returned. I want it to display the request text directly. What parameters should I add when starting it?\r\n\r\ndocker Logs\uff1a\r\n\r\n in=GenerateReqInput(text=None, input_ids=[151644, 8948, 198, 2610, 525, 264, 10950, 17847, 13, 151645, 198, 151644, 872, 198, 108386, 151645, 198, 151644, 77091, 198], image_data=None, sampling_params={'temperature': 0.0, 'max_new_tokens': None, 'min_new_tokens': 0, 'stop': [], 'stop_token_ids': [], 'top_p': 1.0, 'presence_penalty': 0.0, 'frequency_penalty': 0.0, 'repetition_penalty': 1.0, 'regex': None, 'n': 1}, rid='640143780ce94c81a56689020f8a5b09', return_logprob=False, logprob_start_len=-1, top_logprobs_num=0, return_text_in_logprobs=True, stream=False, modalities=[], is_single=True, lora_path=None), out={'text': '\u4f60\u597d\uff0c\u6709\u4ec0\u4e48\u6211\u53ef\u4ee5\u5e2e\u52a9\u4f60\u7684\u5417\uff1f', 'meta_info': {'prompt_tokens': 20, 'completion_tokens': 9, 'completion_tokens_wo_jump_forward': 9, 'finish_reason': {'type': 'stop', 'matched': 151645}, 'id': '640143780ce94c81a56689020f8a5b09'}, 'index': 0}\r\nINFO:     172.18.0.1:59398 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\r\n\r\n\r\n\r\n\n\n### Reproduction\n\ndocker run\uff1a\r\n\r\ndocker run -itd --name n72 --runtime nvidia --gpus '\"device=0,1,2,6\"'  \\\r\n    -p 1090:30000 \\\r\n    -v /mnt/data1/home/fusion_large:/32k \\\r\n    --ipc=host \\\r\n    lmsysorg/sglang:latest \\\r\n    python3 -m sglang.launch_server --model-path /32k --host 0.0.0.0 --port 30000  --dtype bfloat16 --tensor-parallel-size 4   --served-model-name cosmic-32k --log-requests \r\n\n\n### Environment\n\nImage\uff1a\r\nsglang v0.3.0 \r\n\r\nOS\uff1a\r\ncat /etc/os-release\r\nNAME=\"TencentOS Server\"\r\nVERSION=\"2.4\"\r\nID=\"tencentos\"\r\nID_LIKE=\"rhel fedora centos tlinux\"\r\nVERSION_ID=\"2.4\"\r\nPRETTY_NAME=\"TencentOS Server 2.4\"\r\nANSI_COLOR=\"0;31\"\r\nCPE_NAME=\"cpe:/o:tencentos:tencentos:2\"\r\nHOME_URL=\"https://cloud.tencent.com/product/ts\"",
+    "labels": [
+      "good first issue"
+    ],
+    "state": "open",
+    "created_at": "2024-10-08T11:16:46+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1608/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1608"
+  },
+  {
+    "number": 2271,
+    "title": "[Kernel] Optimize triton decoding kernels for long context",
+    "body": "We noticed the current triton decoding kernel is very slow on long context. This is due to a missing flash decoding like optimization.\r\n\r\n## Reproduce\r\nWe test the decoding speed with a context length of 200 and 2,000.\r\n\r\ntriton backend: The decoding speed drops from 147.64 token/s to 126.41 token/s\r\n```\r\n$ python3 -m sglang.bench_offline_throughput --model meta-llama/Llama-3.1-8B-Instruct --dataset-name random --num-prompt 1 --random-input 128 --random-output 2048 --random-range 1 --attention-backend triton\r\n\r\n[2024-11-30 05:10:04 TP0] Decode batch. #running-req: 1, #token: 234, token usage: 0.00, gen throughput (token/s): 147.64, #queue-req: 0\r\n... \r\n[2024-11-30 05:10:18 TP0] Decode batch. #running-req: 1, #token: 2154, token usage: 0.00, gen throughput (token/s): 126.41, #queue-req: 0\r\n```\r\n\r\nflashinfer backend: The decoding speed only drops from 144.17 token/s to 143.35 token/s\r\n```\r\n$ python3 -m sglang.bench_offline_throughput --model meta-llama/Llama-3.1-8B-Instruct --dataset-name random --num-prompt 1 --random-input 128 --random-output 2048 --random-range 1\r\n\r\n[2024-11-30 05:11:40 TP0] Decode batch. #running-req: 1, #token: 234, token usage: 0.00, gen throughput (token/s): 144.17, #queue-req: 0\r\n...\r\n[2024-11-30 05:11:54 TP0] Decode batch. #running-req: 1, #token: 2154, token usage: 0.00, gen throughput (token/s): 143.35, #queue-req: 0\r\n```\r\n\r\n## Possible solutions\r\nWe can learn from the flash decoding triton kernel from lightllm and improve the [current triton decoding kernel](https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/layers/attention/triton_ops/decode_attention.py). Related links:\r\n- https://github.com/ModelTC/lightllm/blob/main/lightllm/models/llama/triton_kernel/gqa_flash_decoding.py\r\n- https://pytorch.org/blog/flash-decoding/\r\n- https://arxiv.org/pdf/2311.01282\r\n\r\n\r\n\r\n",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2024-11-30T06:04:27+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2271/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2271"
+  },
+  {
+    "number": 1108,
+    "title": "[Feature] Do we have any plan for supporting Phi3V?",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nDo we have any plan for supporting Phi3V?\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2024-08-15T05:03:47+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1108/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1108"
+  },
+  {
+    "number": 2109,
+    "title": "[Feature] Support for rerank models",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nvLLM has completion but no rerank, infinity has no completion but rerank, therefore sglang should have rerank\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue"
+    ],
+    "state": "open",
+    "created_at": "2024-11-21T06:45:30+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2109/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 2
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2109"
+  },
+  {
+    "number": 2729,
+    "title": "[Feature] Support bitsandbytes in QWen2 VL",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nSupport bitsandbytes in QWen2 VL\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "open",
+    "created_at": "2025-01-04T08:12:29+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2729/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2729"
+  },
+  {
+    "number": 2657,
+    "title": "[Feature] Add arguments mapping between SGLang / vllm / trt-llm",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThis is what I need to do for integrating SGLang into OpenRLHF. OpenRLHF already supports vllm. We need to add sglang. I need to map the server and sampling parameters from vllm to sglang. I think this is a good issue for us to let our users switch smoothly between mainstream engines.\r\n\r\n**I attached how I am doing right now. But it may be wrong.**\n\n### Related resources\n\n**The args Mapping from vllm to sglang**\r\n\r\nThese are the server parameters of vllm:\r\n\r\n```python\r\npretrain,\r\nnoset_visible_devices=noset_visible_devices,\r\ntrust_remote_code=True,\r\ntensor_parallel_size=tensor_parallel_size,\r\ndtype=\"bfloat16\",\r\nseed=seed + i,\r\nenable_prefix_caching=enable_prefix_caching,\r\nenforce_eager=enforce_eager,\r\nmax_model_len=max_model_len,\r\nbackend=backend,\r\n```        \r\n\r\nAmong them, pretrain is the model path, and this is my mapping in sglang:\r\n\r\n```python\r\n#! TODO chenyang check engine params\r\nsglang_params = {\r\n    \"model_path\": args[0],  # pretrain path\r\n    \"trust_remote_code\": kwargs.get(\"trust_remote_code\", True),\r\n    \"dtype\": kwargs.get(\"dtype\", \"auto\"),\r\n    \"tp_size\": kwargs.get(\"tensor_parallel_size\", 1),\r\n    \"device\": \"cuda\",\r\n    \"disable_radix_cache\": not kwargs.get(\"enable_prefix_caching\", False),\r\n    \"random_seed\": kwargs.get(\"seed\", 42),\r\n    \"disable_cuda_graph\": not kwargs.get(\"enforce_eager\", False),\r\n    \"disable_cuda_graph_padding\": not kwargs.get(\"enable_prefix_caching\", False),\r\n    \"context_length\": kwargs.get(\"max_model_len\", None),\r\n    \"log_level\": \"info\",\r\n    \"return_token_ids\": True,\r\n}\r\nself.llm = sglang.Engine(**sglang_params)\r\n```\r\n\r\n</details>\r\n\r\n**The Sampling Params Mapping from vllm to sglang**\r\n\r\n```python\r\nif self.backend == \"vllm\":\r\n    outputs = self.llm.generate(\r\n        sampling_params=kwargs[\"sampling_params\"], prompt_token_ids=kwargs[\"prompt_token_ids\"]\r\n    )\r\nelif self.backend == \"sglang\":\r\n    # Note that sglang sampling params are different from vllm\r\n    sampling_params = kwargs[\"sampling_params\"]\r\n    all_prompts = kwargs[\"all_prompts\"]\r\n\r\n    # min_tokens, include_stop_str_in_output is not used in sglang\r\n\r\n    sampling_params = dict(\r\n        max_new_tokens=sampling_params.max_tokens,\r\n        top_p=sampling_params.top_p,\r\n        top_k=sampling_params.top_k,\r\n        temperature=sampling_params.temperature,\r\n        repetition_penalty=sampling_params.repetition_penalty,\r\n        skip_special_tokens=sampling_params.skip_special_tokens,\r\n    )\r\n    outputs = self.llm.generate(all_prompts, sampling_params)\r\n```\r\n\r\nOf course, the sampling params passed in from the front end are as follows:\r\n\r\n```python\r\nsampling_params = SamplingParams(\r\n    temperature=kwargs.get(\"temperature\", 1.0),\r\n    top_p=kwargs.get(\"top_p\", 1.0),\r\n    top_k=kwargs.get(\"top_k\", -1),\r\n    max_tokens=kwargs.get(\"max_new_tokens\", 1024),\r\n    min_tokens=kwargs.get(\"min_new_tokens\", 1),\r\n    skip_special_tokens=kwargs.get(\"skip_special_tokens\", False),\r\n    include_stop_str_in_output=True,\r\n)\r\n```\r\n\r\n**There may be problems with my these mappings. We need documentation as a guide.** ",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted",
+      "RLHF"
+    ],
+    "state": "open",
+    "created_at": "2024-12-30T07:23:00+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2657/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2657"
+  },
+  {
+    "number": 2294,
+    "title": "[Bug] EOFError",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n```\r\n[2024-12-01 09:13:28 TP0] Init torch distributed begin.\r\n[2024-12-01 09:13:28 TP2] Init torch distributed begin.\r\n[2024-12-01 09:13:29 TP7] Init torch distributed begin.\r\n[2024-12-01 09:13:29 TP1] Init torch distributed begin.\r\n[2024-12-01 09:13:29 TP6] Init torch distributed begin.\r\n[2024-12-01 09:13:30 TP4] Init torch distributed begin.\r\n[2024-12-01 09:13:30 TP3] Init torch distributed begin.\r\n[2024-12-01 09:13:30 TP5] Init torch distributed begin.\r\nTraceback (most recent call last):\r\n  File \"/usr/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\r\n    return _run_code(code, main_globals, None,\r\n  File \"/usr/lib/python3.10/runpy.py\", line 86, in _run_code\r\n    exec(code, run_globals)\r\n  File \"/home/ubuntu/.local/lib/python3.10/site-packages/sglang/launch_server.py\", line 13, in <module>\r\n    launch_server(server_args)\r\n  File \"/home/ubuntu/.local/lib/python3.10/site-packages/sglang/srt/server.py\", line 487, in launch_server\r\n    launch_engine(server_args=server_args)\r\n  File \"/home/ubuntu/.local/lib/python3.10/site-packages/sglang/srt/server.py\", line 456, in launch_engine\r\n    data = scheduler_pipe_readers[i].recv()\r\n  File \"/usr/lib/python3.10/multiprocessing/connection.py\", line 250, in recv\r\n    buf = self._recv_bytes()\r\n  File \"/usr/lib/python3.10/multiprocessing/connection.py\", line 414, in _recv_bytes\r\n    buf = self._recv(4)\r\n  File \"/usr/lib/python3.10/multiprocessing/connection.py\", line 383, in _recv\r\n    raise EOFError\r\nEOFError\r\n```\n\n### Reproduction\n\n`python -m sglang.launch_server --model-path google/gemma-2-27b-it --tp 8`\n\n### Environment\n\n```\r\n2024-12-01 09:14:57.446738: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.\r\n2024-12-01 09:14:57.460649: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:485] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\r\n2024-12-01 09:14:57.477200: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:8454] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\r\n2024-12-01 09:14:57.482288: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1452] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\r\n2024-12-01 09:14:57.495378: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.\r\nTo enable the following instructions: AVX512F AVX512_VNNI AVX512_BF16 AVX512_FP16 AVX_VNNI, in other operations, rebuild TensorFlow with the appropriate compiler flags.\r\n/usr/lib/python3/dist-packages/scipy/__init__.py:146: UserWarning: A NumPy version >=1.17.3 and <1.25.0 is required for this version of SciPy (detected version 1.26.4\r\n  warnings.warn(f\"A NumPy version >={np_minversion} and <{np_maxversion}\"\r\nPython: 3.10.12 (main, Nov  6 2024, 20:22:13) [GCC 11.4.0]\r\nCUDA available: True\r\nGPU 0,1,2,3,4,5,6,7: NVIDIA H100 80GB HBM3\r\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\r\nCUDA_HOME: /usr\r\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\r\nCUDA Driver Version: 550.127.05\r\nPyTorch: 2.5.1+cu124\r\nsglang: 0.3.6.post2\r\nflashinfer: 0.1.6+cu124torch2.4\r\ntriton: 3.1.0\r\ntransformers: 4.46.3\r\ntorchao: 0.6.1\r\nnumpy: 1.26.4\r\naiohttp: 3.11.8\r\nfastapi: 0.115.5\r\nhf_transfer: 0.1.8\r\nhuggingface_hub: 0.26.3\r\ninteregular: 0.3.3\r\nmodelscope: 1.20.1\r\norjson: 3.10.12\r\npackaging: 21.3\r\npsutil: 5.9.0\r\npydantic: 2.10.2\r\nmultipart: 0.0.19\r\nzmq: 26.2.0\r\nuvicorn: 0.32.1\r\nuvloop: 0.21.0\r\nvllm: 0.6.4.post1\r\nopenai: 1.46.0\r\nanthropic: 0.39.0\r\ndecord: 0.6.0\r\nNVIDIA Topology: \r\n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    NIC0    CPU Affinity    NUMA Affinity   GPU NUMA ID\r\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    SYS     0-103   0               N/A\r\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    SYS     0-103   0               N/A\r\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    SYS     0-103   0               N/A\r\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    SYS     0-103   0               N/A\r\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    SYS     104-207 1               N/A\r\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    SYS     104-207 1               N/A\r\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    SYS     104-207 1               N/A\r\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      SYS     104-207 1               N/A\r\nNIC0    SYS     SYS     SYS     SYS     SYS     SYS     SYS     SYS      X \r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n\r\nNIC Legend:\r\n\r\n  NIC0: mlx5_0\r\n\r\n\r\nHypervisor vendor: KVM\r\nulimit soft: 1048576\r\n```",
+    "labels": [
+      "bug"
+    ],
+    "state": "open",
+    "created_at": "2024-12-01T09:15:30+00:00",
+    "closed_at": null,
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2294/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2294"
+  },
+  {
+    "number": 2219,
+    "title": "[Feature] support torchao for qwen2 models",
+    "body": "I used one A30 card, and used Qwen2-7B-Instruct, the speed with quantization seems no different\r\n\r\npython3 -m sglang.bench_latency --model ../Qwen2-7B-Instruct --batch-size 1 --input-len 200 --output-len 100\r\nBenchmark ...\r\nPrefill. latency: 0.03508 s, throughput:   5700.84 token/s\r\nDecode.  latency: 0.01952 s, throughput:     51.23 token/s\r\nDecode.  latency: 0.01947 s, throughput:     51.37 token/s\r\nDecode.  latency: 0.01939 s, throughput:     51.58 token/s\r\nDecode.  latency: 0.01933 s, throughput:     51.74 token/s\r\nDecode.  latency: 0.01928 s, throughput:     51.87 token/s\r\nDecode.  median latency: 0.01924 s, median throughput:     51.98 token/s\r\nTotal. latency:  1.942 s, throughput:    154.52 token/s\r\n\r\npython3 -m sglang.bench_latency --model ../Qwen2-7B-Instruct --batch-size 1 --input-len 200 --output-len 100 --enable-torch-compile\r\nBenchmark ...\r\nPrefill. latency: 0.03655 s, throughput:   5471.84 token/s\r\nDecode.  latency: 0.01852 s, throughput:     54.00 token/s\r\nDecode.  latency: 0.01847 s, throughput:     54.14 token/s\r\nDecode.  latency: 0.01845 s, throughput:     54.21 token/s\r\nDecode.  latency: 0.01843 s, throughput:     54.26 token/s\r\nDecode.  latency: 0.01838 s, throughput:     54.39 token/s\r\nDecode.  median latency: 0.01836 s, median throughput:     54.46 token/s\r\nTotal. latency:  1.855 s, throughput:    161.71 token/s\r\n\r\npython3 -m sglang.bench_latency --model ../Qwen2-7B-Instruct --batch-size 1 --input-len 200 --output-len 100 --enable-torch-compile --torchao-config int8wo\r\nBenchmark ...\r\nPrefill. latency: 0.04469 s, throughput:   4475.31 token/s\r\nDecode.  latency: 0.01860 s, throughput:     53.77 token/s\r\nDecode.  latency: 0.01849 s, throughput:     54.09 token/s\r\nDecode.  latency: 0.01844 s, throughput:     54.24 token/s\r\nDecode.  latency: 0.01841 s, throughput:     54.32 token/s\r\nDecode.  latency: 0.01837 s, throughput:     54.45 token/s\r\nDecode.  median latency: 0.01836 s, median throughput:     54.46 token/s\r\nTotal. latency:  1.863 s, throughput:    160.99 token/s\r\n\r\npython3 -m sglang.bench_latency --model ../Qwen2-7B-Instruct --batch-size 1 --input-len 200 --output-len 100 --enable-torch-compile --torchao-config int4wo\r\nBenchmark ...\r\nPrefill. latency: 0.03558 s, throughput:   5621.52 token/s\r\nDecode.  latency: 0.01855 s, throughput:     53.91 token/s\r\nDecode.  latency: 0.01852 s, throughput:     54.01 token/s\r\nDecode.  latency: 0.01845 s, throughput:     54.20 token/s\r\nDecode.  latency: 0.01842 s, throughput:     54.28 token/s\r\nDecode.  latency: 0.01841 s, throughput:     54.33 token/s\r\nDecode.  median latency: 0.01837 s, median throughput:     54.44 token/s\r\nTotal. latency:  1.855 s, throughput:    161.72 token/s",
+    "labels": [
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "open",
+    "created_at": "2024-11-27T09:19:01+00:00",
+    "closed_at": null,
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2219/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2219"
+  },
+  {
+    "number": 2772,
+    "title": "[willing to PR] Add Lookahead speculative decoding",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nn-gram based speculative is very effective in retrieval augmented generation(RAG). The cost of generating draft tokens is relatively low compared to eagle and has a great potential for accelerating token generation in RAG. Ant group has proposed the Trie-based retrieval and verification mechanism. I want to adopt it to SGLang.\n\n### Related resources\n\n[Lookahead: An Inference Acceleration Framework for Large Language Model with Lossless Generation Accuracy](https://arxiv.org/abs/2312.12728)",
+    "labels": [
+      "enhancement",
+      "good first issue"
+    ],
+    "state": "open",
+    "created_at": "2025-01-07T08:38:49+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2772/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2772"
+  }
+]

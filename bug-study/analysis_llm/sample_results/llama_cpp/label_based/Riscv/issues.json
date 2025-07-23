@@ -1,0 +1,30 @@
+[
+  {
+    "number": 12693,
+    "title": "Compile bug: RISCV cross-compile warnings cause build failure",
+    "body": "### Git commit\n\n9c4cef4602c77068e1c6b91b2d8e707b493f6fcf\n\n### Operating systems\n\nLinux\n\n### GGML backends\n\nCPU\n\n### Problem description & steps to reproduce\n\nI am updating the CI with cross-compile builds for RISCV regression tests (see #12428 ) and a build error is occurring due to some RISCV macros/functions. Since I am not familiar with RISCV functions in question, I am deferring this fix to folks who know that platform better.\n\n\n### First Bad Commit\n\n_No response_\n\n### Compile command\n\n```shell\nPlease see the github workflow here: https://github.com/ggml-org/llama.cpp/pull/12428/files#diff-245fd2c5accd266a35983ed2891af1c8f8b41af027aa393075f15a00b38ff817\n```\n\n### Relevant log output\n\n```shell\n[ 12%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu-quants.c.o\n/home/runner/work/llama.cpp/llama.cpp/ggml/src/ggml-cpu/ggml-cpu-quants.c: In function \u2018ggml_vec_dot_q5_0_q8_0\u2019:\n/home/runner/work/llama.cpp/llama.cpp/ggml/src/ggml-cpu/ggml-cpu-quants.c:3141:19: error: implicit declaration of function \u2018__riscv_vcreate_v_i8m1_i8m2\u2019; did you mean \u2018__riscv_vset_v_i8m1_i8m2\u2019? [-Werror=implicit-function-declaration]\n 3141 |             v0c = __riscv_vcreate_v_i8m1_i8m2(v0l, v0h);\n      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~\n      |                   __riscv_vset_v_i8m1_i8m2\n/home/runner/work/llama.cpp/llama.cpp/ggml/src/ggml-cpu/ggml-cpu-quants.c:3141:19: error: incompatible types when assigning to type \u2018vint8m2_t\u2019 from type \u2018int\u2019\n/home/runner/work/llama.cpp/llama.cpp/ggml/src/ggml-cpu/ggml-cpu-quants.c: In function \u2018ggml_vec_dot_q5_1_q8_1\u2019:\n/home/runner/work/llama.cpp/llama.cpp/ggml/src/ggml-cpu/ggml-cpu-quants.c:3480:19: error: incompatible types when assigning to type \u2018vint8m2_t\u2019 from type \u2018int\u2019\n 3480 |             v0c = __riscv_vcreate_v_i8m1_i8m2(v0l, v0h);\n      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~\ncc1: some warnings being treated as errors\n```",
+    "labels": [
+      "good first issue",
+      "build",
+      "Riscv"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-01T14:20:59+00:00",
+    "closed_at": "2025-04-03T17:19:00+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12693/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12693"
+  }
+]

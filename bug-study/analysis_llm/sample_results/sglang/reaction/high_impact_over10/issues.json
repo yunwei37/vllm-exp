@@ -1,0 +1,787 @@
+[
+  {
+    "number": 2389,
+    "title": "[Feature] SGLang Router design discussion",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\n@ispobock  and I had a brief discussion about the current design and implementation of the SGLang Router.\r\n\r\nI think the main concerns currently are as follows, before large-scale deployment.\r\n\r\n- The current Router is stateful, which means I cannot deploy the Router like scaling a stateless service.\r\nMay we consider storing the state of the Router in services like Redis, DB, or etcd here?\r\n\r\n- The current Router is at the cluster level. Although there are replicas, when the master fails, a replica can be used.\r\nImagine a real deployment scenario, such as one used by actual customers, where the deployment requires simultaneous use of AWS, GCP, and Oracle. The data centers are distributed across the Western US, Central US, and Eastern US. There is a risk of cloud service providers going down as well as data center outages. Additionally, there is consideration for network communication latency between different regions.\r\n\r\nThese issues cannot be well resolved under the current Router design, and to truly use the Router for large-scale deployment, these problems cannot be avoided.\r\n\r\nThis issue is just a starting point to raise some practical deployment requirements from the industry. We can discuss more detailed designs offline, and if the community has similar feedback or needs, they are welcome to join the discussion on the [Slack channel](https://join.slack.com/t/sgl-fru7574/shared_invite/zt-2rtikx2pv-DUfPrhx2SaNAq~47YtV1XQ). Thanks! cc @ByronHsu \n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-07T11:53:13+00:00",
+    "closed_at": "2025-04-06T00:19:37+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2389/reactions",
+      "total_count": 12,
+      "+1": 12,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2389"
+  },
+  {
+    "number": 634,
+    "title": "Development  Roadmap (2024 Q3)",
+    "body": "Here is the development roadmap for 2024 Q3. Contributions and feedback are welcome.\r\n\r\n## Server API\r\n - [ ] Add APIs for using the inference engine in a single script without launching a separate server. See also [examples](https://docs.vllm.ai/en/latest/getting_started/examples/offline_inference.html).\r\n   - #1127 \r\n - [x] Support most OpenAI APIs: Batch, completion, chat, embedding\r\n   - #699  \r\n   - #640 \r\n   - #852 \r\n   - #916 \r\n   - #997\r\n- [ ] Support directly taking embedding as inputs. #745\r\n- [x] Support updating the model weights without relaunching the server. @shanyu-sys \r\n   - #1157 \r\n- [ ] Support Mistral endpoint in the language frontend\r\n## Performance\r\n- [x] Improve time-to-first-token in streaming mode with better scheduling.\r\n  - #1339\r\n  - #1345\r\n- [x] Implement chunked prefill. @hnyls2002 @vikranth22446 \r\n   - #800\r\n   - #811 \r\n   - #1040 \r\n   - #1013 \r\n- [ ] Implement speculative decoding. See also a [prototype](https://github.com/sgl-project/sglang/pull/270).\r\n    - #859\r\n## Parallelism\r\n- [ ] Support sequence parallelism for long context models.\r\n    - #1041\r\n## Quantization\r\n- [x] Support W8A16, W4A16 weight-only integer quantization. @zhyncs \r\n  - #1341 \r\n- [ ] Support W4A8 quantization with fp8 activation and int4 weight.\r\n- [x] Support fp8/fp4 KV cache quantization. int4/int8 is low priority. Currently we've supported fp8 e5m2, and we should also support fp8 e4m3. @ispobock \r\n  - #1204\r\n## Observability\r\n- [ ] Integrate Grafana / Prometheus\r\n  - #1461 \r\n## Model Coverage\r\n- [x] Support interleaved window attention (gemma). @Ying1123 \r\n  - #1056 \r\n  - #1090 \r\n  - #1112 \r\n  - #1151 (delayed to Q4, which is dependent on new memory manager)\r\n- Language Models\r\n  - [ ] Mamba models\r\n  - [x] Deepseek models\r\n     - #689 \r\n     - #693 \r\n     - #905 \r\n     - #1138\r\n     - #1285\r\n- Vision Language Models\r\n  - [x] [LLaVA-OneVision](https://llava-vl.github.io/blog/2024-08-05-llava-onevision/)\r\n    - #1123  \r\n  - [ ] [CogVLM2](https://github.com/THUDM/CogVLM2)\r\n  - [ ] [Cambrian-1](https://cambrian-mllm.github.io/)\r\n  - [ ] Phi-vision\r\n- [x] Embedding models\r\n  - #983 \r\n  - #987 \r\n  - #988 \r\n  - #997 \r\n  - #1014 \r\n  - #1186 \r\n## Hardware Coverage\r\n- [x] AMD support\r\n  - #1420\r\n## Language API\r\n- [ ] Function calling. Add `tools` argument in `sgl.gen`. See also [guidance](https://github.com/guidance-ai/guidance/blob/d1bbe1c698cbb201f89556d71193993e78c0686b/README.md?plain=1#L102) and [Claudette](https://www.answer.ai/posts/2024-06-21-claudette.html). For OpenAI models, we can translate to their function calling API (https://platform.openai.com/docs/guides/function-calling). For local models, we can use SGLang primitives (regex, select) and constrained decoding to implement a similar workflow. Or we can interrupt the decoding process to replace it with function callings. @Yiyun-Liang \r\n  - #573 \r\n- [ ] Support sending a full serialized SGL program to the server.\r\n- [x] Constraint decoding\r\n  - #1125 \r\n## LoRA Support\r\n- [x] Port multi-LoRA serving from [S-LoRA](https://github.com/S-LoRA/S-LoRA) (Full optimizations will be in Q4 planning). @Ying1123 \r\n  - #1307 \r\n  - #1433 \r\n## Usage examples\r\n- [ ] Add more usage examples (e.g., [parallel JSON decoding](https://github.com/varunshenoy/super-json-mode/issues/8), [auto parallel decoding](https://arxiv.org/abs/2401.06761), [Self-Discover: Large Language Models Self-Compose Reasoning Structures](https://arxiv.org/abs/2402.03620)).\r\n## Others\r\n- [x] Setup CI. @zhyncs @hnyls2002 @merrymercy @Ying1123 \r\n- [x] Documentation website.\r\n- Compiler mode optimizations for the language. (Delayed to Q4)\r\n",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-07-17T02:15:39+00:00",
+    "closed_at": "2024-11-01T05:56:56+00:00",
+    "comments": 19,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/634/reactions",
+      "total_count": 18,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 18,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/634"
+  },
+  {
+    "number": 8004,
+    "title": "[WIP] [Roadmap] Supporting Ascend NPU on 2025 H2",
+    "body": "# SGLang NPU support on 2025 H2\n\nDuring 2025 H1, we have contributed initial supports for NPU ([#3853](https://github.com/sgl-project/sglang/pull/3853), [#7022](https://github.com/sgl-project/sglang/pull/7022)), which make it possible for users to run SGLang on NPU hardware.\n\nOur goal on 2025 H2 is to provide a seamless running experience on NPUs, and here is a rough development roadmap:\n\n## CI on NPU hardware\n\n- [ ] [**_July_**] Enable autoscaling runners #7935 \n- [ ] E2E/unittest test coverage\n\n## Model support\n\n*We will start with supporting the hotest models*\n\n- [ ] [**_July_**] DeepseekV2 / V3 family\n- [ ] [**_July_**] Qwen3 family\n- [ ] [**_July_**] Qwen3-MoE family\n\n## User / Developer experience\n\n*User experience is also to be taken into our consideration, containers and documents will be provided soon*\n\n- [ ] [**_July_**] Docker image\n- [ ] [**_July_**] Docs (Quickstart / Installation / tutorials\u2026)\n\n## Performance Enhancement\n\n### Attention Backend\n\n- [x] [**_July_**] Ascend Attention Backend implementation w/ PA & MLA fused kernels #7722 \n\n### Parallelism\n\n- [ ] [**_September_**] Support DeepEP expert parallelism\n- [ ] [**_September_**] Optimization on DeepEPMoE implementation with fused kernels\n\n### Quantization\n\n- [x] [**_July_**] Support for Ascend-specific W8A8 quant method #7791 \n- [ ] [**_August_**] Support for AWQ quant method\n- [ ] [**_August_**] Support for GPTQ quant method\n\n### Cache\n\n- [x] [**_July_**] A new transfer-engine implementation supports Device-to-device transfer on NPUs #7795 \n- [ ] [**_November_**] A new cache pooling system supports HBM & DRAM mixed-pooling, coherent memory access and remote L3 cache direct copy to L1 cache on NPUs\n- [ ] [**_October_**] An optimized bucketing router policy for extremely uneven prompt length\n\n### Support Graph Mode\n\n- [ ] [**_November_**] NPU graph mode support\n\n### EPLB\n\n- [ ] [**_October_**] Support Expert Distribution Recorder on NPUs\n- [ ] [**_October_**] Support Async loading of experts' weights\n\n## Community\n\n- [ ] `#npu-support` is actively constructing on SGLang slack channel\n",
+    "labels": [],
+    "state": "open",
+    "created_at": "2025-07-14T03:17:24+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/8004/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/8004"
+  },
+  {
+    "number": 3140,
+    "title": "[Feature] GGUF Q4KM(4bit) format for deepseek R1 support",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nCan you support deepseek R1 Q4KM GGUF file\uff0chttps://huggingface.co/unsloth/DeepSeek-R1-GGUF\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-26T06:08:02+00:00",
+    "closed_at": "2025-04-22T00:18:35+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3140/reactions",
+      "total_count": 22,
+      "+1": 21,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3140"
+  },
+  {
+    "number": 7532,
+    "title": "SGLang Router Architecture Improvement Proposal",
+    "body": "# SGLang Router Architecture Improvement Proposal\n\n## Table of Contents\n1. [Summary](#summary)\n2. [Current Architecture Overview](#current-architecture-overview)\n3. [System Components](#system-components)\n4. [Request Flow Analysis](#request-flow-analysis)\n5. [Identified Pain Points](#identified-pain-points)\n6. [Proposed Improvements](#proposed-improvements)\n7. [Long-Term Vision](#long-term-vision)\n8. [Implementation Phases](#implementation-phases)\n9. [Risk Analysis](#risk-analysis)\n10. [Success Metrics](#success-metrics)\n11. [Conclusion](#conclusion)\n12. [Appendix: Architecture Diagrams](#appendix-architecture-diagrams)\n\n## Summary\n\nThis proposal outlines a architectural improvement plan for the SGLang Router, a high-performance load balancer that supports both traditional and disaggregated (Prefill-Decode) routing modes. The improvements focus on enhancing maintainability and extensibility without disrupting existing functionality. These changes lay the foundation for a long-term transformation where sgl-router evolves from a simple proxy into a full-featured OpenAI API server with native tool calling, session management, and direct gRPC communication with SGLang's backend services.\n\n## Current Architecture Overview\n\nThe SGLang Router currently operates as an HTTP proxy that distributes requests across multiple SGLang server instances. It supports both regular routing mode and prefill-decode (PD) disaggregated routing mode, with multiple load balancing policies including random, round-robin, cache-aware, and power-of-two selection. The implementation consists of several large monolithic files that mix concerns and make maintenance challenging. (See [Appendix](#appendix-architecture-diagrams) for detailed architecture diagrams)\n\n## System Components\n\n### 1. Entry Point (`lib.rs`)\nThe main entry point provides Python bindings through PyO3:\n\n```rust\n#[pyclass]\nstruct Router {\n    // Configuration\n    host: String,\n    port: u16,\n    worker_urls: Vec<String>,\n    policy: PolicyType,\n    \n    // PD Mode specific\n    pd_disaggregation: bool,\n    prefill_urls: Option<Vec<(String, Option<u16>)>>,\n    decode_urls: Option<Vec<String>>,\n    \n    // Policy parameters\n    cache_threshold: f32,\n    balance_abs_threshold: usize,\n    balance_rel_threshold: f32,\n    // ... more fields\n}\n```\n\n### 2. HTTP Server (`server.rs`)\nActix-web based server exposing multiple endpoints:\n\n```mermaid\ngraph LR\n    subgraph \"API Endpoints\"\n        subgraph \"OpenAI API\"\n            CC[\"/v1/chat/completions\"]\n            CO[\"/v1/completions\"]\n            GE[\"/generate\"]\n        end\n        \n        subgraph \"Management\"\n            AW[\"/add_worker\"]\n            RW[\"/remove_worker\"]\n            LW[\"/list_workers\"]\n        end\n        \n        subgraph \"Monitoring\"\n            HE[\"/health\"]\n            GL[\"/get_loads\"]\n            SI[\"/get_server_info\"]\n        end\n    end\n    \n    subgraph \"Request Processing\"\n        RP[\"Request Parser\"]\n        RA[\"Request Adapter\"]\n        RO[\"Router Selection\"]\n    end\n    \n    subgraph \"Response Handling\"\n        ST[\"Streaming\\n(SSE)\"]\n        JS[\"JSON\\nResponse\"]\n        ER[\"Error\\nHandler\"]\n    end\n    \n    %% Flow connections\n    CC --> RP\n    CO --> RP\n    GE --> RP\n\n    RP --> RA\n    RA --> RO\n\n    RO --> ST\n    RO --> JS\n    RO --> ER\n\n```\n\n### 3. Router Implementation (`router.rs`)\n\nThe router is implemented as an enum with four variants:\n\n```mermaid\nclassDiagram\n    class Router {\n        <<enumeration>>\n        Random\n        RoundRobin\n        CacheAware\n        PrefillDecode\n    }\n    \n    class Random {\n        -worker_urls: Arc~RwLock~Vec~String~~~\n        -timeout_secs: u64\n        -interval_secs: u64\n        +route(request) HttpResponse\n        +add_worker(url) Result\n        +remove_worker(url) Result\n    }\n    \n    class RoundRobin {\n        -worker_urls: Arc~RwLock~Vec~String~~~\n        -current_index: AtomicUsize\n        -timeout_secs: u64\n        +route(request) HttpResponse\n        +get_next_worker() String\n    }\n    \n    class CacheAware {\n        -worker_urls: Arc~RwLock~Vec~String~~~\n        -tree_map: Arc~DashMap~String, Tree~~\n        -running_queue: Arc~Mutex~HashMap~String, usize~~~\n        -config: CacheAwareConfig\n        +route(request) HttpResponse\n        +select_by_cache(text) String\n        +is_load_balanced() bool\n    }\n    \n    class PrefillDecode {\n        -pd_router: Arc~PDRouter~\n        +route(request) HttpResponse\n        +forward_to_pd() HttpResponse\n    }\n    \n    Router <|-- Random\n    Router <|-- RoundRobin\n    Router <|-- CacheAware\n    Router <|-- PrefillDecode\n```\n\n### 4. Cache-Aware Algorithm Detail\n\n```mermaid\nflowchart TD\n    Start([Request Arrives]) --> Extract[Extract Text from Request]\n    Extract --> CheckBalance{System<br/>Load Balanced?}\n    \n    CheckBalance -->|Yes| TreeLookup[Lookup in Radix Trees]\n    CheckBalance -->|No| LoadBalance[Select Least Loaded]\n    \n    TreeLookup --> FindMatch[Find Best Prefix Match]\n    FindMatch --> CheckThreshold{Match Rate ><br/>Threshold?}\n    \n    CheckThreshold -->|Yes| SelectCache[Select Worker<br/>with Best Match]\n    CheckThreshold -->|No| SelectSmallest[Select Worker with<br/>Smallest Tree]\n    \n    SelectCache --> UpdateTree\n    SelectSmallest --> UpdateTree\n    LoadBalance --> UpdateTree[Update Tree<br/>with Request]\n    \n    UpdateTree --> Forward[Forward Request]\n    Forward --> UpdateLoad[Update Load Counter]\n    UpdateLoad --> End([Return Response])\n```\n\n### 5. PD Router Architecture (`pd_router.rs`)\n\n```mermaid\ngraph TB\n    subgraph \"PD Router Components\"\n        PDR[PD Router]\n        \n        subgraph \"Worker Pools\"\n            PFP[Prefill Pool<br/>RwLock Vec]\n            DCP[Decode Pool<br/>RwLock Vec]\n        end\n        \n        subgraph \"Selection Policies\"\n            PRND[Random Selection]\n            PP2[Power of Two]\n            PCA[Cache Aware]\n        end\n        \n        subgraph \"Request Processing\"\n            BSI[Bootstrap Injection]\n            PAR[Parallel Dispatch]\n            LPM[Logprob Merger]\n        end\n        \n        subgraph \"Load Tracking\"\n            PLT[Prefill Load Tracker]\n            DLT[Decode Load Tracker]\n        end\n    end\n    \n    PDR --> PFP\n    PDR --> DCP\n    PDR --> PRND\n    PDR --> PP2\n    PDR --> PCA\n    \n    PRND --> BSI\n    PP2 --> BSI\n    PCA --> BSI\n    \n    BSI --> PAR\n    PAR --> LPM\n    \n    PFP --> PLT\n    DCP --> DLT\n```\n\n### 6. Service Discovery (`service_discovery.rs`)\n\n```mermaid\nstateDiagram-v2\n    [*] --> Initializing\n    Initializing --> Watching: K8s Client Ready\n    \n    Watching --> Discovering: Timer Tick\n    Discovering --> Processing: Pods Found\n    Processing --> Filtering: Apply Selectors\n    Filtering --> HealthCheck: Valid Pods\n    \n    HealthCheck --> UpdateWorkers: All Healthy\n    HealthCheck --> PartialUpdate: Some Healthy\n    HealthCheck --> Retry: All Failed\n    \n    UpdateWorkers --> Watching: Success\n    PartialUpdate --> Watching: Partial Success\n    Retry --> Discovering: Backoff Wait\n    \n    Watching --> Error: K8s API Error\n    Error --> Retry: Exponential Backoff\n    \n    note right of HealthCheck\n        Concurrent health checks\n        with timeout protection\n    end note\n    \n    note right of UpdateWorkers\n        Atomic worker list update\n        Triggers router refresh\n    end note\n```\n\n## Request Flow Analysis\n\n### Regular Mode Request Flow\n\n```mermaid\nflowchart LR\n    subgraph \"1. Request Receipt\"\n        REQ[HTTP Request] --> PARSE[Parse JSON]\n        PARSE --> ADAPT[Adapt to Internal Format]\n    end\n    \n    subgraph \"2. Routing Decision\"\n        ADAPT --> POLICY{Routing Policy}\n        POLICY -->|Random| RND_LOGIC[Random Selection]\n        POLICY -->|RoundRobin| RR_LOGIC[Sequential Selection]\n        POLICY -->|CacheAware| CA_LOGIC[Cache Analysis]\n    end\n    \n    subgraph \"3. Worker Selection\"\n        RND_LOGIC --> HEALTH{Health Check}\n        RR_LOGIC --> HEALTH\n        CA_LOGIC --> HEALTH\n        HEALTH -->|Healthy| SELECT[Select Worker]\n        HEALTH -->|Unhealthy| RETRY[Try Next]\n        RETRY --> HEALTH\n    end\n    \n    subgraph \"4. Request Forwarding\"\n        SELECT --> BUILD[Build HTTP Request]\n        BUILD --> SEND[Send to Worker]\n        SEND --> WAIT{Response Type}\n        WAIT -->|Stream| SSE[SSE Handler]\n        WAIT -->|JSON| JSON[JSON Handler]\n    end\n    \n    subgraph \"5. Response Processing\"\n        SSE --> STREAM[Stream Response]\n        JSON --> RETURN[Return Response]\n        STREAM --> CLIENT[Client]\n        RETURN --> CLIENT\n    end\n```\n\n### PD Mode Request Flow\n\n```mermaid\nflowchart TB\n    subgraph \"1. Request Preparation\"\n        REQ[Request] --> CHECK{Has Bootstrap?}\n        CHECK -->|No| FETCH[Fetch Bootstrap<br/>from Prefill]\n        CHECK -->|Yes| INJECT[Use Existing]\n        FETCH --> INJECT\n    end\n    \n    subgraph \"2. Worker Selection\"\n        INJECT --> SEL_PF[Select Prefill Worker]\n        INJECT --> SEL_DC[Select Decode Worker]\n        \n        SEL_PF --> PF_POLICY{Policy}\n        SEL_DC --> DC_POLICY{Policy}\n        \n        PF_POLICY -->|Random| PF_RND[Random Prefill]\n        PF_POLICY -->|P2| PF_P2[Power of Two Prefill]\n        \n        DC_POLICY -->|Random| DC_RND[Random Decode]\n        DC_POLICY -->|P2| DC_P2[Power of Two Decode]\n    end\n    \n    subgraph \"3. Parallel Dispatch\"\n        PF_RND --> PF_REQ[Prefill Request]\n        PF_P2 --> PF_REQ\n        DC_RND --> DC_REQ[Decode Request]\n        DC_P2 --> DC_REQ\n        \n        PF_REQ --> PF_WAIT[Wait Prefill]\n        DC_REQ --> DC_WAIT[Wait Decode]\n    end\n    \n    subgraph \"4. Response Handling\"\n        DC_WAIT --> CHECK_LP{Logprobs<br/>Requested?}\n        CHECK_LP -->|Yes| MERGE[Merge Logprobs]\n        CHECK_LP -->|No| RETURN[Return Decode Response]\n        PF_WAIT --> MERGE\n        MERGE --> RETURN\n    end\n```\n\n## Identified Pain Points\n\n### 1. Type Safety and State Management\n- **Issue**: Workers represented as strings (`Vec<String>`)\n- **Impact**: No health/load tracking, type confusion, scattered state\n- **Example**: Health checks require external HashMap lookups\n\n### 2. Code Duplication\n- **Issue**: Routing logic duplicated between regular and PD routers\n- **Impact**: Maintenance overhead, inconsistent behavior\n- **Example**: CacheAware implemented twice with slight variations\n\n### 3. Limited Extensibility\n- **Issue**: Router enum requires modification for new policies\n- **Impact**: Violates Open-Closed Principle, risky changes\n- **Example**: Adding PowerOfTwo to regular mode requires enum changes\n\n### 4. Scattered Observability\n- **Issue**: Metrics collection spread across multiple files\n- **Impact**: Inconsistent naming, missing metrics, hard to dashboard\n- **Example**: Some endpoints lack request duration metrics\n\n### 5. Basic Service Discovery\n- **Issue**: No retry logic, basic error handling\n- **Impact**: Transient K8s API failures cause worker loss\n- **Example**: Network blip removes healthy workers permanently\n\n### 6. PD Mode Limitations\n- **Issue**: No dynamic worker management in PD mode\n- **Impact**: Requires restart to add/remove workers\n- **Example**: `/add_worker` returns error for PD mode\n\n### 7. Configuration Management\n- **Issue**: Configuration validation scattered across multiple locations\n- **Impact**: Inconsistent validation logic, duplicate code, runtime errors\n- **Example**: URL validation in Python code, mode compatibility checks in server startup, policy parameter validation in individual routers\n\n## Proposed Improvements\n\nThe following improvements are designed to address immediate pain points while laying the groundwork for our long-term vision of transforming sgl-router into a full OpenAI API server. Each phase builds capabilities that serve both current needs and future evolution.\n\n### Proposed Project Structure\n\nThe refactored codebase will reorganize existing files into focused modules:\n\n```\nsgl-router/\n\u251c\u2500\u2500 src/\n\u2502   \u251c\u2500\u2500 lib.rs                     # Python bindings, main Router struct\n\u2502   \u251c\u2500\u2500 server.rs                  # HTTP server, actix-web endpoints\n\u2502   \u251c\u2500\u2500 openai_api_types.rs        # OpenAI API request/response types\n\u2502   \u251c\u2500\u2500 service_discovery.rs       # K8s service discovery\n\u2502   \u251c\u2500\u2500 request_adapter.rs         # Request format adaptation\n\u2502   \u2502\n\u2502   \u251c\u2500\u2500 config/                    # Configuration management\n\u2502   \u2502   \u251c\u2500\u2500 mod.rs\n\u2502   \u2502   \u251c\u2500\u2500 types.rs               # RouterConfig, PolicyConfig, etc.\n\u2502   \u2502   \u251c\u2500\u2500 validation.rs          # ConfigValidator\n\u2502   \u2502   \u2514\u2500\u2500 error.rs               # ConfigError\n\u2502   \u2502\n\u2502   \u251c\u2500\u2500 core/                      # Core abstractions\n\u2502   \u2502   \u251c\u2500\u2500 mod.rs\n\u2502   \u2502   \u2514\u2500\u2500 worker.rs              # Worker trait and implementations\n\u2502   \u2502\n\u2502   \u251c\u2500\u2500 router/                    # Routing logic\n\u2502   \u2502   \u251c\u2500\u2500 mod.rs\n\u2502   \u2502   \u251c\u2500\u2500 policies/              # Routing policies\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 mod.rs\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 random.rs\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 round_robin.rs\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 cache_aware.rs\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 power_of_two.rs\n\u2502   \u2502   \u251c\u2500\u2500 router.rs              # Router implementations\n\u2502   \u2502   \u251c\u2500\u2500 pd_router.rs           # PD router logic (includes pd_types)\n\u2502   \u2502   \u251c\u2500\u2500 tree.rs                # Radix tree for cache-aware routing\n\u2502   \u2502   \u2514\u2500\u2500 factory.rs             # Router factory\n\u2502   \u2502\n\u2502   \u2514\u2500\u2500 observability/             # Monitoring\n\u2502       \u251c\u2500\u2500 mod.rs\n\u2502       \u251c\u2500\u2500 logging.rs             # Structured logging\n\u2502       \u2514\u2500\u2500 metrics.rs             # Prometheus metrics\n```\n\nNote: `pd_types.rs` will be merged into `pd_router.rs` as those types are only used there.\n\n### Phase 1: Foundation & Core Abstractions (Weeks 1-3)\n\n#### Task 001: Centralized Configuration\nCreate a comprehensive configuration module to eliminate scattered validation:\n\n```rust\npub struct RouterConfig {\n    pub mode: RoutingMode,\n    pub policy: PolicyConfig,\n    pub workers: Vec<String>,\n    pub host: String,\n    pub port: u16,\n    // ... other fields\n}\n\npub enum RoutingMode {\n    Regular,\n    PrefillDecode {\n        prefill_urls: Vec<(String, Option<u16>)>,\n        decode_urls: Vec<String>,\n    },\n}\n\npub enum PolicyConfig {\n    Random,\n    RoundRobin,\n    CacheAware { threshold: f32, /* ... */ },\n    PowerOfTwo { interval_secs: u64 },\n}\n```\n\nImplement validation with clear error messages:\n- Field-level validation for URLs, ports, thresholds\n- Cross-field compatibility checks (mode vs policy)\n- Early detection of configuration errors\n\n#### Task 002: Worker Abstraction\nTransform workers from strings to typed entities, enabling future support for both HTTP endpoints and gRPC connections:\n\n```rust\npub trait Worker: Send + Sync + Clone {\n    fn url(&self) -> &str;\n    fn worker_type(&self) -> WorkerType;\n    fn is_healthy(&self) -> bool;\n    fn load(&self) -> Arc<AtomicUsize>;\n    async fn check_health(&self) -> Result<(), WorkerError>;\n}\n\npub enum WorkerType {\n    Regular,\n    Prefill { bootstrap_port: Option<u16> },\n    Decode,\n    // Future: GrpcTokenizer, GrpcScheduler for direct backend connections\n}\n```\n\nThis abstraction is crucial for the long-term vision, as it allows the router to treat both traditional HTTP endpoints and future gRPC connections uniformly.\n\n#### Task 003: RoutingPolicy Trait\nUnify routing algorithms:\n\n```rust\n#[async_trait]\npub trait RoutingPolicy: Send + Sync {\n    async fn select_single(&self, workers: &[Arc<dyn Worker>], request: &Value) \n        -> Result<Arc<dyn Worker>, RoutingError>;\n    \n    async fn select_pair(&self, prefill: &[Arc<dyn Worker>], decode: &[Arc<dyn Worker>], request: &Value) \n        -> Result<(Arc<dyn Worker>, Arc<dyn Worker>), RoutingError>;\n}\n```\n\n#### Task 004: Policy Migration\nImplement all policies using the new trait, enabling:\n- PowerOfTwo in regular mode\n- All policies in PD mode\n- Consistent behavior across modes\n\n### Phase 2: Infrastructure (Week 4)\n\n#### Task 005: Centralized Observability\nConsolidate metrics:\n\n```rust\npub struct RouterMetrics;\n\nimpl RouterMetrics {\n    pub fn record_request(route: &str, method: &str);\n    pub fn record_duration(route: &str, duration: Duration);\n    pub fn record_error(route: &str, error: &str);\n    pub fn set_worker_health(url: &str, healthy: bool);\n    pub fn record_cache_hit(worker: &str);\n}\n```\n\n#### Task 006: Enhanced Service Discovery\nAdd resilience:\n- Exponential backoff retry\n- Health validation before adding\n- Support for all worker types\n- Graceful degradation\n\n### Phase 3: Architecture (Week 5)\n\n#### Task 007: Router Factory\nReplace enum with trait-based design, enabling future dual-mode operation:\n\n```rust\npub trait Router: Send + Sync {\n    async fn route(&self, req: HttpRequest, body: Value, route: &str) -> HttpResponse;\n    async fn add_worker(&self, worker: Arc<dyn Worker>) -> Result<(), RouterError>;\n    async fn remove_worker(&self, url: &str) -> Result<(), RouterError>;\n    fn apply_discovery_update(&self, update: DiscoveryUpdate);\n}\n\npub struct RouterFactory;\n\nimpl RouterFactory {\n    pub async fn create_router(config: &RouterConfig) -> Result<Arc<dyn Router>, RouterError>;\n    // Future: create_api_server(config) for full OpenAI API mode\n}\n```\n\nThis factory pattern is essential for supporting both traditional proxy mode and future API server mode, allowing runtime selection based on configuration.\n\n## Long-Term Vision\n\n### From Load Balancer to Full OpenAI API Server\n\nThe architectural improvements proposed in this document are designed with a transformative long-term vision: evolving sgl-router from a simple HTTP proxy into a fully-featured OpenAI-compatible API server that directly integrates with SGLang's backend services.\n\n#### Target Capabilities\n\n1. **Dual Operating Modes**\n   - **Traditional Router Mode**: Continue supporting the current proxy behavior for backward compatibility\n   - **API Server Mode**: Full OpenAI API implementation with advanced features\n\n2. **Native OpenAI API Implementation**\n   - Complete endpoint compatibility (chat/completions, completions, embeddings, etc.)\n   - Built-in request validation and processing\n   - Streaming response support with proper SSE formatting\n   - Error handling matching OpenAI's API behavior\n\n3. **Tool Calling Framework**\n   - Native support for function/tool calling without relying on backend servers\n   - Extensible executor system (HTTP, Python, Shell, custom integrations)\n   - Tool result integration directly in the conversation flow\n   - Security sandboxing and permission management\n\n4. **Direct gRPC Communication**\n   - Replace HTTP forwarding with efficient gRPC calls to SGLang's scheduler\n   - Connection pooling and load balancing\n   - Streaming support for real-time token generation\n   - Reduced latency through protocol optimization and avoid\n\n## Implementation Phases\n\n### Detailed Timeline\n\n```mermaid\ngantt\n    title SGLang Router Improvement Timeline\n    dateFormat  YYYY-MM-DD\n    section Phase 1\n    Configuration Module         :t1, 2025-06-26, 5d\n    Worker Abstraction           :t2, after t1, 6d\n    RoutingPolicy Trait          :t3, after t2, 7d\n    Policy Migration             :t4, after t3, 6d\n    section Phase 2\n    Centralized Observability    :t5, after t4, 4d\n    Enhanced Service Discovery   :t6, after t4, 6d\n    section Phase 3\n    Router Factory               :t7, after t6, 7d\n    section Testing\n    Integration Testing          :t8, after t7, 5d\n    Performance Validation       :t9, after t8, 3d\n    Documentation               :t10, after t8, 3d\n```\n\n## Risk Analysis\n\n### Technical Risks\n\n| Risk                   | Impact | Probability | Mitigation                             |\n|------------------------|--------|-------------|----------------------------------------|\n| Performance Regression | High   | Medium      | Continuous benchmarking, profiling     |\n| Breaking Changes       | High   | Low         | Feature flags, gradual rollout         |\n| Memory Leaks           | Medium | Low         | Stress testing, leak detection         |\n| Thread Safety Issues   | High   | Medium      | Race condition testing, careful review |\n\n\n## Conclusion\n\nThis comprehensive improvement plan addresses fundamental architectural issues while maintaining system stability. The phased approach ensures each improvement builds on the previous, creating a more maintainable, extensible, and reliable routing system for SGLang.\n\n## Appendix: Architecture Diagrams\n\n### High-Level Architecture\n\n```mermaid\ngraph TB\n    subgraph \"Client Layer\"\n        PY[Python Client<br/>SGLang]\n        HTTP[HTTP Client<br/>OpenAI Compatible]\n    end\n\n    subgraph \"Router Layer\"\n        R[Router<br/>lib.rs/PyO3]\n        S[HTTP Server<br/>server.rs]\n\n        subgraph \"Routing Modes\"\n            REG[Regular Router<br/>router.rs]\n            PD[PD Router<br/>pd_router.rs]\n        end\n\n        subgraph \"Routing Policies\"\n            RND[Random]\n            RR[RoundRobin]\n            CA[CacheAware<br/>+ Tree]\n            P2[PowerOfTwo]\n        end\n    end\n\n    subgraph \"Infrastructure\"\n        SD[Service Discovery<br/>K8s Integration]\n        PROM[Prometheus<br/>Metrics]\n        LOG[Logging<br/>tracing]\n    end\n\n    subgraph \"Worker Layer\"\n        subgraph \"Regular Workers\"\n            W1[Worker 1]\n            W2[Worker 2]\n            WN[Worker N]\n        end\n\n        subgraph \"PD Workers\"\n            PF1[Prefill 1]\n            PF2[Prefill 2]\n            D1[Decode 1]\n            D2[Decode 2]\n        end\n    end\n\n    PY --> R\n    HTTP --> S\n    R --> S\n    S --> REG\n    S --> PD\n    REG --> RND\n    REG --> RR\n    REG --> CA\n    PD --> RND\n    PD --> P2\n    PD --> CA\n\n    REG --> W1\n    REG --> W2\n    REG --> WN\n\n    PD --> PF1\n    PD --> PF2\n    PD --> D1\n    PD --> D2\n\n    SD --> REG\n    SD --> PD\n    S --> PROM\n    S --> LOG\n\n```\n\n### Component Interactions\n\n```mermaid\nsequenceDiagram\n    participant C as Client\n    participant S as Server\n    participant R as Router\n    participant P as Policy\n    participant W as Worker\n    participant SD as ServiceDiscovery\n    participant M as Metrics\n    \n    Note over SD: Continuous Discovery\n    SD->>R: Update Workers\n    \n    C->>S: HTTP Request\n    S->>S: Parse & Validate\n    S->>R: Route Request\n    \n    R->>P: Select Worker(s)\n    \n    alt Regular Mode\n        P->>P: Apply Policy Logic\n        P-->>R: Selected Worker\n        R->>W: Forward Request\n        W-->>R: Response\n    else PD Mode\n        P->>P: Select Prefill & Decode\n        P-->>R: Worker Pair\n        par Prefill Request\n            R->>W: Prefill Request\n        and Decode Request\n            R->>W: Decode Request\n        end\n        W-->>R: Merged Response\n    end\n    \n    R-->>S: Response\n    S-->>C: HTTP Response\n    \n    R->>M: Record Metrics\n    \n    Note over R,W: Health Checks\n    loop Every 30s\n        R->>W: Health Check\n        W-->>R: Status\n        R->>M: Update Health\n    end\n```",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "router"
+    ],
+    "state": "open",
+    "created_at": "2025-06-25T20:06:12+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7532/reactions",
+      "total_count": 36,
+      "+1": 18,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 8,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 10,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7532"
+  },
+  {
+    "number": 407,
+    "title": "Please add Phi3 support",
+    "body": "Getting this error - \r\n\r\n```\r\nrouter init state: Traceback (most recent call last):\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/router/manager.py\", line 73, in start_router_process\r\n    model_client = ModelRpcClient(server_args, port_args)\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/router/model_rpc.py\", line 657, in __init__\r\n    self.model_server = ModelRpcService().exposed_ModelRpcServer(\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/router/model_rpc.py\", line 70, in __init__\r\n    self.model_runner = ModelRunner(\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/router/model_runner.py\", line 294, in __init__\r\n    self.load_model()\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/router/model_runner.py\", line 303, in load_model\r\n    model_class = get_model_cls_by_arch_name(architectures)\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/router/model_runner.py\", line 58, in get_model_cls_by_arch_name\r\n    raise ValueError(\r\nValueError: Unsupported architectures: Phi3ForCausalLM. Supported list: ['CohereForCausalLM', 'DbrxForCausalLM', 'GemmaForCausalLM', 'LlamaForCausalLM', 'LlavaLlamaForCausalLM', 'MistralForCausalLM', 'MixtralForCausalLM', 'QWenLMHeadModel', 'Qwen2ForCausalLM', 'StableLmForCausalLM', 'YiVLForCausalLM']\r\n\r\n```",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-05-01T04:09:58+00:00",
+    "closed_at": "2024-09-22T14:19:38+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/407/reactions",
+      "total_count": 7,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 4
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/407"
+  },
+  {
+    "number": 6411,
+    "title": "[Bug] there is a significant increase TTFT when using PD disaggregation mode compared to the single-node mode",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n### Observation:\nDuring testing, we observed a significant increase in Time to First Token (TTFT) when using PD disaggregation mode compared to the single-node mode. Specifically:\n\n**Baseline TTFT (single-node mode): 2338 ms\nPD Disaggregation TTFT: 24,766.90 ms**\n\n### Environment Configuration:\n\nHardware:\nBaseline test: 8 \u00d7 H20 GPUs in a single node\nPD disaggregation test: 2P + 1D , 8 \u00d7 H20 GPUs for each node\nSoftware/Python Stack:\n* sgl-kernel: 0.1.2.post1\n* sglang: 0.4.6.post4\n* PyTorch: 2.6.0\n\n### Question:\nWhat factors might contribute to this substantial TTFT increase in the PD disaggregation mode?\n\n### Reproduction\n\n### baseline\nwe first run a single node test with 8xH20 GPUs, to get the TTFT in prefill without decode:\nfor server:\n```bash\n#!/bin/bash\npython3 -m sglang.launch_server \\\n        --model-path /mnt/deepseek-ai/DeepSeek-V3-0324 \\\n\t--enable-dp-attention \\\n        --trust-remote-code \\\n        --port 8000 \\\n\t--host 0.0.0.0 \\\n        --context-length 65535 \\\n        --chunked-prefill-size 160000 \\\n        --tensor-parallel-size 8    \\\n\t--dp-size 8 \\\n        --disable-radix-cache \\\n\t--mem-fraction-static 0.85\n```\nfor client:\n```bash\npython3 -m sglang.bench_serving --backend sglang --dataset-name random --random-input 4096 --random-output 1 --random-range-ratio 1 --num-prompts 2048 --max-concurrency 320 --request-rate 1.6 --port 8000\n```\n\nthe result is:\n```bash\n============ Serving Benchmark Result ============\nBackend:                                 sglang\nTraffic request rate:                    1.6\nMax reqeuest concurrency:                320\nSuccessful requests:                     2048\nBenchmark duration (s):                  1316.09\nTotal input tokens:                      8388608\nTotal generated tokens:                  2048\nTotal generated tokens (retokenized):    2037\nRequest throughput (req/s):              1.56\nInput token throughput (tok/s):          6373.90\nOutput token throughput (tok/s):         1.56\nTotal token throughput (tok/s):          6375.46\nConcurrency:                             3.66\n----------------End-to-End Latency----------------\nMean E2E Latency (ms):                   2349.92\nMedian E2E Latency (ms):                 2160.91\n---------------Time to First Token----------------\nMean TTFT (ms):                          2338.14\nMedian TTFT (ms):                        2150.81\nP99 TTFT (ms):                           4978.92\n---------------Inter-Token Latency----------------\nMean ITL (ms):                           0.00\nMedian ITL (ms):                         0.00\nP95 ITL (ms):                            0.00\nP99 ITL (ms):                            0.00\nMax ITL (ms):                            0.00\n==================================================\n```\n**the baseline Mean TTFT is 2338ms**\n\n### PD disaggregation mode\nthen we run the model in PD disaggregation mode, we use 2Prefill node + 1Decode node, each node use 8xH20 GPUs, the prefill node's command is as below:\n```bash\n#!/bin/bash\nexport NODE_NAME=prefill0\nexport NCCL_IB_GID_INDEX=3\npython3 -m sglang.launch_server \\\n        --model-path /mnt/deepseek-ai/DeepSeek-V3-0324 \\\n        --enable-dp-attention \\\n        --trust-remote-code \\\n        --port 8101 \\\n\t    --host 0.0.0.0 \\\n        --context-length 65535 \\\n        --chunked-prefill-size 160000 \\\n        --tensor-parallel-size 8    \\\n        --dp-size 8 \\\n        --disable-radix-cache \\\n        --page-size 32 \\\n        --disaggregation-mode prefill \\\n\t    --mem-fraction-static 0.75\n```\nthe command in decode node is as below:\n```bash\n#!/bin/bash\nexport NODE_NAME=decode0\nexport NCCL_IB_GID_INDEX=3\npython3 -m sglang.launch_server \\\n        --model-path /mnt/deepseek-ai/DeepSeek-V3-0324 \\\n\t    --enable-dp-attention \\\n        --trust-remote-code \\\n        --port 8103 \\\n        --host 0.0.0.0 \\\n        --context-length 65535 \\\n        --chunked-prefill-size 160000 \\\n        --tensor-parallel-size 8    \\\n        --dp-size 8 \\\n        --cuda-graph-max-bs 128 \\\n        --disable-radix-cache \\\n        --page-size 32 \\\n        --disaggregation-mode decode\n```\nfor command of minilb is as below:\n```bash\npython3 -m sglang.srt.disaggregation.mini_lb --prefill http://172.16.1.18:8101 http://172.16.1.19:8102 --decode http://172.16.1.20:8103 --host 0.0.0.0 --port 8000 --prefill-bootstrap-ports 8998 8998\n```\n\nbecause we use 2xprefill nodes, so the client request-rate =2x1.6=3.2, the client command is as below:\n```bash\npython3 -m sglang.bench_serving --backend sglang --dataset-name random --random-input 4096 --random-output 1300 --random-range-ratio 1 --num-prompts 4096 --max-concurrency 640 --request-rate 3.2 --port 8000\n```\n\nthe result is\n```bash\n============ Serving Benchmark Result ============\nBackend:                                 sglang\nTraffic request rate:                    3.2\nMax reqeuest concurrency:                640\nSuccessful requests:                     4096\nBenchmark duration (s):                  1600.93\nTotal input tokens:                      16777216\nTotal generated tokens:                  5324800\nTotal generated tokens (retokenized):    5305875\nRequest throughput (req/s):              2.56\nInput token throughput (tok/s):          10479.68\nOutput token throughput (tok/s):         3326.07\nTotal token throughput (tok/s):          13805.75\nConcurrency:                             561.68\n----------------End-to-End Latency----------------\nMean E2E Latency (ms):                   219533.81\nMedian E2E Latency (ms):                 217821.11\n---------------Time to First Token----------------\nMean TTFT (ms):                          24766.90\nMedian TTFT (ms):                        19459.66\nP99 TTFT (ms):                           67373.77\n---------------Inter-Token Latency----------------\nMean ITL (ms):                           149.94\nMedian ITL (ms):                         145.09\nP95 ITL (ms):                            169.96\nP99 ITL (ms):                            292.58\nMax ITL (ms):                            864.00\n==================================================\n```\nthe mean TTFT is 24766.90ms, which is almost 10 x baseline TTFT, seems like there are some thing wrong here.\n\n### Environment\n\nPython: 3.10.12 (main, Feb  4 2025, 14:57:36) [GCC 11.4.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA H20-3e\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\nCUDA Driver Version: 570.133.20\nPyTorch: 2.6.0+cu124\nsglang: 0.4.6.post4\nsgl_kernel: 0.1.2.post1\nflashinfer_python: 0.2.5\ntriton: 3.2.0\ntransformers: 4.51.1\ntorchao: 0.9.0\nnumpy: 1.26.4\naiohttp: 3.11.14\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.30.2\ninteregular: 0.3.3\nmodelscope: 1.24.0\norjson: 3.10.16\noutlines: 0.1.11\npackaging: 24.2\npsutil: 7.0.0\npydantic: 2.10.6\npython-multipart: 0.0.20\npyzmq: 26.3.0\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.7.2\nxgrammar: 0.1.19\nopenai: 1.68.2\ntiktoken: 0.9.0\nanthropic: 0.49.0\nlitellm: 1.63.14\ndecord: 0.6.0\nNVIDIA Topology:\n\tGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tGPU5\tGPU6\tGPU7\tNIC0\tNIC1\tNIC2\tNIC3\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\nGPU0\t X \tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\tNODE\tNODE\tSYS\tSYS\t0-47,96-143\t0N/A\nGPU1\tNV18\t X \tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\tPIX\tNODE\tSYS\tSYS\t0-47,96-143\t0N/A\nGPU2\tNV18\tNV18\t X \tNV18\tNV18\tNV18\tNV18\tNV18\tNODE\tNODE\tSYS\tSYS\t0-47,96-143\t0N/A\nGPU3\tNV18\tNV18\tNV18\t X \tNV18\tNV18\tNV18\tNV18\tNODE\tPIX\tSYS\tSYS\t0-47,96-143\t0N/A\nGPU4\tNV18\tNV18\tNV18\tNV18\t X \tNV18\tNV18\tNV18\tSYS\tSYS\tPIX\tNODE\t48-95,144-1911N/A\nGPU5\tNV18\tNV18\tNV18\tNV18\tNV18\t X \tNV18\tNV18\tSYS\tSYS\tNODE\tNODE\t48-95,144-1911N/A\nGPU6\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\t X \tNV18\tSYS\tSYS\tNODE\tPIX\t48-95,144-1911N/A\nGPU7\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\t X \tSYS\tSYS\tNODE\tNODE\t48-95,144-1911N/A\nNIC0\tNODE\tPIX\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\t X \tNODE\tSYS\tSYS\nNIC1\tNODE\tNODE\tNODE\tPIX\tSYS\tSYS\tSYS\tSYS\tNODE\t X \tSYS\tSYS\nNIC2\tSYS\tSYS\tSYS\tSYS\tPIX\tNODE\tNODE\tNODE\tSYS\tSYS\t X \tNODE\nNIC3\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tPIX\tNODE\tSYS\tSYS\tNODE\t X\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\n\nulimit soft: 1048576",
+    "labels": [],
+    "state": "open",
+    "created_at": "2025-05-19T06:36:11+00:00",
+    "closed_at": null,
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6411/reactions",
+      "total_count": 8,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 5
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6411"
+  },
+  {
+    "number": 7031,
+    "title": "[Feature] Merge PDLB into SGLang Router",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\n## Overview\n\nMerge Prefill-Decode Load Balancer (PDLB) functionality into SGLang Router to support both traditional load balancing and prefill-decode disaggregated routing.\n\n**Key Insight**: Since PDLB has very minimal to no users, we can implement the optimal solution without migration.\n\n## System Architecture\n\n```mermaid\ngraph TB\n    subgraph \"Unified SGLang Router\"\n        A[Router Core] --> B{Policy Detection}\n        B --> C[Regular Router]\n        B --> D[PD Router]\n        \n        C --> C1[RoundRobin]\n        C --> C2[Random] \n        C --> C3[CacheAware]\n        \n        D --> D1[PD Random]\n        D --> D2[PD PowerOfTwo]\n        D --> D3[PD CacheAware]\n        \n        D3 --> E[Tree-Based Selection]\n        E --> E1[Prefill Tree]\n        E --> E2[Load Tracking]\n    end\n    \n    subgraph \"Worker Infrastructure\"\n        F[Regular Workers]\n        G[Prefill Workers]\n        H[Decode Workers]\n    end\n    \n    C --> F\n    D --> G\n    D --> H\n    \n    style D3 fill:#2E8B57,color:#fff\n    style E fill:#DAA520,color:#fff\n    style A fill:#1E90FF,color:#fff\n```\n\n## Implementation Phases\n\n### Phase 1A: Extract PDLB Components\n\n- [x] Create `pd_types.rs` with essential PDLB types\n- [x] Extract `EngineInfo`, `Bootstrap` trait, `SingleOrBatch<T>`\n- [x] Add `PDSelectionPolicy` enum (Random, PowerOfTwo, CacheAware)\n\n```rust\n// Essential PDLB types extracted\npub struct EngineInfo {\n    pub engine_type: EngineType,\n    pub url: String,\n    pub bootstrap_port: Option<u16>,\n}\n\n#[typetag::serde(tag = \"type\")]\npub trait Bootstrap {\n    fn is_stream(&self) -> bool;\n    fn get_batch_size(&self) -> Result<Option<usize>, Error>;\n    fn add_bootstrap_info(&mut self, prefill_info: &EngineInfo) -> Result<(), Error>;\n}\n\n#[derive(Debug, Clone, PartialEq)]\npub enum PDSelectionPolicy {\n    Random,\n    PowerOfTwo,\n    CacheAware {\n        cache_threshold: f32,\n        balance_abs_threshold: usize,\n        balance_rel_threshold: f32,\n    },\n}\n```\n\n### Phase 1B: Core PD Router Extension\n\n- [x] Extend Router enum with `PrefillDecode` variant\n- [x] Add `PrefillDecodeConfig` to `PolicyConfig`\n- [x] Update all Router methods to handle PD mode\n- [x] Python bindings with `Router.new_pd()` constructor\n\n```rust\n// Extended Router enum\npub enum Router {\n    RoundRobin { /* existing */ },\n    Random { /* existing */ },\n    CacheAware { /* existing */ },\n    PrefillDecode {\n        prefill_workers: Arc<RwLock<Vec<EngineInfo>>>,\n        decode_workers: Arc<RwLock<Vec<EngineInfo>>>,\n        selection_policy: PDSelectionPolicy,\n        prefill_tree: Option<Arc<Mutex<Tree>>>,\n        timeout_secs: u64,\n        interval_secs: u64,\n    },\n}\n```\n\n### Phase 2: Bootstrap & Dual Dispatch\n\n- [x] Implement request parsing for PD mode (`Bytes` \u2192 `Box<dyn Bootstrap>`)\n- [x] Bootstrap injection mechanism for batch/single requests\n- [x] Dual dispatch logic (send to BOTH prefill and decode)\n- [x] Stream handling for PD responses\n\n```rust\n// PD request routing flow\nasync fn route_pd_request(\n    &self,\n    client: &reqwest::Client,\n    body: &Bytes,\n    route: &str,\n) -> HttpResponse {\n    // 1. Parse into typed request\n    let mut typed_request: Box<dyn Bootstrap> = parse_pd_request(body, route)?;\n    \n    // 2. Select prefill and decode servers\n    let (prefill, decode) = self.select_pd_pair(client).await;\n    \n    // 3. Bootstrap injection\n    typed_request.add_bootstrap_info(&prefill)?;\n    \n    // 4. Send to BOTH servers, return decode response\n    let (_, decode_response) = tokio::join!(\n        send_to_prefill(prefill, &typed_request),\n        send_to_decode(decode, &typed_request)\n    );\n    \n    decode_response\n}\n```\n\n### Phase 3: Cache-Aware PD Implementation\n\n- [ ] Adapt existing Tree structure for PD routing\n- [ ] Text extraction from PD requests for cache matching\n- [ ] Load balancing fallback when system is imbalanced\n- [ ] PD-specific metrics and monitoring\n\n```mermaid\ngraph TD\n    A[PD Request] --> B[Extract Text]\n    B --> C{Load Balanced?}\n    \n    C -->|Yes - Imbalanced| D[Use Load Balancing]\n    D --> D1[Select Least Loaded Prefill]\n    D --> D2[Select PowerOfTwo Decode]\n    \n    C -->|No - Balanced| E[Use Cache-Aware]\n    E --> F[Tree Prefix Match]\n    F --> G{Match Rate > Threshold?}\n    \n    G -->|Yes - Cache Hit| H[Route to Matched Worker]\n    G -->|No - Cache Miss| I[Route to Smallest Tree Worker]\n    \n    H --> J[Update Tree & Load Tracking]\n    I --> J\n    D1 --> J\n    D2 --> K[Send Requests]\n    J --> K\n    \n    style H fill:#2E8B57,color:#fff\n    style I fill:#B22222,color:#fff\n    style D1 fill:#1E90FF,color:#fff\n```\n\n### Phase 4: Testing & Polish\n**Status**: \n\n- [x] Comprehensive unit and integration tests\n- [ ] Performance benchmarking\n- [x] Documentation and examples\n- [x] Production readiness validation\n\n## Python API Design\n\n### Desired Implementation\n```python\nfrom sglang_router import Router\n\n# Clean PD Router creation\nrouter = Router.new_pd(\n    prefill_urls=[(\"http://prefill1:8080\", 9000), (\"http://prefill2:8080\", None)],\n    decode_urls=[\"http://decode1:8081\", \"http://decode2:8081\"],\n    policy=\"cache_aware\",  # \"random\", \"po2\", \"cache_aware\"\n    host=\"127.0.0.1\",\n    port=3001,\n    cache_threshold=0.5,\n    balance_abs_threshold=32,\n    balance_rel_threshold=1.0001,\n)\n\nrouter.start()\n```\n\n### Command Line Interface\n\n```bash\n# PD mode with cache-aware routing\npython -m sglang_router.launch_router \\\n    --policy prefill_decode \\\n    --prefill-urls http://prefill1:8080:9000 http://prefill2:8080 \\\n    --decode-urls http://decode1:8081 http://decode2:8081 \\\n    --pd-policy cache_aware \\\n    --cache-threshold 0.6 \\\n    --host 0.0.0.0 \\\n    --port 8080\n```\n\n## Key Challenges\n\n### 1. Request Processing Paradigm Shift\n- **Router**: Raw `Bytes` \u2192 Single worker selection\n- **PDLB**: Typed structs \u2192 Bootstrap injection \u2192 Dual server dispatch\n- **Solution**: Bridge both paradigms in PD mode\n\n### 2. Bootstrap Injection Complexity\n- Must handle `SingleOrBatch<T>` for batch requests\n- Critical for prefill-decode disaggregation\n- **Solution**: Integrate PDLB's Bootstrap trait system\n\n### 3. Cache-Aware PD Routing\n- First-of-its-kind cache-aware routing for PD disaggregation\n- Adaptive switching between cache optimization and load balancing\n- **Solution**: Adapt Router's Tree for prefill selection\n\n## Success Metrics\n\n- [x] **Functionality**: All PD selection policies working (random, po2, cache_aware)\n- [x] **Performance**: No significant latency overhead vs regular routing\n- [x] **Compatibility**: Existing Router functionality unchanged\n- [x] **Production Ready**: Comprehensive metrics, health checking, failover (excluding PD for failover)\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2025-06-10T06:30:08+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7031/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7031"
+  },
+  {
+    "number": 23,
+    "title": "Metal support?",
+    "body": "Hey, when is planned the support for Metal backend? ",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-17T20:16:06+00:00",
+    "closed_at": "2024-07-25T06:32:59+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/23/reactions",
+      "total_count": 8,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 5
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/23"
+  },
+  {
+    "number": 4709,
+    "title": "[Roadmap] FlashAttention3 Support as SGLang Attention Backend",
+    "body": "\n**Functionality**\n- [x] Basic FA3 support including MHA Models (Llama, QWen and etc), Cuda Graph, Sliding Window (Gemma): https://github.com/sgl-project/sglang/pull/4680 @hebiao064 @qingquansong \n- [x] Support Page Size > 1 https://github.com/sgl-project/sglang/pull/4832 @hebiao064 \n- [x] Support MLA for Deepseek-like models #4831 @Fridge003  \n- [x] Support Speculative Decoding [PR1](https://github.com/sgl-project/sglang/pull/4951), [PR2](https://github.com/sgl-project/sglang/pull/5050/files), [PR3](https://github.com/sgl-project/sglang/pull/5168) [PR4](https://github.com/sgl-project/sglang/pull/5318) @qingquansong @hebiao064 @zcnrex \n- [x] Figure out how to build FA3 into SGLang: https://github.com/sgl-project/sglang/pull/4902 @yinfan98 \n- [x] Add E2E Test like `sglang/test/srt/test_triton_attention_backend.py`: https://github.com/sgl-project/sglang/pull/4760 @yubofredwang \n- [x] Support Multimodal  https://github.com/sgl-project/sglang/pull/5103 @zcnrex @mickqian @yizhang2077 \n- [x] Support FP8 https://github.com/sgl-project/sglang/pull/4686 @yundai424 \n\n\n**Documentation and Benchmark:**\n- [x] https://github.com/sgl-project/sglang/issues/4865\n- [x] https://github.com/sgl-project/sglang/issues/5172 @zhyncs @hebiao064 Shivam (In Review, will be tracked offline)\n\n**Perf Optimization and Accuracy Problems**\n- [x] Fix Cuda Graph Accuracy problem for Page Size > 1: https://github.com/sgl-project/sglang/pull/4855 @qingquansong \n- [x] Optimizing Decoding by remove `item() device sync: https://github.com/sgl-project/sglang/pull/4745 @hebiao064 \n- [x] Optimizing Prefill by remove `item()` device sync: https://github.com/sgl-project/sglang/pull/4932 @Fridge003 \n- [x] Optimizing Draft Decode and Target Verify CUDA Graph Latency: https://github.com/sgl-project/sglang/pull/5090 @hebiao064 \n\nSuccess Criteria: \n- The latency should be on par with vLLM FlashAttention3 and SGLang's FlashInfer implementation\n- The accuracy should be on par with vLLM FlashAttention3 and SGLang's FlashInfer implementation\n\n\n\nOther issues we surfaced but not scoped in this task:\n- Flash Infer accuracy is bad for Gemma 2 Models\n- [x] VSCode Test Explorer is broken since some circular dependency: https://github.com/sgl-project/sglang/pull/4736 @hebiao064 ",
+    "labels": [
+      "high priority",
+      "collaboration"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-24T06:13:12+00:00",
+    "closed_at": "2025-04-21T06:16:51+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4709/reactions",
+      "total_count": 23,
+      "+1": 17,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 6,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4709"
+  },
+  {
+    "number": 4616,
+    "title": "[0.4.4.post1] DeepSeek-R1 Optimization Option Ablations",
+    "body": "> [!NOTE]\n> Updated on **2025-03-20**. Older albations can be found here: #3956\n\n# Overview\n\nWe sincerely thanks for the help from [M0gician](http://m0gician.github.io/) for the massive experiments.\n\n**As of 2025-03-20**, SGLang provides the following optimizations for DeepSeek V3/R1 models:\n\n| Name                                        | Description                                                                                                                                                                                                                                     | Enabled by Default | Enable/Disable Argument                                                                                                                                   |\n|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|\n| MLA Optimization                            | SGLang custom tailored optimizations, including<br>  - *Weight Absorption*,<br>- *Flashinfer MLA Wrapper*,<br> - *FP8 Quantization*,<br> - *CUDA Graph & Torch.compile suuport*                                                                 | \u2705               | `--disable-mla`                                                                                                                                           |\n| CUDA Graph                                  | Capturing and replaying entire sequences of GPU operations as a single graph, thereby reducing kernel launch overhead and synchronization delays                                                                                                | \u2705               | `--disable-cuda-graph`                                                                                                                                    |\n| Torch Compile                               | Dynamically converting PyTorch models into optimized execution graphs, reducing runtime overhead and enhancing GPU performance                                                                                                                  | \u274c              | `--enable-torch-compile`                                                                                                                                 |\n| Radix Cache                                 | Organizes the KV cache in a radix tree, enabling automatic detection and reuse of shared prompt prefixes across multiple generation calls, thereby reducing redundant computations                                                              | \u2705               | `--disable-radix-cache`                                                                                                                                   |\n| Flashinfer MLA                              | Multi-latent Attention implemented by Flashinfer that replaces the default Triton backend                                                                                                                                                       | \u274c              | `--enable-flashinfer-mla`                                                                                                                                 |\n| Speculative Decoding (`Next-N`)             | Dynamically generating a context-aware draft token tree with a smaller, well-calibrated model and then verifying these tokens in parallel with the original LLM, thereby reducing expensive forward passes while preserving output quality.     | \u274c              | `--speculative-algorithm`,<br> `--speculative-draft`,<br> `--speculative-num-steps`,<br> `--speculative-eagle-topk`,<br> `--speculative-num-draft-tokens` |\n| Tensor Parallelism (`tp`)                   | Splitting the heavy tensor operations\u2014such as the matrix multiplications in self-attention and feedforward layers\u2014across multiple GPUs, thereby lowering the per-device memory burden and enabling simultaneous computation for reduced latency | \u2705 (=1)         | `--tp-size`                                                                                                                                               |\n| Expert Parallelism (`EP-MoE`)               | Distributing the computation of different expert subnetworks across multiple devices, thereby reducing memory constraints and communication overhead while enabling simultaneous, efficient processing of input tokens.                         | \u274c              | `--enable-ep-moe`,<br> `--ep-size`                                                                                                                        |\n| Data Parallelism Attention (`DP-Attention`) | Partitioning the MLA attention across DP workers\u2014each handling independent prefill, decode, and idle batches\u2014to significantly reduce per-worker KV cache size and enable larger, more efficient batch processing                                | \u274c              | `--enable-dp-attention`,<br>`--dp-size`                                                                                                                                    |\n\n# General Advice\n\n* Speculative Decoding is great for small concurrency (less than 32), but its performance degrades quickly as the concurrency increases.\n* `CUDA Graph` boosts inference performance significantly, at the cost of increased memory usage. Sometimes it's a good trade-off to disable `CUDA Graph` to further increase concurrency to get better throughput.\n* `DP-Attention` is a must for large concurrency (greater than 256), but it hurts per-request decoding speed.\n\n# Known Issues\n\n* Speculative Decoding is not compatible with:\n  - `DP-Attention`\n* When `CUDA Graph`, `Flashinfer-MLA`, and `DP-Attention` are enabled\n  - `--dp-size` greater than `4` will cause CUDA illegal memory access error.\n\n# Optimization Ablations\n\n## Test Environment\n\n* SGLang version: 0.4.4.post1\n* Flashinfer version: 0.2.3+cu124torch2.5\n* Hardware: 2 nodes of H20 (AMD EPYC 9K84 * 2, 2.20 TiB memory, 8 * H20 96GiB each)\n* Model: DeepSeek-R1\n* Model Max Length: 3200 (modified in both model and NextN's `tokenizer_config.json`)\n* CUDA Version: 12.2\n* Operating System: Rocky Linux release 9.2 (Blue Onyx)\n* Test bench: ThreadPool with AsyncOpenAI client\n* Avg input length = 760 tokens\n* Avg output length = 460 tokens\n\n## Tuned Fused MoE Kernel Config\n\n### Baselines\n\n<details>\n<summary><b>Engine arguments used:</b></summary>\n\n* Torch Compile + Cuda Graph + Radix Cache\n> ```python -m sglang.launch_server --model-path <YOUR_MODEL_DIR> --tp 16 --dist-init-addr <YOUR_ADDR> --nnodes 2 --node-rank <YOUR_NODE_RANK> --trust-remote-code --max-running-requests 1024 --enable-torch-compile --host <YOUR_HOST_IP> --port <YOUR_HOST_PORT> --schedule-conservativeness 0.01```\n\n* Torch Compile + Cuda Graph + Radix Cache + Flashinfer-mla\n> ```python -m sglang.launch_server --model-path <YOUR_MODEL_DIR> --tp 16 --dist-init-addr <YOUR_ADDR> --nnodes 2 --node-rank <YOUR_NODE_RANK> --trust-remote-code --max-running-requests 1024 --enable-torch-compile --enable-flashinfer-mla --host <YOUR_HOST_IP> --port <YOUR_HOST_PORT> --schedule-conservativeness 0.01```\n\n* Cuda Graph + Radix Cache + Flashinfer-mla + EP-MoE\n> ```python -m sglang.launch_server --model-path <YOUR_MODEL_DIR> --tp 16 --dist-init-addr <YOUR_ADDR> --nnodes 2 --node-rank <YOUR_NODE_RANK> --trust-remote-code --max-running-requests 1024 --enable-torch-compile --enable-flashinfer-mla --host <YOUR_HOST_IP> --port <YOUR_HOST_PORT> --schedule-conservativeness 0.01 --enable-ep-moe --ep-size 16```\n\n</details>\n\n| Runnable           | Torch Compile | Cuda Graph | cuda-graph-max-bs | schedule-conservativeness | Radix Cache | Flashinfer-mla | Next-N | Speculative-num-steps | Speculative-eagle-topk | Speculative-num-draft-tokens | EP-MoE | DP-Attention | dp-size | Client concurrency | Avg Request Throughput  (request/s) | Avg Throughput   (p+d, token/s) | Per-request Output Throughput  (token/s) | total req  | max-running-requests |\n|--------------------|---------------|------------|-------------------|---------------------------|-------------|----------------|--------|-----------------------|------------------------|------------------------------|--------|--------------|---------|--------------------|-------------------------------------|---------------------------------|------------------------------------------|------------|----------------------|\n| \u2705                  | \u2705             | \u2705          | 160               | 0.01                      | \u2705           | \u2796              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2796            | \u2796       | 768                | 3.42                                | 4173.19                         | 3.38                                     | 1024       | 1024                 |\n| \u2705                  | \u2705             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2796            | \u2796       | 768<br>1024          | 3.52<br>4.94                          | 4284.14<br>6025.54                | 3.47<br>3.03                               | 1024<br>2048 | 1024                 |\n| \u2705                  | \u2796             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2705      | \u2796            | \u2796       | 1024               | 4.57                                | 5595.41                         | 3.15                                    | 4096       | 2048                 |\n\n### DP-Attention\n\n<details>\n<summary><b>Engine arguments used:</b></summary>\n\n> ``` python -m sglang.launch_server --model-path <YOUR_MODEL_DIR> --tp 16 --dist-init-addr <YOUR_ADDR> --nnodes 2 --node-rank <YOUR_NODE_RANK> --trust-remote-code --max-running-requests 1024 --enable-flashinfer-mla --enable-dp-attention --host <YOUR_HOST_IP> --port <YOUR_HOST_PORT> --dp-size <YOUR_DP_SIZE> --schedule-conservativeness 0.01```\n\n</details>\n\n| Runnable           | Torch Compile | Cuda Graph | cuda-graph-max-bs | schedule-conservativeness | Radix Cache | Flashinfer-mla | Next-N | Speculative-num-steps | Speculative-eagle-topk | Speculative-num-draft-tokens | EP-MoE | DP-Attention | dp-size | Client concurrency | Avg Request Throughput  (request/s) | Avg Throughput   (p+d, token/s) | Per-request Output Throughput  (token/s) | total req  | max-running-requests |\n|--------------------|---------------|------------|-------------------|---------------------------|-------------|----------------|--------|-----------------------|------------------------|------------------------------|--------|--------------|---------|--------------------|-------------------------------------|---------------------------------|------------------------------------------|------------|----------------------|\n| \u2705                  | \u2705             | \u2705          | 160               | 10.0                      | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2796            | \u2796       | 1024               | 3.60                                | 4432.55                         | 2.32                                     | 2048       | 1024                 |\n| \u2705                  | \u2796             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 4       | 1024               | 5.48                                | 6683.13                         | 3.52                                     | 2048       | 1024                 |\n| \u2705                  | \u2796             | \u2705          | 1024              | 0.01                      | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 4       | 1024               | 4.97                                | 6102.58                         | 3.51                                     | 2048       | 1024                 |\n| \u274c                  | \u2796             | \u2705          | 1024              | 0.01                      | \u2796           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 8       | 1024               | N/A                                 | N/A                             | N/A                                      | 2048       | 1024                 |\n| \u2705                  | \u2796             | \u2705          | 1024              | 0.01                      | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2705      | \u2705            | 4       | 1024               | 5.03                                | 6138.26                         | 3.70                                     | 2048       | 1024                 |\n\n### Speculative Decoding\n\n<details>\n<summary><b>Engine arguments used:</b></summary>\n\n> ```python -m sglang.launch_server --model-path <YOUR_MODEL_DIR> --tp 16 --dist-init-addr <YOUR_ADDR> --nnodes 2 --node-rank <YOUR_NODE_RANK> --trust-remote-code --max-running-requests 1024 --speculative-algorithm NEXTN --speculative-draft <YOUR_NEXTN_MODEL_DIR> --speculative-num-steps 3 --speculative-eagle-topk 1 --speculative-num-draft-tokens 4 --enable-torch-compile --enable-flashinfer-mla --mem-fraction-static 0.7 --host <YOUR_HOST_IP> --port <YOUR_HOST_PORT> --schedule-conservativeness 0.01```\n\n*`Torch compile` and `Cuda graph` capture for DeepSeek-R1 take about 1 hour+ for the first time. Those for the Next-N model take another 5 minutes*\n\n</details>\n\n| Runnable           | Torch Compile | Cuda Graph | cuda-graph-max-bs | schedule-conservativeness | Radix Cache | Flashinfer-mla | Next-N | Speculative-num-steps | Speculative-eagle-topk | Speculative-num-draft-tokens | EP-MoE | DP-Attention | dp-size | Client concurrency | Avg Request Throughput  (request/s) | Avg Throughput   (p+d, token/s) | Per-request Output Throughput  (token/s) | total req  | max-running-requests |\n|--------------------|---------------|------------|-------------------|---------------------------|-------------|----------------|--------|-----------------------|------------------------|------------------------------|--------|--------------|---------|--------------------|-------------------------------------|---------------------------------|------------------------------------------|------------|----------------------|\n| \u2705[^1] | \u2705             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2796      | \u2796            | \u2796       | 1                  | 0.10                                | 125.06                          | 47.55                                    | 4          | 1024                 |\n| \u2705                  | \u2705             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2796      | \u2796            | \u2796       | 2                  | 0.18                                | 214.63                          | 41.63                                    | 8          | 1024                 |\n| \u2705                  | \u2705             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2796      | \u2796            | \u2796       | 4                  | 0.32                                | 380.94                          | 37.00                                    | 16         | 1024                 |\n| \u2705                  | \u2705             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2796      | \u2796            | \u2796       | 8                  | 0.46                                | 563.65                          | 30.41                                    | 32         | 1024                 |\n| \u2705                  | \u2705             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2796      | \u2796            | \u2796       | 16                 | 0.80                                | 949.86                          | 24.39                                    | 64         | 1024                 |\n| \u2705                  | \u2705             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2796      | \u2796            | \u2796       | 32                 | 1.21                                | 1478.97                         | 19.49                                    | 128        | 1024                 |\n| \u2705                  | \u2705             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2796      | \u2796            | \u2796       | 64                 | 1.39                                | 1685.98                         | 11.69                                    | 256        | 1024                 |\n| \u2705                  | \u2705             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2796      | \u2796            | \u2796       | 512                | 2.81                                | 3424.67                         | 3.73                                     | 1024       | 1024                 |\n| \u2705                  | \u2705             | \u2705          | 160               | 0.01                      | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2796      | \u2796            | \u2796       | 1024               | 3.66                                | 4494.40                         | 2.56                                     | 2048       | 1024                 |\n\n![Image](https://github.com/user-attachments/assets/a294f784-1fc3-43bb-8550-f3ddd8212fac)\n![Image](https://github.com/user-attachments/assets/37dce674-1271-4dbd-8ddd-31b75522bcdb)\n\n## Default Fused MoE Kernel Config\n\n| Runnable                                                           | Torch Compile | Cuda Graph | cuda-graph-max-bs | Radix Cache | Flashinfer-mla | Next-N | Speculative-num-steps | Speculative-eagle-topk | Speculative-num-draft-tokens | EP-MoE | DP-Attention | dp-size | Client concurrency    | Avg Request Throughput  (request/s) | Avg Throughput   (p+d, token/s)            | Per-request Output Throughput  (token/s) | total req                 | max-running-requests |\n|--------------------------------------------------------------------|---------------|------------|-------------------|-------------|----------------|--------|-----------------------|------------------------|------------------------------|--------|--------------|---------|-----------------------|-------------------------------------|--------------------------------------------|------------------------------------------|---------------------------|----------------------|\n| \u2705                                                                  | \u2705             | \u2705          | 160               | \u2705           | \u2796              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2796            | \u2796       | 768<br> 1024          | 3.36<br>  3.62                      | 4129.05<br> 4484.12                        | 3.51<br> 2.56                            | 1024<br> 2048             | 1024                 |\n| \u2705                                                                  | \u2705             | \u2705          | 160               | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2796            | \u2796       | 768<br> 1024          | 2.90<br> 3.56                       | 3645.06<br> 4457.89                        | 3.65<br> 2.94                            | 1024<br> 1280             | 1024                 |\n| \u274c<br>(torch._dynamo.exc.InternalTorchDynamoError)                  | \u2705             | \u2705          | 160               | \u2705           | \u2796              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 16      | 16                    | N/A                                 | N/A                                        | N/A                                      | 32                        | 1024                 |\n| \u2705                                                                  | \u2796             | \u2705          | 160               | \u2705           | \u2796              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 16      | 768<br> 1024<br> 1024 | 3.77<br> 4.36<br> 3.82              | 4678.48<br> 5014.13<br> 4696.90            | 4.61<br> 4.06<br> 4.03                   | 1024<br> 1280<br> 2048    | 1024                 |\n| \u2705                                                                  | \u2796             | \u2705          | 160               | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 2       | 16<br>  768<br> 1024  | 0.40<br> 3.26<br> 3.67              | 506.03<br> 4016.99<br> 4944.38             | 15.92<br> 4.15<br> 4.02                  | 32<br> 1024<br> 1280      | 1024                 |\n| \u2705                                                                  | \u2796             | \u2705          | 512               | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 2       | 512<br> 768           | 3.12<br> 2.73                       | 3834.93<br> 3390.73                        | 4.51<br> 4.25                            | 1024<br> 1024             | 1024                 |\n| \u2705<br>(--schedule-conservativeness 0.01)                            | \u2796             | \u2705          | 512               | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 2       | 1024                  | 4.34                                | 5395.85                                    | 4.02                                     | 1280                      | 1024                 |\n| \u2705<br>(--schedule-conservativeness 0.01)                            | \u2796             | \u2705          | 512               | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 4       | 1024                  | 4.89                                | 6031.62                                    | 4.28                                     | 1280                      | 1024                 |\n| \u274c<br>(illegal memory access)                                       | \u2796             | \u2705          | 512               | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 8       | 1024                  | N/A                                 | N/A                                        | N/A                                      | 1280                      | 1024                 |\n| \u2705<br>(--schedule-conservativeness 0.01)                            | \u2796             | \u2705          | 512               | \u2796           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 8       | 1024                  | 4.89                                | 6022.89                                    | 4.26                                     | 1280                      | 1024                 |\n| \u2705<br>(--schedule-conservativeness 0.01)                            | \u2796             | \u2705          | 512               | \u2705           | \u2796              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2796      | \u2705            | 8       | 1024                  | 3.86                                | 4715.58                                    | 4.19                                     | 1280                      | 1024                 |\n| \u274c<br>(TypeError: 'NoneType' object is not iterable)                | \u2796             | \u2705          | 160               | \u2705           | \u2705              | \u2705      | 1                     | 1                      | 2                            | \u2796      | \u2705            | 2       | N/A                   | N/A                                 | N/A                                        | N/A                                      | N/A                       | N/A                  |\n| \u2705<br>(--mem-fraction-static 0.7)                                   | \u2705             | \u2705          | 160               | \u2705           | \u2705              | \u2705      | 1                     | 1                      | 2                            | \u2796      | \u2796            | \u2796       | 16<br>32<br>128<br>512<br>768 | 0.70<br>0.94<br>1.84<br>3.30<br>3.27        | 852.60<br>1151.75<br>2222.38<br>4002.79<br>3942.09 | 21.00<br>16.96<br>8.39<br>4.62<br>3.05           | 256<br>256<br>256<br>1024<br>1024 | 768                  |\n| \u2705<br>(--mem-fraction-static 0.7)                                   | \u2796             | \u2705          | 160               | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2796      | \u2796            | \u2796       | 16<br>32<br>128<br>512<br>768 | 0.68<br>1.04<br>1.94<br>2.87<br>3.28        | 829.29<br>1268.11<br>2348.24<br>3497.01<br>4017.84 | 20.35<br>16.22<br>9.53<br>4.09<br>3.50           | 256<br>256<br>256<br>1024<br>1024 | 768                  |\n| \u2705<br>(--mem-fraction-static 0.7, --schedule-conservativeness 0.01) | \u2796             | \u2705          | 160               | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2796      | \u2796            | \u2796       | 768                   | 2.63                                | 3197.51                                    | 2.62                                     | 1024                      | 1024                 |\n| \u274c                                                                  | \u2796             | \u2705          | 160               | \u2705           | \u2705              | \u2796      | \u2796                     | \u2796                      | \u2796                            | \u2705      | \u2705            | 2       | N/A                   | N/A                                 | N/A                                        | N/A                                      | N/A                       | N/A                  |\n| \u2705<br>(--mem-fraction-static 0.7)                                   | \u2796             | \u2705          | 160               | \u2705           | \u2705              | \u2705      | 1                     | 1                      | 2                            | \u2705      | \u2796            | \u2796       | 768<br>1024             | 2.74<br>3.50                          | 3353.09<br>4279.49                           | 3.12<br>2.85                               | 1024<br>1280                | 1024                 |\n| \u2705<br>(--mem-fraction-static 0.7, --schedule-conservativeness 0.01) | \u2796             | \u2705          | 160               | \u2705           | \u2705              | \u2705      | 3                     | 1                      | 4                            | \u2705      | \u2796            | \u2796       | 512<br>768              | 2.97<br>\u274c (OOM)                       | 3599.67<br>\u274c (OOM)                           | 4.21<br>\u274c (OOM)                            | 1024<br>1024                | 1024                 |\n| \u274c<br>(OOM)                                                         | \u2705             | \u2705          | 160               | \u2705           | \u2796              | \u2705      | 1                     | 1                      | 2                            | \u2705      | \u2796            | \u2796       | N/A                   | N/A                                 | N/A                                        | N/A                                      | N/A                       | N/A                  |\n| \u2705<br>(--mem-fraction-static 0.7, --schedule-conservativeness 0.01) | \u2796             | \u2705          | 160               | \u2705           | \u2796              | \u2705      | 1                     | 1                      | 2                            | \u2705      | \u2796            | \u2796       | 512                   | 2.16                                | 2639.71                                    | 3.07                                     | 1024                      | 1024                 |\n\n\n[^1]: the peak decoding speed under this setup is 65 token/s (number read directly from loggings)<br>> Decode batch. #running-req: 1, #token: 694, token usage: 0.00, accept len: 3.05, gen throughput (token/s): 65.08, largest-len: 0, #queue-req: 0",
+    "labels": [
+      "high priority",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-20T07:41:44+00:00",
+    "closed_at": "2025-06-04T00:19:41+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4616/reactions",
+      "total_count": 19,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 19,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4616"
+  },
+  {
+    "number": 7227,
+    "title": "[Roadmap] Blackwell Support and Optimizations",
+    "body": "### Roadmap\n\n- [x] ~~Initial support and optimizations for GB200, PD disaggregation, and large-scale EP~~ -- Done in https://lmsys.org/blog/2025-06-16-gb200-part-1/\n- [x] Initial optimizations for prefill for large scale EP\n- [ ] Optimize kernels for the Blackwell architecture\n    - [ ] Communication kernels\n    - [ ] Various smaller kernels\n- [ ] Optimize for latency-oriented scenarios\n- [ ] Computation-communication overlap\n\nTODO: more\n\n### Updates after Blog\n\n* Prefill is slightly optimized, 13149 token/s/gpu for ISL 4096 (as usual all code are open sourced)\n\n### Blog Reproduction\n\n<details>\n\nTo reproduce [the blog post](https://lmsys.org/blog/2025-06-16-gb200-part-1/), here are the instructions:\n\n#### 2025.07.12\n\nTo use the latest main, the following commands can be used.\n\nVersions that I personally use to test (other versions may work as well)\n* SGLang: https://github.com/sgl-project/sglang/commit/2a2d3478afe8cdb336888f2e6faa3775ac40254e\n* sgl-kernel: the one inside SGLang\n* DeepGEMM: https://github.com/sgl-project/DeepGEMM/commit/98707282f30aad49bb2fc924332a7b40a7e7a6dd (this is currently the version that is tagged in the `blackwell` branch)\n* DeepEP: https://github.com/fzyzcjy/DeepEP/commit/1b14ad661c7640137fcfe93cccb2694ede1220b0 (but I think https://github.com/deepseek-ai/DeepEP/commit/dd133d39bce06469292311a4accf0ae79dcb45fa or latest main should work)\n* Mooncake: mooncake-transfer-engine==0.3.4.post2\n* torch: 2.8.0.dev20250613+cu128\n\n```\n# P nodes\nSGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=2048 MC_TE_METRIC=true SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000 SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT=100000 SGLANG_DISAGGREGATION_WAITING_TIMEOUT=100000 SGLANG_MOONCAKE_CUSTOM_MEM_POOL=True SGLANG_LOCAL_IP_NIC=eth0 GLOO_SOCKET_IFNAME=eth0 NCCL_SOCKET_IFNAME=eth0 NCCL_MNNVL_ENABLE=1 NCCL_CUMEM_ENABLE=1 SGLANG_USE_MESSAGE_QUEUE_BROADCASTER=0 SGL_DISABLE_TP_MEMORY_INBALANCE_CHECK=1 PYTHONUNBUFFERED=1 python3 -m sglang.launch_server --model-path deepseek-v3-0324 --trust-remote-code --disaggregation-mode prefill --dist-init-addr 192.168.3.47:5757 --nnodes 2 --node-rank 0 --tp-size 8 --dp-size 8 --enable-dp-attention --host 0.0.0.0 --decode-log-interval 1 --max-running-requests 6144 --context-length 2176 --disable-radix-cache --moe-dense-tp-size 1 --enable-dp-lm-head --disable-shared-experts-fusion --ep-num-redundant-experts 32 --eplb-algorithm deepseek --attention-backend cutlass_mla --watchdog-timeout 1000000  --init-expert-location YOUR_FILE --disable-cuda-graph --chunked-prefill-size 16384 --max-total-tokens 32768 --enable-deepep-moe --deepep-mode low_latency --deepep-config YOUR_FILE --ep-dispatch-algorithm dynamic\n\n# D nodes\nSGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=768 MC_TE_METRIC=true SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000 SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT=100000 SGLANG_DISAGGREGATION_WAITING_TIMEOUT=100000 SGLANG_HACK_SEQ_BOOTSTRAP_ROOM=1 SGLANG_MOONCAKE_CUSTOM_MEM_POOL=True SGLANG_LOCAL_IP_NIC=eth0 GLOO_SOCKET_IFNAME=eth0 NCCL_SOCKET_IFNAME=eth0 NCCL_MNNVL_ENABLE=1 NCCL_CUMEM_ENABLE=1 SGLANG_USE_MESSAGE_QUEUE_BROADCASTER=0 SGL_DISABLE_TP_MEMORY_INBALANCE_CHECK=1 PYTHONUNBUFFERED=1 python3 -m sglang.launch_server --model-path deepseek-v3-0324 --trust-remote-code --disaggregation-mode decode --dist-init-addr 192.168.3.44:5757 --nnodes 12 --node-rank 0 --tp-size 48 --dp-size 48 --enable-dp-attention --host 0.0.0.0 --decode-log-interval 1 --max-running-requests 36864 --context-length 2176 --disable-radix-cache --moe-dense-tp-size 1 --enable-dp-lm-head --disable-shared-experts-fusion --ep-num-redundant-experts 32 --eplb-algorithm deepseek --attention-backend cutlass_mla --watchdog-timeout 1000000  --init-expert-location YOUR_PATH --chunked-prefill-size 36864 --mem-fraction-static 0.82 --enable-deepep-moe --deepep-mode low_latency --ep-dispatch-algorithm static --cuda-graph-bs 768 --num-reserved-decode-tokens YOUR_VALUE\n\n# LB\npython3 -m sglang.srt.disaggregation.launch_lb --prefill \"http://your-ip:30000\" --decode \"http://your-ip:30000\" --host 0.0.0.0 --port 8000 --timeout 3600\n\n# slow down\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": 180}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n\n# start benchmark; do not wait for this to finish before running the next line\npython3 -m sglang.bench_one_batch_server --model-path /path/to/DeepSeek-V3-0324 --base-url http://your-lb-ip:7000 --batch-size 73728 --input-len YOUR_INPUT --output-len YOUR_OUTPUT --skip-warmup\n\n# after some time (e.g. 10 minute), the D nodes are saturated, then this command should be executed\n# finish slowing down D nodes\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": null}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n```\n\n#### 2025.06.16\n\n<details>\n\n```\n# P nodes\nSGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=2048 SGLANG_MOONCAKE_ALLOCATOR_SO_PATH=/data/numa0/tom/temp/Mooncake/build/mooncake-transfer-engine/nvlink-hook/hook.so SGLANG_MOONCAKE_CUSTOM_POOL=True python3 -m sglang.launch_server --model-path /path/to/deepseek-v3-0324 --trust-remote-code --disaggregation-mode prefill --dist-init-addr your-ip:5757 --nnodes 2 --node-rank 0 --tp-size 8 --dp-size 8 --enable-dp-attention --host 0.0.0.0 --decode-log-interval 1 --max-running-requests 6144 --context-length 2176 --disable-radix-cache --enable-deepep-moe --deepep-mode low_latency --moe-dense-tp-size 1 --enable-dp-lm-head --disable-shared-experts-fusion --ep-num-redundant-experts 32 --ep-dispatch-algorithm static --eplb-algorithm deepseek --attention-backend cutlass_mla --watchdog-timeout 1000000  --init-expert-location YOUR_PATH --disable-cuda-graph --chunked-prefill-size 16384 --max-total-tokens 32768\n\n# D nodes\nSGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=768 SGLANG_NUM_RESERVED_DECODE_TOKENS=176 SGLANG_MOONCAKE_ALLOCATOR_SO_PATH=/data/numa0/tom/temp/Mooncake/build/mooncake-transfer-engine/nvlink-hook/hook.so SGLANG_MOONCAKE_CUSTOM_POOL=True python3 -m sglang.launch_server --model-path /path/to/deepseek-v3-0324 --trust-remote-code --disaggregation-mode decode --dist-init-addr your-ip:5757 --nnodes 12 --node-rank 0 --tp-size 48 --dp-size 48 --enable-dp-attention --host 0.0.0.0 --decode-log-interval 1 --max-running-requests 36864 --context-length 2176 --disable-radix-cache --enable-deepep-moe --deepep-mode low_latency --moe-dense-tp-size 1 --enable-dp-lm-head --cuda-graph-bs 768 --disable-shared-experts-fusion --ep-num-redundant-experts 32 --ep-dispatch-algorithm static --eplb-algorithm deepseek --attention-backend cutlass_mla --watchdog-timeout 1000000  --init-expert-location your_path --chunked-prefill-size 36864 --mem-fraction-static 0.82\n\n# LB\npython3 -m sglang.srt.disaggregation.launch_lb --prefill \"http://your-ip:30000\" --decode \"http://your-ip:30000\" --host 0.0.0.0 --port 8000 --timeout 3600\n\n# slow down\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": 180}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n\n# start benchmark; do not wait for this to finish before running the next line\npython3 -m sglang.bench_one_batch_server --model-path /path/to/DeepSeek-V3-0324 --base-url http://your-lb-ip:7000 --batch-size 73728 --input-len 2000 --output-len 100 --skip-warmup\n\n# after some time (e.g. 10 minute), the D nodes are saturated, then this command should be executed\n# finish slowing down D nodes\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": null}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n```\n\nRemarks\n\n* Mooncake \"allocator so path\" will soon no longer be needed when it is on master\n* The slow-down is similar to #6017\n\n</details>\n\n</details>",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "blackwell"
+    ],
+    "state": "open",
+    "created_at": "2025-06-16T06:07:50+00:00",
+    "closed_at": null,
+    "comments": 45,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7227/reactions",
+      "total_count": 31,
+      "+1": 11,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 10,
+      "confused": 0,
+      "heart": 10,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7227"
+  },
+  {
+    "number": 3554,
+    "title": "[Feature] Proposal for adding PD-Disaggregation Feature to SGLang",
+    "body": "##  Principles of Design\n\n1. Model-Agnostic Approach\nThe changes will be implemented in a model-agnostic manner, rather than being tailored to specific models.\n\n2. Compatibility with Open-Source Projects\nTo enhance interoperability with leading open-source LLM serving frameworks and ensure better code portability in the future:\n  \n3. Flexibility & Extensibility\nWhile the implementation will align with popular projects at the API level, the internal design will remain simple and flexible. Following the principle of \"less is more\", only the essential components will be defined, leaving the detailed implementation to concrete classes. \n\n## Proposed Changes\n\n### User Interface\n\nIt is similar to vLLM, yet with greater flexibility for different KV transfer paradigms. \n\nSample Commands:\n\n```\n# To start a KV producer sglang instance\npython -m sglang.launch_server --model-path meta-llama/Meta-Llama-3.1-8B-Instruct --port 30000 --kv-transfer-config '{\"kv_connector\":\"SomeConnector\",\"kv_role\":\"kv_producer\",\"ConnectorConfig\": \"/etc/kv_producer.cfg\"}'\n```\n\n```\n# To start a KV conusmer sglang instance\npython -m sglang.launch_server --model-path meta-llama/Meta-Llama-3.1-8B-Instruct \n--port 31000 --kv-transfer-config '{\"kv_connector\":\"SomeConnector\",\"kv_role\":\"kv_consumer\",\"ConnectorConfig\": \"/etc/kv_producer.cfg\"}'\n```\n\n```\n# to start a kv_proxy\npython -m sglang.router\n\n```\n\n\nkv_proxy will send a request(MAX_TOKEN=1) to PREFILL node. and PREFILL node is responsibleto save  the request's kvcache into KVPool. \nand return the one token(first token) back. And then the kv_proxy send origin_tokens + first_token to DECODE node. DECODE node will try to allocate memory and download kvcache before adding to current batching.\n\n\n![Image](https://github.com/user-attachments/assets/c06d9b7c-648c-46d4-bec2-10fdc3d2bdbf)\n\n\nA new argument will be added to class sglang.srt.server_args.ServerArgs\n```\n        parser.add_argument('--kv-transfer-config',\n                            type=KVTransferConfig.from_cli,\n                            default=None,\n                            help='The configurations for distributed KV cache '\n                            'transfer. Should be a JSON string.')\n```\n\nAccordingly, class KVTransferConfig will be defined under python/sglang/srt/configs.\n```\nclass KVTransferConfig(BaseModel):\n    \"\"\"Configuration for distributed KV cache transfer.\"\"\"\n\n    # The KV connector to transmit KV caches between sglang instances.\n    kv_connector: Optional[str] = None\n\n    # Choices are 'kv_producer', 'kv_consumer', and 'both'.\n    kv_role: Optional[str] = None\n\n    # TODO:     \n    # path to the Connector specific config file or a dict\n    ConnectorConfig: union[str] = None\n```\n\n\n\n\n### KV Connector\n\nSimilar to the PD-disagg implementation in vllm, KVConnector classes are defined to manage the KV transfer between KV producer & conusmer. \n\nUnder folder python/sglang/srt/distributed, add a new folder, kv_connector. Under the new folder of kv_connector, abstract classes will be defined as below.\n\n1.  KVConnectorBase,  an abstract class.\n\nThe KVConnectorBase class, similar to its counterpart in vllm, will have the following API:\n```\n    class KVConnectorBase(ABC):\n        @abstractmethod \n        def send_kv_caches(\n            self,\n            forward_batch: ForwardBatch,\n        )\n        \n        @abstractmethod \n        def recv_kv_caches(\n            self,\n            forward_batch: ForwardBatch,\n        )\n```\n\n\n2. and We will implement the following KVConnectors\n\n      a. PyNccl  Connector(port from vllm project)\n      b. Mooncake Connector(port from vllm project)\n      c. Infinistore Connector(https://github.com/bd-iaas-us/infiniStore)\n\n3. Each connector could be easily mocked and tested.\n\n\n\n## Solution 1\n\n\n### [PREFILL] modify function: process_batch_result_prefill in scheduler.py\n\nthis is where the prefill is finished for current batch, we could use\n```self.req_to_token_pool.req_to_token[req.req_pool_idx]``` to find all KVcache for one req. But unfortunately the kv cache\nis not continuous in TokenToKVPool. The kvcache layout for one request is sth like:\n\n![Image](https://github.com/user-attachments/assets/8e93f080-33c8-436f-9420-e3d1a849e934)\n\nSo this solution is to merge all data together and set corresponding hash key for request. and save it to KVPool.  and Because \nmerging data and sending network message may block scheduler. We should execute the above operation in another thread.\n\n\n\n### [DECODE] modify funciton: get_next_batch_to_run in scheduler.py\n\nAdd a new function ```get_next_batch_to_decode```, this function will create new batch if no batching is runing, and also \npop tasks from waiting queue. Because DECODE node will only do decode compuation. get_next_batch_to_decode will submit a task for another thread to download kvcache. ```get_next_batch_to_decode``` will check how many req which downloaded kvcache and finnaly adding to current running batch.\nThe same idea as prefill. ```get_next_batch_to_decode``` can not block scheduler either.\n\n\n### Summary\n\nThis solution is almost identical as vLLM's kv-transfer except:\n\n1. do all logic in scheduler not in modelrunner. I think this is friendly to overlap scheduler\n2. use separarate thread to do upload/download kvcache.\n\nPros:\n\n1. Merging kvcache into a big tensor could increase the network bandwidth for transfering. \n2. Be compatible with all remote KV storage and other framework such lmcache\n\nCons:\n\n1. Copying data from GPU-memory to CPU-memory increased TTFT\n2. DECODE node can not fully use prefix-cache. Because DECODE node will always download the big tensor and split it.\n\n\n\n## Solution 2\n\nI think this solution 2 could resolve the drawbacks of Solution 1. We could have a remote radix-cache pool behind all RadixCache.\n\nUnlike normal KVCACHE. we could have a remote storage which support radix-like API:\n\n```\ndef put(prefix, ids)\ndef get(prefix, ids)\n```\n\n![Image](https://github.com/user-attachments/assets/bfacae27-bcf6-447f-b8d2-44a29e122089)\n\nWhen prefill is finished, PREFILL node will put all prefix+ids tensor into remote storage. For Decode node, when a request is popped from waiting queue, Decode node do not have to download all kvcache\uff0c it just look up its own PrefixCache first, and only download missing parts. In summary, \nthe Remote storage, PREFILL node and Decode node have the exactly the same structure. Remote storage is only to help synchronize between PREFILL and DECODE. Moreover, radixcache may evict GPU memory, But the remote Storage could still hold all prefix cache data.\n\n### Summary\n\nPros:\n\n1. Copy GPU memory to remote CPU memory directly throught GPUDirect. This feature could make PD-disaggregation much faster.\n2. DECODE node could use its prefix cache as before.\n3. Beacause remote storage works as a backup for RadixCache. PD-dissaggration solution also help caching much more data in memory.\n\n\nCons:\n\n1. Because we need a KVstorage(radixtree inside), maybe pynccl is not compatible in this solution\n\n\n\n\n\n\n",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2025-02-13T22:46:07+00:00",
+    "closed_at": "2025-03-22T02:56:52+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3554/reactions",
+      "total_count": 9,
+      "+1": 9,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3554"
+  },
+  {
+    "number": 6925,
+    "title": "[RFC][Feature] Support Remote Prefill in PD Disaggregation",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nWith middle size(30B-70B) LLM, not all requests benefit from PD disaggregation (e.g. input tokens <= 128, output tokens >=512). In this case, remote prefill with conditional disaggregation is a nice to have feature.\n\n\n### Related resources\n\nDynamo implement remote prefill in vLLM v0/v1\n- https://github.com/ai-dynamo/dynamo/blob/main/docs/architecture/disagg_serving.md\n- https://github.com/vllm-project/vllm/pull/17751\n- https://github.com/vllm-project/vllm/pull/16677",
+    "labels": [],
+    "state": "open",
+    "created_at": "2025-06-06T16:50:14+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6925/reactions",
+      "total_count": 7,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6925"
+  },
+  {
+    "number": 4379,
+    "title": "[Feature] Support tool calls for DeepSeek.",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nI saw from the official documentation (https://docs.sglang.ai/backend/function_calling.html) that sglang supports tool calls, but I can't seem to find the tool parse for deepseekv3/r1. Does this mean that the deepseek model does not support tool calls?\n\nFrom the DeepSeek official website, it seems that function call support has been implemented on the model side, although it may still be unstable. https://api-docs.deepseek.com/zh-cn/guides/function_calling\n\n### Related resources\n\n_No response_",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2025-03-13T09:30:22+00:00",
+    "closed_at": "2025-04-21T03:00:52+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4379/reactions",
+      "total_count": 8,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 5,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4379"
+  },
+  {
+    "number": 5118,
+    "title": "[Roadmap] Llama 4 Support",
+    "body": "- [x] Initial Llama 4 Support @CatherineSue @fzyzcjy @ispobock  @ch-wan  #5092 \n- [x] Llama 4 User Guide @ch-wan @ispobock #5133\n- [x] Vision Backbone Support @mickqian #5144 \n- [ ] Local Attention Support in Various Attention Backbones\n  - [x] FlashAttention V3\n  - [ ] FlashInfer\n  - [ ] Triton\n- [ ] Quantization \n  - [x] FP8 @HandH1998 #5194\n  - [ ] INT4 @AniZpZ\n- [ ] Kernel Optimization\n- [ ] Memory Optimization @tarinkk @Pb314314  #6563 \n- [ ] EP Optimization\n- [x] Llama4 Tool Call Support @CatherineSue #5725 \n",
+    "labels": [
+      "high priority",
+      "collaboration"
+    ],
+    "state": "open",
+    "created_at": "2025-04-07T08:06:44+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5118/reactions",
+      "total_count": 12,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 12,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5118"
+  },
+  {
+    "number": 7736,
+    "title": "Development Roadmap (2025 H2)",
+    "body": "The SGLang team is expected to complete planning for the H2 roadmap within the next two weeks. Stay tuned\u2014exciting things are on the way!\n",
+    "labels": [
+      "high priority",
+      "collaboration"
+    ],
+    "state": "open",
+    "created_at": "2025-07-03T06:04:23+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7736/reactions",
+      "total_count": 52,
+      "+1": 24,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 11,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 10,
+      "eyes": 7
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7736"
+  },
+  {
+    "number": 6040,
+    "title": "[Feature] support function call for Qwen3 models",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nfunction call is a very important feature of the qwen3 model, and it is currently supported by some other frameworks (such as vllm, Ollama, etc.). We hope that sglang can also support it as soon as possible.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "function-calling"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-06T03:15:59+00:00",
+    "closed_at": "2025-06-12T09:50:47+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6040/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6040"
+  },
+  {
+    "number": 3758,
+    "title": "[Feature] Optimizing DeepSeek with the DeepSeek Infra OSS component",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nref https://github.com/deepseek-ai/open-infra-index\n\n- [ ] https://github.com/deepseek-ai/DeepEP\n- [ ] https://github.com/deepseek-ai/DeepGEMM\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "performance",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-21T11:52:28+00:00",
+    "closed_at": "2025-03-10T18:28:27+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3758/reactions",
+      "total_count": 6,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 6,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3758"
+  },
+  {
+    "number": 7332,
+    "title": "[RFC] Bi-weekly release",
+    "body": "After thorough internal discussions, the SGLang team has decided to standardize the release cycle as follows:\n\n- A new version will be released every two weeks under normal circumstances (e.g., v0.4.8, v0.4.9).\n\n- If urgent issues or high-priority features arise between regular releases, we may publish a patch release or an additional stable version as needed.\n\n- Bi-weekly releases will typically occur around the middle and end of each month.\n\n- Each release will aim to include a set of planned features, usually discussed and finalized by the SGLang team in advance.\n\n",
+    "labels": [
+      "high priority",
+      "collaboration"
+    ],
+    "state": "open",
+    "created_at": "2025-06-18T23:17:05+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7332/reactions",
+      "total_count": 16,
+      "+1": 11,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 5,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7332"
+  },
+  {
+    "number": 7429,
+    "title": "[Tracking] Model support",
+    "body": "### **[Tracking] Model support**\n\nThe goal is to support other model architectures available. Expand the model zoo \ud83c\udf8a \n\nThe goal is to implement support for all architectures listed below. Anyone is welcome to take any issue or implement the model below.\n\nIf you need help implementing a new model, see https://docs.sglang.ai/supported_models/support_new_models.html\n\n#### Text-only Language Models (Generative)\n- [ ] `OPTForCasualLM` (facebook/opt-125m) #7440 \n- [ ] `AquilaForCausalLM` (Aquila, Aquila2)\n- [ ] `ArcticForCausalLM` (Arctic) #5768\n- [ ] `BambaForCausalLM` (Bamba)\n- [ ] `BartForConditionalGeneration` (BART)\n- [ ] `BloomForCausalLM` (BLOOM, BLOOMZ)\n- [ ] `Cohere2ForCasualLM` #4570\n- [ ] `DeciLMForCausalLM` (DeciLM)\n- [ ] `FalconForCausalLM` (Falcon)\n- [ ] `FalconH1ForCausalLM` (Falcon-H1) #6517\n- [ ] `FalconMambaForCausalLM` (FalconMamba)\n- [ ] `Dots1ForCasualLM` (dots.llm1) #6471\n- [ ] `GPT2LMHeadModel` (GPT-2)\n- [ ] `GPTBigCodeForCausalLM` (StarCoder, SantaCoder)\n- [ ] `GPTJForCausalLM` (GPT-J)\n- [ ] `GPTNeoXForCausalLM` (GPT-NeoX, Pythia)\n- [ ] `GraniteForCausalLM` (Granite 3.0, 3.1)\n- [ ] `GraniteMoeForCausalLM` (Granite 3.0 MoE)\n- [ ] `GraniteMoeHybridForCausalLM` (Granite 4.0 MoE Hybrid)\n- [ ] `GraniteMoeSharedForCausalLM` (Granite MoE Shared)\n- [ ] `GritLM` (GritLM)\n- [ ] `InternLMForCausalLM` (InternLM v1)\n- [ ] `JAISLMHeadModel` (Jais)\n- [ ] `JambaForCausalLM` (Jamba) #1190\n- [ ] `MambaForCausalLM` (Mamba)\n- [ ] `Mamba2ForCausalLM` (Mamba2)\n- [ ] `MiniCPMForCausalLM` (MiniCPM v1) #6900\n- [ ] `MiniMaxM1ForCausalLM` (MiniMax-Text) #2898\n- [ ] `MiniMaxText01ForCausalLM` (MiniMax-Text-01)\n- [ ] `MPTForCausalLM` (MPT)\n- [ ] `NemotronForCausalLM` (Nemotron-3) #5063\n- [ ] `NemotronHForCausalLM` (Nemotron-H)\n- [ ] `OLMoForCausalLM` (OLMo v1)\n- [ ] `OLMo2ForCausalLM` (OLMo2)\n- [ ] `OPTForCausalLM` (OPT)\n- [ ] `OrionForCausalLM` (Orion)\n- [ ] `PersimmonForCausalLM` (Persimmon)\n- [x] `PhiForCausalLM` (Phi-1.5, Phi-2) #7862 @ppraneth \n- [x] `Phi3SmallForCausalLM` (Phi-3-Small)\n- [x] `PhiMoEForCausalLM` (Phi-3.5-MoE) #7907 @byjiang1996 \n- [ ] `Plamo2ForCausalLM` (PLaMo2)\n- [ ] `SolarForCausalLM` (Solar Pro)\n- [ ] `Starcoder2ForCausalLM` (Starcoder2)\n- [ ] `TeleChat2ForCausalLM` (TeleChat2) \n- [ ] `TeleFLMForCausalLM` (TeleFLM)\n- [ ] `Zamba2ForCausalLM` (Zamba2)\n\n#### Embedding Models\n- [ ] `GteModel`\n- [ ] `GteNewModel`\n- [ ] `ModernBertModel`\n- [ ] `NomicBertModel`\n- [ ] `RobertaModel`\n- [ ] `JambaForSequenceClassification`\n- [ ] `BertForSequenceClassification`\n- [ ] `Qwen3ForSequenceClassification` #7314\n- [ ] `RobertaForSequenceClassification`\n- [ ] `XLMRobertaForSequenceClassification`\n\n#### Multimodal Models\n- [ ] `Glm4vForConditionalGeneration` (THUDM/GLM-4.1V-9B-Thinking)\n- [ ] `AriaForConditionalGeneration` (Aria)\n- [ ] `AyaVisionForConditionalGeneration` (Aya Vision) #6304\n- [ ] `Blip2ForConditionalGeneration` (BLIP-2) #4414\n- [ ] `ChameleonForConditionalGeneration` (Chameleon)\n- [ ] `Florence2ForConditionalGeneration` (Florence-2)\n- [ ] `FuyuForCausalLM` (Fuyu)\n- [ ] `GLM4VForCausalLM` PP support #7257\n- [ ] `GraniteSpeechForConditionalGeneration` (Granite Speech)\n- [ ] `H2OVLChatModel` (H2OVL)\n- [ ] `Idefics3ForConditionalGeneration` (Idefics3)\n- [ ] `LlavaNextVideoForConditionalGeneration` (LLaVA-NeXT-Video) #4062\n- [ ] `MiniMaxVL01ForConditionalGeneration` (MiniMax-VL)\n- [ ] `MolmoForCausalLM` (Molmo)\n- [ ] `NVLM_D_Model` (NVLM-D 1.0)\n- [ ] `Ovis` (Ovis1.6, Ovis2) #5018\n- [ ] `PaliGemmaForConditionalGeneration` (PaliGemma)\n- [ ] `Phi3VForCausalLM` (Phi-3-Vision) #1108\n- [ ] `PixtralForConditionalGeneration` (Pixtral)\n- [ ] `Qwen2AudioForConditionalGeneration` (Qwen2-Audio)\n- [ ] `Qwen2_5OmniThinkerForConditionalGeneration` (Qwen2.5-Omni) #4969\n- [ ] `SkyworkR1VChatModel` (Skywork-R1V) #4692\n- [ ] `SmolVLMForConditionalGeneration` (SmolVLM2)\n- [ ] `TarsierForConditionalGeneration` (Tarsier)\n- [ ] `Tarsier2ForConditionalGeneration` (Tarsier2)\n\n---\n**Related Issues & PRs**\n\n- Support TRI-ML/prismatic-vlms: #1129\n- facebook/contriever support: #3720\n- Support Gemma 3 QAT models: #5591\n- Bytedancer: #6724",
+    "labels": [
+      "good first issue",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2025-06-21T22:18:10+00:00",
+    "closed_at": null,
+    "comments": 22,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7429/reactions",
+      "total_count": 15,
+      "+1": 10,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 5,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7429"
+  },
+  {
+    "number": 128,
+    "title": "[Bug] liuhaotian/llava-v1.6-mistral-7b doesn't load",
+    "body": "When trying to load the Mistral variant of LLaVa 1.6, I get an expected error:\r\n\r\n```sh\r\npython3 -m sglang.launch_server --model-path liuhaotian/llava-v1.6-mistral-7b --chat-template vicuna_v1.1 --port 30000\r\n```\r\n\r\n```\r\nValueError: The checkpoint you are trying to load has model type `llava_mistral` but Transformers does not recognize this architecture. This could be because of an issue with the checkpoint, or because your version of Transformers is out of date\r\n```\r\n\r\nTransformers doesn't treat the LLaVa variants any differently, they all use the same config.  I think this *could* be easily fixed by adding a mapping from `llava_mistral` to the `LlavaConfig` in the config mapping.  ",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-31T23:55:51+00:00",
+    "closed_at": "2024-07-25T06:32:21+00:00",
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/128/reactions",
+      "total_count": 8,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/128"
+  },
+  {
+    "number": 7574,
+    "title": "Gemma3n Usage",
+    "body": "~~Due to some compatible issues, we need to manually install the latest version of transformers and timm by:\n`pip install -U transformers timm`.~~\n\nThe latest SGLang version 0.4.8.post1 could not work with gemma3n, and was fixed in latest main.\nTo solve the issue, please **install from source** by: (please remove `uv` if you don't use)\n\n```\ngit clone https://github.com/sgl-project/sglang.git\ncd sglang\nuv pip install -e \"python[all]\"\n```\n\nLaunch the server with:\n`python -m sglang.launch_server --model-path google/gemma-3n-E4B-it --attention-backend fa3`\n\nIf you encounter any issue when running the gemma3n, welcome to comment under this issue.\n\nKnown issues:\n1. `TypeError: unsupported operand type(s) for %: 'list' and 'int'` : Please follow above instruction",
+    "labels": [
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2025-06-26T21:14:01+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7574/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7574"
+  },
+  {
+    "number": 2929,
+    "title": "[Feature] Lora Development Roadmap",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Features \n\n- [x] triton kernel & benchmark #3161 @Fridge003 \n- [x] accuracy alignment #2671 #3413 @Fridge003 \n- [x] test cases enhancement #3414 #3652 #4492 #4925 @aoshen524 @jcbjcbjc\n- [x] support multi-rank adaptors #4492 @jcbjcbjc\n- [x] support tensor parallel #2931 #4274 @aoshen524 \n- [ ] compatibility with radix attention #2880 @Sunt-ing @jcbjcbjc\n- [x] compatibility with cuda graph #3282 #4115 @Qiaolin-Yu  @Beichen-Ma \n- [x] support phi4mm #6544 @lifuhuang \n- [ ] support lora for embedding layer #3438 @Beichen-Ma \n- [x] load/unload #7412 #7446 @lifuhuang  @Fridge003 \n- [ ] optimizing speed #2372 #3323 #6961 @jcbjcbjc @Fridge003 @lifuhuang \n- [ ] unified paging (support lora with different ranks) #3647 @Sunt-ing @jcbjcbjc\n- [ ] OpenAI compatible API\n- [x] Documentation #5521 @Fridge003 \n\n### Related resources\n\nPrior todo list can be referred to #1307 and #1728",
+    "labels": [
+      "help wanted",
+      "lora"
+    ],
+    "state": "open",
+    "created_at": "2025-01-16T21:30:56+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2929/reactions",
+      "total_count": 14,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 6,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2929"
+  },
+  {
+    "number": 4221,
+    "title": "[Feature] SGLang Support for TileLang",
+    "body": "We recently came across an interesting project: [TileLang](https://github.com/tile-ai/tilelang). It appears to offer significant advantages over Triton in many cases while maintaining a clean dataflow and simple syntax.\n\nDo we have any plans to support a TileLang backend in SGLang?\n\nFor instance, TileLang has demonstrated up to **5x speedup** over Triton\u2019s Flash MLA implementations on H100, with a kernel implementation of just **80 lines of code (see document:** https://github.com/tile-ai/tilelang/tree/main/examples/deepseek_mla). Given these promising results, it would be valuable to explore its potential integration.\n\nWould love to hear thoughts on this!\n",
+    "labels": [
+      "help wanted",
+      "high priority",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-09T05:34:49+00:00",
+    "closed_at": "2025-05-27T00:18:53+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4221/reactions",
+      "total_count": 9,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 5,
+      "eyes": 4
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4221"
+  },
+  {
+    "number": 5591,
+    "title": "[Feature]  Support Gemma 3 QAT models",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nHello SGLang team,\n\nCould you please add support for the quantization-aware training models of Google's Gemma 3? Thanks!\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2025-04-21T05:53:29+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5591/reactions",
+      "total_count": 13,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5591"
+  },
+  {
+    "number": 1729,
+    "title": "[Bug][minimal reproducible demo] High variability across batch inference runs",
+    "body": "### Checklist\r\n\r\n- [X] 1. I have searched related issues but cannot get the expected help.\r\n- [X] 2. The bug has not been fixed in the latest version.\r\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\r\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 5. Please use English, otherwise it will be closed.\r\n\r\n### Describe the bug\r\n\r\n## Background\r\n\r\nThis bug might be related to #1316.\r\n\r\nWhen asking the model a block of questions it should answer with `yes` followed by a block of questions that should be answered by `no` a degradation in quality can be observed for some runs, when running the same data many times.\r\n\r\n## Standard `lmsysorg/sglang:v0.3.3.post1-cu121-srt`\r\n\r\nAsking 200 times _the same_ 40 yes, 40 no questions and recording logit averages.\r\n**Blue**: questions that should be answered yes: average yes logit (post-softmax)\r\n**Orange**: questions that should be answered no: average yes logit (post-softmax).\r\n(please check the minimal reproducible sample [here](https://github.com/FredericOdermatt/sglang/blob/bug/variability-across-runs/examples/frontend_language/usage/readme_examples_run_batch.py))\r\n\r\n![image](https://github.com/user-attachments/assets/26714c0b-a8b3-489c-8eaa-d99933be7988)\r\n\r\n## Restricted `lmsysorg/sglang:v0.3.3.post1-cu121-srt`\r\n\r\nAdding the following flags and running 100 times:\r\n```\r\n--attention-backend triton --sampling-backend pytorch --disable-radix-cache --disable-regex-jump-forward --disable-cuda-graph --disable-cuda-graph-padding --disable-disk-cache --disable-custom-all-reduce --disable-mla\r\n```\r\n\r\n![image](https://github.com/user-attachments/assets/d54813fb-6af3-4823-a6c9-e3ee298472b4)\r\n\r\n## Observations\r\n\r\n- We see that Mixtral22B should have an average of around 0.93 probability mass towards the `yes` token for questions that should be answered with yes when set up correctly.\r\n- For the current docker image (v0.3.3.post1) there are some intermittent runs that can go as low as 0.5 on average\r\n- A more restricted setup disabling caches etc doesn't show the deteriorating behavior\r\n- the behavior happens irrespective of random seed choice\r\n- I was able to reproduce the behavior on sglang `v0.2.6` equally\r\n- The behavior doesn't happen if all correct answers are `yes` (simply commenting out the 40 questions that should be answered with `no`)\r\n![image](https://github.com/user-attachments/assets/32ff0e24-ffac-49c2-b2fd-1a6aa8647a8d)\r\nThis observation makes me suspect a caching mechanism\r\n\r\n## Further notes\r\n\r\n- I haven't checked yet whether the long prompt is really necessary (see minimal example), I can run that experiment at the next occasion\r\n\r\n\r\n### Reproduction\r\n\r\nCurrent minimal reproducible example [here](https://github.com/FredericOdermatt/sglang/blob/bug/variability-across-runs/examples/frontend_language/usage/readme_examples_run_batch.py)\r\n\r\n**Normal server start**\r\n\r\n```python3 -m sglang.launch_server --model-path mistralai/Mixtral-8x22B-Instruct-v0.1 --random-seed 42 --tp-size 8 --dp-size 1 --host 0.0.0.0 --port 30001```\r\n\r\n**Restricted server start**\r\n```python3 -m sglang.launch_server --model-path mistralai/Mixtral-8x22B-Instruct-v0.1 --attention-backend triton --sampling-backend pytorch --disable-radix-cache --disable-regex-jump-forward --disable-cuda-graph --disable-cuda-graph-padding --disable-disk-cache --disable-custom-all-reduce --disable-mla --random-seed 42 --tp-size 8 --dp-size 1 --host 0.0.0.0 --port 30001```\r\n\r\n### Environment\r\n\r\n**Environment for problematic runs**\r\n`lmsysorg/sglang:v0.3.3.post1-cu121-srt`\r\n",
+    "labels": [
+      "bug",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-20T14:07:03+00:00",
+    "closed_at": "2025-02-25T00:17:03+00:00",
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1729/reactions",
+      "total_count": 7,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1729"
+  },
+  {
+    "number": 1384,
+    "title": "[Feature] Support RM API",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nDoes SGLang support rapid deployment of RM services?\r\nOr convenient custom APIs? It seems that currently there are only chat/completion/embedding APIs. As a newcomer to inference acceleration, any help would be beneficial.\n\n### Related resources\n\ncopied from https://github.com/vllm-project/vllm/issues/6620, same demand",
+    "labels": [
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-11T04:27:29+00:00",
+    "closed_at": "2024-10-19T14:52:16+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1384/reactions",
+      "total_count": 6,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 5
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1384"
+  },
+  {
+    "number": 1487,
+    "title": "Development Roadmap (2024 Q4)",
+    "body": "Here is the development roadmap for 2024 Q4. Contributions and feedback are welcome ([**Join Bi-weekly Development Meeting**](https://t.co/4BFjCLnVHq)). Previous 2024 Q3 roadmap can be found in #634.\n\n## Performance\n- [x] Hide CPU overhead with overlapped scheduler (#1738, #2067)\n- [x] Support speculative decoding\n  - Eagle  #2150 \n  - Reference-based. #270\n  - Medusa head #859\n  - Draft model based.\n- [x] Sparse Attention #1459\n- [x] Faster grammar parsing library for constrained decoding #1752 \n- [x] Multi-layer radix cache (GPU/CPU/Disk) https://github.com/sgl-project/sglang/pull/2693  @xiezhq-hermann \n- [ ] Improve the performance of mixed chunked prefill. see a draft #1383 \n- [ ] Integrate CuDNN paged attention [kernels](https://github.com/NVIDIA/cudnn-frontend/blob/v1.8.0/samples/python/52_scaled_dot_product_attention_with_paged_caches.ipynb) \n\n## Parallelism\n- [ ] Support sequence parallelism #1436. Related [paper](https://www.arxiv.org/pdf/2411.01783)\n- [ ] Support pipeline parallelism.\n- [ ] Support expert parallelism + data parallelism for DeepSeek/MoE models. @ispobock \n    - [x] Data parallelism #1970 \n    - [x] Expert parallelism # #1435 \n- [x] Implement a better cache-aware load balancer for data parallelism. #2114 #1732 @ByronHsu @yichuan520030910320 \n- [ ] Overlap communication in tensor parallelsim. @zhuohaol\n- [ ] Support disaggregated serving to separate prefill and decoding.\n\n## Hardware Coverage\n- [x] AMD optimizations. cc @HaiShaw \n  - CK kernels\n  - Setup CI (accuracy/performance) for AMD\n- [x] Intel XPU support.\n  - #1480\n  - #2121\n\n## Model Coverage\n- [x] Multi-modal models\n  - Llama 3.2 Vision https://github.com/sgl-project/sglang/pull/1551\n  - QWen2-VL https://github.com/sgl-project/sglang/pull/1546\n  - DeepSeek VL2 https://github.com/sgl-project/sglang/issues/2653\n  - mistralai/Pixtral https://github.com/sgl-project/sglang/issues/2351\n  - GLM 4V https://github.com/sgl-project/sglang/pull/1641\n  - VILA https://arxiv.org/abs/2412.04468\n  - InternVL\n  - Phi-vision\n  - [FishSpeech](https://github.com/fishaudio/fish-speech) audio model support \n  - [Ultravox](https://github.com/sgl-project/sglang/issues/1271)\n- [ ] Language models\n  -  Mamba models @rahulbatra85 @HaiShaw \n  - xLSTM\n- [x] Reward models\n  - #1525 \n  - #1954 \n\n## New features\n- [ ] Integrate with LMCache https://github.com/LMCache/LMCache\n- [ ] A padded batch mode to make results more deterministic https://github.com/sgl-project/sglang/blob/8912b7637f5c8dca0f18c31a17e46f427cf53152/docs/references/faq.md?plain=1#L3\n- [x] Performance optimizations for multi-LoRA serving #1728 \n\n## Quantization\n@HaiShaw @zhyncs @ispobock \n- [x] Torchao integration #1561\n- [x] Turbomind operators integration\n- [ ] More CUTLASS mixed precision gemm integration\n- [ ] KV cache quantization (more formats + scaling factor)\n\n## Server API\n- [x] Support directly taking embedding as inputs. #745\n- [x] Add APIs for using the inference engine in a single script without launching a separate server. See also [examples](https://docs.vllm.ai/en/latest/getting_started/examples/offline_inference.html).\n  - #1567\n- [ ] Support endpoint other than OpenAI (Anthropic, Mistral) in the language frontend.\n- [x] Better APIs to support RL trainers, including https://github.com/huggingface/trl and https://github.com/OpenRLHF/OpenRLHF @zhaochenyang20 \n- [x] Support generalized reward API (adding linear layers to any Causal LM to get the reward) https://github.com/OpenRLHF/OpenRLHF @zhaochenyang20 \n\n## Observability\n- [x] Integrate Grafana / Prometheus\n  - #1853  #1461 \n\n## Others\n- [x] Notebook-style interactive tutorials. @zhaochenyang20 \n- [ ] Compiler mode optimizations for the language (e.g. support sending a full serialized SGL program to the server). @hnyls2002 \n- [ ] Memory pool refactor to better support mixing different attention layers (e.g., interleaved window attention). @Ying1123 \n- [ ] Make vLLM an optional dependency. @zhyncs @ByronHsu @yizhang2077 https://github.com/sgl-project/sglang/issues/1673",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-09-21T22:38:00+00:00",
+    "closed_at": "2025-03-03T18:43:18+00:00",
+    "comments": 27,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1487/reactions",
+      "total_count": 39,
+      "+1": 19,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 9,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 11,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1487"
+  },
+  {
+    "number": 2807,
+    "title": "[Feature] RFC for adding CPU support for SGLang",
+    "body": "### Motivation\n\nHi, SGLang folks! This is Mingfei from intel pytorch team, our team helps optimize PyTorch performance on CPU. I am also the PyTorch module maintainer for cpu performance. We would like to contribute to SGLang for CPU enabling and performance optimization.\n\n### Targets\nOur primary target is to optimize SGLang performance on Intel Xeon Scalable Processors (x86 server CPUs).\n* Optimization will be focusing on Xeon with [Intel\u00ae Advanced Matrix Extensions](https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/advanced-matrix-extensions/overview.html) support, including Sapphire Rapids(4th gen), Emerald Rapids(5th gen), Granite Rapids(6th gen).\n* Native implementations or fallbacks will be provided for CPUs with other ISA to make it functional.\n* Providing good performance per dollar.\n\n### Limitations\n\n* Kernels written in **avx512** and **amx-bf16**, requires **GCC11** or above.\n* **BFloat16/Float16** will be enabled at the same time on CPU, but we only focus on **BFloat16** performance optimization at the current stage, **Float16** optimization will be added later on.\n\n### Schedule for 25Q1\nWe will focusing on DeepSeek series at the moment to align with our internal development requirements and extend the model coverage later on.\n\n#### Generic enabling/optimizations for sglang\n\n- [x] CPU device enabling. We intend to enable CPU device with torch native backend first and then gradually replace all the performance critical components with C++ intrinsics kernels. https://github.com/sgl-project/sglang/pull/2806\n- [x] fused kernels for `rms_norm`, `silu_and_mul`, sampling and so on.\n- [x] radix attention kernels for extend and decoding.\n\n#### DeepSeek performance optimizations\n(we are currently mapping the work from [DeepSeek Multi-head Latent Attention (MLA) Throughput Optimizations](https://lmsys.org/blog/2024-09-04-sglang-v0-3/#deepseek-multi-head-latent-attention-mla-throughput-optimizations))\n- [x] MLA decoding kernel optimization with head blocking.\n- [x] DeepSeekMoE (FusedMoE)\n- [x] fp8 kv cache (experimental)\n\n#### Tensor Parallel\n- [x] Map TP to the multiple sockets (numa nodes) on a single node CPU\n- [ ] EPMoE\n\nWe hope to help more customers to build better user experience with deploying with sglang on CPU devices. Welcome any feedbacks, thanks!\n\n",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "intel",
+      "cpu"
+    ],
+    "state": "open",
+    "created_at": "2025-01-09T07:58:45+00:00",
+    "closed_at": null,
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2807/reactions",
+      "total_count": 14,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2807"
+  }
+]

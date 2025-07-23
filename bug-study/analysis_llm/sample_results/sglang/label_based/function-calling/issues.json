@@ -1,0 +1,83 @@
+[
+  {
+    "number": 7047,
+    "title": "[Bug] Function calling format issues with deepseek-ai/DeepSeek-R1-0528 on SGLang",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nWe have deployed deepseek-ai/DeepSeek-R\u201d1-0528 on SGLang with following arguments:\n--tool-call-parser deepseekv3 --chat-template /sgl-workspace/sglang/examples/chat_template/tool_chat_template_deepseekr1.jinja\n\nThe model provides following response for curl:\n{\"id\":\"80890216cd5e485b86061e2efa71724b\",\"object\":\"chat.completion\",\"created\":1749361574,\"model\":\"deepseek-ai/DeepSeek-R1-0528\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"<\uff5ctool\u2581calls\u2581begin\uff5c><\uff5ctool\u2581call\u2581begin\uff5c>function<\uff5ctool\u2581sep\uff5c>get_current_weather\\n```json\\n{\\\"location\\\":\\\"Bellevue, WA\\\",\\\"}\\n```<\uff5ctool\u2581call\u2581end\uff5c><\uff5ctool\u2581calls\u2581end\uff5c>\",\"reasoning_content\":null,\"tool_calls\":[]},\"logprobs\":null,\"finish_reason\":\"tool_calls\",\"matched_stop\":null}],\"usage\":{\"prompt_tokens\":199,\"total_tokens\":227,\"completion_tokens\":28,\"prompt_tokens_details\":null}}\n\nThe json formatting error is observed.\n\n### Reproduction\n\nImage used:\ndocker pull lmsysorg/sglang:v0.4.6.post5-cu124\ncommand:\npython3 -m sglang.launch_server --model-path deepseek-ai/DeepSeek-R1-0528 --tp 16 \\\n                --dist-init-addr $LWS_LEADER_ADDRESS:20000 \\\n                --nnodes 2 \\\n                --node-rank $NODE_RANK \\\n                --host 0.0.0.0 --port 8000 \\\n                --enable-metrics --trust-remote-code --enable-torch-compile --torch-compile-max-bs 8 --attention-backend flashinfer --tool-call-parser deepseekv3 --chat-template /sgl-workspace/sglang/examples/chat_template/tool_chat_template_deepseekv1.jinja\n\n### Environment\n\nRunning on kubernetes cluster.",
+    "labels": [
+      "function-calling"
+    ],
+    "state": "open",
+    "created_at": "2025-06-10T10:00:37+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7047/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7047"
+  },
+  {
+    "number": 6589,
+    "title": "[Feature] Tool Call Roadmap",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n## Motivation\n\nAdd a list of issues need to resolve in tool call.\n\n## Track for Tool Call Issues\n\n### High Piority\n\nIssues related to accuracy, consistency, and performance.\n\n- [x] [Multiple Tool Call Support for MistralDetector and Qwen25Detector](https://github.com/sgl-project/sglang/issues/6589#issuecomment-2907987558)\n#6597 \n\n- [ ] [JSON Double Dumping Behavior](https://github.com/sgl-project/sglang/issues/6589#issuecomment-2907988051)\n\n- [x] [`ToolCallItem.tool_index` not following OpenAI API](https://github.com/sgl-project/sglang/issues/6589#issuecomment-2907988438) \n#6715 \n#6655 \n#6678 \n\n----\n\n### Medium Priority\n\nIssues that are not immediate, such as features still WIP, or needs refactor, or edge cases.\n\n- [ ] [Tests for `get_structure_tag` in `FunctionCallParser`](https://github.com/sgl-project/sglang/issues/6589#issuecomment-2907988553)\n\n- [x] [DeepSeekV3Dectector may have issues with Multiple Tool Calls Streaming Parsing](https://github.com/sgl-project/sglang/issues/6589#issuecomment-2908033411) \n#6655 \n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "feature",
+      "function-calling"
+    ],
+    "state": "open",
+    "created_at": "2025-05-25T10:29:03+00:00",
+    "closed_at": null,
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6589/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6589"
+  },
+  {
+    "number": 6040,
+    "title": "[Feature] support function call for Qwen3 models",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nfunction call is a very important feature of the qwen3 model, and it is currently supported by some other frameworks (such as vllm, Ollama, etc.). We hope that sglang can also support it as soon as possible.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "function-calling"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-06T03:15:59+00:00",
+    "closed_at": "2025-06-12T09:50:47+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6040/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6040"
+  }
+]

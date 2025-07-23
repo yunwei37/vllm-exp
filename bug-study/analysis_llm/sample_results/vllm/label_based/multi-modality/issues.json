@@ -1,0 +1,390 @@
+[
+  {
+    "number": 16354,
+    "title": "[Feature]: Benchmarks for audio models",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\n- Add audio datasets to `benchmarks/benchmark_dataset.py` to so we can run performance benchmarks on audio models as well.\n- Add a benchmark similar to MMMU (#11196) but for audio models to evaluate their correctness.\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\ncc @mgoin @ywang96 \n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "feature request",
+      "multi-modality"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-09T16:55:19+00:00",
+    "closed_at": "2025-04-19T09:24:15+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/16354/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/16354"
+  },
+  {
+    "number": 15186,
+    "title": "[New Model]: please surport  model   https://huggingface.co/Skywork/Skywork-R1V-38B",
+    "body": "### The model to consider.\n\nhttps://huggingface.co/Skywork/Skywork-R1V-38B\n\n### The closest model vllm already supports.\n\nhttps://huggingface.co/Skywork/Skywork-R1V-38B\n\n### What's your difficulty of supporting the model you want?\n\nhttps://huggingface.co/Skywork/Skywork-R1V-38B\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "new-model",
+      "multi-modality"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-20T04:43:12+00:00",
+    "closed_at": "2025-03-29T03:39:22+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15186/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15186"
+  },
+  {
+    "number": 15144,
+    "title": "[Bug] Mismatch between `get_multimodal_embedding` output and `PlaceholderRange`",
+    "body": "In V1, we expect the output of `get_multimodal_embedding` to correspond to the `PlaceholderRange`, which is in turn constructed based on `PromptUpdateDetails.features`. However, the current V1 code doesn't validate this, causing the model to crash during inference when under high load (e.g. #14897, #14963).\n\nFrom a quick look at the code, these models output embedding sizes which are inconsistent with the placeholder range:\n\n- [x] Fuyu (fixed by #15731)\n- [x] Gemma3 (fixed by #14980)\n- [x] Idefics3 (fixed by #15696)\n- [x] InternVL-based models (fixed by #15086)\n- [x] MiniCPM-V (fixed by #15487)\n\n(Basically, any model that has image newline/column tokens after applying HF processor needs a mask to map image patch features to image embeddings, as described below.)\n\nTo fix this, we can follow these steps:\n\n1. Update the multi-modal processor to output a mask to indicate which positions in the `PlaceholderRange`-aligned embeddings should the patch features (outputted by vision encoder) be assigned to. This mask can be called `embed_is_patch`.\n2. Use `scatter_patch_features` to scatter the patch features into the image embedding tensor.\n3. When merging multimodal embeddings, use `select_patch_features` to recover the patch features from the image embeddings. The number of patch features should correspond to the number of image tokens (which is a subset of the feature tokens in `PromptUpdateDetails`).\n\nFollow-up work:\n\n- #15712 (assigned to @DarkLight1337)\n- Directly use individual token IDs instead of range of IDs (assigned to @ywang96 )\n",
+    "labels": [
+      "bug",
+      "help wanted",
+      "v1",
+      "multi-modality"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-19T16:53:23+00:00",
+    "closed_at": "2025-03-30T10:47:54+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15144/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15144"
+  },
+  {
+    "number": 15011,
+    "title": "[Feature]: Support more video loader",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nvllm now using `decord` for video loader. There are some problem here:\n1. `decord` is unmaintained from 3 years ago. and the newest release 0.6 is from 4 years ago. It may cause some unknown issue with this lib without fix.\n2. `decord` only published x86 package to pypi, for some aarch64 machine, such as GH200, users need build it by hand.\n\nSo it's good to support more video loader for diversity usage.\n\nSome investigation maybe useful:\n1. huggingface transformers support `decord`, `pyav`, `torchvision` and `opencv`.  https://huggingface.co/docs/transformers/chat_template_multimodal#sampling-with-fixed-number-of-frames while only `decord` and `pyav` support `load_from_url` case. `pyav` is the default backend even the performance of `decord` is better.\n2. The suggested loader from Qwen2.5 VL are `decord` and `torchvision`. https://github.com/QwenLM/Qwen2.5-VL/blob/f56c4d62f6ed38d725d9da2d1440d19b04c10c66/qwen-vl-utils/src/qwen_vl_utils/vision_process.py#L257-L260\n3. sglang is the same with vllm using `decord`\n\ncc: @DarkLight1337 @ywang96 @jeejeelee \n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "multi-modality"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-18T08:29:37+00:00",
+    "closed_at": "2025-04-01T15:55:14+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15011/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15011"
+  },
+  {
+    "number": 14876,
+    "title": "[Tracking Issue]: Multi-modal model requests",
+    "body": "Moved to https://github.com/orgs/vllm-project/projects/10",
+    "labels": [
+      "new-model",
+      "multi-modality"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-16T02:14:05+00:00",
+    "closed_at": "2025-03-16T13:01:04+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14876/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14876"
+  },
+  {
+    "number": 14438,
+    "title": "[RFC]: Configurable multi-modal data for profiling",
+    "body": "### Motivation.\n\nWe can control the data used in profiling multi-modal models using `limit_mm_per_prompt`. However, this is insufficient for the following use-cases:\n\n- Restrict models that accept multiple modalities to only accept single modality inputs to avoid unnecessary memory allocation, e.g.:\n  - Make Qwen2-VL only accept 10 images *or* 1 video, but not 10 images *and* 1 video per prompt\n- Limit the duration of multi-modal data items with temporal components to save memory, e.g.:\n  - Make Whisper accept only 20s of audio instead of 30s\n  - Make Qwen2-VL accept only 10 frames of video instead of 16\n\nTo enable them, this RFC proposes a new engine argument: `mm_profiling_configs`, which lets users configure the multi-modal data used for profiling in more detail.\n\n### Proposed Change.\n\nThis RFC proposes a new engine argument `mm_profiling_configs`, which accepts a list of config objects in JSON form. At a minimum, each config object specifies the maximum number of multi-modal items per prompt. This results in the following schema:\n\n```py\nclass MultiModalProfilingConfig:\n    limit_mm_per_prompt: dict[str, int]\n\n    def get_limit_per_prompt(self, modality: str) -> int:\n        return self.limit_per_prompt.get(modality, 1)\n\nclass MultiModalConfig:   # Add the following fields:\n    profiling_configs: list[MultiModalProfilingConfig]\n\nclass EngineArgs:  # Add the following fields:\n    mm_profiling_configs: list[MultiModalProfilingConfig]\n```\n\n#### Multiple profiling runs\n\nEach config corresponds to one profile run, during which the config is passed to the multimodal profiler. After profiling each config, we will allocate memory based on the config that results in the most memory usage.\n\n```py\nclass MultiModalProfiler:   # Update the following methods:\n    def get_dummy_encoder_data(\n        self,\n        seq_len: int,\n        profiling_config: MultiModalProfilingConfig,\n    ) -> DummyData:\n        ...\n\n    def get_dummy_decoder_data(\n        self,\n        seq_len: int,\n        profiling_config: MultiModalProfilingConfig,\n    ) -> DummyData:\n        ...\n\n    def get_dummy_processor_inputs(\n        self,\n        seq_len: int,\n        profiling_config: MultiModalProfilingConfig,\n    ) -> ProcessorInputs:\n        ...\n```\n\n#### Input validation\n\nTo prevent malicious users from crashing the server during inference time by sending too many multi-modal data items in a single prompt (causing OOM), we continue to limit the number of data items per prompt, but in a different way.\n\nBefore processing the multi-modal data, we iterate through each profiling config and accept the input as long as it fits within the bounds of at least one of the configs. By default, this check is performed by looking at the number of multi-modal data items only. This can be overridden per model, allowing the check to be based on other fields in the config.\n\n```py\nclass MultiModalProcessor:   # Add the following methods:\n    def _validate_mm_items_profiling(\n        self,\n        mm_items: MultiModalDataItems,\n        profiling_config: MultiModalProfilingConfig,\n    ) -> None:\n        for modality, items in mm_items.items():\n            limit = profiling_config.get_limit_per_prompt(modality)\n            if len(items) > limit:\n                raise ValueError(\n                    f\"You set {modality}={limit} (or defaulted to 1) in \"\n                    f\"`--limit-mm-per-prompt`, but passed {len(items)} \"\n                    f\"{modality} items in the same prompt.\")\n\n    def _validate_mm_items(self, mm_items: MultiModalDataItems) -> None:\n        mm_config = self.info.ctx.get_mm_config()\n\n        failures = list[Exception]()\n        for profiling_config in mm_config.profiling_configs:\n            try:\n                self._validate_mm_items_profiling(mm_items, profiling_config)\n            except Exception as e:\n                failures.append(e)\n            else:\n                return\n\n        if failures:\n            failures_str = \"\\n\".join(str(e) for e in failures)\n            raise RuntimeError(f\"Inputs failed to satisfy profiling requirements: {failures_str}\")\n```\n\nTo maintain compatibility, `limit_mm_per_prompt` will remain as a shorthand for specifying a single profiling config with the given maximum number of multi-modal items per prompt. That is:\n\n```py\nEngineArgs(limit_mm_per_prompt=...) == EngineArgs(mm_profiling_configs=MultiModalProfilingConfig(limit_mm_per_prompt=...))\n````\n\n### Feedback Period.\n\n1 week\n\n### CC List.\n\n@NickLucche @ywang96 @Isotr0py @jeejeelee for multi-modality\n@youkaichao @WoosukKwon @ywang96 for profiling\n\n### Any Other Things.\n\n@NickLucche mentioned that the naming of `mm_profiling_configs` is not ideal since it can also affect model inference. However, `mm_config` is already taken by `MultiModalConfig`. Any other suggestions?\n\n@ywang96 reminded me that we don't need to limit the number of multi-modal items per prompt in V1 anymore.\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "RFC",
+      "stale",
+      "multi-modality"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-07T13:55:02+00:00",
+    "closed_at": "2025-07-14T02:17:02+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14438/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14438"
+  },
+  {
+    "number": 10114,
+    "title": "[RFC]: Merge input processor and input mapper for multi-modal models",
+    "body": "## Motivation\n\n### Background\n\nTo provide more control over the model inputs, we currently define two methods for multi-modal models in vLLM:\n\n- The **input processor** is called inside `LLMEngine` to extend the prompt with placeholder tokens which are reserved for vLLM features such as KV cache and chunked prefill.\n- The **input mapper** is called inside `ModelRunner` to transform multi-modal inputs (e.g. `PIL` images) into tensor inputs, usually via the modality-specific processor (e.g. `AutoImageProcessor`) from HuggingFace.\n\n### Issues with the current design\n\n1. The input processor accepts the output of HF `AutoTokenizer`, a list of token IDs, instead of the text prompt. Since HF `AutoProcessor` doesn\u2019t accept token IDs, we have to write custom code to edit the list of token IDs based on the multi-modal inputs. For some models (such as Phi-3-vision), this means re-implementing code from their HF `AutoProcessor`, complicating the process of porting the model to vLLM.\n2. The input mapper, being inside `ModelRunner`, lies on the critical path of vLLM\u2019s model execution. Even when the input mapper is fast, the tail TTFT and TPOT suffers because of this. As the input mapper takes up more time, our overall throughput decreases proportionally which can be avoided if we move it outside of the critical path. Nevertheless, we can do little if the `AutoProcessor` inside input mapper is very slow, like in [#9238](https://github.com/vllm-project/vllm/issues/9238). Hope that [huggingface/transformers#33810](https://github.com/huggingface/transformers/issues/33810) can help with that!\n3. This abstraction results in redundant processing for models (such as Qwen2-VL and Molmo) with HF `AutoProcessor` that already performs most of the work for calculating the number of placeholder tokens.\n\n## Proposed Change\n\n### Unified multi-modal processor\n\nWe plan to merge our input processor and input mapper into a unified multi-modal processor (`BaseMultiModalProcessor`) that wraps HF `AutoProcessor`, and call it inside the `LLMEngine` (and thus benefit from #8779), taking the role of the existing tokenizer. After this change, each input type will be processed as follows:\n\n- Text-only prompt: Pass to vLLM tokenizer (wraps HF `AutoTokenizer`) [Unchanged]\n- List of token IDs: Skip vLLM tokenizer [Unchanged]\n- Text prompt with multi-modal input: Pass to vLLM multi-modal processor [NEW]\n- List of token IDs with multi-modal input: ~[Deprecated]~ Pass to vLLM multi-modal processor [NEW]\n\n### Automatic prompt replacement\n\n`BaseMultiModalProcessor._get_prompt_replacements` specifies HF's logic of replacing input placeholder tokens (e.g. `<image>` for a single image) with feature placeholder tokens (e.g. `<image><image>...<image>`, the number of which equals to the feature size). Given this specification, we can automatically detect whether HF has replaced the input placeholder tokens by checking whether the feature placeholder tokens exist in the prompt.\n\n`BaseMultiModalProcessor._apply_prompt_replacements` provides model-agnostic code for automatically replacing input placeholder tokens with feature placeholder tokens. This is only called if we find that HF hasn't done so yet.\n\nThis enables the multi-modal processor to accept text/token prompts and process them separately from the multi-modal data. The detailed logic is shown in `BaseMultiModalProcessor._apply_hf_processor_main`.\n\n### Processor caching\n\n#11396 caches each item in the multi-modal output of HF processor and links them back to items in the input data.\n\nWhen new data is passed in, we first check which items are in the cache, and which ones are missing. The missing items are passed into the HF processor in a single batch and cached, before being merged with the existing items in the cache.\n\nNote that the text/token prompt must be processed separately from the multi-modal data because HF processors expect the input placeholders in the text to correspond to each multi-modal data item, but we only want to process the items that are missing. We can handle this elegantly using automatic prompt replacement (see above).\n\n### ~~Deprecate token IDs with multi-modal input~~\n\n~~To be compatible with OpenAI\u2019s (legacy) Completions API, we currently support passing token IDs directly to both `LLM` class and OpenAI-compatible server. However, Completions API doesn\u2019t support multi-modal inputs, so we will deprecate passing token IDs alongside multi-modal inputs to simplify model implementation (see Issue 1 above). **Please tell us if you have a use case for this and don\u2019t want to see it removed!**~~\n\n## Feedback Period\n\nFeel free to comment as the effort progresses!\n\n### Timeline\n\n- [x] #10040\n- [x] #10044\n- [x] #10485\n- [x] [3/N] Develop and refine POC\n  - [x] #10676\n  - [x] #10711 \n  - [x] #10977\n  - [x] #11199\n  - [x] #11198\n  - [x] #11258\n  - [x] #11303\n  - [x] #11396\n  - [x] #11620\n  - [x] #11661\n  - [x] #11669\n  - [x] #11674\n  - [x] #11746\n  - [x] #11812\n  - [x] #11900\n  - [x] #12244\n  - [x] #12269\n  - [x] #11427\n  - [x] #13215\n  - [x] #13380\n  - [x] #13516\n  - [x] #13964\n  - [x] #14038\n  - [x] #15712\n  - [x] #16408\n  - [x] #16416\n- [x] [4/N] Deprecate the old code for input processor/mapper so external developers have time to convert\n  - [x] Update documentation on how to implement multi-modal models\n    - [x] #11925\n    - [x] #13331\n    - [x] #14278\n    - [ ] #15405\n    - [x] #16915\n  - [x] Activate deprecation logic\n    - [x] #13979\n- [x] [5/N] Convert the rest of the built-in vLLM models to multi-modal processor\n  - [x] #11632 (Aria, BLIP-2, Chameleon, Fuyu)\n  - [x] #11682\n  - [x] #11717\n  - [x] #12504\n  - [x] #12069\n  - [x] #12553\n  - [x] #12660\n  - [x] #12449\n  - [x] #12966\n  - [x] #13278\n  - [x] #14015\n  - [x] #12211\n  - [x] #15477\n- [x] [6/N] Remove the old code for input processor/mapper\n  - [x] #14864\n  - [x] #15673\n  - [x] #15686\n\nThe majority of our code will be called inside the existing `InputPreprocessor` which is separated from the vLLM engine, making it easy to integrate with #8779.\n\n## CC List\n\n@ywang96 @Isotr0py @WoosukKwon @robertgshaw2-neuralmagic \n\n## Any Other Things\n\n### ~~Multi-modal plugins remain supported~~ Migrating multi-modal plugins\n\nYou can define additional input modalities (`ModalityDataItems`) and parse them in subclasses of `MultiModalDataParser` on a per-model basis. Afterwards, override `BaseMultiModalProcessor._get_data_parser` to construct your newly-defined parser.\n\nSome users currently use multi-modal plugins to directly pass custom model inputs ([#6260](https://github.com/vllm-project/vllm/pull/6260)). Those inputs can be excluded from HF processing by returning them in `ModalityDataItems.get_passthrough_data` instead of `ModalityDataItems.get_processor_data`.\n\n### ~~No batched preprocessing for now~~\n\n~~Currently, preprocessing is performed per prompt in vLLM. While we can call HF tokenizer and modality-specific processor on batched inputs separately, calling the wrapping HF `AutoProcessor` with both list of texts and list of multi-modal data results in the processed multi-modal data (e.g. image) being assigned to every text in the list, rather than the more intuitive `zip`-like behavior (e.g. the `i`th image only assigned to the `i`th text). To support batched preprocessing, we would have to write custom code for each model to combine the outputs of HF tokenizer and modality-specific processors. Given that this can significantly complicate model implementation (see Issue 1 above), we will not consider batched preprocessing at this stage, even with this change.~~\n",
+    "labels": [
+      "RFC",
+      "multi-modality"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-07T09:57:55+00:00",
+    "closed_at": "2025-04-28T07:38:50+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/10114/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/10114"
+  },
+  {
+    "number": 21062,
+    "title": "[Feature]: Remove xformers requirement for Mistral-format Pixtral and Mistral3",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nI implemented this a while ago for the HF-format of Pixtral in https://github.com/vllm-project/vllm/pull/9597 by using the torch SDPA implementation. Xformers is not available on all architectures and most other vision encoders have multiple backends for attention. Pixtral is maybe the only that uses xformers strictly.\n\nWe should be able to replace the `xops` usage in the `pixtral.py` classes `VisionTransformer` and `Attention` by following the same substitution as in the HF modules.\nSuch as \nhttps://github.com/vllm-project/vllm/blob/a0f8a7964694a6077689b242b5eca95de392d4bb/vllm/model_executor/models/pixtral.py#L1274-L1282\nand\nhttps://github.com/vllm-project/vllm/blob/a0f8a7964694a6077689b242b5eca95de392d4bb/vllm/model_executor/models/pixtral.py#L1087-L1099\n\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "good first issue",
+      "feature request",
+      "multi-modality"
+    ],
+    "state": "open",
+    "created_at": "2025-07-16T16:13:25+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/21062/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/21062"
+  },
+  {
+    "number": 19381,
+    "title": "[New Model]: Support ColQwen2VL",
+    "body": "### The model to consider.\n\nColQwen2VL is an efficient document retrieval vision language model based on Qwen2VL, as described in the paper \"ColPali: Efficient Document Retrieval with Vision Language Models\". The model is designed to generate embeddings rather than text outputs, making it suitable for document retrieval applications.\n\nThis was supported in HF Transformers as of https://github.com/huggingface/transformers/pull/35778\n\nAn initial attempt to support the model was posted in https://github.com/vllm-project/vllm/pull/14291 but it was made before the HF definition was finalized so it grew out-of-date.\n\n### The closest model vllm already supports.\n\nQwen2VL is used as a base, so mostly it is wrapping that backbone\n\n### What's your difficulty of supporting the model you want?\n\nSee previous attempt https://github.com/vllm-project/vllm/pull/14291\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "new-model",
+      "multi-modality"
+    ],
+    "state": "open",
+    "created_at": "2025-06-09T19:49:53+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/19381/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/19381"
+  },
+  {
+    "number": 19183,
+    "title": "[Usage]: Getting empty output for whsiperv3",
+    "body": "### Your current environment\n\n```text\nfrom vllm import LLM, SamplingParams\nfrom vllm.assets.audio import AudioAsset\nfrom librosa import load as load_audio\n\n# Create a Whisper encoder/decoder model instance\nllm = LLM(\n    # model=\"openai/whisper-large-v3\",\n    model = \"\",\n    trust_remote_code=True,\n    max_model_len=448,\n    max_num_seqs=400,\n    limit_mm_per_prompt={\"audio\": 1},\n    kv_cache_dtype=\"fp8\",\n    task='transcription',\n    dtype=\"bfloat16\",\n    enforce_eager=False,\n    max_logprobs=1\n)\n\n\n(waveform,sampling_rate)= load_audio('./sample.wav',sr=16000, mono=True)\n\n\n\nprompts = [\n    {\n        \"prompt\": \"<|startoftranscript|><|en|>\",\n        \"multi_modal_data\": {\n            \"audio\": (waveform,sampling_rate),\n        },\n    }\n]*1\n\n#tried below also but same error\n# prompts = [\n#     {\n#         \"encoder_prompt\":{\n#             \"prompt\":\"\",\n#             \"multi_modal_data\":{\"audio\":(waveform,sampling_rate)},\n#         },\n#         \"decoder_prompt\":{\n#             \"prompt_token_ids\":[\n#                 50258,\n#                 'en',\n#                 50360,\n#                 1\n#             ]\n#         }\n#     }\n# ] * 1\n\n\n# ,\n#     {  # Test explicit encoder/decoder prompt\n#         \"encoder_prompt\": {\n#             \"prompt\": \"\",\n#             \"multi_modal_data\": {\n#                 \"audio\": (waveform,sampling_rate),\n#             },\n#         },\n#         \"decoder_prompt\": \"<|startoftranscript|>\",\n#     }\n\n# Create a sampling params object.\nsampling_params = SamplingParams(\n    temperature=0,\n    top_p=1.0,\n    max_tokens=400,\n    detokenize=False,\n    skip_special_tokens=False,\n)\n\nstart = time.time()\n\noutputs = llm.generate(prompts, sampling_params)\n\n# Print the outputs.\nfor output in outputs:\n    prompt = output.prompt\n    encoder_prompt = output.encoder_prompt\n    generated_text = output.outputs[0].text\n    print(f\"Generated text: {generated_text!r}\")\n\nduration = time.time() - start\n\nprint(\"Duration:\", duration)\nprint(\"RPS:\", len(prompts) / duration)\n\n```\n\nError:\n\nAdding requests: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 2/2 [00:00<00:00, 66.34it/s]\nProcessed prompts: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 2/2 [00:00<00:00,  8.93it/s, est. speed input: 17.86 toks/s, output: 35.72 toks/s]\nGenerated text: ''\nGenerated text: ''\nDuration: 0.2592043876647949\nRPS: 7.715918769810391\n\n### How would you like to use vllm\n\nI want to run inference of a whisperv3 using vllm skd way. Is the code I am using correct ? Via API can't consume due to current infra restriction i have. \nvLLM==0.9.0.1\npython3.10\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "usage",
+      "multi-modality"
+    ],
+    "state": "open",
+    "created_at": "2025-06-05T05:33:00+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/19183/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/19183"
+  },
+  {
+    "number": 16353,
+    "title": "[Feature]: Run performance benchmarks for multi-modal models in CI",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nWe currently only have benchmarks for text-only models such as Llama. With the increasing importance of multi-modality and related optimizations such as processor cache, we should add performance benchmarks for multi-modal models to avoid regressions (e.g. memory leaks, slow batching).\n\nWe can measure the peak memory usage based on this code:\n\n```python\nimport resource\n\nmax_self_usage = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1 << 20)\nmax_children_usage = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss / (1 << 20)\nprint(f\"Peak memory usage: {max_self_usage} (self) + {max_children_usage} (children) GiB\")\n```\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\ncc @mgoin @ywang96 \n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "feature request",
+      "stale",
+      "multi-modality"
+    ],
+    "state": "open",
+    "created_at": "2025-04-09T16:48:25+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/16353/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/16353"
+  },
+  {
+    "number": 16191,
+    "title": "[Usage]: How can I quickly obtain the number of prompt tokens containing multimodal data?",
+    "body": "### Your current environment\n\n```text\nThe output of `python collect_env.py`\n```\n\n\n### How would you like to use vllm\n\nThe /tokenize API can only return the number of prompt tokens that contain text and multimodal placeholders, but cannot return the actual number of prompt tokens. @DarkLight1337 \n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "usage",
+      "multi-modality"
+    ],
+    "state": "open",
+    "created_at": "2025-04-07T14:45:08+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/16191/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/16191"
+  },
+  {
+    "number": 14764,
+    "title": "[RFC]: Schema for checking input shapes for multi-modal models",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nCurrently, we use `_parse_and_validate_*_input` to validate the multi-modal inputs. However, only minimal checks are being made, with some models only checking the type of the inputs. It is easy for the actual shape of the inputs to not match what is being documented in classes like `*ImagePixelInputs`, confusing model developers and maintainers.\n\nTo avoid this, I propose adding a base class `TensorSchema` to validate the model inputs. For example:\n\nOriginal code:\n```py\nclass Phi3VImagePixelInputs(TypedDict):\n    type: Literal[\"pixel_values\"]\n    data: Union[torch.Tensor, List[torch.Tensor]]\n    \"\"\"Shape: `(batch_size * num_images, 1 + num_patches, num_channels, height, width)`\"\"\"\n\n    image_sizes: torch.Tensor\n    \"\"\"Shape: `(batch_size * num_images, 2)`\"\"\"\n```\n\nThe idea:\n```py\nclass Phi3VImagePixelInputs(TensorSchema):\n    \"\"\"\n    Dimensions:\n        - b: Batch size (number of prompts)\n        - n: Number of images\n        - p: Number of patches\n        - h: Height of each patch\n        - w: Width of each patch\n    \"\"\"\n    type: Literal[\"pixel_values\"] = \"pixel_values\"\n    data: Annotated[Union[torch.Tensor, List[torch.Tensor]], TensorShape(\"bn\", \"p\", 3, \"h\", \"w\")]\n    image_sizes: Annotated[Union[torch.Tensor, List[torch.Tensor]], TensorShape(\"bn\", 2)]\n```\n\n- Validation is done automatically, similar to Pydantic models\n  - To avoid performance issues, we should be able to disable validation using a flag\n- We tag each tensor field with `typing_extensions.Annotated` and use the additional metadata to perform validation.\n  - Can switch to `typing.Annotated` once we drop support for Python 3.9\n- Dimensions that are constants can be checked directly\n  - Example: We validate that `data.shape[2] == 3`\n- Dimensions with the same name should be consistent between fields, e.g.\n  - Example: Since `data.shape[0]` and `image_sizes.shape[0]` share the name `bn`, we validate that `data.shape[0] == image_sizes[0]`\n- If a field is a list/tuple instead of a tensor, we use `len` instead of `shape` to check the leading dimension, then recurse into each element of the list to check the remaining dimensions.\n\n### Notes\n\nThis idea can benefit projects outside of vLLM as well, so we should consider developing this as a separate package.\n\n### CC List\n\n@ywang96 @Isotr0py @mgoin \n@hmellor in case this is already a project on HF\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "good first issue",
+      "feature request",
+      "RFC",
+      "multi-modality"
+    ],
+    "state": "open",
+    "created_at": "2025-03-13T14:57:56+00:00",
+    "closed_at": null,
+    "comments": 29,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14764/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14764"
+  },
+  {
+    "number": 4194,
+    "title": "[RFC]: Multi-modality Support on vLLM",
+    "body": "**Active Projects (help wanted!):**\n- [Core tasks](https://github.com/orgs/vllm-project/projects/8)\n- [Model requests](https://github.com/orgs/vllm-project/projects/10)\n\n**Update [11/18] - In the upcoming months, we will focus on performance optimization for multimodal models as part of vLLM V1 engine re-arch effort**\n\n**P0** (We will definitely work on them):\n- [ ] V1 re-arch for multimodal models - See high-level design ([Slides](https://docs.google.com/presentation/d/1e3CxQBV3JsfGp30SwyvS3eM_tW-ghOhJ9PAJGK6KR54/edit#slide=id.g31455c8bc1e_2_122), [Doc](https://docs.google.com/document/d/11_DFQTku6C2aV6ghK21P76ST6uAUVjMlEjs54prtb_g/edit?usp=sharing))\n  - [ ] Core \n    - [x] [1/N] #9871\n    - [x] [2/N] #10374 \n    - [x] [3/N] #10570 \n    - [x] [4/N] #10699\n    - [x] [5/N] #11210\n    - [x] [6/N] #12128 \n    - [x] [7/N] Enable rest of single-modality LMMs on V1\n      - [x] #11632 (Aria, BLIP-2, Chameleon, Fuyu)\n      - [x] #14275\n      - [x] #11685\n      - [x] #11733\n      - [x] #12069\n      - [x] #12504\n      - [x] #12660 \n      - [x] #15487\n    - [x] [8/N] Enable mixed-modality inference on V1\n      - [x] #11685\n      - [x] #12259\n    - [ ] [9/N] Enable interleaved-modality inference on V1\n      - [x] #15605 \n  - [x] Multimodal prefix caching\n    - [x] #10507\n    - [x] #11187 \n    - [x] #11646\n  - [ ] Multimodal input & embedding caching\n    - [x] #11020\n    - [x] #11396\n    - [x] #14805\n    - [x] #14864\n    - [ ] Reuse multimodal embeddings from encoder cache \n- [x] #10114\n\n**P1** (We should be aware of these and spend some time if possible):\n- [ ] More efficient multimodal input data processing\n- [ ] Quantization for LMMs\n- [ ] LoRA for LMMs\n    - [ ] #8802 \n    - [ ] #9495\n    - [ ] LoRA for VLM2Vec\n- [ ] Consolidate ViT attention backend\n- [ ] V1 spec decode for VLMs\n- [ ] Update developer facing documentation for V1 re-arch multimodal models.\n  - [x] #11998  \t\n\n**P2** (We should work on these when they become more important/frequently requested):\n- [ ] Enhance multimodal support for OpenAI-compatible server\n  - [x] #11027\n  - [x] #13955\n  - [ ] Embeddings for multi-turn conversation\n  - [x] #17551\n- [ ] [Next steps for Multimodal Llama](https://github.com/vllm-project/vllm/issues/8826#issuecomment-2379960574)\n- [ ] Better encoder cache & compute budget strategy\n   - [x] #11895  \n- [ ] Better profiling strategy\n- [ ] Prototype separating vision encoder to its own worker (fully disaggregated from decoder)\n\n\n------------------------\n**Update [9/8] - We have finished majority of the refactoring and made extensive progress for supporting multimodal models. See details [here](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2337115965).**\n<details>\n<summary><b>Roadmap for Q3 2024</b></summary>\n\nIn the upcoming months, we will focus on enabling multimodal models to be compatible with other performance-related features on vLLM as well as collaborating with model vendors to directly onboard new multimodal models.\n\n**P0** (We will definitely work on them):\n- #10114\n  - #10040\n  - #10044\n  - [2/N] Convert LLaVA-1.5, Phi-3-Vision, Qwen2-VL and Ultravox to multi-modal processor as POC and add tests\n  - [3/N] Deprecate the old code for input processor/mapper so external developers have time to convert\n  - [4/N] Convert the rest of the built-in vLLM models to multi-modal processor\n  - [5/N] Remove the old code for input processor/mapper\n- Proper chunked prefill with multimodal input\n  - #8346\n  - #9950\n- Prefix caching with multimodal input\n  - #8348 \n- Enable flamingo-style multimodal models (e.g., Multimodal Llama)\n  - #8811\n  - #8822  \n- Fully enable video input, and therefore, mixed multi-modal input\n   - #7559\n   - #10020\n- Update OpenAI-compatible server to use [OpenAI Audio API](https://platform.openai.com/docs/guides/audio/quickstart?audio-generation-quickstart-example=audio-in)\n- Multimodal embedding models\n   - #9303\n   - #9576\n   - #9759\n   - #9912\n   - #9944\n   - #9919\n- Shepherd model support directly from model vendor\n  - #8377 \n  - #7905\n  - #8486 \n  - #8811\n      - #9095\n      - #9393\n      - [**Next steps for Llama 3.2 vision model**](https://github.com/vllm-project/vllm/issues/8826#issuecomment-2379960574)\n  - #9242 \n  - #9016 \n  - #9248\n\n**P1** (We should be aware of these and spend some time if possible):\n- Better profiling strategy for multimodal models\n- Multi-input support for more compatible models \n    - Chameleon\n    - #8201\n    - LLaVA-NeXT-Video\n    - #8905 \n- Better developer facing documentation for adding new models\n- Add more multimodal models, and shepherd model support from community contributions\n   - #7559 \n   - #8029\n   - #9747 \n   - #9767\n   - See [full list of multimodal models to implement](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2102487467)\n- Misc bug fixes\n\n**P2** (We should work on these when they become more important/frequently requested):\n- Multimodal models with LoRA\n    - #7585\n    - #7199\n    - #8943\n    - #9622\n    - #10022\n    - #10281\n    - #8802\n    - #9495\n    - LoRA for VLM2Vec\n- Quantized multimodal models\n    - #9217\n    - #9772\n    - #9720\n    - #9812\n    - #9891\n    - #9921\n- Refactor currently supported multimodal models for dynamic ViT&LM loading\n    - #7153\n    - #8407\n- Enable LM-only loading for multimodal models that support embeddings as input\n- Multimodal benchmarking (Online & Offline)\n    - #8495\n    - #9851\n    - #10287\n- PP for multimodal models\n  - #8696\n  - #7168 \n- Extra input mapper/processor kwargs\n  - #8657\n  - #8658\n  - #8946\n  - #8856\n  - #9131\n- OOT multimodal models\n  - #8717 \n\n</details>\n\n------------------------\n\n**Update [7/3] - We have finished our 2nd refactoring milestone - see details [here](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2207884780)**.\n\n<details>\n<summary><b>Roadmap for 3rd Milestone</b></summary>\nIn the upcoming months, we will focus on wrapping up the main goal of this refactoring RFC and supporting more models and modalities.\n\n**P0** (We will definitely work on these):\n- Support image embeddings as input\n  - #6613 \n  - Support image embeddings for Fuyu and MiniCPM-V\n- Support multiple multi-modal inputs whenever the model supports it ([detailed plan](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2251895609))\n  - #7126\n  - #7230\n  - #7783\n  - #7902\n  - #7963\n  - Multi-image support for Chameleon & InternVL\n  - #8049\n- Merge at least 3 VLMs from the currently opened PRs\n  - #5770, #6633\n  - #5920 \n  - #4087 \n  - #3924\n  - #5817 \n  - #6514\n- Better documentation\n  - #8181\n\n\n**P1** (We should be aware of these and spend some time if possible):\n- Aid support for Whisper with multimodal interface\n  - #5964 \n- Custom vision prompt template in OpenAI-compatible server\n- Sharding Vision Encoder & MultiModalProjector\n  - #7186 \n- Bug Fixes\n- Add more VLMs - See full [List of vision models to implement](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2102487467)\n- Better error handling\n  - #7998\n  - #8028\n  - Follow-up to #8028\n\n\n**P2** (We should work on these when they become more frequently requested) **Help wanted!**:\n- Port over more vision encoders\n  - #6942\n  - #7020 (`Idefics2VisionTransformer`)\n- Dynamic vision encoder and LM backbone\n  - #7067\n  - #7153\n  - BLIP-2 w/ FLAN-T5\n    - #8407\n    - #3117\n- VLM with Lora\n  - #7199\n- Quantized VLMs\n  - #7187 \n- Add/aid support for models with other modalities\n  - #7446\n  - #7615\n  - #7559\n- Enable other features in vLLM with multi-modal models (e.g, chunked prefill, automatic prefix caching)\n  - #8098\n\n</details>\n\n------------\n**Update [6/11] - We have finished our 1st refactoring milestone - see details [here](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2126436729)**. \n<details>\n<summary><b>Roadmap for 2nd Milestone</b></summary>\nSome of the items @DarkLight1337, @xwjiang2010 and I are looking to work on as part of the next milestone are tentatively:\n\n_API Changes:_ A list of user-facing breaking changes can be found [here](https://github.com/vllm-project/vllm/issues/5806#issuecomment-2201579928)\n- Completely remove the need for specifying image related arguments when launching the server, and infer configs from the model repo or a configmap in vLLM.\n  - #5852\n  - #6089\n  - #6121\n- Support dynamic image shape - This means the scheduler will need to know in advance the final shape of multi-modal embeddings that are processed right before being passed to the language model. \n  - #5214\n  - #5276\n\n_Performance related_ \n- Port `CLIPVisionModel`\n  - #5591\n  - #5717  \n- Optimize `CLIPAttention`\n- Optimize `MultiModalProjector`\n- Blocks: #5481\n\n_Model support_ - Add more vision language models, and better developer facing documentation\n  - [List of vision models to implement](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2102487467)\n  - [Guide on implementing new VLMs](https://docs.vllm.ai/en/latest/models/enabling_multimodal_inputs.html)\n\nSome of the ideas that we **should** work on in the future: \n- Make VLMs work with chunked prefill\n- Unify tokenizer & multi-modal processor (so that we can leverage `AutoProcessor` from `transformers`)\n- Prefix caching for images\n- Streaming inputs of multi-modal data\n\nAs always, please provide feedback and feature requests in this issue. Suggestions and contributions are very welcomed!\n\n</details>\n\n------------\n\n<details>\n\n<summary><b>Original RFC</b></summary>\nMulti-modality support was brought to vLLM recently, much thanks to https://github.com/vllm-project/vllm/pull/3042 from @xwjiang2010. Since then we have seen an increasing amount of interest in such models (from the number of pull requests and issues related). However, there are a few issues we should address with the current design before we bring in more features around multi-modality.\n\n1. `VisionLanguageConfig` and `MultiModalData`\n    - Currently the multimodal input can be either `pixel_values` or `image_feaures` for simplicity. While this works well with llava 1.5 where pixel_values are the only output from its `ClipImageProcessor`, this does not work well when it comes to supporting models with more complicated preprocessing to return multiple outputs.(e.g, llava 1.6, fuyu, etc). Developers could add additional preprocessing inside model implementation as a workaround, but this will be unmaintainable over time.\n\n    - The overhead of requiring `image_feature_size`, `image_token_id` and `image_input_shape` is pushed to the user when these can/should be inferred from the model & processor config and not required at the inference time.\n\n3. The current design assumes multi-modal inputs **are already processed** to be consumed by the model executable, but vLLM does not have a processor util. This blocks the vision model support on the OpenAI API server for end-to-end inference.\n\n5. The current prompt format `\"<Image>\" * 576 + prompt` makes the underlying implementation easier (especially when it comes to profiling), but complicates the user experience compared to huggingface format `\"<Image>\\n\" + prompt` and that has caused some confusion on what's needed to make multi-model work on vLLM.\n\n**Proposal**\nMost items in the above issues have been discussed and addressed in the original Llava1.5 PR as well as https://github.com/vllm-project/vllm/pull/3978. We propose a few high-level design decisions for the refactoring and **welcome any feedback!**\n\n1. **Adding a processor util** - We can leverage out-of-box `AutoProcessor` from `transformers` the same way we have been doing with tokenizer as an attribute of `LLMEngine` (e.g., `self.multi_modal_processor = AutoProcessor(model)`). This allows us to support end-to-end inference with the API server as well as the `LLM` object.\n\n3. **Frontend input format**:  Because of 1, we can keep the same format as HuggingFace since that's how users usually discover new models and it makes end-to-end integration test easier. Preprocessing should be hidden away from the interface and user. For example, this preprocessing step can be done inside `LLMEngine.add_request()` around the same place as https://github.com/vllm-project/vllm/blob/a134ef6f5e6c24d3cd459c63557e5db276db25b2/vllm/engine/llm_engine.py#L385-L391\nHere's a pesudocode\n```\nif multi_modal_input is None:\n   prompt_token_ids = self.encode_request( \n       request_id=request_id, \n       prompt=prompt, \n       prompt_token_ids=prompt_token_ids, \n       lora_request=lora_request)\nelse:\n   # preprocessed_inputs is a dictionary of key(str)-value(tensor)\n   # as output of self.multi_modal_processor\n   preprocessed_inputs = self.preprocess_request(\n       request_id=request_id, \n       prompt=prompt, \n       prompt_token_ids=prompt_token_ids, \n       lora_request=lora_request,\n       multi_modal_input=images)\n   prompt_token_ids = preprocessed_inputs.pop(\"input_ids\")\n   multi_modal_data = MultiModalData(data=preprocessed_inputs)\n...\n\n```\nand thus at `LLM` level, only image tensors will be required.\n\n4. **Refactor `MultiModalData`**: Now this object simply holds the multi-modal data dictionary that we need for the model_executable. At inference time, data is unpacked in the forward pass - this approach is similar to `transformer` implementation of multi-modal models.\n6. **Refactor `VisionLanguageConfig`**: This config is a lot simpler now. One caveat is that sometimes when the image features can be dynamic, users may specify an optional `max_feature_size` to help engine run the profiling for the worst-case scenario as well as to potentially abort certain requests.\n7. **Regarding the original `image_feature` as input type design**: IMO LlaVA is a special case among multi-modal models since its vision encoder is detached from the language model and can be initialized separately, but in this case, one could argue that for the MultiModalProjector as well, and perhaps passing image_feature (outputs of CLIP) is a design decision not generalizable to all other models. Instead, passing multi-modal embeddings (outputs of CLIP -> Projector) at inference time is more flexible and should work nicely with other models. (**One followup question is, does it make sense to actually define a separate `Llava-no-clip` module, since this is so specific to llava, to make our life easier?**)\n\nWith the above changes, as an end-user, ideally you then should be able to do something like the following\n\n```\nfrom PIL import Image\nfrom vllm import LLM\nfrom vllm.config import VisionLanguageConfig\n\nmodel_id = \"llava-hf/llava-v1.6-mistral-7b-hf\"\nllm = LLM(model=model_id, multi_modal_input_type=VisionLanguageConfig.IMAGE_INPUT_TYPE.IMAGE) # This can also be EMBEDDINGS\n\nprompt = \"<image>\\nUSER: What's the content of the image?\\nASSISTANT:\"\n\nurl = \"https://www.ilankelman.org/stopsigns/australia.jpg\"\nimage = Image.open(requests.get(url, stream=True).raw)\n\nllm.generate(prompt, ..., multi_modal_input=image)\n```\nUnder the hood, the pipeline is\n```\nprompt, image\n-> prompt_token_ids, MultiModalData(data=preprocessed_inputs) # through preprocess within engine.add_request() \n-> prompt_token_ids, pixel_values, image_sizes  # though unpacking in implementation of model's `forward`.\n```\n\nI will follow up with a series of PR for refactoring but please leave any feedback since this is a pretty significant interface change. \n\n</details>\n",
+    "labels": [
+      "RFC",
+      "multi-modality"
+    ],
+    "state": "open",
+    "created_at": "2024-04-19T07:51:48+00:00",
+    "closed_at": null,
+    "comments": 98,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4194/reactions",
+      "total_count": 49,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 31,
+      "rocket": 0,
+      "eyes": 18
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4194"
+  }
+]

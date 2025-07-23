@@ -1,0 +1,805 @@
+[
+  {
+    "number": 3483,
+    "title": "[Feature Request] Dynamic temperature sampling for better coherence / creativity",
+    "body": "# Prerequisites\r\n\r\n- [\u2705] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Feature Idea\r\n\r\nTypical sampling methods for large language models, such as Top P and Top K, (as well as alternative sampler modes that decide the Top K dynamically like Mirostat) are based off the assumption that a static temperature value (a consistently randomized probability distribution) is the ideal sampler conditioning. Mirostat, most notably, was designed to 'learn' a certain targeted level of 'entropy' over time; this helped the model find the most grammatically coherent selection of tokens to be considered by the sampler for good results. Most of these sampling implementations weren't designed to be used together. Some, like TFS, were created when the largest available models were smaller ones like GPT2. Those models struggled a _lot_ more when attempting to generalize in different directions, and it makes sense to me that they'd need unique sampler tricks to keep them grammatically coherent.\r\n\r\nI've tested and played around with these settings for Llama models, and while Mirostat seemed like a step in the right direction, especially for preventing repetition, I realized that nobody had made a sampler mode that would control temperature _directly_ per token. My implementation of this would be calculated based on a simple metric; take the standard deviation of all tokens being considered by your top P / top K before applying the temperature randomization, and based on the 'confidence' of the model (as represented by the variation in choice), you can apply a temperature adjustment proportional to the variation of probability seen in the sampled set of tokens being chosen from.\r\n\r\nThe main idea is to **encourage randomizing 'uncertain' probabilities** (e.g, open ended writing, abstract concepts that can be represented with many words, and aren't deterministic by nature) while **keeping the temperature low for more deterministic tokens** without having to find the ideal selection of candidates for sampling per token (which I believe is how Mirostat was designed to work). \r\n\r\nList of possible advantages could be:\r\n- Having a definable range between the 'Base Temperature' and 'Maximum Temperature' could generally improve the creative problem solving ability of the model.\r\n- Certain tokens are highly important to the context and are more important than others. For example, if the probability was randomized too far for at least one token that represents something deterministic like a certain character in a programming syntax, this leads to a higher failure rate for the rest of the generation.\r\n- Could help prevent the model's generations from trending towards repetition due to a much broader range of probabilities that could be considered without impacting the model's intelligence as broadly (e.g a max temperature of 1.5 might not impact the model as strongly compared to if every token was sampled with that value). If this is the case, biasing against repeated tokens artificially through the Repetition Penalty would become less necessary.\r\n\r\nList of possible disadvantages could be:\r\n- A lot of faith is being put in the idea that strong variations of possibilities have a correlation with a high amount of acceptable / reasonable tokens. If the correlation is mild, the default range values would have to be adjusted to accomodate this, but that could be mitigated by testing different values for the base/max temp range, or through benchmarking them individually.\r\n- The rate at which a model becomes more certain might not be linear; there might be a very short gap between 'low deviation' and 'high deviation' on unsampled probabilities.\r\n- Reproducability might be more difficult, but I'm unsure of this. I'm guessing you could just use the same seed for every temperature value variation.",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-05T02:23:01+00:00",
+    "closed_at": "2024-06-12T01:06:49+00:00",
+    "comments": 47,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3483/reactions",
+      "total_count": 10,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 10,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3483"
+  },
+  {
+    "number": 11490,
+    "title": "Feature Request: Support for Deepseek Janus-Pro-7B & Janus-1.3B",
+    "body": "### Prerequisites\n\n- [x] I am running the latest code. Mention the version if possible as well.\n- [x] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\n- [x] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [x] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new and useful enhancement to share.\n\n### Feature Description\n\nDeepSeek recently released **[Janus-Pro-7B](https://huggingface.co/deepseek-ai/Janus-Pro-7B)** and **[Janus-1.3B](https://huggingface.co/deepseek-ai/Janus-1.3B)**, both multimodal models currently supported in [Transformers](https://github.com/huggingface/transformers). \n\n\n\n**Resources:** [Janus GitHub](https://github.com/deepseek-ai/Janus)\n\n\n### Motivation\n\nAdding them to `llama.cpp` would enable efficient local inference, expanding support for state-of-the-art multimodal AI. Would love to see this integrated\u2014appreciate all the great work!  \n\n### Possible Implementation\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-29T14:53:13+00:00",
+    "closed_at": "2025-04-22T01:08:02+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/11490/reactions",
+      "total_count": 54,
+      "+1": 54,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/11490"
+  },
+  {
+    "number": 1602,
+    "title": "llama : add Falcon LLM support",
+    "body": "Falcon LLM 40b and 7b were just open sourced under a license which allows commercial use (~~with royalties for over $1 million revenue per year~~) and have are topping the Huggingface Open LLM leaderboard. It seems to be based on a modified gpt3 architecture. I\u2019m wondering if support in llama.cpp would be considered.\r\n\r\nhttps://huggingface.co/tiiuae/falcon-40b",
+    "labels": [
+      "help wanted",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-05-26T17:45:06+00:00",
+    "closed_at": "2023-08-23T20:11:44+00:00",
+    "comments": 210,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1602/reactions",
+      "total_count": 110,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 71,
+      "rocket": 21,
+      "eyes": 14
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1602"
+  },
+  {
+    "number": 4782,
+    "title": "HQQ quantization",
+    "body": "# Prerequisites\n\nPlease answer the following questions for yourself before submitting an issue.\n\n- [X] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\n- [X] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\n\n# Feature Description\n\nAdd support to new \n[HQQ](https://mobiusml.github.io/hqq_blog/) (Half-Quadratic Quantization)  quantization method. HQQ requires no calibration data and it takes less than 5 minutes to process Llama-2-70B quantized to 2-bit outperforming the full-precision Llama-2-13B according to the report.\n![image](https://github.com/ggerganov/llama.cpp/assets/163333/bfcf3ccc-8006-42d6-a55b-1a1372922e05)\n\n# Motivation\n\nHQQ performs better the other quantization methods like GPTQ or AWQ according to the tech report\n![image](https://github.com/ggerganov/llama.cpp/assets/163333/8db215d3-5cef-457c-a72f-cdb6e56051fe)\n\n# Possible Implementation\n\nThe official HQQ implementation code is available [here](https://github.com/mobiusml/hqq)",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-05T10:52:53+00:00",
+    "closed_at": "2024-04-02T01:08:44+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4782/reactions",
+      "total_count": 7,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4782"
+  },
+  {
+    "number": 10877,
+    "title": "Feature Request: Add support for SmolVLM",
+    "body": "### Prerequisites\n\n- [X] I am running the latest code. Mention the version if possible as well.\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new and useful enhancement to share.\n\n### Feature Description\n\nSupport running https://huggingface.co/HuggingFaceTB/SmolVLM-Instruct\n\n### Motivation\n\nSmolVLM is a small and mighty multimodal model provided by huggingface. The article about it: https://huggingface.co/blog/smolvlm\n\n### Possible Implementation\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-17T23:47:12+00:00",
+    "closed_at": "2025-03-24T01:07:52+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10877/reactions",
+      "total_count": 9,
+      "+1": 9,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10877"
+  },
+  {
+    "number": 1938,
+    "title": "Can we finetune existing models via the ideas of QLORA",
+    "body": "QLORA gives a idea that we can still use quantized weights and LoRA to fine tune a model. As backward caculation is most done already, maybe we can look at this:\r\n\r\n- Evaluate if we need to do double quantize to further optimize for VRAM usage over speed.\r\n- implement LoRA finetune in llama? or a standalone application?\r\n- Add gpu offload support to compute grad.",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-19T13:48:02+00:00",
+    "closed_at": "2024-04-10T01:06:52+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1938/reactions",
+      "total_count": 12,
+      "+1": 11,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1938"
+  },
+  {
+    "number": 13272,
+    "title": "Feature Request: add per-request \"reasoning\" options in llama-server",
+    "body": "### Feature Description\n\nAs reasoning models are becoming mainstream, we start to see some pattern:\n- Most models use `<think>`, `<reasoning>`, etc, basically a set of known tokens now\n- The \"reasoning budget\" can technically be supported by any models, not just Qwen, by keeping track of number of tokens between `<think>` and `</think>`\n- \"no think\" is just a reasoning budget == 0\n\nSo I'm thinking about accepting an object like this for each request:\n\n```\"reasoning\": {\n\"reasoning\": {\n    \"budget\": -1, // number of reasoning tokens budget\n                     default: -1 (inf) ; 0 for no think\n    \"format\": \"\", // equivalent of --reasoning-format\n                     if set to \"deepseek\", reasoning will be returned in \"message.reasoning_content\"\n                     if set to \"hide\", it will be completely hidden\n                     default: \"none\", return the reasoning with the message as normal\n}\n```\n\nThe reasoning format \"hide\" can be implemented via https://github.com/ggml-org/llama.cpp/pull/13214 ; the \"deepseek\" format current only supported for non-stream, but I think we can modify a bit to support this.\n\nFor the budget, we don't yet have the logic to handle it.\n",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-02T21:27:22+00:00",
+    "closed_at": "2025-07-11T01:08:01+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/13272/reactions",
+      "total_count": 9,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/13272"
+  },
+  {
+    "number": 10816,
+    "title": "Feature Request: Support for C4AI Command R7B / Cohere2ForCausalLM",
+    "body": "### Prerequisites\n\n- [X] I am running the latest code. Mention the version if possible as well.\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new and useful enhancement to share.\n\n### Feature Description\n\nI would like to request support for **C4AI Command R7B** by Cohere.\r\n\r\nHere is some relevant information:\r\n\r\nDownload link: https://huggingface.co/CohereForAI/c4ai-command-r7b-12-2024\r\n\r\nSome specifications:\r\n\r\n- A well-rounded model\r\n- Model Size: 7 billion parameters\r\n- Context length: 128K\r\n- Enhanced efficiency in math, code, and reasoning tasks\r\n- Multilingual, reasoning, tool use.\r\n- RAG capability\r\n\r\nBlog post: https://cohere.com/blog/command-r7b\r\n\n\n### Motivation\n\nI believe it will be a great addition to llama.cpp\n\n### Possible Implementation\n\n**Model Architecture:** This is an auto-regressive language model that uses an optimized transformer architecture. After pretraining, this model uses supervised fine-tuning (SFT) and preference training to align model behavior to human preferences for helpfulness and safety. The model features three layers with sliding window attention (window size 4096) and ROPE for efficient local context modeling and relative positional encoding. A fourth layer uses global attention without positional embeddings, enabling unrestricted token interactions across the entire sequence.",
+    "labels": [
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-13T18:54:15+00:00",
+    "closed_at": "2025-01-04T14:33:33+00:00",
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10816/reactions",
+      "total_count": 11,
+      "+1": 11,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10816"
+  },
+  {
+    "number": 6715,
+    "title": "Feature request: Graphical GGUF viewer",
+    "body": "# Motivation\r\n\r\nWith the recent introduction of `eval-callback` example, we now having more tools for debugging when working with llama.cpp. However, one of the tool that I feel missing is the ability to dump everything inside a gguf file into a human-readable (and interactive) interface.\r\n\r\nInspired from `huggingface.js` where users can visualize the KV and list of tensors on huggingface.com, I would like to implement the same thing in llama.cpp. I find this helpful in these situations:\r\n- Debugging `convert.py` script when adding a new architecture\r\n- Debugging tokenizers\r\n- Debugging changes related to gguf (model splits for example)\r\n- Debugging tensors (i.e. display N first elements of a tensor, just like `eval-callback`)\r\n- Debugging control vectors\r\n- ... (maybe other usages in the future)\r\n\r\nThe reason why I can't use `huggingface.js` is because it's based on browser, which make it tricky when reading a huge local file. It also don't have access to quantized types (same for `gguf-py`).\r\n\r\n# Possible Implementation\r\n\r\nIdeally, I want the implementation to be a binary named `gguf-viewer` that when run, will open a web page in `localhost:8080`. User can then go to the web page to explore the gguf file. It will have these sections:\r\n- Complete list of KV\r\n- Tokenizer-related info (for example: list all tokens, lookup one token)\r\n- List of all tensors",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "open",
+    "created_at": "2024-04-17T04:30:46+00:00",
+    "closed_at": null,
+    "comments": 18,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6715/reactions",
+      "total_count": 12,
+      "+1": 12,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6715"
+  },
+  {
+    "number": 238,
+    "title": "Document check sums of models so that we can confirm issues are not caused by bad downloads or conversion",
+    "body": "Can someone please confirm the following md5 sums are correct?  I regenerated them with the latest code.\r\n\r\n```\r\n$ md5sum ./models/*/*.pth | sort -k 2,2\r\n0804c42ca65584f50234a86d71e6916a  ./models/13B/consolidated.00.pth\r\n016017be6040da87604f77703b92f2bc  ./models/13B/consolidated.01.pth\r\nf856e9d99c30855d6ead4d00cc3a5573  ./models/30B/consolidated.00.pth\r\nd9dbfbea61309dc1e087f5081e98331a  ./models/30B/consolidated.01.pth\r\n2b2bed47912ceb828c0a37aac4b99073  ./models/30B/consolidated.02.pth\r\nea0405cdb5bc638fee12de614f729ebc  ./models/30B/consolidated.03.pth\r\n9deae67e2e7b5ccfb2c738f390c00854  ./models/65B/consolidated.00.pth\r\n0c4b00c30460c3818bd184ee949079ee  ./models/65B/consolidated.01.pth\r\n847194df776dd38f8ae9ddcede8829a1  ./models/65B/consolidated.02.pth\r\n3b6c8adcb5654fd36abab3206b46a0f1  ./models/65B/consolidated.03.pth\r\n68d61d1242597ad92616ec31b8cb6b4c  ./models/65B/consolidated.04.pth\r\n7f71259eaee2b906aa405d8edf39925f  ./models/65B/consolidated.05.pth\r\n0574e26b6891ab2cb0df7340d773fe9b  ./models/65B/consolidated.06.pth\r\ne5d9790df955270b836aec79462ead22  ./models/65B/consolidated.07.pth\r\n6efc8dab194ab59e49cd24be5574d85e  ./models/7B/consolidated.00.pth\r\n```\r\n\r\n\r\n<details>\r\n<summary>Edit: File format has changed. Don\u2019t use these collapsed weights!</summary>\r\n\r\n```\r\n$ md5sum ./models/*/ggml-model-f16* | sort -k 2,2\r\n0d851faaf144ff75ff9683685cbcbedc  ./models/13B/ggml-model-f16.bin\r\n5cde948c6a27f41dc822b1a8a0587e79  ./models/13B/ggml-model-f16.bin.1\r\nc80e0c824c7e853c3d5be915afb37eef  ./models/30B/ggml-model-f16.bin\r\n72da29fca244f2a64f85b2c14b20290d  ./models/30B/ggml-model-f16.bin.1\r\n16f07b182f44116fd72a9cc174dc0db2  ./models/30B/ggml-model-f16.bin.2\r\n2413e326c00b476e8cd13d5f1fe65854  ./models/30B/ggml-model-f16.bin.3\r\neb8f7835d1d7e716f96af02fefdd5c04  ./models/65B/ggml-model-f16.bin\r\n30f08121b86fe90db2497bd87f844d3b  ./models/65B/ggml-model-f16.bin.1\r\n98983c0e2338d2985a0d9bb8bd27efb5  ./models/65B/ggml-model-f16.bin.2\r\n635ebf87ef9053f7facccc665a0c826a  ./models/65B/ggml-model-f16.bin.3\r\n6ca89293e1a9c8ad96b476406739827c  ./models/65B/ggml-model-f16.bin.4\r\n696e4afe846ddfe2a2366db927a0dffa  ./models/65B/ggml-model-f16.bin.5\r\n39a7f52b968aa833212c027d6fd58ccf  ./models/65B/ggml-model-f16.bin.6\r\na8ac8b55c152565573b118b0a0109726  ./models/65B/ggml-model-f16.bin.7\r\n0fd0234fd08a7310f93f64faff7fda15  ./models/7B/ggml-model-f16.bin\r\n```\r\n\r\n\r\n```\r\n$ md5sum ./models/*/ggml-model-q4_0* | sort -k 2,2\r\nb405d83aff658379cc8b1b59b9a39668  ./models/13B/ggml-model-q4_0.bin\r\nb06456f82bbc9d1fd46afa635ce0eba4  ./models/13B/ggml-model-q4_0.bin.1\r\nc8bdc3fedd676b4c30bcc61812dab84f  ./models/30B/ggml-model-q4_0.bin\r\naad0750e54004014b65fa65aedacdf84  ./models/30B/ggml-model-q4_0.bin.1\r\n88876dca38cedf53ba0a915e817921ed  ./models/30B/ggml-model-q4_0.bin.2\r\n4063e11be83d342893ba4e3e299a4436  ./models/30B/ggml-model-q4_0.bin.3\r\ndbdd682cce80e2d6e93cefc7449df487  ./models/65B/ggml-model-q4_0.bin\r\n5d7c7e0e30b351af5237b81852e4b01b  ./models/65B/ggml-model-q4_0.bin.1\r\n2ca89995c8c17890b2935022aede929e  ./models/65B/ggml-model-q4_0.bin.2\r\n88e36f69163fe09da11531332410f4d4  ./models/65B/ggml-model-q4_0.bin.3\r\n4fe105f7d77d54d94daa33bbfd582733  ./models/65B/ggml-model-q4_0.bin.4\r\n1106d57cdf87ecbf83540f3a0027b480  ./models/65B/ggml-model-q4_0.bin.5\r\nc5759417ae123248bb2cecf85546680f  ./models/65B/ggml-model-q4_0.bin.6\r\ncedfc3b77578db761f871f8c8baa8323  ./models/65B/ggml-model-q4_0.bin.7\r\n919e4f8aee6ce4f3fbabb6cbcd7756db  ./models/7B/ggml-model-q4_0.bin\r\n```\r\n\r\n</details>",
+    "labels": [
+      "documentation",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-17T12:50:44+00:00",
+    "closed_at": "2023-05-02T13:41:32+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/238/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/238"
+  },
+  {
+    "number": 9119,
+    "title": "Feature Request: Add support for Phi-3.5 MoE and Vision Instruct",
+    "body": "### Prerequisites\n\n- [X] I am running the latest code. Mention the version if possible as well.\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new and useful enhancement to share.\n\n### Feature Description\n\nMicrosoft has recently dropped two new models in the Phi Family. \r\n\r\n3.5 MoE: https://huggingface.co/microsoft/Phi-3.5-MoE-instruct\r\n3.5 Vision: https://huggingface.co/microsoft/Phi-3.5-vision-instruct\r\n\r\nIt would be nice to see support added to llama.cpp for these two models. \n\n### Motivation\n\nSupporting all model releases so the wider community can enjoy these great free models. \n\n### Possible Implementation\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "model",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-21T14:32:40+00:00",
+    "closed_at": "2025-02-12T01:07:21+00:00",
+    "comments": 24,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9119/reactions",
+      "total_count": 121,
+      "+1": 92,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 22,
+      "rocket": 3,
+      "eyes": 4
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9119"
+  },
+  {
+    "number": 5588,
+    "title": "Server: add function calling API",
+    "body": "# Motivation\r\n\r\nThis subject is already brought up in https://github.com/ggerganov/llama.cpp/issues/4216 , but my initial research failed.\r\n\r\nRecently, I discovered a new line of model designed specifically for this usage: https://github.com/MeetKai/functionary\r\n\r\nThis model can decide whether to call functions (and which function to be called) in a given context. The chat template looks like this:\r\n\r\n```\r\n{#v2.2#}\r\n{% for message in messages %}\r\n  {% if message['role'] == 'user' or message['role'] == 'system' %}\r\n    {{ '<|from|>' + message['role'] + '\\n<|recipient|>all\\n<|content|>' + message['content'] + '\\n' }}\r\n  {% elif message['role'] == 'tool' %}\r\n    {{ '<|from|>' + message['name'] + '\\n<|recipient|>all\\n<|content|>' + message['content'] + '\\n' }}\r\n  {% else %}\r\n    {% set contain_content='no'%}\r\n    {% if message['content'] is not none %}\r\n      {{ '<|from|>assistant\\n<|recipient|>all\\n<|content|>' + message['content'] }}\r\n      {% set contain_content='yes'%}\r\n    {% endif %}\r\n    {% if 'tool_calls' in message and message['tool_calls'] is not none %}\r\n      {% for tool_call in message['tool_calls'] %}\r\n        {% set prompt='<|from|>assistant\\n<|recipient|>' + tool_call['function']['name'] + '\\n<|content|>' + tool_call['function']['arguments'] %}\r\n        {% if loop.index == 1 and contain_content == \\\"no\\\" %}\r\n          {{ prompt }}\r\n        {% else %}\r\n          {{ '\\n' + prompt}}\r\n        {% endif %}\r\n      {% endfor %}\r\n    {% endif %}\r\n    {{ '<|stop|>\\n' }}\r\n  {% endif %}\r\n{% endfor %}\r\n{% if add_generation_prompt %}\r\n  {{ '<|from|>assistant\\n<|recipient|>' }}\r\n{% endif %}\r\n```\r\n\r\nExample:\r\n\r\n```\r\n<|from|>system\r\n<|recipient|>all\r\n<|content|>// Supported function definitions that should be called when necessary.\r\nnamespace functions {\r\n// Get the current weather\r\ntype get_current_weather = (_: {\r\n// The city and state, e.g. San Francisco, CA\r\nlocation: string,\r\n}) => any;\r\n} // namespace functions\r\n<|from|>system\r\n<|recipient|>all\r\n<|content|>A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions. The assistant calls functions with appropriate input when necessary\r\n<|from|>user\r\n<|recipient|>all\r\n<|content|>What is the weather for Istanbul?\r\n```\r\n\r\n## Possible implementation\r\n\r\nSince this is the only one model available publicly that can do this function, it's quite risky to modify `llama_chat_apply_template` to support it (we may end up pollute the code base).\r\n\r\nThe idea is to firstly keep the implementation in server example, then when the template become more mainstream, we can adopt it in `llama_chat_apply_template`.\r\n\r\nData passing in the direction from user ==> model (input direction)\r\n* [ ] Add function in server example to parse input request and format the prompt. Attention: with function calling, we will have 2 types of system messages: one for the actual prompt (`You are a helpful assistant`) and one for function definition.\r\n\r\nData passing in the direction from model ==> user (output direction)\r\n* [ ] Add grammar to for model to output JSON when it's inside function argument message\r\n* [ ] Add parser to extract function arguments and return it as JSON",
+    "labels": [
+      "enhancement",
+      "demo",
+      "server/webui",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-19T13:47:28+00:00",
+    "closed_at": "2024-06-16T01:07:14+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5588/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5588"
+  },
+  {
+    "number": 33,
+    "title": "What is the meaning of hacked?",
+    "body": "Hey, I was reading your Readme.md and I saw that your repo was hacked. I want to ask what this means and wanted to check if the users like me also get the impact of hacking. Or, this is not the thing I should worry about?",
+    "labels": [
+      "question"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-12T04:35:26+00:00",
+    "closed_at": "2023-03-12T05:09:52+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/33/reactions",
+      "total_count": 197,
+      "+1": 25,
+      "-1": 5,
+      "laugh": 141,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 26,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/33"
+  },
+  {
+    "number": 1069,
+    "title": "Support for Minigpt-4?",
+    "body": "Minigpt-4 is recently released, which is a multimodal model capable of handling both text and image inputs (similar to GPT-4, but this is built by Vicuna-13b and Blit2). From their demo, the model looks very capable! It seems to handle image inputs pretty well. Unfortunately, it currently runs only on GPU, and seems to require 24GB of VRAM.\r\n\r\n[Minigpt-4 Github Page](https://github.com/Vision-CAIR/MiniGPT-4)\r\n\r\nI am wondering if it is possible to run it on CPU? Also, do you think 4-bit quantization is possible? Vicuna-13b works very well with 4-bit quantization, but I have no idea if the inclusion of Blit2 changes anything, or is it even possible to make a quantization at all. I feel like it would be great if somehow the CPU version could be developed. Thanks!",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-19T19:08:38+00:00",
+    "closed_at": "2024-04-09T01:10:07+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1069/reactions",
+      "total_count": 15,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 12,
+      "eyes": 3
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1069"
+  },
+  {
+    "number": 7201,
+    "title": " LLaVA-NeXT-Video-34B",
+    "body": "Hello \r\n\r\nAre there any plans to add [LLaVA-NeXT-Video-34B](https://huggingface.co/lmms-lab/LLaVA-NeXT-Video-34B) to llamacpp?",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-10T14:42:08+00:00",
+    "closed_at": "2024-06-25T02:41:22+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7201/reactions",
+      "total_count": 10,
+      "+1": 10,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7201"
+  },
+  {
+    "number": 303,
+    "title": "Using non LoRA Alpaca model",
+    "body": "The following repo contains a recreation of the original weights for Alpaca, without using LoRA. How could we use that model with this project? https://github.com/pointnetwork/point-alpaca\r\nThanks a bunch!",
+    "labels": [
+      "question",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-19T20:03:48+00:00",
+    "closed_at": "2023-07-28T19:35:59+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/303/reactions",
+      "total_count": 6,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 6,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/303"
+  },
+  {
+    "number": 4381,
+    "title": "llama : add Mixtral support",
+    "body": "Hi,\r\nPlease add support for [Mistral's MOE model Mixtral](https://twitter.com/MistralAI/status/1733150512395038967).",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-12-08T18:20:09+00:00",
+    "closed_at": "2023-12-13T12:04:31+00:00",
+    "comments": 62,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4381/reactions",
+      "total_count": 137,
+      "+1": 88,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 12,
+      "rocket": 22,
+      "eyes": 15
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4381"
+  },
+  {
+    "number": 6499,
+    "title": "Support JetMoE",
+    "body": "Very interesting new open source model just dropped, called JetMoE. It looks like the current SOTA as far as compute efficiency goes.\r\n\r\nIt has a very interesting model architecture:\r\n\r\n> **Model Details**\r\n> JetMoE-8B has 24 blocks. Each block has two MoE layers: Mixture of Attention heads (MoA) and Mixture of MLP Experts (MoE). Each MoA and MoE layer has 8 expert, and 2 experts are activated for each input token. It has 8 billion parameters in total and 2.2B active parameters. JetMoE-8B is trained on 1.25T tokens from publicly available datasets, with a learning rate of 5.0 x 10-4 and a global batch-size of 4M tokens.\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/15776622/82cf791a-22ee-4402-a299-736c135928ed)\r\n\r\n- Website: https://research.myshell.ai/jetmoe\r\n- Github: https://github.com/myshell-ai/JetMoE\r\n- HuggingFace: https://huggingface.co/jetmoe/jetmoe-8b\r\n- Chat Demo on Lepton AI: https://www.lepton.ai/playground/chat?model=jetmoe-8b-chat\r\n\r\n\r\n| Model           | Active Params | Training Tokens | MBPP | Open LLM Leaderboard Average |  ARC | Hellaswag | MMLU | TruthfulQA | WinoGrande | GSM 8K |\r\n|-----------------|:-------------:|:---------------:|:----:|:----------------------------:|:----:|:---------:|:----:|:----------:|:----------:|:------:|\r\n| Gemma-2B        |       2B      |        2T       | 28.0 |             46.4             | 48.4 |    71.8   | 41.8 |    33.1    |    66.3    |  16.9  |\r\n| DeepseekMoE-16B |      2.8B     |        2T       | 34.0 |             51.1             | 53.2 |    79.8   | 46.3 |    36.1    |    73.7    |  17.3  |\r\n| LLaMA2-7B       |       7B      |        2T       | 20.8 |             51.0             | 53.1 |    78.6   | 46.9 |    38.8    |    74.0    |  14.5  |\r\n| LLaMA-13B       |      13B      |        1T       | 22.0 |             51.4             | 56.2 |    80.9   | 47.7 |    39.5    |    76.2    |   7.6  |\r\n| JetMoE-8B       |      2.2B     |      1.25T      | 34.2 |             53.0             | 48.7 |    80.5   | 49.2 |    41.7    |    70.2    |  27.8  |",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-05T00:14:59+00:00",
+    "closed_at": "2024-09-24T01:07:32+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6499/reactions",
+      "total_count": 25,
+      "+1": 25,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6499"
+  },
+  {
+    "number": 171,
+    "title": "[Proposal] \"Stable\" C API",
+    "body": "I propose refactoring `main.cpp` into a library (`llama.cpp`, compiled to `llama.so`/`llama.a`/whatever) and making `main.cpp` a simple driver program. A simple C API should be exposed to access the model, and then bindings can more easily be written for Python, node.js, or whatever other language.\r\n\r\nThis would partially solve #82 and #162.\r\n\r\nEdit: on that note, is it possible to do inference from two or more prompts on different threads? If so, serving multiple people would be possible without multiple copies of model weights in RAM.",
+    "labels": [
+      "duplicate",
+      "enhancement"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-15T18:01:09+00:00",
+    "closed_at": "2023-03-15T20:29:20+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/171/reactions",
+      "total_count": 10,
+      "+1": 10,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/171"
+  },
+  {
+    "number": 1326,
+    "title": "Investigate supporting starcode",
+    "body": "Bigcode just released [starcoder](https://huggingface.co/bigcode/starcoder). This is a 15B model trained on 1T Github tokens. This seems like it could be an amazing replacement for gpt-3.5 and maybe gpt-4 for local coding assistance and IDE tooling!\r\n\r\nMore info: https://huggingface.co/bigcode",
+    "labels": [
+      "help wanted",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2023-05-04T21:04:22+00:00",
+    "closed_at": "2023-05-18T12:34:49+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1326/reactions",
+      "total_count": 12,
+      "+1": 12,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1326"
+  },
+  {
+    "number": 6903,
+    "title": "server: phi-3 end token not handled?",
+    "body": "Phi-3 4k model include in all responses the end token \"<|end|>\"\r\n\r\nIm using: https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf and llama.cpp for docker cuda server in the latest version.\r\n\r\nThanks in advance.",
+    "labels": [
+      "bug-unconfirmed",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-25T10:58:12+00:00",
+    "closed_at": "2024-06-25T02:41:36+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6903/reactions",
+      "total_count": 9,
+      "+1": 9,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6903"
+  },
+  {
+    "number": 2428,
+    "title": "[Prompt Processing] Is there a way to speed up prompt processing for Metal? (M1/M2)",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [x] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [x] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [x] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\n\r\nPrompt eval time is around twice as long as eval time (12 tokens/sec vs 22 tokens/sec). Is there a way to make them both the same speed?\r\n\r\n# Current Behavior\r\n\r\nPrompt eval time takes twice as long as eval time.",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-07-27T22:00:17+00:00",
+    "closed_at": "2024-04-09T01:07:22+00:00",
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2428/reactions",
+      "total_count": 7,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2428"
+  },
+  {
+    "number": 3000,
+    "title": "[macos] AMD GPU using mul_mm in metal",
+    "body": "\r\n\r\nwhen i remove these and related stuff on ggml-metal.h, and compile, it can load model and run on gpu but nothing really work (gpu usage just stuck 98% and just hang on terminal)\r\n\r\n```\r\n        GGML_METAL_ADD_KERNEL(mul_mm_f16_f32);\r\n        GGML_METAL_ADD_KERNEL(mul_mm_q4_0_f32);\r\n        GGML_METAL_ADD_KERNEL(mul_mm_q8_0_f32);\r\n        GGML_METAL_ADD_KERNEL(mul_mm_q4_1_f32);\r\n        GGML_METAL_ADD_KERNEL(mul_mm_q2_K_f32);\r\n        GGML_METAL_ADD_KERNEL(mul_mm_q3_K_f32);\r\n        GGML_METAL_ADD_KERNEL(mul_mm_q4_K_f32);\r\n        GGML_METAL_ADD_KERNEL(mul_mm_q5_K_f32);\r\n        GGML_METAL_ADD_KERNEL(mul_mm_q6_K_f32);\r\n```\r\n\r\nbut when revert all, it just not working at all when loading model with gpu \r\n\r\n```\r\nggml_metal_init: loaded kernel_mul_mat_q5_K_f32            0x7fcb478145f0 | th_max =  768 | th_width =   64\r\nggml_metal_init: loaded kernel_mul_mat_q6_K_f32            0x7fcb47814dd0 | th_max = 1024 | th_width =   64\r\nggml_metal_init: loaded kernel_mul_mm_f16_f32                         0x0 | th_max =    0 | th_width =    0\r\nggml_metal_init: load pipeline error: Error Domain=CompilerError Code=2 \"SC compilation failure\r\nThere is a call to an undefined label\" UserInfo={NSLocalizedDescription=SC compilation failure\r\nThere is a call to an undefined label}\r\nllama_new_context_with_model: ggml_metal_init() failed\r\nllama_init_from_gpt_params: error: failed to create context with model './models/falcon-7b-Q4_0-GGUF.gguf'\r\nmain: error: unable to load model\r\n```\r\n\r\ni dont know coding these, i just random edit, maybe there are workaround for amd gpu in macos \r\n",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-09-04T02:36:03+00:00",
+    "closed_at": "2024-04-05T01:06:24+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3000/reactions",
+      "total_count": 6,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 6
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3000"
+  },
+  {
+    "number": 12359,
+    "title": "Feature Request: Slim Attention (lossless 2x reduction in KV cache size)",
+    "body": "### Prerequisites\n\n- [x] I am running the latest code. Mention the version if possible as well.\n- [x] I carefully followed the [README.md](https://github.com/ggml-org/llama.cpp/blob/master/README.md).\n- [x] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [x] I reviewed the [Discussions](https://github.com/ggml-org/llama.cpp/discussions), and have a new and useful enhancement to share.\n\n### Feature Description\n\nSlim attention can reduce KV cache size by a factor of 2 without a loss of accuracy as it's lossless: https://arxiv.org/pdf/2503.05840\n\n### Motivation\n\nAllows you to run with larger context sizes at the same (V)RAM usage or allows you to cram the same context into less (V)RAM. Furthermore, it improves performance at long context sizes.\n\n### Possible Implementation\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-13T03:48:19+00:00",
+    "closed_at": "2025-05-25T01:08:18+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12359/reactions",
+      "total_count": 21,
+      "+1": 21,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12359"
+  },
+  {
+    "number": 6120,
+    "title": "llama: add Grok support",
+    "body": "Hi,\r\nPlease add support for Grok.\r\nThanks!\r\n\r\nRelevant links:\r\n* https://github.com/xai-org/grok\r\n* https://x.ai/blog/grok-os\r\n* https://twitter.com/grok/status/1769441648910479423\r\n* [NEW] Official Upload (thx to @dranger003) for linking: https://huggingface.co/xai-org/grok-1",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "model"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-17T20:31:28+00:00",
+    "closed_at": "2024-05-08T17:05:36+00:00",
+    "comments": 21,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6120/reactions",
+      "total_count": 86,
+      "+1": 57,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 9,
+      "rocket": 14,
+      "eyes": 6
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6120"
+  },
+  {
+    "number": 1725,
+    "title": "CLBlast build failing on q3 model",
+    "body": "When trying to run `wizardlm-30b.ggmlv3.q3_K_M.bin` from https://huggingface.co/TheBloke/WizardLM-30B-GGML using CLBlast build, it fails with `GGML_ASSERT: D:\\a\\llama.cpp\\llama.cpp\\ggml-opencl.cpp:1009: to_fp32_cl != nullptr`\r\n\r\n```\r\nPS H:\\Files\\Downloads\\llama-master-2d7bf11-bin-win-clblast-x64> .\\main.exe -m C:\\temp\\models\\wizardlm-30b.ggmlv3.q3_K_M.bin -ngl 20\r\nmain: build = 631 (2d7bf11)\r\nmain: seed  = 1686095068\r\nggml_opencl: selecting platform: 'NVIDIA CUDA'\r\nggml_opencl: selecting device: 'NVIDIA GeForce RTX 3080'\r\nggml_opencl: device FP16 support: false\r\nllama.cpp: loading model from C:\\temp\\models\\wizardlm-30b.ggmlv3.q3_K_M.bin\r\nllama_model_load_internal: format     = ggjt v3 (latest)\r\nllama_model_load_internal: n_vocab    = 32001\r\nllama_model_load_internal: n_ctx      = 512\r\nllama_model_load_internal: n_embd     = 6656\r\nllama_model_load_internal: n_mult     = 256\r\nllama_model_load_internal: n_head     = 52\r\nllama_model_load_internal: n_layer    = 60\r\nllama_model_load_internal: n_rot      = 128\r\nllama_model_load_internal: ftype      = 12 (mostly Q3_K - Medium)\r\nllama_model_load_internal: n_ff       = 17920\r\nllama_model_load_internal: n_parts    = 1\r\nllama_model_load_internal: model size = 30B\r\nllama_model_load_internal: ggml ctx size =    0.13 MB\r\nllama_model_load_internal: using OpenCL for GPU acceleration\r\nllama_model_load_internal: mem required  = 12303.88 MB (+ 3124.00 MB per state)\r\nllama_model_load_internal: offloading 20 layers to GPU\r\nllama_model_load_internal: total VRAM used: 4913 MB\r\n..................................\r\nllama_init_from_file: kv self size  =  780.00 MB\r\n\r\nsystem_info: n_threads = 12 / 24 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | VSX = 0 |\r\nsampling: repeat_last_n = 64, repeat_penalty = 1.100000, presence_penalty = 0.000000, frequency_penalty = 0.000000, top_k = 40, tfs_z = 1.000000, top_p = 0.950000, typical_p = 1.000000, temp = 0.800000, mirostat = 0, mirostat_lr = 0.100000, mirostat_ent = 5.000000\r\ngenerate: n_ctx = 512, n_batch = 512, n_predict = -1, n_keep = 0\r\n\r\n\r\n GGML_ASSERT: D:\\a\\llama.cpp\\llama.cpp\\ggml-opencl.cpp:1009: to_fp32_cl != nullptr\r\n\r\nPS H:\\Files\\Downloads\\llama-master-2d7bf11-bin-win-clblast-x64> certutil -hashfile C:\\temp\\models\\wizardlm-30b.ggmlv3.q3_K_M.bin SHA256\r\nSHA256 hash of C:\\temp\\models\\wizardlm-30b.ggmlv3.q3_K_M.bin:\r\n65e3770689b388c50bf39406484cd5755854b57d57d802380bedfb4d31a63e8b\r\nCertUtil: -hashfile command completed successfully.\r\n```\r\n\r\nRunning without GPU layers works",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-06T23:52:55+00:00",
+    "closed_at": "2024-04-10T01:07:43+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1725/reactions",
+      "total_count": 7,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 3
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1725"
+  },
+  {
+    "number": 1780,
+    "title": "[Feature] Support resetting the status of llama_context",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [x] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [x] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [x] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\n\r\nHere's my assumption: sometimes one may want to restart a session with the model. However if inputting the new prompt directly, the previous session will impact on the new session (unless the new prompt is long enough), because `llama.eval` will leave some effects in `llama_context`. Therefore, clearing the some variables such as `embd` and `embd_inps` in `main.cpp` is not enough, making it's necessary to reload the model to restart a session.\r\n\r\nI'm still new to LLM so please correct me if what I said is wrong. :)\r\n\r\nUnder the assumption, I think it's better if an API is provided to allow resetting the status of `llama_context`. Thus users need not to reload the model to restart a session.\r\n\r\n# Current Behavior\r\n\r\nNeed to reload the model to restart a session.\r\n",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-09T16:07:18+00:00",
+    "closed_at": "2024-04-10T01:07:30+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1780/reactions",
+      "total_count": 10,
+      "+1": 9,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1780"
+  },
+  {
+    "number": 722,
+    "title": "Rockchip RK3588 perf",
+    "body": "Just did a very simple run with llama-7b-4bit. It... took a while. Had it run in a screen. But, it worked!\r\n\r\n```\r\nroot@FriendlyWrt /s/o/llama.cpp (master)# time ./main --color -m models/ggml-model-q4_0.bin -p \"Hello there!\"\r\nmain: seed = 1680443840\r\nllama_model_load: loading model from 'models/ggml-model-q4_0.bin' - please wait ...\r\nllama_model_load: n_vocab = 32000\r\nllama_model_load: n_ctx   = 512\r\nllama_model_load: n_embd  = 4096\r\nllama_model_load: n_mult  = 256\r\nllama_model_load: n_head  = 32\r\nllama_model_load: n_layer = 32\r\nllama_model_load: n_rot   = 128\r\nllama_model_load: f16     = 2\r\nllama_model_load: n_ff    = 11008\r\nllama_model_load: n_parts = 1\r\nllama_model_load: type    = 1\r\nllama_model_load: ggml map size = 4017.70 MB\r\nllama_model_load: ggml ctx size =  81.25 KB\r\nllama_model_load: mem required  = 5809.78 MB (+ 1026.00 MB per state)\r\nllama_model_load: loading tensors from 'models/ggml-model-q4_0.bin'\r\nllama_model_load: model size =  4017.27 MB / num tensors = 291\r\nllama_init_from_file: kv self size  =  256.00 MB\r\n\r\nsystem_info: n_threads = 8 / 8 | AVX = 0 | AVX2 = 0 | AVX512 = 0 | FMA = 0 | NEON = 1 | ARM_FMA = 1 | F16C = 0 | FP16_VA = 1 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 0 | VSX = 0 |\r\nsampling: temp = 0.800000, top_k = 40, top_p = 0.950000, repeat_last_n = 64, repeat_penalty = 1.100000\r\ngenerate: n_ctx = 512, n_batch = 8, n_predict = 128, n_keep = 0\r\n\r\n\r\n Hello there! I am a freelance illustrator based in New Zealand. I grew up with an appreciation for the natural world, which has inspired me to create my work through observation and playful experimentation.\r\nMy focus is on watercolour painting (in particular), as well as digital art & animation. My style is bright & bold, vibrant, dynamic & colourful - I love animals!\r\nI am always keen to collaborate with other artists/creatives, so if you are interested in working together please feel free to drop me a line. [end of text]\r\n\r\nllama_print_timings:        load time = 93487.23 ms\r\nllama_print_timings:      sample time =   704.72 ms /   115 runs   (    6.13 ms per run)\r\nllama_print_timings: prompt eval time = 92466.10 ms /     4 tokens (23116.52 ms per token)\r\nllama_print_timings:        eval time = 11195694.23 ms /   114 runs   (98207.84 ms per run)\r\nllama_print_timings:       total time = 11289895.19 ms\r\n\r\n________________________________________________________\r\nExecuted in  188.18 mins    fish           external\r\n   usr time  324.60 mins    0.00 millis  324.60 mins\r\n   sys time   11.70 mins    1.70 millis   11.70 mins\r\n```\r\n\r\nModel was loaded from external microSD via internal bus.\r\n\r\nIm quite amazed this worked at all, honestly.\r\n\r\nCPU Info in detail:\r\n```\r\n# lscpu\r\nArchitecture:           aarch64\r\n  CPU op-mode(s):       32-bit, 64-bit\r\n  Byte Order:           Little Endian\r\nCPU(s):                 8\r\n  On-line CPU(s) list:  0-7\r\nVendor ID:              ARM\r\n  Model name:           Cortex-A55\r\n    Model:              0\r\n    Thread(s) per core: 1\r\n    Core(s) per socket: 4\r\n    Socket(s):          1\r\n    Stepping:           r2p0\r\n    CPU(s) scaling MHz: 100%\r\n    CPU max MHz:        1800.0000\r\n    CPU min MHz:        408.0000\r\n    BogoMIPS:           48.00\r\n    Flags:              fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp\r\n  Model name:           Cortex-A76\r\n    Model:              0\r\n    Thread(s) per core: 1\r\n    Core(s) per socket: 2\r\n    Socket(s):          2\r\n    Stepping:           r4p0\r\n    CPU(s) scaling MHz: 68%\r\n    CPU max MHz:        2352.0000\r\n    CPU min MHz:        408.0000\r\n    BogoMIPS:           48.00\r\n    Flags:              fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp\r\nCaches (sum of all):\r\n  L1d:                  384 KiB (8 instances)\r\n  L1i:                  384 KiB (8 instances)\r\n  L2:                   2.5 MiB (8 instances)\r\n  L3:                   3 MiB (1 instance)\r\nVulnerabilities:\r\n  Itlb multihit:        Not affected\r\n  L1tf:                 Not affected\r\n  Mds:                  Not affected\r\n  Meltdown:             Not affected\r\n  Spec store bypass:    Mitigation; Speculative Store Bypass disabled via prctl\r\n  Spectre v1:           Mitigation; __user pointer sanitization\r\n  Spectre v2:           Vulnerable: Unprivileged eBPF enabled\r\n  Srbds:                Not affected\r\n  Tsx async abort:      Not affected\r\n```\r\n(`/proc/cpuinfo` doesnt give any more useful details here, sadly.)\r\n\r\nHardware is a [FriendlyElec NanoPi R6s](https://www.friendlyelec.com/index.php?route=product/product&product_id=289)",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-04-02T20:39:28+00:00",
+    "closed_at": "2023-04-02T22:14:36+00:00",
+    "comments": 103,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/722/reactions",
+      "total_count": 11,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 5,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/722"
+  },
+  {
+    "number": 12666,
+    "title": "Feature Request: Add support for StarVector-8b/1b",
+    "body": "### Prerequisites\n\n- [x] I am running the latest code. Mention the version if possible as well.\n- [x] I carefully followed the [README.md](https://github.com/ggml-org/llama.cpp/blob/master/README.md).\n- [x] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\n- [x] I reviewed the [Discussions](https://github.com/ggml-org/llama.cpp/discussions), and have a new and useful enhancement to share.\n\n### Feature Description\n\nI have trid to convert [starvector(github)](https://github.com/joanrod/star-vector) [huggingface](https://huggingface.co/starvector/starvector-8b-im2svg) ```safetensors``` to ```gguf``` using ``` convert_hf_to_gguf.py ``` but failed.\n\n```bash\npython llama.cpp/convert_hf_to_gguf.py starvector-8b/\nINFO:hf-to-gguf:Loading model: starvector-8b\nERROR:hf-to-gguf:Model StarVectorForCausalLM is not supported\n```\n\nAdd support for StarVector (StarVectorForCasualLM) to run this model on llama.cpp, and more over, ollama!\n\n### Motivation\n\nStarVector is useful when you want to generate SVG\uff08Scalable Vector Graphics\uff09and is useful for frontend development (they use many icons), to run model locally on llama.cpp.\n\n### Possible Implementation\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-31T04:52:29+00:00",
+    "closed_at": "2025-05-16T01:07:54+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12666/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12666"
+  },
+  {
+    "number": 9440,
+    "title": "Feature Request: Pixtral by Mistral support (pixtral-12b-240910)",
+    "body": "### Prerequisites\r\n\r\n- [X] I am running the latest code. Mention the version if possible as well.\r\n- [X] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [X] I searched using keywords relevant to my issue to make sure that I am creating a new issue that is not already open (or closed).\r\n- [X] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new and useful enhancement to share.\r\n\r\n### Feature Description\r\n\r\nDear llama.cpp team,\r\n\r\nMistral has just released Pixtral and I would like to request support for it, if possible.\r\n\r\nHere are some relevant links:\r\n\r\n**X announcement:** https://x.com/mistralai/status/1833758285167722836\r\n\r\n**Magnet link:** `xt=urn:btih:7278e625de2b1da598b23954c13933047126238a&dn=pixtral-12b-240910&tr=udp%3A%2F%http://2ftracker.opentrackr.org/%3A1337%2Fannounce&tr=udp%3A%2F%http://2fopen.demonii.com/%3A1337%2Fannounce&tr=http%3A%2F%http://2ftracker.ipv6tracker.org/%3A80%2Fannounce`\r\n\r\n**HuggingFace alternative download link:** https://huggingface.co/mistral-community/pixtral-12b-240910\r\n\r\n**Additional information:** https://github.com/mistralai/mistral-common/releases/tag/v1.4.0\r\n\r\n**Important notes from the readme:** \r\n- Use GELU for the vision adapter\r\n- Use 2D ROPE for the vision encoder\r\n\r\n---------------\r\n\r\nThank you for your time and consideration!",
+    "labels": [
+      "enhancement",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-11T18:03:29+00:00",
+    "closed_at": "2025-02-08T01:07:14+00:00",
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9440/reactions",
+      "total_count": 145,
+      "+1": 117,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 28,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9440"
+  }
+]

@@ -1,0 +1,764 @@
+[
+  {
+    "number": 10359,
+    "title": "ggml : reintegrate the AMX backend into the CPU backend",
+    "body": "As explained here https://github.com/ggerganov/llama.cpp/pull/10343#issuecomment-2480834278, we would like to keep the CPU implementations inside the CPU backend. The AMX backend was created mainly because at the time we didn't support runtime weight repacking. Since now this functionality is supported, we should merge the AMX backend into the CPU backend.\r\n\r\nThe rough plan to achieve that is outlined here: https://github.com/ggerganov/llama.cpp/discussions/10350#discussioncomment-11282778\r\n\r\n> The plan to reintegrate the AMX backend would be to create a new buffer type that converts the weights to the layout that the AMX backend needs them, and then check in the matrix multiplication the buffer type to determine if the AMX matrix multiplication code should be used. Basically extending the same that is done in https://github.com/ggerganov/llama.cpp/pull/9921 for the aarch64 types.",
+    "labels": [
+      "refactoring",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-17T11:35:11+00:00",
+    "closed_at": "2025-01-01T01:07:39+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10359/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10359"
+  },
+  {
+    "number": 10183,
+    "title": "ggml : move LLAMAFILE/tinyBLAS into a backend",
+    "body": "The `LLAMAFILE` SGEMM routines are currently called directly from within `ggml-cpu.c` based on compile-time conditionals:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/a9e8a9a0306a8093eef93b0022d9f45510490072/ggml/src/ggml-cpu.c#L7454-L7481\r\n\r\nIn order to simplify the logic and reduce the coupling of the different BLAS implementations, the `LLAMAFILE` code should be moved into a `ggml` backend, similar to the other BLAS implementations.\r\n\r\nNot sure if it has to be a new backend, or if we can move it in the existing `ggml-blas` backend - TBD.",
+    "labels": [
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-05T09:24:54+00:00",
+    "closed_at": "2024-11-17T06:48:36+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10183/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10183"
+  },
+  {
+    "number": 10180,
+    "title": "ggml : refactor ggml-cpu.c into multiple C++ source files",
+    "body": "As per recent discussions (e.g. https://github.com/ggerganov/llama.cpp/pull/10144#pullrequestreview-2411814357), we should split the large `ggml-cpu.c` implementation into smaller modules - similar to how the CUDA backend is organized. We should utilize ~C++11~ C++ to reduce code duplication.",
+    "labels": [
+      "refactoring",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2024-11-05T07:12:48+00:00",
+    "closed_at": null,
+    "comments": 17,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10180/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10180"
+  },
+  {
+    "number": 9859,
+    "title": "server : remove self-extend features",
+    "body": "The extra logic added to support this functionality is a bit questionable (https://github.com/ggerganov/llama.cpp/pull/5195#issuecomment-1917507112) and it introduces too much complexity around the context management. With new models available where the training context is plenty (32k and even 128k), we should remove this feature in view of simplifying the server implementation and potentially look to re-introduce it in the future in a better way.",
+    "labels": [
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-12T07:11:13+00:00",
+    "closed_at": "2024-10-12T13:06:32+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9859/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9859"
+  },
+  {
+    "number": 9811,
+    "title": "server : remove system prompt support",
+    "body": "The \"system_prompt\" related functionality is quite outdated and is introducing unnecessary complexity. It only sort of makes sense for non-finetuned models in order to save the computation of a common prefix when there are multiple parallel slots. But in practice, only finetuned models are utilized for this use case and they always require a chat template, which is incompatible with the current implementation of the system prompt. So in order to simplify the code a bit, we should remove the system prompt related functionality from the server.",
+    "labels": [
+      "refactoring",
+      "server"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-09T19:10:10+00:00",
+    "closed_at": "2024-10-12T11:51:55+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9811/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9811"
+  },
+  {
+    "number": 9369,
+    "title": "llama : refactor llama_vocab",
+    "body": "As of today we support 5 tokenizer implementations:\r\n\r\n```c\r\n        LLAMA_VOCAB_TYPE_SPM  = 1, // LLaMA tokenizer based on byte-level BPE with byte fallback\r\n        LLAMA_VOCAB_TYPE_BPE  = 2, // GPT-2 tokenizer based on byte-level BPE\r\n        LLAMA_VOCAB_TYPE_WPM  = 3, // BERT tokenizer based on WordPiece\r\n        LLAMA_VOCAB_TYPE_UGM  = 4, // T5 tokenizer based on Unigram\r\n        LLAMA_VOCAB_TYPE_RWKV = 5, // RWKV tokenizer based on greedy tokenization\r\n```\r\n\r\nThe function `llama_tokenize_internal` in `llama-vocab.cpp` currently constructs a tokenizer instance on every call which for some of the tokenizers incurs significant overhead. This should be avoided by pre-constructing the tokenizer object upon `llama-vocab` creation and abstracting the objects (e.g. `llm_tokenizer_spm`, `llm_tokenizer_bpe`, etc.) with a common interface.\r\n\r\nHowever, we want `llama_tokenize_internal` to remain thread-safe as it currently is (I think). Therefore, the tokenizer objects would likely need to be split into 2 parts:\r\n\r\n- immutable pre-computed data (such as tries and lookup tables)\r\n- mutable work data\r\n\r\nThe first one will be initialized once upon `llama-vocab` creation. The latter will be created each time within `llama_tokenize_internal` and will be used to store fleeting data while tokenizing.\r\n\r\nA test that guarantees thread-safety for all tokenizer via thread sanitizers would be useful.\r\n\r\nThis should resolve https://github.com/ggerganov/llama.cpp/issues/9180 and also help to multi-thread the tokenization process in `llama-server`.\r\n\r\nWhile working on this, the `llama-vocab.cpp` can use various simplifications and improvements as well.",
+    "labels": [
+      "good first issue",
+      "performance",
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-08T13:00:28+00:00",
+    "closed_at": "2024-09-30T18:02:31+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9369/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9369"
+  },
+  {
+    "number": 9095,
+    "title": "Refactor: Add more typechecking to GGUFWriter.add_key_value",
+    "body": "### Background Description\r\n\r\nAs per this discussion https://github.com/ggerganov/llama.cpp/pull/9074#issuecomment-2296799118  write better error messages in case of wrong types.\r\n\r\nFYI: This ticket is free for others to approach\r\n\r\n### Possible Refactor Approaches\r\n\r\nN/A",
+    "labels": [
+      "help wanted",
+      "refactoring"
+    ],
+    "state": "open",
+    "created_at": "2024-08-19T21:08:18+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9095/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9095"
+  },
+  {
+    "number": 8566,
+    "title": "llama : reimplement logging",
+    "body": "Rewrite the logging functionality in `common/log.h` with main goals:\r\n\r\n- asynchronous logging\r\n- log to file should be possible to disable\r\n- compile-time verbosity level\r\n- colors",
+    "labels": [
+      "enhancement",
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-18T11:16:04+00:00",
+    "closed_at": "2024-09-15T17:49:48+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8566/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8566"
+  },
+  {
+    "number": 7787,
+    "title": "Refactor: investigate cleaner exception handling for server/server.cpp",
+    "body": "### Background Description\r\n\r\nIn https://github.com/ggerganov/llama.cpp/pull/7642 @0wwafa observed unhanded exceptions on windows, but didn't provide a concrete example of a failure to load replications steps, so the root cause is unknown. He assert that every exception should be catched globally.\r\n\r\nHowever @ngxson mentioned that we should do a more local try catch focused on `ctx_server.init()` as it makes no sense to cover `ctx_server.load_model(params)` which will always return false. 0wwafa opted afterwards to close the PR.\r\n\r\nConsidering that he did observe an exception around this area, we should at least give this spot a lookover to ensure all error cases are handled.\r\n\r\nIf done so, make sure to at least credit @0wwafa in the commit for the general observation.\r\n\r\n### Possible Refactor Approaches\r\n\r\n* See if we can restrict the error handling to ctx_server.init() or closer to the error source.",
+    "labels": [
+      "help wanted",
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-06T03:20:52+00:00",
+    "closed_at": "2024-08-16T15:19:06+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7787/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7787"
+  },
+  {
+    "number": 7573,
+    "title": "Reorganization of the project files",
+    "body": "Since there was some discussion about splitting `llama.cpp` into multiple files, I would like to propose a reorganization of the project files. In short:\r\n\r\n- Move ggml files to the ggml directory\r\n- Move llama.cpp files to the llama directory\r\n- Split llama.cpp into multiple files, possibly:\r\n  - llama-tokenizer.cpp/h\r\n  - llama-sampling.cpp/h\r\n  - llama-models.cpp/h\r\n- Possibly move common into examples \r\n\r\nHopefully this will allow:\r\n- Having a more clear separation between ggml and llama.cpp\r\n- First step towards building ggml separately, and sharing the same build scripts in the ggml repository and other projects\r\n- Improve build time of llama.cpp\r\n- Make working on llama.cpp easier\r\n\r\nThe tree structure would look like this:\r\n```\r\n\u251c\u2500\u2500 common\r\n\u251c\u2500\u2500 examples\r\n\u251c\u2500\u2500 gguf-py\r\n\u251c\u2500\u2500 tests\r\n\u251c\u2500\u2500 ggml\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-alloc.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-alloc.c\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-backend-impl.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-backend.c\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-backend.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-common.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-cuda\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-cuda.cu\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-cuda.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-impl.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-kompute.cpp\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-kompute.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-metal.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-opencl.cpp\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-opencl.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-quants.c\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-quants.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-rpc.cpp\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-rpc.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-sycl.cpp\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-sycl.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-vulkan.cpp\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml-vulkan.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml.c\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 ggml.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 sgemm.cpp\r\n\u2502\u00a0\u00a0 \u2514\u2500\u2500 sgemm.h\r\n\u251c\u2500\u2500 llama\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 llama.cpp\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 llama.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 new files: llama-tokenizer.cpp/h, llama-sampling.cpp/h, llama-models.cpp/h, ...\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 unicode-data.cpp\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 unicode-data.h\r\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 unicode.cpp\r\n\u2502\u00a0\u00a0 \u2514\u2500\u2500 unicode.h\r\n\u251c\u2500\u2500 CMakeLists.txt\r\n\u251c\u2500\u2500 Makefile\r\n\u2514\u2500\u2500 convert-hf-to-gguf.py\r\n```",
+    "labels": [
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-27T21:03:53+00:00",
+    "closed_at": "2024-06-26T20:14:39+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7573/reactions",
+      "total_count": 5,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7573"
+  },
+  {
+    "number": 7559,
+    "title": "Refactor: Existing examples refactoring opportunities",
+    "body": "[GG in this PR was suggesting a refactoring of examples and provided an example of what he would like to refactor. This is a ticket to inform others about opportunities to improve examples](https://github.com/ggerganov/llama.cpp/pull/7534#issuecomment-2132746334)\r\n\r\n> I think a bigger advantage would be to do some refactoring in the existing examples and \"hide\" some of the state for sampling and KV cache management that we expose behind the common API\r\n\r\n- [ ] Hide some state for sampling (unsure what this mean)\r\n- [ ] Key Value cache management should be abstracted away behind the common API\r\n- [ ] @ngxson [suggest restructuring the help message in gpt_params_print_usage() to improve help message clarity](https://github.com/ggerganov/llama.cpp/pull/7534#issuecomment-2133064853)\r\n\r\nIf there is any other aspect of the example which is currently a pain point for developer grokking, feel free to also suggest some so it can be added here.",
+    "labels": [
+      "help wanted",
+      "refactoring"
+    ],
+    "state": "open",
+    "created_at": "2024-05-27T09:31:05+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7559/reactions",
+      "total_count": 2,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7559"
+  },
+  {
+    "number": 6913,
+    "title": "ggml : unified CMake build",
+    "body": "Currently the [ggml](https://github.com/ggerganov/ggml), [llama.cpp](https://github.com/ggerganov/llama.cpp) and [whisper.cpp](https://github.com/ggerganov/whisper.cpp) projects share the same source of the `ggml` library, but have different CMake scripts. The scripts are adapted to the specifics of the projects and are quite similar with each other - all of them build `ggml`. Still, there are differences due to manually rewriting them and applying changes from one repo to another\r\n\r\nThe goal in this task is to unify, deduplicate and streamline the build process of `ggml` with proper CMake scripts that are shared across the projects. This will simplify changes in the future and will also help other 3rd party projects that depend on `ggml`\r\n\r\nMore on this topic has been discussed in:\r\n\r\n- https://github.com/ggerganov/llama.cpp/issues/5890\r\n- https://github.com/ggerganov/ggml/pull/804\r\n\r\nTo achieve that, the `ggml`-related sources in `llama.cpp` and `whisper.cpp` would likely have to be reorganized in a subfolder to emulate a submodule. We avoid usage of actual `git` submodules since I consider that it has some disadvantages. Instead, we do manual synchronization with [sync scripts](https://github.com/ggerganov/llama.cpp/blob/master/scripts/sync-ggml-am.sh) across the 3 repos. In any case, after we complete this task it would be much simpler to switch to a `ggml` submodule if we decide to do so in the future\r\n\r\nRegarding the existing Makefiles in `llama.cpp` and `whisper.cpp` - we should keep those as an alternative build system. It does not have to support all possible backends and configurations as the primary CMake build would do so. Makefile maintenance will be low priority\r\n\r\nAfter the build system is improved, we can consider extending it with build-time generated configuration (e.g. `config.h`) for increased compatibility as suggested in #5890. But for now this remains low priority",
+    "labels": [
+      "enhancement",
+      "build",
+      "refactoring",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2024-04-25T19:15:40+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6913/reactions",
+      "total_count": 8,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6913"
+  },
+  {
+    "number": 6082,
+    "title": "llama : combine expert tensors into a single tensor",
+    "body": "Currently, we store separate tensors for each expert:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/3020327f6cd6d2ce50528dd65f4b199d2ea8b1ae/ggml.c#L4442-L4455\r\n\r\nThis leads to large number of possible \"source\" tensors for the `_id` ops which increases significantly the size of `struct ggml_tensor` on the stack:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/3020327f6cd6d2ce50528dd65f4b199d2ea8b1ae/ggml.h#L573-L576\r\n\r\nAdditionally, the Metal implementation is currently hacked to support up to 8 experts and extension to more than that is not completely obvious:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/3020327f6cd6d2ce50528dd65f4b199d2ea8b1ae/ggml-metal.m#L1750-L1759\r\n\r\nWe should improve this, with one possible way being to store the data for the experts into a single tensor and address is with appropriate offsets",
+    "labels": [
+      "high priority",
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-15T12:55:03+00:00",
+    "closed_at": "2024-04-03T13:07:06+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6082/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6082"
+  },
+  {
+    "number": 5608,
+    "title": "llama : update the convert-llama2c-to-ggml example",
+    "body": "The [convert-llama2c-to-ggml](https://github.com/ggerganov/llama.cpp/tree/master/examples/convert-llama2c-to-ggml) is mostly functional, but can use some maintenance efforts. It also needs an update to support the `n_head_kv` parameter, required for multi-query models (e.g. [stories260K](https://huggingface.co/karpathy/tinyllamas/blob/main/stories260K/readme.md)).\r\n\r\nHere is quick'n'dirty patch to make it work with `stories260k` which uses `n_head = 8` and `n_head_kv = 4`:\r\n\r\n```diff\r\ndiff --git a/examples/convert-llama2c-to-ggml/convert-llama2c-to-ggml.cpp b/examples/convert-llama2c-to-ggml/convert-llama2c-to-ggml.cpp\r\nindex 8209dcb6..4aab8552 100644\r\n--- a/examples/convert-llama2c-to-ggml/convert-llama2c-to-ggml.cpp\r\n+++ b/examples/convert-llama2c-to-ggml/convert-llama2c-to-ggml.cpp\r\n@@ -162,8 +162,8 @@ static int checkpoint_init_weights(TransformerWeights *w, Config* p, FILE* f, bo\r\n     if (fread(w->token_embedding_table, sizeof(float), p->vocab_size * p->dim, f) != static_cast<size_t>(p->vocab_size * p->dim)) return 1;\r\n     if (fread(w->rms_att_weight, sizeof(float), p->n_layers * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim)) return 1;\r\n     if (fread(w->wq, sizeof(float), p->n_layers * p->dim * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim)) return 1;\r\n-    if (fread(w->wk, sizeof(float), p->n_layers * p->dim * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim)) return 1;\r\n-    if (fread(w->wv, sizeof(float), p->n_layers * p->dim * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim)) return 1;\r\n+    if (fread(w->wk, sizeof(float), p->n_layers * p->dim * p->dim/2, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim/2)) return 1;\r\n+    if (fread(w->wv, sizeof(float), p->n_layers * p->dim * p->dim/2, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim/2)) return 1;\r\n     if (fread(w->wo, sizeof(float), p->n_layers * p->dim * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim)) return 1;\r\n     if (fread(w->rms_ffn_weight, sizeof(float), p->n_layers * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim)) return 1;\r\n     if (fread(w->w1, sizeof(float), p->n_layers * p->dim * p->hidden_dim, f) != static_cast<size_t>(p->n_layers * p->dim * p->hidden_dim)) return 1;\r\n@@ -383,8 +383,8 @@ static void init_model(struct my_llama_model * model) {\r\n         layer.attention_norm = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, n_embd);\r\n \r\n         layer.wq = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd);\r\n-        layer.wk = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd);\r\n-        layer.wv = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd);\r\n+        layer.wk = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd/2);\r\n+        layer.wv = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd/2);\r\n         layer.wo = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd);\r\n \r\n         layer.ffn_norm = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, n_embd);\r\n@@ -697,8 +697,8 @@ static void save_as_llama_model(\r\n \r\n         // from 3d matrix layer x dim x dim to 2d matrix dim x dim\r\n         convert_weights_ak_to_gg(layer.wq            , &w->wq[i*row_length*row_length]);\r\n-        convert_weights_ak_to_gg(layer.wk            , &w->wk[i*row_length*row_length]);\r\n-        convert_weights_ak_to_gg(layer.wv            , &w->wv[i*row_length*row_length]);\r\n+        convert_weights_ak_to_gg(layer.wk            , &w->wk[i*row_length*row_length/2]);\r\n+        convert_weights_ak_to_gg(layer.wv            , &w->wv[i*row_length*row_length/2]);\r\n         convert_weights_ak_to_gg(layer.wo            , &w->wo[i*row_length*row_length]);\r\n \r\n         convert_weights_ak_to_gg(layer.w1            , &w->w1[i*row_length*n_ff]);\r\n@@ -737,7 +737,7 @@ static void save_as_llama_model(\r\n     gguf_set_val_u32(ctx, KV_FEED_FORWARD_LENGTH, model->hparams.n_ff);\r\n     gguf_set_val_u32(ctx, KV_ATTENTION_HEAD_COUNT, model->hparams.n_head);\r\n     // n_head_kv is optional, default to n_head\r\n-    // gguf_set_val_u32(ctx, KV_ATTENTION_HEAD_COUNT_KV, ...);\r\n+    gguf_set_val_u32(ctx, KV_ATTENTION_HEAD_COUNT_KV, model->hparams.n_head/2);\r\n     gguf_set_val_u32(ctx, KV_BLOCK_COUNT, model->hparams.n_layer);\r\n     gguf_set_val_u32(ctx, KV_ROPE_DIMENSION_COUNT, model->hparams.n_rot);\r\n     gguf_set_val_f32(ctx, KV_ATTENTION_LAYERNORM_RMS_EPS, 1e-5f);\r\n```\r\n\r\nBut obviously, a better implementation is necessary.\r\n\r\nIt would be also useful to add tests to our CI that perform `llama2.c` model conversions to GGUF. These small models could become useful for creating more efficient tests (e.g. https://github.com/ggerganov/llama.cpp/pull/5566#issuecomment-1953806043)\r\n",
+    "labels": [
+      "good first issue",
+      "testing",
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-20T09:50:31+00:00",
+    "closed_at": "2024-03-22T18:49:07+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5608/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5608"
+  },
+  {
+    "number": 5239,
+    "title": "llama : refactor the llm.build_xxx functions",
+    "body": "Now that we support a large amount of architectures, we can clearly see the patterns when constructing the compute graphs - i.e. optional biases, different norm types, QKV vs Q+K+V, etc.\r\n\r\nWe should deduplicate the copy-paste portions in functions such as `llm.build_llama()`, `llm.build_falcon()`, etc.\r\n\r\nThe advantage of the current code is that it is easy to look into the graph of a specific architecture. When we refactor this, we will lose this convenience to some extend. So we should think about making this refactoring in such a way that we don't completely obscure which parts of the graph belong to which architectures\r\n\r\nOpen for ideas and suggestions how to do this best",
+    "labels": [
+      "good first issue",
+      "refactoring",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2024-01-31T12:55:44+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5239/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5239"
+  },
+  {
+    "number": 5220,
+    "title": "ggml : move constant tables into a common header",
+    "body": "The goal is to reduce copy-paste of the same values across all backends",
+    "labels": [
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-30T17:14:18+00:00",
+    "closed_at": "2024-03-09T10:47:58+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5220/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5220"
+  },
+  {
+    "number": 5215,
+    "title": "llama : create llamax library",
+    "body": "Depends on: https://github.com/ggerganov/llama.cpp/issues/5214\r\n\r\nThe `llamax` library will wrap `llama` and expose common high-level functionality. The main goal is to ease the integration of `llama.cpp` into 3rd party projects. Ideally, most projects would interface through the `llamax` API for all common use cases, while still have the option to use the low-level `llama` API for more uncommon applications that require finer control of the state.\r\n\r\nA simple way to think about `llamax` is that it will simplify all of the existing examples in `llama.cpp` by hiding the low-level stuff, such as managing the KV cache and batching requests.\r\n\r\nRoughly, `llamax` will require it's own state object and a run-loop function.\r\n\r\nThe specifics of the API are yet to be determined - suggestions are welcome.\r\n",
+    "labels": [
+      "refactoring",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2024-01-30T13:01:06+00:00",
+    "closed_at": null,
+    "comments": 18,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5215/reactions",
+      "total_count": 34,
+      "+1": 19,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 7,
+      "rocket": 4,
+      "eyes": 4
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5215"
+  },
+  {
+    "number": 5214,
+    "title": "llama : move the sampling API from common into llama lib",
+    "body": "There is functionality around `llama_sampling_context` currently part of `common`. We should move it into `llama`. Pretty much the entire API from `common/sampling.h` except `llama_sampling_params` and `llama_sampling_sample` can be integrated into the library.\r\n\r\nThis would probably require to also merge the grammar parser into the `llama` lib implementation.\r\n\r\nThe `llama_sampling_params` and `llama_sampling_sample` will stay in `common` since they are very example-specific and not general-purpose enough to be merged.",
+    "labels": [
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-30T12:44:03+00:00",
+    "closed_at": "2024-09-07T12:17:24+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5214/reactions",
+      "total_count": 7,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 7,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5214"
+  },
+  {
+    "number": 4574,
+    "title": "llama : integer type consistency in `llama.h`",
+    "body": "# Feature Description\r\n\r\nllama.h should prefer to use `sized` (always) + `signed` (mostly) integers.\r\n\r\n# Motivation\r\n\r\nThe integer types in `llama.h` right now are.\r\n\r\n| Count | Type            |\r\n|---------|------------------|\r\n| 33      | `int`              |\r\n| 10      | `int32_t`       |\r\n| 24      | `uint32_t`     |\r\n| 2        | `int64_t`       |\r\n| 2        | `uint64_t`    | \r\n\r\nIn #4540 there was a discussion around preferences for integer types on new methods. \r\n\r\nAvoiding `int` makes cross platform code simpler at essentially no cost.\r\nSigned makes arithmetic simpler at the cost of some bits if you need something large.\r\n\r\n# Possible Implementation\r\n\r\n1. Change all `int`'s to `int32_t`\r\n2. As code changes try to prefer signed integers.\r\n\r\nWe could also do some higher-impact things, but I'd take the lower-impact slower changes over a large find-and-replace.",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "refactoring",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2023-12-21T19:55:14+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4574/reactions",
+      "total_count": 4,
+      "+1": 2,
+      "-1": 1,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4574"
+  },
+  {
+    "number": 4491,
+    "title": "deprecate llama_batch_get_one and llama_get_logits",
+    "body": "We should deprecate these functions so people do not use them in new code. But we would first have to stop using them in our own code, which is easier said than done. For example, I tried to understand what beam search was using for a batch size, and gave up:\r\nhttps://github.com/ggerganov/llama.cpp/blob/88ae8952b65cbf32eb1f5703681ea592e510e570/llama.cpp#L8000-L8003\r\n\r\nsee also #4274",
+    "labels": [
+      "refactoring",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-12-16T03:15:15+00:00",
+    "closed_at": "2024-10-10T01:07:34+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4491/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4491"
+  },
+  {
+    "number": 4218,
+    "title": "llama : speed-up grammar sampling",
+    "body": "There have been a few reports where the grammar sampling can significantly degrade the performance.\r\nIt would be nice to profile and optimize the implementation - there should be room for improvements.\r\n\r\nAlready on-going efforts:\r\n\r\n- #4210 \r\n- #4213\r\n\r\nProbably worth looking in multi-threading the implementation as well.",
+    "labels": [
+      "performance",
+      "refactoring",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2023-11-25T17:04:06+00:00",
+    "closed_at": null,
+    "comments": 40,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4218/reactions",
+      "total_count": 20,
+      "+1": 20,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4218"
+  },
+  {
+    "number": 4216,
+    "title": "server : improvements and maintenance",
+    "body": "The [server](https://github.com/ggerganov/llama.cpp/tree/master/examples/server) example has been growing in functionality and unfortunately I feel it is not very stable at the moment and there are some important features that are still missing. Creating this issue to keep track on some of these points and try to draw more attention from the community. I guess, some of the tasks are relatively big and would require significant efforts to complete\r\n\r\n- [x] **Support chat templates**\r\n  We need to have separation between the user input and the special tokens, so that the tokenization is performed correctly. See the following comments / commits for more context:\r\n  https://github.com/ggerganov/llama.cpp/pull/4160#discussion_r1403675264\r\n  https://github.com/ggerganov/llama.cpp/pull/4198/commits/c544faed749240fe5eac2bc042087c71f79a0728\r\n  https://github.com/ggerganov/llama.cpp/pull/4160#issuecomment-1824984718\r\n\r\n  We already support extracting meta information from the GGUF model files that can provide the chat template for the specific model: \r\n  https://github.com/ggerganov/llama.cpp/pull/4125\r\n  Support chat template for `/v1/chat/completions`: https://github.com/ggerganov/llama.cpp/pull/5593\r\n  List of supported templates: [view on wiki](https://github.com/ggerganov/llama.cpp/wiki/Templates-supported-by-llama_chat_apply_template) \r\n\r\n  Supporting this in `server` would require changes both in the backend and the frontend\r\n\r\n- [x] **Likely redundant logic for OpenAI (OAI) compatibility that should be removed**\r\n  https://github.com/ggerganov/llama.cpp/pull/4198#discussion_r1404500731\r\n\r\n- [x] **Use multiple mount points for the OAI API**\r\n  https://github.com/ggerganov/llama.cpp/blob/af19d3573481d409b3c4e55494810eb1f65a9aae/examples/server/server.cpp#L2682-L2684\r\n  https://github.com/ggerganov/llama.cpp/pull/5722\r\n\r\n- [x] **Return meaningful errors on KV cache overflow**\r\n  https://github.com/ggerganov/llama.cpp/issues/4185#issuecomment-1825721736\r\n\r\n- [x] **Refactor the code**\r\n  With the recent additions for parallel decoding support for multiple clients and LLaVA, I feel the code base became very cumbersome and there is a lot of room for refactoring and improving the code. There should be some effort dedicated to cleaning up things and simplifying the code.\r\n  https://github.com/ggerganov/llama.cpp/pull/5065\r\n  https://github.com/ggerganov/llama.cpp/pull/5710\r\n\r\n- [x] **Batched decoding endpoint?**\r\n  Although we added parallel decoding support via \"slots\", we are still lacking batched decoding where a single client could pass an array of prompts to be completed. Or alternatively, generate multiple completions for a single prompt. Would be useful to support this use case\r\n  https://github.com/ggerganov/llama.cpp/issues/3478#issuecomment-1822010431\r\n\r\n- [ ] **Tool calls (function calling)**\r\n  Support for [MeetKai/functionary](https://github.com/MeetKai/functionary) model by implementing [OpenAI-compatible tool calls](https://platform.openai.com/docs/api-reference/chat/create#chat-create-tool) to chat endpoint.\r\n  https://github.com/ggerganov/llama.cpp/pull/5695\r\n\r\n- [ ] **Multimodal support**\r\n  Support has been temporary dropped in #5882, before working in `server`, we should improve `llava-cli` and the API for using LLaVA\r\n  - #8010\r\n  - #6027\r\n  - https://github.com/ggerganov/llama.cpp/pull/5882#issuecomment-1980713874\r\n  - https://github.com/ggerganov/llama.cpp/pull/5882#issuecomment-1991583459\r\n  - #5896\r\n  - #5592\r\n  - #6226\r\n\r\n- [ ] **Prompt processing improvment**\r\n  - #6586\r\n  - #6607\r\n \r\n- [ ] **Server production readiness**\r\n  - https://github.com/ggerganov/llama.cpp/discussions/6398\r\n  - #6546\r\n\r\nThis is likely not a complete list of things - if you think some feature is important to be improved or supported, drop a comment.\r\n\r\nHave a look to issues labelled with [server/webui](https://github.com/ggerganov/llama.cpp/labels/server%2Fwebui).",
+    "labels": [
+      "help wanted",
+      "refactoring",
+      "server/webui",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2023-11-25T09:57:53+00:00",
+    "closed_at": null,
+    "comments": 120,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4216/reactions",
+      "total_count": 77,
+      "+1": 54,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 23,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4216"
+  },
+  {
+    "number": 3960,
+    "title": "ggml : become thread-safe",
+    "body": "ref https://github.com/ggerganov/llama.cpp/discussions/499#discussioncomment-7478602\r\n\r\nWe should be able to run inference on multiple graphs, backends and devices in parallel.\r\nCurrently, there are CUDA singletons that break this requirement and possibly there could be other problems.\r\n",
+    "labels": [
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-05T15:56:19+00:00",
+    "closed_at": "2024-05-05T01:06:52+00:00",
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3960/reactions",
+      "total_count": 14,
+      "+1": 14,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3960"
+  },
+  {
+    "number": 3470,
+    "title": "ggml : deprecate ggml_alibi by replacing it with ggml_add",
+    "body": "Since `ggml_alibi` is effectively a tensor addition, I think it would be better to replace it with `ggml_add`, similar to what we did with `ggml_diag_mask_inf()` in #3228 \r\n\r\nThis change would be useful since we won't need dedicated kernels for this operator and gives more flexibility to the user code",
+    "labels": [
+      "good first issue",
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-04T13:28:58+00:00",
+    "closed_at": "2024-02-19T12:28:26+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3470/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3470"
+  },
+  {
+    "number": 3382,
+    "title": "llama : refactor llama_build_graph to reduce code duplication",
+    "body": "With the support of new model architectures, we start to observe a lot of repeating patterns in the code for building their compute graphs. We should find a way to refactor and reuse the repetitive code. We should also consider splitting the implementation in separate source files if necessary.\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/0e76a8992c8200237bbc6471a53fb8796b3872f7/llama.cpp#L3997-L4026\r\n\r\nOpen to ideas and suggestions",
+    "labels": [
+      "good first issue",
+      "high priority",
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2023-09-28T19:13:18+00:00",
+    "closed_at": "2023-11-01T18:11:33+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3382/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3382"
+  },
+  {
+    "number": 3229,
+    "title": "metal : simplify kernel arguments using a struct",
+    "body": "Create a struct `ggml_metal_locals` and populate using `GGML_TENSOR_LOCALS` similar to what we do in `ggml.c`:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/3b4bab6a38502d9e68587c2c19f26472480ec4dd/ggml.c#L244-L256\r\n\r\nRefactor all kernels to accept a single struct of `ggml_metal_locals` in order to avoid long lists of arguments such as:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/3b4bab6a38502d9e68587c2c19f26472480ec4dd/ggml-metal.m#L753-L782\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/3b4bab6a38502d9e68587c2c19f26472480ec4dd/ggml-metal.metal#L29-L61",
+    "labels": [
+      "good first issue",
+      "refactoring",
+      "roadmap"
+    ],
+    "state": "closed",
+    "created_at": "2023-09-17T17:10:35+00:00",
+    "closed_at": "2025-03-07T07:40:54+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3229/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3229"
+  },
+  {
+    "number": 2271,
+    "title": "llama : fix `llama_context_params` float array size to not depend on compile-time constants",
+    "body": "The `llama_context_params` size should be a constant - should not depend on compile-time constants:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/d01bccde9f759b24449fdaa16306b406a50eb367/llama.h#L91\r\n\r\nEasiest change is to make this a pointer",
+    "labels": [
+      "good first issue",
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2023-07-19T07:17:34+00:00",
+    "closed_at": "2023-07-21T10:10:52+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2271/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2271"
+  },
+  {
+    "number": 1991,
+    "title": "llama : refactor model loading code",
+    "body": "In `llama.cpp` we have logic for supporting some very old model formats and features such as sharded models which is making the code unnecessary complicated and difficult to maintain. We should simplify it and remove support for old stuff that is no longer used.\r\n\r\nAdditionally, with the upcoming unified file format (https://github.com/ggerganov/ggml/issues/220) we will have to look into reimplementing the code to use it and add support for loading non-LLaMA models as well. This will be an important step towards adding inference of new models such as MPT and Falcon. Therefore, simplifying the logic as much as possible will help to easily adopt the new unified file format when it is ready",
+    "labels": [
+      "good first issue",
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-25T10:30:31+00:00",
+    "closed_at": "2023-08-21T20:22:19+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1991/reactions",
+      "total_count": 13,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 4,
+      "rocket": 0,
+      "eyes": 3
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1991"
+  }
+]

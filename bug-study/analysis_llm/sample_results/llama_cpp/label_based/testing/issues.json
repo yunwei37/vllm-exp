@@ -1,0 +1,335 @@
+[
+  {
+    "number": 11514,
+    "title": "Move gguf fuzzers to the llama.cpp repository",
+    "body": "Fuzz testing of llama.cpp in OSS-Fuzz has been very valuable to detect leaks and security issues in the model loading code. Unfortunately, the build of the [current fuzzers](https://github.com/google/oss-fuzz/tree/master/projects/llamacpp) has been broken for a long time, and new code is not being tested.\n\nWe should move the fuzzers to this repository and ensure that they are maintained. More details: https://google.github.io/oss-fuzz/advanced-topics/ideal-integration/\n\n@DavidKorczynski the current implementation seems to be Apache licensed, which would complicate moving the code here. Would it be possible to re-license it as MIT?",
+    "labels": [
+      "enhancement",
+      "testing",
+      "roadmap"
+    ],
+    "state": "open",
+    "created_at": "2025-01-30T15:57:53+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/11514/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/11514"
+  },
+  {
+    "number": 11275,
+    "title": "ci : add Arm Cobalt 100 runners",
+    "body": "There are some new Github Actions runners \"powered by the Cobalt 100-based processors\":\n\nhttps://github.blog/changelog/2025-01-16-linux-arm64-hosted-runners-now-available-for-free-in-public-repositories-public-preview/\n\nNot sure what this processor is specifically, but it might have some Arm features that would be useful to exercise in the CI. We should look into more details and add workflows if it makes sense.",
+    "labels": [
+      "help wanted",
+      "good first issue",
+      "testing",
+      "roadmap"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-17T09:17:03+00:00",
+    "closed_at": "2025-02-22T11:09:50+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/11275/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/11275"
+  },
+  {
+    "number": 7893,
+    "title": "ci : self-hosted runner issue",
+    "body": "Not sure what happened but Github shows hundreds of self-hosted runners here:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/actions/runners?tab=self-hosted\r\n\r\nWhen I start the runner on the T4 node, it now just spams the following error:\r\n\r\n```\r\ninvalid JIT response code: 422\r\n    {\"message\":\"Invalid Argument - Runner group 1 has reached max limit of 10000 runners.\",\"documentation_url\":\"https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-a-repository\",\"status\":\"422\"}\r\nggml-ci:     ggml-runner-90970032-26062764448-pull_request_target-1718175354 triggered for workflow_name=Benchmark\r\ninvalid JIT response code: 422\r\n    {\"message\":\"Invalid Argument - Runner group 1 has reached max limit of 10000 runners.\",\"documentation_url\":\"https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-a-repository\",\"status\":\"422\"}\r\nggml-ci:     ggml-runner-90970032-26062764706-pull_request_target-1718175355 triggered for workflow_name=Benchmark\r\ninvalid JIT response code: 422\r\n    {\"message\":\"Invalid Argument - Runner group 1 has reached max limit of 10000 runners.\",\"documentation_url\":\"https://docs.github.com/rest/actions/self-hosted-runners#create-configuration-for-a-just-in-time-runner-for-a-repository\",\"status\":\"422\"}\r\n...\r\n```\r\n\r\nI've currently disabled the [Benchmark](https://github.com/ggerganov/llama.cpp/actions/workflows/bench.yml) workflow as I'm not familiar with the setup and don't know how to fix it.\r\n\r\n@phymbert Let me know if you have some time to look into that. If not, then no worries",
+    "labels": [
+      "testing",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-12T07:04:44+00:00",
+    "closed_at": "2025-02-14T01:07:18+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7893/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7893"
+  },
+  {
+    "number": 6292,
+    "title": "Add some models in ggml-models HF repo",
+    "body": "### Motivation\r\n\r\nIn the context of:\r\n\r\n- #6233\r\n\r\nNeed to add some models in the [GGML HF Repo](https://huggingface.co/ggml-org/models/tree/main):\r\n\r\n- mixtral8x7B Q4 Q8 F16 in split format\r\n- bert-bge-large F16\r\n- llama7B 13B split Q4 F16\r\n",
+    "labels": [
+      "enhancement",
+      "performance",
+      "model",
+      "testing",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-25T06:36:44+00:00",
+    "closed_at": "2024-05-18T01:58:22+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6292/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6292"
+  },
+  {
+    "number": 6223,
+    "title": "server: add tests with `--split` and `--model-url`",
+    "body": "since we added #6187 and #6192. Servers tests must be improved to support this feature",
+    "labels": [
+      "enhancement",
+      "testing",
+      "server/webui"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-22T07:13:46+00:00",
+    "closed_at": "2024-03-23T17:07:01+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6223/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6223"
+  },
+  {
+    "number": 6129,
+    "title": "ci : re-enable sanitizer builds when they work again",
+    "body": "Disabled temporary to avoid failure notifications https://github.com/ggerganov/llama.cpp/pull/6128",
+    "labels": [
+      "good first issue",
+      "testing"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-18T08:35:30+00:00",
+    "closed_at": "2024-05-18T15:56:01+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6129/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6129"
+  },
+  {
+    "number": 5608,
+    "title": "llama : update the convert-llama2c-to-ggml example",
+    "body": "The [convert-llama2c-to-ggml](https://github.com/ggerganov/llama.cpp/tree/master/examples/convert-llama2c-to-ggml) is mostly functional, but can use some maintenance efforts. It also needs an update to support the `n_head_kv` parameter, required for multi-query models (e.g. [stories260K](https://huggingface.co/karpathy/tinyllamas/blob/main/stories260K/readme.md)).\r\n\r\nHere is quick'n'dirty patch to make it work with `stories260k` which uses `n_head = 8` and `n_head_kv = 4`:\r\n\r\n```diff\r\ndiff --git a/examples/convert-llama2c-to-ggml/convert-llama2c-to-ggml.cpp b/examples/convert-llama2c-to-ggml/convert-llama2c-to-ggml.cpp\r\nindex 8209dcb6..4aab8552 100644\r\n--- a/examples/convert-llama2c-to-ggml/convert-llama2c-to-ggml.cpp\r\n+++ b/examples/convert-llama2c-to-ggml/convert-llama2c-to-ggml.cpp\r\n@@ -162,8 +162,8 @@ static int checkpoint_init_weights(TransformerWeights *w, Config* p, FILE* f, bo\r\n     if (fread(w->token_embedding_table, sizeof(float), p->vocab_size * p->dim, f) != static_cast<size_t>(p->vocab_size * p->dim)) return 1;\r\n     if (fread(w->rms_att_weight, sizeof(float), p->n_layers * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim)) return 1;\r\n     if (fread(w->wq, sizeof(float), p->n_layers * p->dim * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim)) return 1;\r\n-    if (fread(w->wk, sizeof(float), p->n_layers * p->dim * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim)) return 1;\r\n-    if (fread(w->wv, sizeof(float), p->n_layers * p->dim * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim)) return 1;\r\n+    if (fread(w->wk, sizeof(float), p->n_layers * p->dim * p->dim/2, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim/2)) return 1;\r\n+    if (fread(w->wv, sizeof(float), p->n_layers * p->dim * p->dim/2, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim/2)) return 1;\r\n     if (fread(w->wo, sizeof(float), p->n_layers * p->dim * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim * p->dim)) return 1;\r\n     if (fread(w->rms_ffn_weight, sizeof(float), p->n_layers * p->dim, f) != static_cast<size_t>(p->n_layers * p->dim)) return 1;\r\n     if (fread(w->w1, sizeof(float), p->n_layers * p->dim * p->hidden_dim, f) != static_cast<size_t>(p->n_layers * p->dim * p->hidden_dim)) return 1;\r\n@@ -383,8 +383,8 @@ static void init_model(struct my_llama_model * model) {\r\n         layer.attention_norm = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, n_embd);\r\n \r\n         layer.wq = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd);\r\n-        layer.wk = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd);\r\n-        layer.wv = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd);\r\n+        layer.wk = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd/2);\r\n+        layer.wv = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd/2);\r\n         layer.wo = ggml_new_tensor_2d(ctx, GGML_TYPE_F32, n_embd, n_embd);\r\n \r\n         layer.ffn_norm = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, n_embd);\r\n@@ -697,8 +697,8 @@ static void save_as_llama_model(\r\n \r\n         // from 3d matrix layer x dim x dim to 2d matrix dim x dim\r\n         convert_weights_ak_to_gg(layer.wq            , &w->wq[i*row_length*row_length]);\r\n-        convert_weights_ak_to_gg(layer.wk            , &w->wk[i*row_length*row_length]);\r\n-        convert_weights_ak_to_gg(layer.wv            , &w->wv[i*row_length*row_length]);\r\n+        convert_weights_ak_to_gg(layer.wk            , &w->wk[i*row_length*row_length/2]);\r\n+        convert_weights_ak_to_gg(layer.wv            , &w->wv[i*row_length*row_length/2]);\r\n         convert_weights_ak_to_gg(layer.wo            , &w->wo[i*row_length*row_length]);\r\n \r\n         convert_weights_ak_to_gg(layer.w1            , &w->w1[i*row_length*n_ff]);\r\n@@ -737,7 +737,7 @@ static void save_as_llama_model(\r\n     gguf_set_val_u32(ctx, KV_FEED_FORWARD_LENGTH, model->hparams.n_ff);\r\n     gguf_set_val_u32(ctx, KV_ATTENTION_HEAD_COUNT, model->hparams.n_head);\r\n     // n_head_kv is optional, default to n_head\r\n-    // gguf_set_val_u32(ctx, KV_ATTENTION_HEAD_COUNT_KV, ...);\r\n+    gguf_set_val_u32(ctx, KV_ATTENTION_HEAD_COUNT_KV, model->hparams.n_head/2);\r\n     gguf_set_val_u32(ctx, KV_BLOCK_COUNT, model->hparams.n_layer);\r\n     gguf_set_val_u32(ctx, KV_ROPE_DIMENSION_COUNT, model->hparams.n_rot);\r\n     gguf_set_val_f32(ctx, KV_ATTENTION_LAYERNORM_RMS_EPS, 1e-5f);\r\n```\r\n\r\nBut obviously, a better implementation is necessary.\r\n\r\nIt would be also useful to add tests to our CI that perform `llama2.c` model conversions to GGUF. These small models could become useful for creating more efficient tests (e.g. https://github.com/ggerganov/llama.cpp/pull/5566#issuecomment-1953806043)\r\n",
+    "labels": [
+      "good first issue",
+      "testing",
+      "refactoring"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-20T09:50:31+00:00",
+    "closed_at": "2024-03-22T18:49:07+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5608/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5608"
+  },
+  {
+    "number": 3730,
+    "title": "Missing tokenizer tests",
+    "body": "AFAIU we are missing tokenizer tests for supported models like\r\n\r\n* Baichuan\r\n* Bloom\r\n* GptNeoX\r\n* Persimmon\r\n* Refact\r\n* Starcoder\r\n\r\nIt would be great if anyone would be helping out.",
+    "labels": [
+      "help wanted",
+      "testing"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-22T20:00:20+00:00",
+    "closed_at": "2023-10-24T07:17:18+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3730/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3730"
+  },
+  {
+    "number": 3469,
+    "title": "ci : add Apple silicon (M1) macOS runners",
+    "body": "We should start running the CI on these runners too:\n\nhttps://github.blog/changelog/2023-10-02-github-actions-apple-silicon-m1-macos-runners-are-now-available-in-public-beta/\n\nExample from the `ggml` repo: https://github.com/ggerganov/ggml/pull/514\n\nNeed to do it for `llama.cpp` and `whisper.cpp`",
+    "labels": [
+      "good first issue",
+      "testing"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-04T11:21:05+00:00",
+    "closed_at": "2024-12-23T14:43:36+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3469/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 2
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3469"
+  },
+  {
+    "number": 2634,
+    "title": "llama : add LoRA test to CI",
+    "body": "Add a simple test to [ci/run.sh](https://github.com/ggerganov/llama.cpp/tree/master/ci) to make sure LoRA functionality is OK",
+    "labels": [
+      "good first issue",
+      "testing"
+    ],
+    "state": "closed",
+    "created_at": "2023-08-16T15:57:07+00:00",
+    "closed_at": "2023-08-27T07:03:28+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2634/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2634"
+  },
+  {
+    "number": 2631,
+    "title": "llama : add test for saving/loading sessions to the CI",
+    "body": "See how the `save-load-state` example works:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/tree/master/examples/save-load-state\r\n\r\nAdd a simple test to [ci/run.sh](https://github.com/ggerganov/llama.cpp/tree/master/ci)",
+    "labels": [
+      "good first issue",
+      "testing"
+    ],
+    "state": "closed",
+    "created_at": "2023-08-16T14:42:01+00:00",
+    "closed_at": "2025-03-07T10:19:33+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2631/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2631"
+  },
+  {
+    "number": 582,
+    "title": "Fix failing CI test using thread sanitizer",
+    "body": "I cannot reproduce on my machines:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/actions/runs/4545676297/jobs/8013336777\r\n\r\nIf someone that can reproduce, please try to fix this",
+    "labels": [
+      "help wanted",
+      "high priority",
+      "testing"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-28T17:16:53+00:00",
+    "closed_at": "2023-04-02T07:18:54+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/582/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/582"
+  }
+]

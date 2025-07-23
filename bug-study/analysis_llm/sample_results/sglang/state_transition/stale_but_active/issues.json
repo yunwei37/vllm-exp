@@ -1,0 +1,329 @@
+[
+  {
+    "number": 5989,
+    "title": "[Feature] Integrate FlashMLA into sgl-kernel",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nIntegrate FlashMLA into sgl-kernel, so flashmla backend can run without manually installing flashmla package.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2025-05-03T02:24:13+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5989/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5989"
+  },
+  {
+    "number": 5409,
+    "title": "[Bug] Auto-truncation still uses full context length instead of (context_length - max_tokens)",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI'm experiencing an issue where prompt auto-truncation doesn't properly account for max_tokens when using the HTTP server, even with allow_auto_truncate=True enabled. This persists after the changes in https://github.com/sgl-project/sglang/pull/4919.\n\n### Reproduction\n\n1.  python -m sglang.launch_server --model-path NousResearch/Hermes-3-Llama-3.2-3B --host 0.0.0.0  --max-total-tokens 7192 --disable-overlap --allow-auto-truncate\n2. Send a request with a prompt exceeding 7192 tokens, and specify max_tokens=100\n3. Observe that truncation occurs at 7192 tokens total (prompt + response) rather than reserving space for max_tokens\n\nExpected Behavior:\u200b\u200b\nTruncation should preserve space for response tokens by truncating the prompt to (context_length - max_tokens) tokens, as implemented in other frameworks like vLLM.\n\n\u200bSuggested Fix:\u200b\u200b\nAdd a truncate_prompt_tokens parameter to the HTTP API request schema to explicitly control this behavior, mirroring [vLLM's implementation](https://github.com/vllm-project/vllm/blob/b590adfdc15fc716f6d120aeefeb587f491f8fce/vllm/entrypoints/openai/protocol.py#L262C5-L262C27\u3002)\n\n\n### Environment\n\nPython: 3.10.16 (main, Dec 11 2024, 16:24:50) [GCC 11.2.0]\nCUDA available: True\nGPU 0: NVIDIA RTX 6000 Ada Generation\nGPU 0 Compute Capability: 8.9\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.1, V12.1.105\nCUDA Driver Version: 550.54.14\nPyTorch: 2.5.1+cu124\nsglang: 0.4.5\nsgl_kernel: 0.0.8\nflashinfer: Module Not Found\ntriton: 3.1.0\ntransformers: 4.51.0\ntorchao: 0.9.0+cu124\nnumpy: 2.1.2\naiohttp: 3.11.16\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.30.2\ninteregular: 0.3.3\nmodelscope: 1.24.1\norjson: 3.10.16\noutlines: 0.1.11\npackaging: 24.1\npsutil: 7.0.0\npydantic: 2.11.3\nmultipart: Module Not Found\nzmq: Module Not Found\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: Module Not Found\nxgrammar: 0.1.17\nopenai: 1.72.0\ntiktoken: 0.9.0\nanthropic: 0.49.0\nlitellm: 1.65.4.post1\ndecord: 0.6.0\nNVIDIA Topology:\nGPU0 NIC0 CPU Affinity NUMA Affinity GPU NUMA ID\nGPU0 X SYS 44-65 1 N/A\nNIC0 SYS X\n\nLegend:\n\nX = Self\nSYS = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\nNODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\nPHB = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\nPXB = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\nPIX = Connection traversing at most a single PCIe bridge\nNV# = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\nNIC0: mlx5_bond_0\n\nulimit soft: 1048576\n\n",
+    "labels": [
+      "good first issue",
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2025-04-15T07:33:29+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5409/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5409"
+  },
+  {
+    "number": 5386,
+    "title": "[Bug] `HF_HUB_OFFLINE` not longer supported in version 0.4.5",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nSince the latest version, one can no longer set the env variable \"HF_HUB_OFFLINE\". Setting this variable will lead to the following failure during the model config.\n```shell\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/sgl-workspace/sglang/python/sglang/launch_server.py\", line 14, in <module>\n    launch_server(server_args)\n  File \"/sgl-workspace/sglang/python/sglang/srt/entrypoints/http_server.py\", line 679, in launch_server\n    tokenizer_manager, scheduler_info = _launch_subprocesses(server_args=server_args)\n                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/sgl-workspace/sglang/python/sglang/srt/entrypoints/engine.py\", line 568, in _launch_subprocesses\n    tokenizer_manager = TokenizerManager(server_args, port_args)\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tokenizer_manager.py\", line 159, in __init__\n    self.model_config = ModelConfig(\n                        ^^^^^^^^^^^^\n  File \"/sgl-workspace/sglang/python/sglang/srt/configs/model_config.py\", line 168, in __init__\n    self._verify_quantization()\n  File \"/sgl-workspace/sglang/python/sglang/srt/configs/model_config.py\", line 289, in _verify_quantization\n    quant_cfg = self._parse_quant_hf_config()\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/sgl-workspace/sglang/python/sglang/srt/configs/model_config.py\", line 248, in _parse_quant_hf_config\n    if hf_api.file_exists(self.model_path, \"hf_quant_config.json\"):\n       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/huggingface_hub/utils/_validators.py\", line 114, in _inner_fn\n    return fn(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/huggingface_hub/hf_api.py\", line 2958, in file_exists\n    get_hf_file_metadata(url, token=token)\n  File \"/usr/local/lib/python3.12/dist-packages/huggingface_hub/utils/_validators.py\", line 114, in _inner_fn\n    return fn(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/huggingface_hub/file_download.py\", line 1401, in get_hf_file_metadata\n    r = _request_wrapper(\n        ^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/huggingface_hub/file_download.py\", line 285, in _request_wrapper\n    response = _request_wrapper(\n               ^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/huggingface_hub/file_download.py\", line 308, in _request_wrapper\n    response = get_session().request(method=method, url=url, **params)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/requests/sessions.py\", line 589, in request\n    resp = self.send(prep, **send_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/requests/sessions.py\", line 703, in send\n    r = adapter.send(request, **kwargs)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/huggingface_hub/utils/_http.py\", line 107, in send\n    raise OfflineModeIsEnabled(\nhuggingface_hub.errors.OfflineModeIsEnabled: Cannot reach https://huggingface.co/upstage/SOLAR-10.7B-Instruct-v1.0/resolve/main/hf_quant_config.json: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.\n```\n\nI work on a research cluster where the nodes do not have internet access.\n\nI would be more than happy to provide a PR if you are interested.\n\n### Reproduction\n\nTaking the example from the documentation\n```shell\nhuggingface-cli download meta-llama/Llama-3.1-8B-Instruct\ndocker run --gpus all \\\n    --shm-size 32g \\\n    -p 30000:30000 \\\n    -v ~/.cache/huggingface:/root/.cache/huggingface \\\n    --env \"HF_HUB_OFFLINE=1\" \\\n    --ipc=host \\\n    lmsysorg/sglang:latest \\\n    python3 -m sglang.launch_server --model-path meta-llama/Llama-3.1-8B-Instruct --host 0.0.0.0 --port 30000\n```\n\n### Environment\n\n```shell\nApptainer> python3 -m sglang.check_env\nPython: 3.12.8 (main, Dec  4 2024, 08:54:12) [GCC 11.4.0]\nROCM available: True\nGPU 0,1: AMD Instinct MI300A\nGPU 0,1 Compute Capability: 9.4\nROCM_HOME: /opt/rocm\nHIPCC: HIP version: 6.3.42131-fa1d09cbd\nROCM Driver Version: 6.10.5\nPyTorch: 2.6.0a0+git8d4926e\nsglang: 0.4.5\nsgl_kernel: 0.0.8\nflashinfer: Module Not Found\ntriton: 3.2.0+gitcddf0fc3\ntransformers: 4.51.0\ntorchao: 0.10.0\nnumpy: 1.26.4\naiohttp: 3.11.11\nfastapi: 0.115.6\nhf_transfer: 0.1.9\nhuggingface_hub: 0.30.2\ninteregular: 0.3.3\nmodelscope: 1.24.1\norjson: 3.10.16\noutlines: 0.1.11\npackaging: 24.2\npsutil: 6.1.1\npydantic: 2.10.5\nmultipart: Module Not Found\nzmq: Module Not Found\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.6.7.dev2+g113274a0.rocm630\nxgrammar: 0.1.17\nopenai: 1.72.0\ntiktoken: 0.7.0\nanthropic: 0.49.0\nlitellm: 1.65.4.post1\ndecord: 0.6.0\nAMD Topology: \n\n\n============================ ROCm System Management Interface ============================\n=============================== Link Type between two GPUs ===============================\n       GPU0         GPU1         \nGPU0   0            XGMI         \nGPU1   XGMI         0            \n================================== End of ROCm SMI Log ===================================\n\nulimit soft: 8192\n```",
+    "labels": [
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2025-04-14T16:54:24+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5386/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5386"
+  },
+  {
+    "number": 5107,
+    "title": "llmcompressor quantization + sglang inference faulure",
+    "body": "Hi\uff0cbig guys\uff01\nRecently I followed the official documentation of sglang and llmcompressor and quantized the Qwen2.5-0.5B model into three different classes (W4A16, W8A8-Int8, and W8A8-FP8), but with the same quantization code, the same runtime environment, and only the model files are different \uff08after quantizate\uff09, only the model of W8A8-FP8 is able to be started through the Sglang service, the other However, with the same quantization code and the same runtime environment, only the model files are different, only the model of W8A8-FP8 can be started by Sglang service, while the others will report errors. Is there any solution?\n\nHere is the code I quantified, the commands executed by the service startup, and the errors reported (W4A16 and W8A8-Int8)\n![Image](https://github.com/user-attachments/assets/f1a2e10f-eb15-4759-a1f7-0f4dfd2720a3)\n\nW8A8-Int8 Error:\n![Image](https://github.com/user-attachments/assets/b445deb6-7bc2-4341-aebc-4414d8194724)\n\nW4A16 Error:\n![Image](https://github.com/user-attachments/assets/9e8e5865-5f58-4829-bbfb-022efdf348a7)\n\nMay I ask what the problem with this is? What should I do to solve it?",
+    "labels": [
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2025-04-07T02:20:30+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5107/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5107"
+  },
+  {
+    "number": 4776,
+    "title": "[Feature] adopt trt llm fp8_blockscale_gemm",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\nfor Blackwell\nref https://github.com/NVIDIA/TensorRT-LLM/pull/3071\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2025-03-26T00:26:10+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4776/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4776"
+  },
+  {
+    "number": 4771,
+    "title": "[Bug] Extraneous/incorrect outputs when using response_format on DeepSeek models and MTP",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nExtraneous/incorrect outputs when using response_format (via pydantic models and model_dump_json) on DeepSeek-V3--0324 with SGLang 0.4.4.post1 and MTP.\n\n### Reproduction\n\n8x h200 nodes, cuda 12.3, python 3.12.9.\n\n```\n    engine_args=(\n        \"--trust-remote-code \"\n        \"--revision f6be68c847f9ac8d52255b2c5b888cc6723fbcb2 \"\n        \"--enable-torch-compile \"\n        \"--torch-compile-max-bs 1 \"\n        \"--enable-flashinfer-mla \"\n        \"--speculative-algo EAGLE \"\n        f\"--speculative-draft {NEXTN} \"\n        \"--speculative-num-steps 3 \"\n        \"--speculative-eagle-topk 1 \"\n        \"--speculative-num-draft-tokens 4\"\n    ),\n```\n(where NEXTN is `lmsys/DeepSeek-R1-NextN`)\n\nExample script:\n```python\nimport os\nimport openai\nfrom pydantic import BaseModel, Field\n\nclient = openai.Client(base_url=\"...\", api_key=\"foo\")\n\nclass CapitalInfo(BaseModel):\n    name: str = Field(..., pattern=r\"^\\w+$\", description=\"Name of the capital city\")\n    population: int = Field(..., description=\"Population of the capital city\")\n\nresponse = client.chat.completions.create(\n    model=\"deepseek-ai/DeepSeek-V3-0324\",\n    messages=[\n        {\n            \"role\": \"user\",\n            \"content\": \"Please generate the information of the capital of France in the specified JSON format.\",\n        },\n    ],\n    temperature=0,\n    response_format={\n        \"type\": \"json_schema\",\n        \"json_schema\": {\n            \"name\": \"capital_info\",\n            \"schema\": CapitalInfo.model_json_schema(),\n        },\n    },\n)\nresponse_content = response.choices[0].message.content\nprint(response_content)\ncapital_info = CapitalInfo.model_validate_json(response_content)\nprint(f\"Validated response: {capital_info.model_dump_json()}\")\n```\n\nOutput:\n```\n$ python test_format.py\n{\"capital\": \"Paris\", \"country\": \"France\", \"population\": 2140526, \"area_sq_km\": 105.4, \"official_language\": \"French\", \"currency\": \"Euro (EUR)\", \"time_zone\": \"CET (UTC+1)\", \"major_landmarks\": [\"Eiffel Tower\", \"Louvre Museum\", \"Notre-Dame Cathedral\", \"Arc de Triomphe\"]}\nTraceback (most recent call last):\n  File \"/Users/jdurbin/test_format.py\", line 30, in <module>\n    capital_info = CapitalInfo.model_validate_json(response_content)\n  File \"/Users/jdurbin/venv/lib/python3.10/site-packages/pydantic/main.py\", line 656, in model_validate_json\n    return cls.__pydantic_validator__.validate_json(json_data, strict=strict, context=context)\npydantic_core._pydantic_core.ValidationError: 1 validation error for CapitalInfo\nname\n  Field required [type=missing, input_value={'capital': 'Paris', 'cou...al', 'Arc de Triomphe']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.10/v/missing\n```\nJust one example, but generally it seems the response format is somewhat ignored with these inference settings.\n\n### Environment\n\n```\n$ python -m sglang.check_env\n2025-03-25 22:26:20,427 - INFO - flashinfer.jit: Prebuilt kernels not found, using JIT backend\nINFO 03-25 22:26:22 __init__.py:190] Automatically detected platform cuda.\n/home/chutes/.local/lib/python3.12/site-packages/torch/utils/cpp_extension.py:1964: UserWarning: TORCH_CUDA_ARCH_LIST is not set, all archs for visible cards are included for compilation.\nIf this is not desired, please set os.environ['TORCH_CUDA_ARCH_LIST'].\n  warnings.warn(\nPython: 3.12.9 (main, Mar 18 2025, 07:40:27) [GCC 11.4.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA H200\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\nCUDA Driver Version: 555.42.06\nPyTorch: 2.5.1+cu124\nsglang: 0.4.4.post1\nsgl_kernel: 0.0.5\nflashinfer: 0.2.3\ntriton: 3.1.0\ntransformers: 4.48.3\ntorchao: 0.9.0\nnumpy: 1.26.4\naiohttp: 3.11.14\nfastapi: 0.115.11\nhf_transfer: 0.1.9\nhuggingface_hub: 0.29.3\ninteregular: 0.3.3\nmodelscope: 1.24.0\norjson: 3.10.15\npackaging: 24.2\npsutil: 7.0.0\npydantic: 2.10.6\nmultipart: 0.0.20\nzmq: 26.3.0\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.7.2\nopenai: 1.68.2\ntiktoken: 0.9.0\nanthropic: 0.49.0\ndecord: 0.6.0\nNVIDIA Topology:\n\tGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tGPU5\tGPU6\tGPU7\tNIC0\tNIC1\tNIC2\tNIC3\tNIC4\tNIC5\tNIC6\tNIC7\tNIC8\tNIC9\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\nGPU0\t X \tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\tPIX\tNODE\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t0-47,96-143\t0\t\tN/A\nGPU1\tNV18\t X \tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\tNODE\tPIX\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t0-47,96-143\t0\t\tN/A\nGPU2\tNV18\tNV18\t X \tNV18\tNV18\tNV18\tNV18\tNV18\tNODE\tNODE\tPIX\tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t0-47,96-143\t0\t\tN/A\nGPU3\tNV18\tNV18\tNV18\t X \tNV18\tNV18\tNV18\tNV18\tNODE\tNODE\tNODE\tPIX\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t0-47,96-143\t0\t\tN/A\nGPU4\tNV18\tNV18\tNV18\tNV18\t X \tNV18\tNV18\tNV18\tSYS\tSYS\tSYS\tSYS\tPIX\tNODE\tNODE\tNODE\tNODE\tNODE\t48-95,144-191\t1\t\tN/A\nGPU5\tNV18\tNV18\tNV18\tNV18\tNV18\t X \tNV18\tNV18\tSYS\tSYS\tSYS\tSYS\tNODE\tPIX\tNODE\tNODE\tNODE\tNODE\t48-95,144-191\t1\t\tN/A\nGPU6\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\t X \tNV18\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tPIX\tNODE\tNODE\tNODE\t48-95,144-191\t1\t\tN/A\nGPU7\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\t X \tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\tPIX\tNODE\tNODE\t48-95,144-191\t1\t\tN/A\nNIC0\tPIX\tNODE\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\t X \tNODE\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\nNIC1\tNODE\tPIX\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tNODE\t X \tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\nNIC2\tNODE\tNODE\tPIX\tNODE\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\t X \tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\nNIC3\tNODE\tNODE\tNODE\tPIX\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\t X \tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\nNIC4\tSYS\tSYS\tSYS\tSYS\tPIX\tNODE\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\t X \tNODE\tNODE\tNODE\tNODE\tNODE\nNIC5\tSYS\tSYS\tSYS\tSYS\tNODE\tPIX\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tNODE\t X \tNODE\tNODE\tNODE\tNODE\nNIC6\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tPIX\tNODE\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\t X \tNODE\tNODE\tNODE\nNIC7\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\tPIX\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\t X \tNODE\tNODE\nNIC8\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\tNODE\t X \tPIX\nNIC9\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\tNODE\tPIX\t X\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_0\n  NIC1: mlx5_1\n  NIC2: mlx5_2\n  NIC3: mlx5_3\n  NIC4: mlx5_4\n  NIC5: mlx5_5\n  NIC6: mlx5_6\n  NIC7: mlx5_7\n  NIC8: mlx5_8\n  NIC9: mlx5_9\n\n\nulimit soft: 65536\n```",
+    "labels": [
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2025-03-25T22:27:26+00:00",
+    "closed_at": null,
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4771/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4771"
+  },
+  {
+    "number": 4414,
+    "title": "[Feature] Can you support the VLA series models? For example, openVLA.",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe documentation does not support the VLA series large models. Can you support the VLA series models?\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "inactive",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2025-03-14T07:00:28+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4414/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4414"
+  },
+  {
+    "number": 4062,
+    "title": "[Bug] granite-vision-3.2-2b failing on sglang with \"LlavaNextForConditionalGeneration not supported\"",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nHi,\n\nI have successfully run the 3.1 versions of granite models on SGLang project (https://github.com/sgl-project/sglang)\n\nI am now trying to run granite-vision-3.2-2b  \n\nBut it fails, with the messages below: in particular `Model architectures ['LlavaNextForConditionalGeneration'] are not supported for now? `\n\nwill IBM work with SGLang project allow this model to run as well on SGLang to be able to leverage its inference acceleration ? It seems that the collaboration has been working for v3.1. see https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/models/granite.py\n\nNote: it seems to be specific to granite-vision-3.2-2b because granite-3.2-2b-instruct works fine with SGLang\n\nThanks, \nDidier\n\n```\nbash-5.2# python3.12 -m sglang.launch_server --model ibm-granite/granite-vision-3.2-2b --model-path ibm-granite/granite-vision-3.2-2b --port 30000 --host 0.0.0.0 --log-level debug --trust-remote-code --tensor-parallel-size 4 --enable-p2p-check --disable-cuda-graph\nINFO 03-04 09:02:43 __init__.py:190] Automatically detected platform cuda.\n[2025-03-04 09:02:46] Setting Triton cache manager to: sglang.srt.utils:CustomCacheManager\n[2025-03-04 09:02:46] server_args=ServerArgs(model_path='ibm-granite/granite-vision-3.2-2b', tokenizer_path='ibm-granite/granite-vision-3.2-2b', tokenizer_mode='auto', load_format='auto', trust_remote_code=True, dtype='auto', kv_cache_dtype='auto', quantization_param_path=None, quantization=None, context_length=None, device='cuda', served_model_name='ibm-granite/granite-vision-3.2-2b', chat_template=None, is_embedding=False, revision=None, skip_tokenizer_init=False, host='0.0.0.0', port=30000, mem_fraction_static=0.85, max_running_requests=None, max_total_tokens=None, chunked_prefill_size=2048, max_prefill_tokens=16384, schedule_policy='lpm', schedule_conservativeness=1.0, cpu_offload_gb=0, prefill_only_one_req=False, tp_size=4, stream_interval=1, stream_output=False, random_seed=108653913, constrained_json_whitespace_pattern=None, watchdog_timeout=300, download_dir=None, base_gpu_id=0, log_level='debug', log_level_http=None, log_requests=False, show_time_cost=False, enable_metrics=False, decode_log_interval=40, api_key=None, file_storage_pth='sglang_storage', enable_cache_report=False, dp_size=1, load_balance_method='round_robin', ep_size=1, dist_init_addr=None, nnodes=1, node_rank=0, json_model_override_args='{}', lora_paths=None, max_loras_per_batch=8, lora_backend='triton', attention_backend='flashinfer', sampling_backend='flashinfer', grammar_backend='outlines', speculative_draft_model_path=None, speculative_algorithm=None, speculative_num_steps=5, speculative_num_draft_tokens=64, speculative_eagle_topk=8, enable_double_sparsity=False, ds_channel_config_path=None, ds_heavy_channel_num=32, ds_heavy_token_num=256, ds_heavy_channel_type='qk', ds_sparse_decode_threshold=4096, disable_radix_cache=False, disable_jump_forward=False, disable_cuda_graph=True, disable_cuda_graph_padding=False, enable_nccl_nvls=False, disable_outlines_disk_cache=False, disable_custom_all_reduce=False, disable_mla=False, disable_overlap_schedule=False, enable_mixed_chunk=False, enable_dp_attention=False, enable_ep_moe=False, enable_torch_compile=False, torch_compile_max_bs=32, cuda_graph_max_bs=80, cuda_graph_bs=None, torchao_config='', enable_nan_detection=False, enable_p2p_check=True, triton_attention_reduce_in_fp32=False, triton_attention_num_kv_splits=8, num_continuous_decode_steps=1, delete_ckpt_after_loading=False, enable_memory_saver=False, allow_auto_truncate=False, return_hidden_states=False, enable_custom_logit_processor=False, tool_call_parser=None, enable_hierarchical_cache=False, enable_flashinfer_mla=False)\nINFO 03-04 09:02:50 __init__.py:190] Automatically detected platform cuda.\nINFO 03-04 09:02:50 __init__.py:190] Automatically detected platform cuda.\nINFO 03-04 09:02:50 __init__.py:190] Automatically detected platform cuda.\nINFO 03-04 09:02:50 __init__.py:190] Automatically detected platform cuda.\nINFO 03-04 09:02:50 __init__.py:190] Automatically detected platform cuda.\n[2025-03-04 09:02:53 TP0] Init torch distributed begin.\n[2025-03-04 09:02:53 TP0] world_size=4 rank=0 local_rank=0 distributed_init_method=tcp://127.0.0.1:30779 backend=nccl\n[2025-03-04 09:02:53 TP1] Init torch distributed begin.\n[2025-03-04 09:02:53 TP3] Init torch distributed begin.\n[2025-03-04 09:02:53 TP2] Init torch distributed begin.\n[2025-03-04 09:02:53 TP1] world_size=4 rank=1 local_rank=1 distributed_init_method=tcp://127.0.0.1:30779 backend=nccl\n[2025-03-04 09:02:53 TP2] world_size=4 rank=2 local_rank=2 distributed_init_method=tcp://127.0.0.1:30779 backend=nccl\n[2025-03-04 09:02:53 TP3] world_size=4 rank=3 local_rank=3 distributed_init_method=tcp://127.0.0.1:30779 backend=nccl\n[2025-03-04 09:02:53 TP0] Found nccl from library libnccl.so.2\n[2025-03-04 09:02:53 TP2] Found nccl from library libnccl.so.2\n[2025-03-04 09:02:53 TP0] sglang is using nccl==2.21.5\n[2025-03-04 09:02:53 TP2] sglang is using nccl==2.21.5\n[2025-03-04 09:02:53 TP1] Found nccl from library libnccl.so.2\n[2025-03-04 09:02:53 TP3] Found nccl from library libnccl.so.2\n[2025-03-04 09:02:53 TP3] sglang is using nccl==2.21.5\n[2025-03-04 09:02:53 TP1] sglang is using nccl==2.21.5\n[2025-03-04 09:02:53 TP3] Custom allreduce is disabled because it's not supported on more than two PCIe-only GPUs. To silence this warning, specify disable_custom_all_reduce=True explicitly.\n[2025-03-04 09:02:53 TP2] Custom allreduce is disabled because it's not supported on more than two PCIe-only GPUs. To silence this warning, specify disable_custom_all_reduce=True explicitly.\n[2025-03-04 09:02:53 TP0] Custom allreduce is disabled because it's not supported on more than two PCIe-only GPUs. To silence this warning, specify disable_custom_all_reduce=True explicitly.\n[2025-03-04 09:02:53 TP1] Custom allreduce is disabled because it's not supported on more than two PCIe-only GPUs. To silence this warning, specify disable_custom_all_reduce=True explicitly.\n[2025-03-04 09:02:53 TP0] Binding to tcp://127.0.0.1:51275\n[2025-03-04 09:02:53 TP0] Message queue communication handle: Handle(connect_ip='127.0.0.1', local_reader_ranks=[1, 2, 3], buffer=<sglang.srt.distributed.device_communicators.shm_broadcast.ShmRingBuffer object at 0x7f72a6c752e0>, local_subscribe_port=51275, remote_subscribe_port=None)\n[2025-03-04 09:02:53 TP3] Connecting to tcp://127.0.0.1:51275\n[2025-03-04 09:02:53 TP2] Connecting to tcp://127.0.0.1:51275\n[2025-03-04 09:02:53 TP1] Connecting to tcp://127.0.0.1:51275\n[2025-03-04 09:02:54 TP2] Load weight begin. avail mem=21.63 GB\n[2025-03-04 09:02:54 TP0] Load weight begin. avail mem=21.63 GB\n[2025-03-04 09:02:54 TP1] Load weight begin. avail mem=21.63 GB\n[2025-03-04 09:02:54 TP3] Load weight begin. avail mem=21.63 GB\n[2025-03-04 09:02:54 TP0] Scheduler hit an exception: Traceback (most recent call last):\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py\", line 1816, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py\", line 240, in __init__\n    self.tp_worker = TpWorkerClass(\n                     ^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/tp_worker_overlap_thread.py\", line 63, in __init__\n    self.worker = TpModelWorker(server_args, gpu_id, tp_rank, dp_rank, nccl_port)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/tp_worker.py\", line 68, in __init__\n    self.model_runner = ModelRunner(\n                        ^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py\", line 194, in __init__\n    self.load_model()\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py\", line 317, in load_model\n    self.model = get_model(\n                 ^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/__init__.py\", line 22, in get_model\n    return loader.load_model(\n           ^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py\", line 357, in load_model\n    model = _initialize_model(\n            ^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py\", line 136, in _initialize_model\n    model_class, _ = get_model_architecture(model_config)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/utils.py\", line 37, in get_model_architecture\n    return ModelRegistry.resolve_model_cls(architectures)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/models/registry.py\", line 65, in resolve_model_cls\n    return self._raise_for_unsupported(architectures)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/models/registry.py\", line 32, in _raise_for_unsupported\n    raise ValueError(\nValueError: Model architectures ['LlavaNextForConditionalGeneration'] are not supported for now. Supported architectures: dict_keys(['BaichuanForCausalLM', 'ChatGLMModel', 'CohereForCausalLM', 'Cohere2ForCausalLM', 'DbrxForCausalLM', 'DeepseekForCausalLM', 'DeepseekV2ForCausalLM', 'DeepseekV3ForCausalLM', 'ExaoneForCausalLM', 'GemmaForCausalLM', 'Gemma2ForCausalLM', 'Gemma2ForSequenceClassification', 'GPT2LMHeadModel', 'GPTBigCodeForCausalLM', 'GraniteForCausalLM', 'Grok1ForCausalLM', 'Grok1ModelForCausalLM', 'InternLM2ForCausalLM', 'InternLM2ForRewardModel', 'LlamaForCausalLM', 'Phi3ForCausalLM', 'InternLM3ForCausalLM', 'LlamaForClassification', 'LlamaForCausalLMEagle', 'LlamaEmbeddingModel', 'MistralModel', 'LlamaForSequenceClassification', 'LlamaForSequenceClassificationWithNormal_Weights', 'LlavaLlamaForCausalLM', 'LlavaQwenForCausalLM', 'LlavaMistralForCausalLM', 'LlavaVidForCausalLM', 'MiniCPMForCausalLM', 'MiniCPM3ForCausalLM', 'MiniCPMV', 'MistralForCausalLM', 'MixtralForCausalLM', 'QuantMixtralForCausalLM', 'MllamaForConditionalGeneration', 'OlmoForCausalLM', 'Olmo2ForCausalLM', 'OlmoeForCausalLM', 'Phi3SmallForCausalLM', 'QWenLMHeadModel', 'Qwen2ForCausalLM', 'Qwen2ForCausalLMEagle', 'Qwen2MoeForCausalLM', 'Qwen2VLForConditionalGeneration', 'StableLmForCausalLM', 'TorchNativeLlamaForCausalLM', 'TorchNativePhi3ForCausalLM', 'XverseForCausalLM', 'XverseMoeForCausalLM', 'YiVLForCausalLM'])\n\n```\n\n### Reproduction\n\nStart SGLang with model Granite with following command line\n\npython3.12 -m sglang.launch_server --model ibm-granite/granite-vision-3.2-2b --model-path ibm-granite/granite-vision-3.2-2b --port 30000 --host 0.0.0.0 --log-level debug --trust-remote-code --tensor-parallel-size 4 --enable-p2p-check --disable-cuda-graph\n\nSimilar command for instruct works fine: \n\npython3.12 -m sglang.launch_server --model ibm-granite/granite-3.2-2b-instruct --model-path ibm-granite/granite-3.2-2b-instruct --port 30000 --host 0.0.0.0 --log-level debug --trust-remote-code --tensor-parallel-size 4 --enable-p2p-check --disable-cuda-graph\n\n\n### Environment\n\nSGLang 0.4.3 containerized in Amazon Linux 2023 and running in an AWS ECS cluster",
+    "labels": [
+      "inactive",
+      "MLLM",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2025-03-04T10:05:44+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4062/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4062"
+  },
+  {
+    "number": 3876,
+    "title": "[Bug] Frontend compatibility with Python 3.13",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n`cafile` parameter in `urllib.request.urlopen` is [removed in Python 3.13](https://docs.python.org/3.13/library/urllib.request.html), causing SGLang frontend to fail.\n\n```\nFile \"lib/python3.13/site-packages/starlette/routing.py\", line 693, in lifespan\n  async with self.lifespan_context(app) as maybe_state:\nFile \"lib/python3.13/contextlib.py\", line 214, in __aenter__\n  return await anext(self.gen)\nFile \"lib/python3.13/site-packages/fastapi/routing.py\", line 133, in merged_lifespan\n  async with original_context(app) as maybe_original_state:\nFile \"lib/python3.13/contextlib.py\", line 214, in __aenter__\n  return await anext(self.gen)\nFile \"server.py\", line 47, in lifespan\n  backend = RuntimeEndpoint(...)\nFile \"lib/python3.13/site-packages/sglang/lang/backend/runtime_endpoint.py\", line 35, in __init__\n  res = http_request(\n    self.base_url +\"/get_model_info\",\n    api_key=self.api_key,\n    verify=self.verify,\n  )\nFile \"lib/python3.13/site-packages/sglang/utils.py\", line 187, in http_request\n  resp = urllib.request.urlopen(reg, data=data, cafile=verify)\nTypeError: urlopen() got an unexpected keyword argument 'cafile'\n```\n\n### Reproduction\n\nUse a Python 3.13 environment and run `pip install sglang`. `pip install aiohttp` may also be required due to #3874.\n\nThen run a demo program against an SRT runtime endpoint.\n\n### Environment\n\nThis script is not really runnable because it imports `torch` without checking for its existence. As far as I can tell, it's basically equal to have `sglang`, `aiohttp` and [these dependencies](https://github.com/sgl-project/sglang/blob/3dc9ff3ce8bb88dcbcf2655f616bd5439f224c11/python/pyproject.toml#L16).",
+    "labels": [
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2025-02-26T07:18:42+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3876/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3876"
+  },
+  {
+    "number": 3647,
+    "title": "[Feature] Support unified paging in multi-lora serving",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nCurrently, SGL doesn't support the unified paging feature proposed by S-LoRA. However, this feature is important for memory management in multi-LoRA serving.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "inactive",
+      "feature",
+      "lora"
+    ],
+    "state": "open",
+    "created_at": "2025-02-17T19:14:47+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3647/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3647"
+  },
+  {
+    "number": 2272,
+    "title": "[Kernel] cuDNN attention backend",
+    "body": "cuDNN provides very fast attention implementation and it is well maintained by NVIDIA. We would like to add a new attention backend based on cudnn.  \r\n\r\n## Steps\r\n1. Learn this cudnn paged attention python api. https://github.com/NVIDIA/cudnn-frontend/blob/v1.8.0/samples/python/52_scaled_dot_product_attention_with_paged_caches.ipynb\r\n2. Add a new attention backend \"cudnn\" here https://github.com/sgl-project/sglang/tree/main/python/sglang/srt/layers/attention\r\n3. We should be able to use it with `python3 -m sglang.launch_server --model meta-llama/Llama-3.1-8B-Instruct --attention-backend cudnn`",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2024-11-30T06:36:16+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2272/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2272"
+  },
+  {
+    "number": 2271,
+    "title": "[Kernel] Optimize triton decoding kernels for long context",
+    "body": "We noticed the current triton decoding kernel is very slow on long context. This is due to a missing flash decoding like optimization.\r\n\r\n## Reproduce\r\nWe test the decoding speed with a context length of 200 and 2,000.\r\n\r\ntriton backend: The decoding speed drops from 147.64 token/s to 126.41 token/s\r\n```\r\n$ python3 -m sglang.bench_offline_throughput --model meta-llama/Llama-3.1-8B-Instruct --dataset-name random --num-prompt 1 --random-input 128 --random-output 2048 --random-range 1 --attention-backend triton\r\n\r\n[2024-11-30 05:10:04 TP0] Decode batch. #running-req: 1, #token: 234, token usage: 0.00, gen throughput (token/s): 147.64, #queue-req: 0\r\n... \r\n[2024-11-30 05:10:18 TP0] Decode batch. #running-req: 1, #token: 2154, token usage: 0.00, gen throughput (token/s): 126.41, #queue-req: 0\r\n```\r\n\r\nflashinfer backend: The decoding speed only drops from 144.17 token/s to 143.35 token/s\r\n```\r\n$ python3 -m sglang.bench_offline_throughput --model meta-llama/Llama-3.1-8B-Instruct --dataset-name random --num-prompt 1 --random-input 128 --random-output 2048 --random-range 1\r\n\r\n[2024-11-30 05:11:40 TP0] Decode batch. #running-req: 1, #token: 234, token usage: 0.00, gen throughput (token/s): 144.17, #queue-req: 0\r\n...\r\n[2024-11-30 05:11:54 TP0] Decode batch. #running-req: 1, #token: 2154, token usage: 0.00, gen throughput (token/s): 143.35, #queue-req: 0\r\n```\r\n\r\n## Possible solutions\r\nWe can learn from the flash decoding triton kernel from lightllm and improve the [current triton decoding kernel](https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/layers/attention/triton_ops/decode_attention.py). Related links:\r\n- https://github.com/ModelTC/lightllm/blob/main/lightllm/models/llama/triton_kernel/gqa_flash_decoding.py\r\n- https://pytorch.org/blog/flash-decoding/\r\n- https://arxiv.org/pdf/2311.01282\r\n\r\n\r\n\r\n",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2024-11-30T06:04:27+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2271/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2271"
+  }
+]

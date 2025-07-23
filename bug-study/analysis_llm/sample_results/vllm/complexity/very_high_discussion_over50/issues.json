@@ -1,0 +1,389 @@
+[
+  {
+    "number": 14696,
+    "title": "[Feature]: Support gemma3 architecture",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nI am using vLLM for hosting of LLMs/SLMs and with the recent release of Gemma 3, I would love to have it supported in vLLM. Google has stated Gemma 3 has day 1 support from HF Transformers, so it should (hopefully) be relatively simple to integrate into vLLM. \n\nCurrently, when attempting to load google/gemma-3-12b-it, the following error is given:\n\n```\nERROR 03-12 18:19:00 engine.py:400] ValueError: The checkpoint you are trying to load has model type `gemma3` but Transformers does not recognize this architecture. This could be because of an issue with the checkpoint, or because your version of Transformers is out of date.\nERROR 03-12 18:19:00 engine.py:400]\nERROR 03-12 18:19:00 engine.py:400] You can update Transformers with the command `pip install --upgrade transformers`. If this does not work, and the checkpoint is very new, then there may not be a release version that supports this model yet. In this case, you can get the most up-to-date code by installing Transformers from source with the command `pip install git+https://github.com/huggingface/transformers.git`\n```\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\nhttps://blog.google/technology/developers/gemma-3/\n\nhttps://developers.googleblog.com/en/introducing-gemma3/\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-12T18:21:45+00:00",
+    "closed_at": "2025-03-13T03:11:13+00:00",
+    "comments": 56,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14696/reactions",
+      "total_count": 15,
+      "+1": 15,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14696"
+  },
+  {
+    "number": 6689,
+    "title": "[Model] Meta Llama 3.1 Know Issues & FAQ",
+    "body": "## Please checkout [Announcing Llama 3.1 Support in vLLM](https://blog.vllm.ai/2024/07/23/llama31.html) ##\r\n\r\n* Chunked prefill is turned on for all Llama 3.1 models. However, it is currently incompatible with prefix caching, sliding window, and multi-lora. In order to use those features, you can set `--enable-chunked-prefill=false` then optionally combine it with `--max-model-len=4096` if turning it out cause OOM. You can change the length for the context window you desired. \r\n* Rope scaling `if rope_scaling is not None and rope_scaling[\"type\"] not in, KeyError: 'type'.`\r\n    * Please update to [v0.5.3.post1](https://github.com/vllm-project/vllm/releases/tag/v0.5.3.post1) which included a fix. \r\n* Rope scaling `ValueError: 'rope_scaling' must be a dictionary with two fields, 'type' and 'factor', got {'factor': 8.0, 'low_freq_factor': 1.0, 'high_freq_factor': 4.0, 'original_max_position_embeddings': 8192, 'rope_type': 'llama3'}`\r\n  * Please upgrade transformers to 4.43.1 (`pip install transformers --upgrade`)\r\n* Using a per-request random seed currently does not work with pipeline parallel deployments (https://github.com/vllm-project/vllm/issues/6449). This will be fixed soon.\r\n\r\nUPDATE: [`meta-llama/Meta-Llama-3.1-405B-Instruct-FP8`](https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct-FP8) model repository has been fixed with the correct number of kv heads. Please try launching with default vLLM args and the updated model weights!",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-07-23T15:19:50+00:00",
+    "closed_at": "2024-09-04T06:02:40+00:00",
+    "comments": 85,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6689/reactions",
+      "total_count": 34,
+      "+1": 34,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6689"
+  },
+  {
+    "number": 3567,
+    "title": "[Misc]: Throughput/Latency for guided_json with ~100% GPU cache utilization",
+    "body": "### Anything you want to discuss about vllm.\n\nHi,\r\n\r\nI am running some benchmarks on the `vllm.entrypoints.openai.api_server` measuring latency and throughput with different number of concurrent requests.\r\n\r\nSpecs:\r\n- H100 80GB\r\n- qwen-1.5-14B-chat\r\n\r\nI am sending 1000 requests with random prompts of token length 512. These are the results I get (see attached image):\r\n\r\n\r\n**Guided_json**\r\n- ~100 running requests\r\n- ~70 generation tokens per second\r\n- ~1700 ms median token time\r\n\r\n**Non-guided_json**\r\n- ~100 running requests\r\n- ~800 generation tokens per second\r\n- ~75 ms median token time (TPOT)\r\n\r\nAt 10 concurrent request (GPU utlization << 100%\r\n\r\nNon-guided_json: ~20 ms median token time\r\nguided_json: ~ 160 ms median token time\r\n\r\n\r\nCurrently the application I am building heavily relies on guided_json, however, to put it in an online setting I would like to ask 1) are the numbers I experience sensible and 2) what can be done to improve performance in the guided_json paradigm?\r\n\r\nI am debating whether I should try and prompt my way to structured outputs and thus avoiding constrained decoding. \r\n\r\n<img width=\"1494\" alt=\"Screenshot 2024-03-22 at 10 10 14\" src=\"https://github.com/vllm-project/vllm/assets/61116071/d39f78fe-403c-4472-98d3-858a763df6bf\">\r\n)\r\n\r\n",
+    "labels": [
+      "structured-output",
+      "misc",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-22T12:11:32+00:00",
+    "closed_at": "2025-05-17T02:09:48+00:00",
+    "comments": 67,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3567/reactions",
+      "total_count": 7,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3567"
+  },
+  {
+    "number": 2747,
+    "title": "ImportError: /ramyapra/vllm/vllm/_C.cpython-310-x86_64-linux-gnu.so: undefined symbol:",
+    "body": "I'm trying to run vllm and lm-eval-harness. I'm using vllm 0.2.5. After I'm done installing both, if I try importing vllm I get the following error:\r\n`\r\n File \"/ramyapra/lm-evaluation-harness/lm_eval/models/__init__.py\", line 7, in <module>\r\n    from . import vllm_causallms\r\n  File \"/ramyapra/lm-evaluation-harness/lm_eval/models/vllm_causallms.py\", line 16, in <module>\r\n    from vllm import LLM, SamplingParams\r\n  File \"/ramyapra/vllm/vllm/__init__.py\", line 3, in <module>\r\n    from vllm.engine.arg_utils import AsyncEngineArgs, EngineArgs\r\n  File \"/ramyapra/vllm/vllm/engine/arg_utils.py\", line 6, in <module>\r\n    from vllm.config import (CacheConfig, ModelConfig, ParallelConfig,\r\n  File \"/ramyapra/vllm/vllm/config.py\", line 9, in <module>\r\n    from vllm.utils import get_cpu_memory, is_hip\r\n  File \"/ramyapra/vllm/vllm/utils.py\", line 8, in <module>\r\n    from vllm._C import cuda_utils\r\nImportError: /ramyapra/vllm/vllm/_C.cpython-310-x86_64-linux-gnu.so: undefined symbol: _ZN2at4_ops19empty_memory_format4callEN3c108ArrayRefINS2_6SymIntEEESt8optionalINS2_10ScalarTypeEES6_INS2_6LayoutEES6_INS2_6DeviceEES6_IbES6_INS2_12MemoryFormatEE\r\n `\r\n \r\n I'm using the NGC docker container 23:10-py3.  ",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-02-04T15:52:34+00:00",
+    "closed_at": "2024-03-25T04:44:55+00:00",
+    "comments": 64,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2747/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2747"
+  },
+  {
+    "number": 2021,
+    "title": "ARM aarch-64 server build failed (host OS: Ubuntu22.04.3) ",
+    "body": "do as: https://docs.vllm.ai/en/latest/getting_started/installation.html \r\n1. docker run --gpus all -it --rm --ipc=host nvcr.io/nvidia/pytorch:23.10-py3\r\n2. git clone https://github.com/vllm-project/vllm.git\r\n3. cd vllm\r\n4. pip install -e .\r\n\r\nhere is the details in side the docker instance:\r\nroot@f8c2e06fbf8b:/mnt/vllm# pip install -e .\r\nLooking in indexes: https://pypi.org/simple, https://pypi.ngc.nvidia.com\r\nObtaining file:///mnt/vllm\r\n  Installing build dependencies ... done\r\n  Checking if build backend supports build_editable ... done\r\n  Getting requirements to build editable ... error\r\n  error: subprocess-exited-with-error\r\n  \r\n  \u00d7 Getting requirements to build editable did not run successfully.\r\n  \u2502 exit code: 1\r\n  \u2570\u2500> [22 lines of output]\r\n      /tmp/pip-build-env-4xoxai9j/overlay/local/lib/python3.10/dist-packages/torch/nn/modules/transformer.py:20: UserWarning: Failed to initialize NumPy: No module named 'numpy' (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)\r\n        device: torch.device = torch.device(torch._C._get_default_device()),  # torch.device('cpu'),\r\n      No CUDA runtime is found, using CUDA_HOME='/usr/local/cuda'\r\n      <string>:142: UserWarning: Unsupported CUDA/ROCM architectures ({'6.1', '7.2', '8.7', '5.2', '6.0'}) are excluded from the `TORCH_CUDA_ARCH_LIST` env variable (5.2 6.0 6.1 7.0 7.2 7.5 8.0 8.6 8.7 9.0+PTX). Supported CUDA/ROCM architectures are: {'7.5', '8.0', '9.0', '7.0', '8.6+PTX', '9.0+PTX', '8.6', '8.0+PTX', '8.9+PTX', '8.9', '7.0+PTX', '7.5+PTX'}.\r\n      Traceback (most recent call last):\r\n        File \"/usr/local/lib/python3.10/dist-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py\", line 353, in <module>\r\n          main()\r\n        File \"/usr/local/lib/python3.10/dist-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py\", line 335, in main\r\n          json_out['return_val'] = hook(**hook_input['kwargs'])\r\n        File \"/usr/local/lib/python3.10/dist-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py\", line 132, in get_requires_for_build_editable\r\n          return hook(config_settings)\r\n        File \"/tmp/pip-build-env-4xoxai9j/overlay/local/lib/python3.10/dist-packages/setuptools/build_meta.py\", line 441, in get_requires_for_build_editable\r\n          return self.get_requires_for_build_wheel(config_settings)\r\n        File \"/tmp/pip-build-env-4xoxai9j/overlay/local/lib/python3.10/dist-packages/setuptools/build_meta.py\", line 325, in get_requires_for_build_wheel\r\n          return self._get_build_requires(config_settings, requirements=['wheel'])\r\n        File \"/tmp/pip-build-env-4xoxai9j/overlay/local/lib/python3.10/dist-packages/setuptools/build_meta.py\", line 295, in _get_build_requires\r\n          self.run_setup()\r\n        File \"/tmp/pip-build-env-4xoxai9j/overlay/local/lib/python3.10/dist-packages/setuptools/build_meta.py\", line 311, in run_setup\r\n          exec(code, locals())\r\n        File \"<string>\", line 297, in <module>\r\n        File \"<string>\", line 267, in get_vllm_version\r\n      NameError: name 'nvcc_cuda_version' is not defined. Did you mean: 'cuda_version'?\r\n      [end of output]\r\n  \r\n  note: This error originates from a subprocess, and is likely not a problem with pip.\r\nerror: subprocess-exited-with-error\r\n\r\n\u00d7 Getting requirements to build editable did not run successfully.\r\n\u2502 exit code: 1\r\n\u2570\u2500> See above for output.\r\n\r\nnote: This error originates from a subprocess, and is likely not a problem with pip.\r\n\r\n[notice] A new release of pip is available: 23.2.1 -> 23.3.1\r\n[notice] To update, run: python -m pip install --upgrade pip",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-12-11T14:37:44+00:00",
+    "closed_at": "2024-09-22T19:47:55+00:00",
+    "comments": 54,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2021/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2021"
+  },
+  {
+    "number": 1441,
+    "title": "Does vllm support the Mac/Metal/MPS? ",
+    "body": "I ran into the error when pip install vllm in Mac: \r\n    RuntimeError: Cannot find CUDA_HOME. CUDA must be available to build the package. \r\n\r\n",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-10-21T00:52:39+00:00",
+    "closed_at": "2023-10-22T08:01:00+00:00",
+    "comments": 110,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1441/reactions",
+      "total_count": 81,
+      "+1": 81,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1441"
+  },
+  {
+    "number": 299,
+    "title": "Support Multiple Models",
+    "body": "- Allow user to specify multiple models to download when loading server\r\n- Allow user to switch between models \r\n- Allow user to load multiple models on the cluster (nice to have)\r\n",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-28T19:14:50+00:00",
+    "closed_at": "2024-09-04T04:24:59+00:00",
+    "comments": 89,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/299/reactions",
+      "total_count": 93,
+      "+1": 71,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 22
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/299"
+  },
+  {
+    "number": 188,
+    "title": "CUDA error: out of memory",
+    "body": "I successfully installed vLLM in WSL2, when I was trying to run the sample code, I got error info like this:\r\n\r\n```\r\nfrom vllm import LLM, SamplingParams\r\n\r\nprompts = [\r\n    \"Hello, my name is\",\r\n    \"The president of the United States is\",\r\n    \"The capital of France is\",\r\n    \"The future of AI is\",\r\n]\r\nsampling_params = SamplingParams(temperature=0.8, top_p=0.95)\r\nllm = LLM(model=\"/mnt/d/github/text-generation-webui/models/facebook_opt-125m\")\r\n\r\noutputs = llm.generate(prompts, sampling_params)\r\n\r\n# Print the outputs.\r\nfor output in outputs:\r\n    prompt = output.prompt\r\n    generated_text = output.outputs[0].text\r\n    print(f\"Prompt: {prompt!r}, Generated text: {generated_text!r}\")\r\n```\r\n\r\nINFO 06-21 21:40:02 llm_engine.py:59] Initializing an LLM engine with config: model='/mnt/d/github/text-generation-webui/models/facebook_opt-125m', dtype=torch.float16, use_dummy_weights=False, download_dir=None, use_np_weights=False, tensor_parallel_size=1, seed=0)\r\nINFO 06-21 21:40:12 llm_engine.py:128] # GPU blocks: 37375, # CPU blocks: 7281\r\nTraceback (most recent call last):\r\n  File \"/mnt/d/01Projects/vllm/prac_1.py\", line 11, in <module>\r\n    llm = LLM(model=\"/mnt/d/github/text-generation-webui/models/facebook_opt-125m\")\r\n  File \"/mnt/d/github/vllm/vllm/entrypoints/llm.py\", line 55, in __init__\r\n    self.llm_engine = LLMEngine.from_engine_args(engine_args)\r\n  File \"/mnt/d/github/vllm/vllm/engine/llm_engine.py\", line 145, in from_engine_args\r\n    engine = cls(*engine_configs, distributed_init_method, devices,\r\n  File \"/mnt/d/github/vllm/vllm/engine/llm_engine.py\", line 102, in __init__\r\n    self._init_cache()\r\n  File \"/mnt/d/github/vllm/vllm/engine/llm_engine.py\", line 134, in _init_cache\r\n    self._run_workers(\"init_cache_engine\", cache_config=self.cache_config)\r\n  File \"/mnt/d/github/vllm/vllm/engine/llm_engine.py\", line 307, in _run_workers\r\n    output = executor(*args, **kwargs)\r\n  File \"/mnt/d/github/vllm/vllm/worker/worker.py\", line 126, in init_cache_engine\r\n    self.cache_engine = CacheEngine(\r\n  File \"/mnt/d/github/vllm/vllm/worker/cache_engine.py\", line 41, in __init__\r\n    self.cpu_cache = self.allocate_cpu_cache()\r\n  File \"/mnt/d/github/vllm/vllm/worker/cache_engine.py\", line 89, in allocate_cpu_cache\r\n    key_blocks = torch.empty(\r\nRuntimeError: CUDA error: out of memory\r\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\r\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1.\r\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\r\n\r\n\r\nPython: 3.10.11\r\nGPU: RTX 3090 24G\r\nLinux: WSL2, Ubuntu 20.04.6 LTS\r\nCan anyone help to answer this?",
+    "labels": [
+      "bug"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-21T13:50:20+00:00",
+    "closed_at": "2023-06-27T14:50:09+00:00",
+    "comments": 54,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/188/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/188"
+  },
+  {
+    "number": 17327,
+    "title": "[Usage] Qwen3 Usage Guide",
+    "body": "vLLM v0.8.4 and higher natively supports all Qwen3 and Qwen3MoE models. Example command:\n* `vllm serve Qwen/... --enable-reasoning --reasoning-parser deepseek_r1` \n    * All models should work with the command as above. You can test the reasoning parser with the following example script: https://github.com/vllm-project/vllm/blob/main/examples/online_serving/openai_chat_completion_with_reasoning_streaming.py\n    * Some MoE models might not be divisible by TP 8. Either lower your TP size or use `--enable-expert-parallel`. \n\n\n* If you are seeing the following error when running fp8 dense models, you are running on vLLM v0.8.4. Please upgrade to v0.8.5.\n```\nFile \".../vllm/model_executor/parameter.py\", line 149, in load_qkv_weight\n    param_data = param_data.narrow(self.output_dim, shard_offset,\nIndexError: start out of range (expected to be in range of [-18, 18], but got 2048)\n```\n\n* If you are seeing the following error when running MoE models with fp8, you are running with too much tensor parallelize degree that the weights are not divisible. Consider `--tensor-parallel-size 4` or `--tensor-parallel-size 8 --enable-expert-parallel`. \n```\nFile \".../vllm/vllm/model_executor/layers/quantization/fp8.py\", line 477, in create_weights\n    raise ValueError(\nValueError: The output_size of gate's and up's weight = 192 is not divisible by weight quantization block_n = 128.\n```\n",
+    "labels": [
+      "usage"
+    ],
+    "state": "open",
+    "created_at": "2025-04-28T22:05:06+00:00",
+    "closed_at": null,
+    "comments": 88,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/17327/reactions",
+      "total_count": 45,
+      "+1": 32,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 12,
+      "eyes": 1
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/17327"
+  },
+  {
+    "number": 14452,
+    "title": "[Doc]: Steps to run vLLM on your RTX5080 or 5090!",
+    "body": "### \ud83d\udcda The doc issue\n\nLet's take a look at the steps required to run vLLM on your RTX5080/5090! \n\n1. **Initial Setup:** To start with, we need a container that has CUDA 12.8 and PyTorch 2.6 so that we have nvcc that can compile for Blackwell. \n\n```\ndocker run --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864 \\\n                                -it nvcr.io/nvidia/pytorch:25.02-py3 /bin/bash\n```\n\n2. **Clone vLLM Repository:** Let's clone top of tree vLLM. If you have an existing clone or working directory, ensure that you are at or above the commit [ed6ea06](https://github.com/vllm-project/vllm/commit/ed6ea06577ec06f0b3a9ac921b55ef254f19d923) in your clone. \n\n```\ngit clone https://github.com/vllm-project/vllm.git && cd vllm\n```\n\n3. **Build vLLM in the container:** Now, we start building vLLM. Please note here that we can't use precompiled vLLM because `vllm-project/vllm` has not moved to the required torch and CUDA versions yet. So, we leverage the torch and CUDA versions that come with the NGC containers. The following steps are your standard build from source instructions, with the caveat of running `use_existing_torch.py`\n\n```\npython use_existing_torch.py\npip install -r requirements/build.txt\npip install setuptools_scm\n\n# optionally create a CACHE_DIR if you don't have your regular CCACHE_DIR\nmkdir <path/to/ccache/dir>\n\nCCACHE_DIR=<path/to/ccache/dir> python setup.py develop\n```\n\nNotes: \n\n- If `ccache` is not already installed, please install using - `apt-get update && apt-get install ccache`. \n- The following may also be needed based on your environment. \n```\napt-get update && apt-get install -y --no-install-recommends \\\n    kmod \\\n    git \\\n    python3-pip \\\n    && apt-get clean && rm -rf /var/lib/apt/lists/*\n```\n\n- To speed up your process, you can leverage `MAX_JOBS` flag. Check the number of cores on your CPU using `nproc` and use it while running your build. For example, if your machine has 16 cores, MAX_JOBS=10 may be a good number to not overload your CPU with the build. Set it to `1` if you want a single threaded build or if you are running into any issues with your parallel build.\n\n```\nMAX_JOBS=<number> CCACHE_DIR=<path/to/ccache/dir> python setup.py develop\n```\n- Switch steps 1 and 2 based on whether or not you want to re-use your repository for development purposes. If you clone first and then start the container, you may have to give additional permissions for making changes to vLLM source in the container. \n\n\n4. **Test vLLM**: Once your build succeeds, run the following to check your installation. \n\n```\npython -c \"import vllm; print(vllm.__version__)\"\n```\n\nYou should see a compiled version of `vllm.0.7.4`+\n\nCongratulations, your RTX5080/90 is now ready to run vLLM!\n\nNote: Flash Attention 3 backend doesn't work with Blackwell yet, please use `VLLM_FLASH_ATTN_VERSION=2` if you run into any issues. \n\n\nThanks @ywang96 for testing this out! Thanks to @kushanam, @kaixih for all the Blackwell support PRs!\n\n### Suggest a potential alternative/fix\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "documentation"
+    ],
+    "state": "open",
+    "created_at": "2025-03-07T18:12:24+00:00",
+    "closed_at": null,
+    "comments": 119,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14452/reactions",
+      "total_count": 30,
+      "+1": 18,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 12,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14452"
+  },
+  {
+    "number": 12568,
+    "title": "[V1] Feedback Thread",
+    "body": "Please leave comments here about your usage of V1, does it work? does it not work? which feature do you need in order to adopt it? any bugs? \n\nFor bug report, please file it separately and link the issue here. \n\nFor in depth discussion, please feel free to join #sig-v1 in the vLLM Slack workspace. \n",
+    "labels": [
+      "v1"
+    ],
+    "state": "open",
+    "created_at": "2025-01-30T02:46:45+00:00",
+    "closed_at": null,
+    "comments": 92,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/12568/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/12568"
+  },
+  {
+    "number": 11286,
+    "title": "[Performance]: decoding speed on long context",
+    "body": "### Proposal to improve performance\r\n\r\nIn our experiments, we found that the decoding speed of vLLM decreases dramatically when the length of the prompt becomes longer. \r\nWe fixed the batchsize=90 the decoding speed is 5364 tokens/s when the length of the prompt is within 100, 5500 tokens/s when 100 to 200, and decreases to 782 when 4000 to 8000, and decreases to 273 when greater than 8000.\r\n\r\n<html xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\">\r\n<head>\r\n\r\n<meta name=Generator content=\"Microsoft Excel\">\r\n<!--[if !mso]>\r\n<style>\r\nv\\:* {behavior:url(#default#VML);}\r\no\\:* {behavior:url(#default#VML);}\r\nx\\:* {behavior:url(#default#VML);}\r\n.shape {behavior:url(#default#VML);}\r\n</style>\r\n<![endif]-->\r\n\r\n</head>\r\n<body>\r\n<!--StartFragment-->\r\n\r\nprompt length | 0-100 | 100-200 | 200-500 | 500-1000 | 1000-2000 | 2000-4000 | 4000-8000 | 8000+\r\n-- | -- | -- | -- | -- | -- | -- | -- | --\r\nwords/s | 5364 | 5500 | 4722 | 2815 | 2484 | 1627 | 782 | 273\r\n\r\n\r\n<!--EndFragment-->\r\n</body>\r\n\r\n</html>\r\nGPU is single A800, 80G,\r\nvLLM block_size=16, max_num_seqs=512, max_model_len=8192, max_tokens=200.\r\nIs that why page attention is accessed more often?\r\n\r\n### Report of performance regression\r\n\r\n_No response_\r\n\r\n### Misc discussion on performance\r\n\r\n_No response_\r\n\r\n### Your current environment (if you think it is necessary)\r\n\r\n```text\r\nThe output of `python collect_env.py`\r\n```\r\n\r\n\r\n### Before submitting a new issue...\r\n\r\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "open",
+    "created_at": "2024-12-18T06:59:09+00:00",
+    "closed_at": null,
+    "comments": 53,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/11286/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/11286"
+  },
+  {
+    "number": 8826,
+    "title": "Llama3.2 Vision Model: Guides and Issues",
+    "body": "Running the server (using the vLLM CLI or our [docker image](https://docs.vllm.ai/en/latest/serving/deploying_with_docker.html)):\r\n* `vllm serve meta-llama/Llama-3.2-11B-Vision-Instruct --enforce-eager --max-num-seqs 16`\r\n* `vllm serve meta-llama/Llama-3.2-90B-Vision-Instruct --enforce-eager --max-num-seqs 32 --tensor-parallel-size 8`\r\n\r\nCurrently:\r\n* Only one leading image is supported. Support for multiple images and interleaving images are work in progress.\r\n* Text only inference is supported.\r\n* Only NVIDIA GPUs are supported.\r\n* *Performance is acceptable but to be optimized!* We aim at first release to be functionality correct. We will work on making it fast \ud83c\udfce\ufe0f \r\n\r\n**Please see the [next steps](https://github.com/vllm-project/vllm/issues/8826#issuecomment-2379960574) for better supporting this model on vLLM.**\r\n\r\ncc @heheda12345 @ywang96 ",
+    "labels": [
+      "stale"
+    ],
+    "state": "open",
+    "created_at": "2024-09-25T22:50:46+00:00",
+    "closed_at": null,
+    "comments": 54,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/8826/reactions",
+      "total_count": 15,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 15
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/8826"
+  },
+  {
+    "number": 4194,
+    "title": "[RFC]: Multi-modality Support on vLLM",
+    "body": "**Active Projects (help wanted!):**\n- [Core tasks](https://github.com/orgs/vllm-project/projects/8)\n- [Model requests](https://github.com/orgs/vllm-project/projects/10)\n\n**Update [11/18] - In the upcoming months, we will focus on performance optimization for multimodal models as part of vLLM V1 engine re-arch effort**\n\n**P0** (We will definitely work on them):\n- [ ] V1 re-arch for multimodal models - See high-level design ([Slides](https://docs.google.com/presentation/d/1e3CxQBV3JsfGp30SwyvS3eM_tW-ghOhJ9PAJGK6KR54/edit#slide=id.g31455c8bc1e_2_122), [Doc](https://docs.google.com/document/d/11_DFQTku6C2aV6ghK21P76ST6uAUVjMlEjs54prtb_g/edit?usp=sharing))\n  - [ ] Core \n    - [x] [1/N] #9871\n    - [x] [2/N] #10374 \n    - [x] [3/N] #10570 \n    - [x] [4/N] #10699\n    - [x] [5/N] #11210\n    - [x] [6/N] #12128 \n    - [x] [7/N] Enable rest of single-modality LMMs on V1\n      - [x] #11632 (Aria, BLIP-2, Chameleon, Fuyu)\n      - [x] #14275\n      - [x] #11685\n      - [x] #11733\n      - [x] #12069\n      - [x] #12504\n      - [x] #12660 \n      - [x] #15487\n    - [x] [8/N] Enable mixed-modality inference on V1\n      - [x] #11685\n      - [x] #12259\n    - [ ] [9/N] Enable interleaved-modality inference on V1\n      - [x] #15605 \n  - [x] Multimodal prefix caching\n    - [x] #10507\n    - [x] #11187 \n    - [x] #11646\n  - [ ] Multimodal input & embedding caching\n    - [x] #11020\n    - [x] #11396\n    - [x] #14805\n    - [x] #14864\n    - [ ] Reuse multimodal embeddings from encoder cache \n- [x] #10114\n\n**P1** (We should be aware of these and spend some time if possible):\n- [ ] More efficient multimodal input data processing\n- [ ] Quantization for LMMs\n- [ ] LoRA for LMMs\n    - [ ] #8802 \n    - [ ] #9495\n    - [ ] LoRA for VLM2Vec\n- [ ] Consolidate ViT attention backend\n- [ ] V1 spec decode for VLMs\n- [ ] Update developer facing documentation for V1 re-arch multimodal models.\n  - [x] #11998  \t\n\n**P2** (We should work on these when they become more important/frequently requested):\n- [ ] Enhance multimodal support for OpenAI-compatible server\n  - [x] #11027\n  - [x] #13955\n  - [ ] Embeddings for multi-turn conversation\n  - [x] #17551\n- [ ] [Next steps for Multimodal Llama](https://github.com/vllm-project/vllm/issues/8826#issuecomment-2379960574)\n- [ ] Better encoder cache & compute budget strategy\n   - [x] #11895  \n- [ ] Better profiling strategy\n- [ ] Prototype separating vision encoder to its own worker (fully disaggregated from decoder)\n\n\n------------------------\n**Update [9/8] - We have finished majority of the refactoring and made extensive progress for supporting multimodal models. See details [here](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2337115965).**\n<details>\n<summary><b>Roadmap for Q3 2024</b></summary>\n\nIn the upcoming months, we will focus on enabling multimodal models to be compatible with other performance-related features on vLLM as well as collaborating with model vendors to directly onboard new multimodal models.\n\n**P0** (We will definitely work on them):\n- #10114\n  - #10040\n  - #10044\n  - [2/N] Convert LLaVA-1.5, Phi-3-Vision, Qwen2-VL and Ultravox to multi-modal processor as POC and add tests\n  - [3/N] Deprecate the old code for input processor/mapper so external developers have time to convert\n  - [4/N] Convert the rest of the built-in vLLM models to multi-modal processor\n  - [5/N] Remove the old code for input processor/mapper\n- Proper chunked prefill with multimodal input\n  - #8346\n  - #9950\n- Prefix caching with multimodal input\n  - #8348 \n- Enable flamingo-style multimodal models (e.g., Multimodal Llama)\n  - #8811\n  - #8822  \n- Fully enable video input, and therefore, mixed multi-modal input\n   - #7559\n   - #10020\n- Update OpenAI-compatible server to use [OpenAI Audio API](https://platform.openai.com/docs/guides/audio/quickstart?audio-generation-quickstart-example=audio-in)\n- Multimodal embedding models\n   - #9303\n   - #9576\n   - #9759\n   - #9912\n   - #9944\n   - #9919\n- Shepherd model support directly from model vendor\n  - #8377 \n  - #7905\n  - #8486 \n  - #8811\n      - #9095\n      - #9393\n      - [**Next steps for Llama 3.2 vision model**](https://github.com/vllm-project/vllm/issues/8826#issuecomment-2379960574)\n  - #9242 \n  - #9016 \n  - #9248\n\n**P1** (We should be aware of these and spend some time if possible):\n- Better profiling strategy for multimodal models\n- Multi-input support for more compatible models \n    - Chameleon\n    - #8201\n    - LLaVA-NeXT-Video\n    - #8905 \n- Better developer facing documentation for adding new models\n- Add more multimodal models, and shepherd model support from community contributions\n   - #7559 \n   - #8029\n   - #9747 \n   - #9767\n   - See [full list of multimodal models to implement](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2102487467)\n- Misc bug fixes\n\n**P2** (We should work on these when they become more important/frequently requested):\n- Multimodal models with LoRA\n    - #7585\n    - #7199\n    - #8943\n    - #9622\n    - #10022\n    - #10281\n    - #8802\n    - #9495\n    - LoRA for VLM2Vec\n- Quantized multimodal models\n    - #9217\n    - #9772\n    - #9720\n    - #9812\n    - #9891\n    - #9921\n- Refactor currently supported multimodal models for dynamic ViT&LM loading\n    - #7153\n    - #8407\n- Enable LM-only loading for multimodal models that support embeddings as input\n- Multimodal benchmarking (Online & Offline)\n    - #8495\n    - #9851\n    - #10287\n- PP for multimodal models\n  - #8696\n  - #7168 \n- Extra input mapper/processor kwargs\n  - #8657\n  - #8658\n  - #8946\n  - #8856\n  - #9131\n- OOT multimodal models\n  - #8717 \n\n</details>\n\n------------------------\n\n**Update [7/3] - We have finished our 2nd refactoring milestone - see details [here](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2207884780)**.\n\n<details>\n<summary><b>Roadmap for 3rd Milestone</b></summary>\nIn the upcoming months, we will focus on wrapping up the main goal of this refactoring RFC and supporting more models and modalities.\n\n**P0** (We will definitely work on these):\n- Support image embeddings as input\n  - #6613 \n  - Support image embeddings for Fuyu and MiniCPM-V\n- Support multiple multi-modal inputs whenever the model supports it ([detailed plan](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2251895609))\n  - #7126\n  - #7230\n  - #7783\n  - #7902\n  - #7963\n  - Multi-image support for Chameleon & InternVL\n  - #8049\n- Merge at least 3 VLMs from the currently opened PRs\n  - #5770, #6633\n  - #5920 \n  - #4087 \n  - #3924\n  - #5817 \n  - #6514\n- Better documentation\n  - #8181\n\n\n**P1** (We should be aware of these and spend some time if possible):\n- Aid support for Whisper with multimodal interface\n  - #5964 \n- Custom vision prompt template in OpenAI-compatible server\n- Sharding Vision Encoder & MultiModalProjector\n  - #7186 \n- Bug Fixes\n- Add more VLMs - See full [List of vision models to implement](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2102487467)\n- Better error handling\n  - #7998\n  - #8028\n  - Follow-up to #8028\n\n\n**P2** (We should work on these when they become more frequently requested) **Help wanted!**:\n- Port over more vision encoders\n  - #6942\n  - #7020 (`Idefics2VisionTransformer`)\n- Dynamic vision encoder and LM backbone\n  - #7067\n  - #7153\n  - BLIP-2 w/ FLAN-T5\n    - #8407\n    - #3117\n- VLM with Lora\n  - #7199\n- Quantized VLMs\n  - #7187 \n- Add/aid support for models with other modalities\n  - #7446\n  - #7615\n  - #7559\n- Enable other features in vLLM with multi-modal models (e.g, chunked prefill, automatic prefix caching)\n  - #8098\n\n</details>\n\n------------\n**Update [6/11] - We have finished our 1st refactoring milestone - see details [here](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2126436729)**. \n<details>\n<summary><b>Roadmap for 2nd Milestone</b></summary>\nSome of the items @DarkLight1337, @xwjiang2010 and I are looking to work on as part of the next milestone are tentatively:\n\n_API Changes:_ A list of user-facing breaking changes can be found [here](https://github.com/vllm-project/vllm/issues/5806#issuecomment-2201579928)\n- Completely remove the need for specifying image related arguments when launching the server, and infer configs from the model repo or a configmap in vLLM.\n  - #5852\n  - #6089\n  - #6121\n- Support dynamic image shape - This means the scheduler will need to know in advance the final shape of multi-modal embeddings that are processed right before being passed to the language model. \n  - #5214\n  - #5276\n\n_Performance related_ \n- Port `CLIPVisionModel`\n  - #5591\n  - #5717  \n- Optimize `CLIPAttention`\n- Optimize `MultiModalProjector`\n- Blocks: #5481\n\n_Model support_ - Add more vision language models, and better developer facing documentation\n  - [List of vision models to implement](https://github.com/vllm-project/vllm/issues/4194#issuecomment-2102487467)\n  - [Guide on implementing new VLMs](https://docs.vllm.ai/en/latest/models/enabling_multimodal_inputs.html)\n\nSome of the ideas that we **should** work on in the future: \n- Make VLMs work with chunked prefill\n- Unify tokenizer & multi-modal processor (so that we can leverage `AutoProcessor` from `transformers`)\n- Prefix caching for images\n- Streaming inputs of multi-modal data\n\nAs always, please provide feedback and feature requests in this issue. Suggestions and contributions are very welcomed!\n\n</details>\n\n------------\n\n<details>\n\n<summary><b>Original RFC</b></summary>\nMulti-modality support was brought to vLLM recently, much thanks to https://github.com/vllm-project/vllm/pull/3042 from @xwjiang2010. Since then we have seen an increasing amount of interest in such models (from the number of pull requests and issues related). However, there are a few issues we should address with the current design before we bring in more features around multi-modality.\n\n1. `VisionLanguageConfig` and `MultiModalData`\n    - Currently the multimodal input can be either `pixel_values` or `image_feaures` for simplicity. While this works well with llava 1.5 where pixel_values are the only output from its `ClipImageProcessor`, this does not work well when it comes to supporting models with more complicated preprocessing to return multiple outputs.(e.g, llava 1.6, fuyu, etc). Developers could add additional preprocessing inside model implementation as a workaround, but this will be unmaintainable over time.\n\n    - The overhead of requiring `image_feature_size`, `image_token_id` and `image_input_shape` is pushed to the user when these can/should be inferred from the model & processor config and not required at the inference time.\n\n3. The current design assumes multi-modal inputs **are already processed** to be consumed by the model executable, but vLLM does not have a processor util. This blocks the vision model support on the OpenAI API server for end-to-end inference.\n\n5. The current prompt format `\"<Image>\" * 576 + prompt` makes the underlying implementation easier (especially when it comes to profiling), but complicates the user experience compared to huggingface format `\"<Image>\\n\" + prompt` and that has caused some confusion on what's needed to make multi-model work on vLLM.\n\n**Proposal**\nMost items in the above issues have been discussed and addressed in the original Llava1.5 PR as well as https://github.com/vllm-project/vllm/pull/3978. We propose a few high-level design decisions for the refactoring and **welcome any feedback!**\n\n1. **Adding a processor util** - We can leverage out-of-box `AutoProcessor` from `transformers` the same way we have been doing with tokenizer as an attribute of `LLMEngine` (e.g., `self.multi_modal_processor = AutoProcessor(model)`). This allows us to support end-to-end inference with the API server as well as the `LLM` object.\n\n3. **Frontend input format**:  Because of 1, we can keep the same format as HuggingFace since that's how users usually discover new models and it makes end-to-end integration test easier. Preprocessing should be hidden away from the interface and user. For example, this preprocessing step can be done inside `LLMEngine.add_request()` around the same place as https://github.com/vllm-project/vllm/blob/a134ef6f5e6c24d3cd459c63557e5db276db25b2/vllm/engine/llm_engine.py#L385-L391\nHere's a pesudocode\n```\nif multi_modal_input is None:\n   prompt_token_ids = self.encode_request( \n       request_id=request_id, \n       prompt=prompt, \n       prompt_token_ids=prompt_token_ids, \n       lora_request=lora_request)\nelse:\n   # preprocessed_inputs is a dictionary of key(str)-value(tensor)\n   # as output of self.multi_modal_processor\n   preprocessed_inputs = self.preprocess_request(\n       request_id=request_id, \n       prompt=prompt, \n       prompt_token_ids=prompt_token_ids, \n       lora_request=lora_request,\n       multi_modal_input=images)\n   prompt_token_ids = preprocessed_inputs.pop(\"input_ids\")\n   multi_modal_data = MultiModalData(data=preprocessed_inputs)\n...\n\n```\nand thus at `LLM` level, only image tensors will be required.\n\n4. **Refactor `MultiModalData`**: Now this object simply holds the multi-modal data dictionary that we need for the model_executable. At inference time, data is unpacked in the forward pass - this approach is similar to `transformer` implementation of multi-modal models.\n6. **Refactor `VisionLanguageConfig`**: This config is a lot simpler now. One caveat is that sometimes when the image features can be dynamic, users may specify an optional `max_feature_size` to help engine run the profiling for the worst-case scenario as well as to potentially abort certain requests.\n7. **Regarding the original `image_feature` as input type design**: IMO LlaVA is a special case among multi-modal models since its vision encoder is detached from the language model and can be initialized separately, but in this case, one could argue that for the MultiModalProjector as well, and perhaps passing image_feature (outputs of CLIP) is a design decision not generalizable to all other models. Instead, passing multi-modal embeddings (outputs of CLIP -> Projector) at inference time is more flexible and should work nicely with other models. (**One followup question is, does it make sense to actually define a separate `Llava-no-clip` module, since this is so specific to llava, to make our life easier?**)\n\nWith the above changes, as an end-user, ideally you then should be able to do something like the following\n\n```\nfrom PIL import Image\nfrom vllm import LLM\nfrom vllm.config import VisionLanguageConfig\n\nmodel_id = \"llava-hf/llava-v1.6-mistral-7b-hf\"\nllm = LLM(model=model_id, multi_modal_input_type=VisionLanguageConfig.IMAGE_INPUT_TYPE.IMAGE) # This can also be EMBEDDINGS\n\nprompt = \"<image>\\nUSER: What's the content of the image?\\nASSISTANT:\"\n\nurl = \"https://www.ilankelman.org/stopsigns/australia.jpg\"\nimage = Image.open(requests.get(url, stream=True).raw)\n\nllm.generate(prompt, ..., multi_modal_input=image)\n```\nUnder the hood, the pipeline is\n```\nprompt, image\n-> prompt_token_ids, MultiModalData(data=preprocessed_inputs) # through preprocess within engine.add_request() \n-> prompt_token_ids, pixel_values, image_sizes  # though unpacking in implementation of model's `forward`.\n```\n\nI will follow up with a series of PR for refactoring but please leave any feedback since this is a pretty significant interface change. \n\n</details>\n",
+    "labels": [
+      "RFC",
+      "multi-modality"
+    ],
+    "state": "open",
+    "created_at": "2024-04-19T07:51:48+00:00",
+    "closed_at": null,
+    "comments": 98,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4194/reactions",
+      "total_count": 49,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 31,
+      "rocket": 0,
+      "eyes": 18
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4194"
+  },
+  {
+    "number": 2248,
+    "title": "Recent vLLMs ask for too much memory: ValueError: No available memory for the cache blocks. Try increasing `gpu_memory_utilization` when initializing the engine.",
+    "body": "Since vLLM 0.2.5, we can't even run llama-2 70B 4bit AWQ on 4*A10G anymore, have to use old vLLM.  Similar problems even trying to be two 7b models on 80B A100.\r\n\r\nFor small models, like 7b with 4k tokens, vLLM fails for \"cache blocks\" even though alot more memory is left.\r\n\r\nE.g.  building docker image with cuda 11.8 and vllm 0.2.5 or 0.2.6 and running like:\r\n\r\n```\r\nport=5001\r\ntokens=8192\r\ndocker run -d \\\r\n    --runtime=nvidia \\\r\n    --gpus '\"device=1\"' \\\r\n    --shm-size=10.24gb \\\r\n    -p $port:$port \\\r\n    --entrypoint /h2ogpt_conda/vllm_env/bin/python3.10 \\\r\n    -e NCCL_IGNORE_DISABLED_P2P=1 \\\r\n    -v /etc/passwd:/etc/passwd:ro \\\r\n    -v /etc/group:/etc/group:ro \\\r\n    -u `id -u`:`id -g` \\\r\n    -v \"${HOME}\"/.cache:/workspace/.cache \\\r\n    --network host \\\r\n    gcr.io/vorvan/h2oai/h2ogpt-runtime:0.1.0 -m vllm.entrypoints.openai.api_server \\\r\n        --port=$port \\\r\n        --host=0.0.0.0 \\\r\n        --model=defog/sqlcoder2 \\\r\n        --seed 1234 \\\r\n        --trust-remote-code \\\r\n\t--max-num-batched-tokens $tokens \\\r\n\t--max-model-len=$tokens \\\r\n\t--gpu-memory-utilization 0.4 \\\r\n        --download-dir=/workspace/.cache/huggingface/hub &>> logs.vllm_server.sqlcoder2.txt\r\n\r\nport=5002\r\ntokens=4096\r\ndocker run -d \\\r\n    --runtime=nvidia \\\r\n    --gpus '\"device=1\"' \\\r\n    --shm-size=10.24gb \\\r\n    -p $port:$port \\\r\n    --entrypoint /h2ogpt_conda/vllm_env/bin/python3.10 \\\r\n    -e NCCL_IGNORE_DISABLED_P2P=1 \\\r\n    -v /etc/passwd:/etc/passwd:ro \\\r\n    -v /etc/group:/etc/group:ro \\\r\n    -u `id -u`:`id -g` \\\r\n    -v \"${HOME}\"/.cache:/workspace/.cache \\\r\n    --network host \\\r\n    gcr.io/vorvan/h2oai/h2ogpt-runtime:0.1.0 -m vllm.entrypoints.openai.api_server \\\r\n        --port=$port \\\r\n        --host=0.0.0.0 \\\r\n        --model=NumbersStation/nsql-llama-2-7B \\\r\n        --seed 1234 \\\r\n        --trust-remote-code \\\r\n\t--max-num-batched-tokens $tokens \\\r\n\t--gpu-memory-utilization 0.6 \\\r\n\t--max-model-len=$tokens \\\r\n        --download-dir=/workspace/.cache/huggingface/hub &>> logs.vllm_server.nsql7b.txt\r\n```\r\n\r\nworks.  However, if the 2nd model was to have 0.4, one gets:\r\n\r\n```\r\nTraceback (most recent call last):\r\n  File \"/h2ogpt_conda/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\r\n    return _run_code(code, main_globals, None,\r\n  File \"/h2ogpt_conda/lib/python3.10/runpy.py\", line 86, in _run_code\r\n    exec(code, run_globals)\r\n  File \"/h2ogpt_conda/vllm_env/lib/python3.10/site-packages/vllm/entrypoints/openai/api_server.py\", line 729, in <module>\r\n    engine = AsyncLLMEngine.from_engine_args(engine_args)\r\n  File \"/h2ogpt_conda/vllm_env/lib/python3.10/site-packages/vllm/engine/async_llm_engine.py\", line 496, in from_engine_args\r\n    engine = cls(parallel_config.worker_use_ray,\r\n  File \"/h2ogpt_conda/vllm_env/lib/python3.10/site-packages/vllm/engine/async_llm_engine.py\", line 269, in __init__\r\n    self.engine = self._init_engine(*args, **kwargs)\r\n  File \"/h2ogpt_conda/vllm_env/lib/python3.10/site-packages/vllm/engine/async_llm_engine.py\", line 314, in _init_engine\r\n    return engine_class(*args, **kwargs)\r\n  File \"/h2ogpt_conda/vllm_env/lib/python3.10/site-packages/vllm/engine/llm_engine.py\", line 113, in __init__\r\n    self._init_cache()\r\n  File \"/h2ogpt_conda/vllm_env/lib/python3.10/site-packages/vllm/engine/llm_engine.py\", line 227, in _init_cache\r\n    raise ValueError(\"No available memory for the cache blocks. \"\r\nValueError: No available memory for the cache blocks. Try increasing `gpu_memory_utilization` when initializing the engine.\r\n```\r\n\r\nHowever, with 0.6 util from before, here is what GPU looks like:\r\n\r\n```\r\n\r\nSun Dec 24 02:45:53 2023\r\n+---------------------------------------------------------------------------------------+\r\n| NVIDIA-SMI 535.129.03             Driver Version: 535.129.03   CUDA Version: 12.2     |\r\n|-----------------------------------------+----------------------+----------------------+\r\n| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |\r\n| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |\r\n|                                         |                      |               MIG M. |\r\n|=========================================+======================+======================|\r\n|   0  NVIDIA A100 80GB PCIe          Off | 00000000:00:06.0 Off |                    0 |\r\n| N/A   43C    P0              72W / 300W |  70917MiB / 81920MiB |      0%      Default |\r\n|                                         |                      |             Disabled |\r\n+-----------------------------------------+----------------------+----------------------+\r\n|   1  NVIDIA A100 80GB PCIe          Off | 00000000:00:07.0 Off |                    0 |\r\n| N/A   45C    P0              66W / 300W |  49136MiB / 81920MiB |      0%      Default |\r\n|                                         |                      |             Disabled |\r\n+-----------------------------------------+----------------------+----------------------+\r\n\r\n+---------------------------------------------------------------------------------------+\r\n| Processes:                                                                            |\r\n|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |\r\n|        ID   ID                                                             Usage      |\r\n|=======================================================================================|\r\n|    0   N/A  N/A      6232      C   /h2ogpt_conda/vllm_env/bin/python3.10     70892MiB |\r\n|    1   N/A  N/A      6966      C   /h2ogpt_conda/vllm_env/bin/python3.10     32430MiB |\r\n|    1   N/A  N/A      7685      C   /h2ogpt_conda/vllm_env/bin/python3.10     16670MiB |\r\n\r\n```\r\n\r\nIgnore GPU=0.\r\n\r\nSo 0.6 util is 17GB, why would 0.4 util out of 80GB be a problem?",
+    "labels": [
+      "bug",
+      "unstale"
+    ],
+    "state": "open",
+    "created_at": "2023-12-24T02:47:42+00:00",
+    "closed_at": null,
+    "comments": 53,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2248/reactions",
+      "total_count": 15,
+      "+1": 15,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2248"
+  }
+]

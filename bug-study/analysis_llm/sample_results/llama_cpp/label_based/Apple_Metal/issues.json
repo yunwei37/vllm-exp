@@ -1,0 +1,143 @@
+[
+  {
+    "number": 12199,
+    "title": "[Metal] Context init optimization opportunity: metal library is compiled for every llama context",
+    "body": "It's likely that this should be addressed in ggml rather than llama\n\nThis is the observed call stack\n\n```\nllama_init_from_model \n  -> ggml_backend_dev_init \n    -> ggml_backend_metal_device_init \n      -> ggml_metal_init \n        -> device.newLibraryWithSource\n```\n\n(obviously in cases where the code is compiled such as with the default `GGML_METAL_EMBED_LIBRARY`)\n\nFor every context the exact same code is compiled again. This seems like something that can be avoided. I'm not a metal expert, but there must be a way to cache the compilation and reuse it for subsequent contexts.",
+    "labels": [
+      "good first issue",
+      "Apple Metal"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-05T13:12:06+00:00",
+    "closed_at": "2025-03-11T11:45:03+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/12199/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/12199"
+  },
+  {
+    "number": 10009,
+    "title": "Bug:Why does llama-cli choose a GPU with lower performance?",
+    "body": "### What happened?\n\nI have 2 GPUs in imc2017 RAM64G, one of which is connected through eGPU. Llama-cli->ggml->always don't use a GPU with higher performance? How can I use a higher GPU, or both?\n\n### Name and Version\n\n METAL_DEVICE_WRAPPER_TYPE=0 (or 1 or 2 ) ./llama-cli\r\nbuilt with Apple clang version 15.0.0 (clang-1500.3.9.4) for x86_64-apple-darwin22.6.0\r\n\n\n### What operating system are you seeing the problem on?\n\nMac\n\n### Relevant log output\n\n```shell\nggml_metal_init: allocating\r\nggml_metal_init: found device: AMD Radeon VII\r\nMETAL_DEVICE_WRAPPER_TYPE=0 ./llama-cli\r\nbuild: 0 (unknown) with Apple clang version 15.0.0 (clang-1500.3.9.4) for x86_64-apple-darwin22.6.0\r\nmain: llama backend init\r\nmain: load the model and apply lora adapter, if any\r\nllama_load_model_from_file: using device Metal (AMD Radeon Pro 570) - 4096 MiB free\r\nllama_model_loader: loaded meta data with 39 key-value pairs and 963 tensors from models/7B/ggml-model-f16.gguf (version GGUF V3 (latest))\r\n...\r\nggml_metal_init: found device: AMD Radeon Pro 570\r\nggml_metal_init: picking default device: AMD Radeon Pro 570\r\nggml_metal_init: using embedded metal library\r\nggml_metal_init: GPU name:   AMD Radeon Pro 570\r\nggml_metal_init: GPU family: MTLGPUFamilyCommon3 (3003)\r\nggml_metal_init: simdgroup reduction support   = false\r\nggml_metal_init: simdgroup matrix mul. support = false\r\nggml_metal_init: hasUnifiedMemory              = false\r\nggml_metal_init: recommendedMaxWorkingSetSize  =  4294.97 MB\r\n......\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "Apple Metal",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-23T01:39:51+00:00",
+    "closed_at": "2024-12-07T01:07:32+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10009/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10009"
+  },
+  {
+    "number": 9507,
+    "title": "metal : increase GPU duty-cycle during inference",
+    "body": "Apparently there is a significant GPU downtime between Metal compute encoders within a single `ggml_metal_graph_compute()`: \r\n\r\n<img width=\"2672\" alt=\"image\" src=\"https://github.com/user-attachments/assets/e01b56a0-cdcf-4777-9944-be6e456858eb\">\r\n\r\nSee https://github.com/ggerganov/llama.cpp/issues/6506 for instructions how to generate the trace from the picture.\r\n\r\nMy expectation was that enqueuing the command buffers in parallel would make them execute without any downtime. The goal of this issue is to understand where this overhead comes from and if there is a way to avoid it.\r\n\r\nObviously, using a single command buffer will avoid all the GPU downtime, but it is much slower to construct it in a single thread. Ideally, we want to continue queuing multiple encoders, but not have the gaps in-between during execution.",
+    "labels": [
+      "help wanted",
+      "performance",
+      "Apple Metal"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-16T12:14:00+00:00",
+    "closed_at": "2024-10-01T13:00:26+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9507/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9507"
+  },
+  {
+    "number": 9243,
+    "title": "Bug: Gemma 2 slower with FA",
+    "body": "### What happened?\n\nGemma 2 is slower with FA on Apple Silicon (M3 Max).\n\n### Name and Version\n\nversion: 3642 (1d1ccce6)\r\nbuilt with Apple clang version 15.0.0 (clang-1500.3.9.4) for arm64-apple-darwin23.6.0\n\n### What operating system are you seeing the problem on?\n\nMac\n\n### Relevant log output\n\n```shell\n| model                          |       size |     params | backend    | ngl | fa | mmap |          test |              t/s |\r\n| ------------------------------ | ---------: | ---------: | ---------- | --: | -: | ---: | ------------: | ---------------: |\r\n| gemma2 2B Q8_0                 |   3.17 GiB |     3.20 B | Metal      |  99 |  0 |    0 |         pp512 |   2360.42 \u00b1 3.71 |\r\n| gemma2 2B Q8_0                 |   3.17 GiB |     3.20 B | Metal      |  99 |  0 |    0 |          tg64 |     85.54 \u00b1 0.05 |\r\n| gemma2 2B Q8_0                 |   3.17 GiB |     3.20 B | Metal      |  99 |  1 |    0 |         pp512 |   1487.45 \u00b1 3.27 |\r\n| gemma2 2B Q8_0                 |   3.17 GiB |     3.20 B | Metal      |  99 |  1 |    0 |          tg64 |     50.99 \u00b1 0.17 |\r\n| gemma2 9B Q8_0                 |  10.05 GiB |    10.16 B | Metal      |  99 |  0 |    0 |         pp512 |    608.84 \u00b1 0.96 |\r\n| gemma2 9B Q8_0                 |  10.05 GiB |    10.16 B | Metal      |  99 |  0 |    0 |          tg64 |     30.29 \u00b1 0.04 |\r\n| gemma2 9B Q8_0                 |  10.05 GiB |    10.16 B | Metal      |  99 |  1 |    0 |         pp512 |   397.25 \u00b1 23.27 |\r\n| gemma2 9B Q8_0                 |  10.05 GiB |    10.16 B | Metal      |  99 |  1 |    0 |          tg64 |     21.33 \u00b1 0.01 |\r\n\r\nbuild: 1d1ccce6 (3642)\n```\n",
+    "labels": [
+      "bug-unconfirmed",
+      "stale",
+      "Apple Metal",
+      "medium severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-29T16:39:59+00:00",
+    "closed_at": "2024-11-08T01:07:24+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/9243/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/9243"
+  },
+  {
+    "number": 8211,
+    "title": "Bug: ld: symbol(s) not found for architecture arm64 ",
+    "body": "### What happened?\n\nsymbol not found compile error for Mac metal build. If I wind back a week with \"git reset --hard master@{\"7 days ago\"}\" it builds and executes fine.\r\n\r\n2023 M2 MBP\n\n### Name and Version\n\nCurrent master branch\n\n### What operating system are you seeing the problem on?\n\nMac\n\n### Relevant log output\n\n```shell\n`\r\nc++ -std=c++11 -fPIC -O3 -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wmissing-declarations -Wmissing-noreturn -pthread   -Wunreachable-code-break -Wunreachable-code-return -Wmissing-prototypes -Wextra-semi -Iggml/include -Iggml/src -Iinclude -Isrc -Icommon -D_XOPEN_SOURCE=600 -D_DARWIN_C_SOURCE -DNDEBUG -DGGML_USE_ACCELERATE -DGGML_USE_BLAS -DACCELERATE_NEW_LAPACK -DACCELERATE_LAPACK_ILP64 -DGGML_USE_LLAMAFILE -DGGML_USE_METAL -DGGML_METAL_EMBED_LIBRARY  ggml/src/ggml.o ggml/src/ggml-blas.o ggml/src/sgemm.o ggml/src/ggml-metal.o ggml/src/ggml-metal-embed.o ggml/src/ggml-alloc.o ggml/src/ggml-backend.o ggml/src/ggml-quants.o pocs/vdot/q8dot.o -o llama-q8dot -framework Accelerate -framework Foundation -framework Metal -framework MetalKit \r\nld: warning: ignoring file '/Users/derp/Documents/llama.cpp/ggml/src/ggml-metal-embed.o': found architecture 'x86_64', required architecture 'arm64'\r\nUndefined symbols for architecture arm64:\r\n  \"_ggml_metallib_end\", referenced from:\r\n      _ggml_metal_init in ggml-metal.o\r\n  \"_ggml_metallib_start\", referenced from:\r\n      _ggml_metal_init in ggml-metal.o\r\nld: symbol(s) not found for architecture arm64\r\nclang: error: linker command failed with exit code 1 (use -v to see invocation)\r\nmake: *** [llama-export-lora] Error 1\r\nUndefined symbols for architecture arm64:\r\n  \"_ggml_metallib_end\", referenced from:\r\n      _ggml_metal_init in ggml-metal.o\r\n  \"_ggml_metallib_start\", referenced from:\r\n      _ggml_metal_init in ggml-metal.o\r\nld: symbol(s) not found for architecture arm64\r\nclang: error: linker command failed with exit code 1 (use -v to see invocation)\r\nmake: *** [llama-q8dot] Error 1\r\n`\n```\n",
+    "labels": [
+      "bug",
+      "Apple Metal",
+      "high severity"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-29T15:26:26+00:00",
+    "closed_at": "2024-08-07T16:24:06+00:00",
+    "comments": 27,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8211/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8211"
+  }
+]

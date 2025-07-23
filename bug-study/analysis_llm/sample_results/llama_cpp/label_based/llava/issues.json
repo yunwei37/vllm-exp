@@ -1,0 +1,171 @@
+[
+  {
+    "number": 8010,
+    "title": "server: Bring back multimodal support",
+    "body": "Multimodal has been removed since https://github.com/ggerganov/llama.cpp/pull/5882\n\n## Current llama.cpp multimodal roadmap\n\n(update 9th april 2025)\n\n- `mtmd` (**M**ul**T**i-**M**o**D**al) library (top prio \ud83d\udd25 )\n    - [x] Implement `libmtmd`: https://github.com/ggml-org/llama.cpp/pull/12849\n    - [x] Support more models via `libmtmd` (top prio \ud83d\udd25 ) : https://github.com/ggml-org/llama.cpp/pull/13012\n    - [x] Support M-RoPE models via `libmtmd` (Qwen2VL, Qwen2.5VL) : https://github.com/ggml-org/llama.cpp/pull/13141\n    - [x] Support audio input\n    - [x] Use smart pointer in `clip.cpp` to avoid mem leak: https://github.com/ggml-org/llama.cpp/pull/12869\n    - [x] ~~Add wrapper for `stb_image` to avoid polluting project with the big header file~~ --> Probably don't need since we're already having some helper in `libmtmd` acting as wrapper for stb_image\n    - [x] Unify conversion scripts --> best case scenario: having `convert_hf_to_gguf.py` that can output both text + vision GGUF files --> introduced in https://github.com/ggml-org/llama.cpp/pull/13023\n    - [x] Remove BOI / EOI token embeddings from clip.cpp (used by glm-edge): https://github.com/ggml-org/llama.cpp/pull/13081\n    - [x] Refactor documentations (find a way to reduce number of README files): https://github.com/ggml-org/llama.cpp/pull/13055\n- Implement `libmtmd` in server API and server web UI (top prio \ud83d\udd25 )\n   - [x] Publish first proposal: https://github.com/ggml-org/llama.cpp/pull/12898\n   - [x] User can upload image from UI ( + drag-and-drop)\n   - [x] Nice-to-have: Better KV caching strategy (TBD)\n   - [x] Nice-to-have: allow loading remote image (may come with security risk)\n   - [ ] Update the [security policy](https://github.com/ggml-org/llama.cpp/security/policy), make it clear that bugs related to 3rd party lib (like `stb_image`) should be reported to upstream, not in llama.cpp\n- [x] Unify all vision CLI (like `minicpmv-cli`, `gemma3-cli`, etc) into a single CLI\n- [x] Add deprecation notice for `llava.h` (we will remove libllava) and `clip.h` (clip is now internal-only)\n- [ ] Experimental support for audio input: https://github.com/ggml-org/llama.cpp/pull/12745\n- [ ] (far in the future) implement `llama_multimodal` API that supports image, audio and more!",
+    "labels": [
+      "enhancement",
+      "llava",
+      "server"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-19T12:03:45+00:00",
+    "closed_at": "2025-05-09T21:20:01+00:00",
+    "comments": 51,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/8010/reactions",
+      "total_count": 151,
+      "+1": 75,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 43,
+      "rocket": 2,
+      "eyes": 31
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/8010"
+  },
+  {
+    "number": 6313,
+    "title": "Add multimodal example",
+    "body": "# Feature Description\r\n\r\nAdd example for multimodal capabilities\r\n\r\n# Motivation\r\n\r\n#5882 took out the multimodal features from the server. Given it's a highly requested feature, our plan would be to reintroduce it at some point (#6168). How about we set up a solid multimodal example elsewhere and then port it to the server example later on?\r\n\r\n# Possible Implementation\r\n\r\nImplementation based on the removed code from https://github.com/ggerganov/llama.cpp/pull/5882/files which had already implemented this feature in the server.cpp example, hopefully with some performance optimization.\r\nFor the example, image file could be provided via command line option.\r\n",
+    "labels": [
+      "enhancement",
+      "llava"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-26T02:50:13+00:00",
+    "closed_at": "2024-03-26T06:32:36+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6313/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6313"
+  },
+  {
+    "number": 6226,
+    "title": "Unable to assign mmproj value when running docker ",
+    "body": "Please include information about your system, the steps to reproduce the bug, and the version of llama.cpp that you are using. If possible, please provide a minimal code example that reproduces the bug.\r\n\r\nIf the bug concerns the server, please try to reproduce it first using the [server test scenario framework](https://github.com/ggerganov/llama.cpp/tree/master/examples/server/tests).\r\n\r\nCommand\r\n```sh\r\nsudo docker run -p 5000:8000  --gpus all --runtime=nvidia -v /models:/models ghcr.io/ggerganov/llama.cpp:server-cuda -m /models/ggml-model-q4_k.gguf --mmproj /models/mmproj-model-f16.gguf  --port 8000 --host 0.0.0.0 -v  -t 16  -n 512 -c 2048 -ngl 1 -cb -np 4 --n-gpu-layers 33\r\n```\r\n\r\nError\r\n```sh\r\nerror: unknown argument: --mmproj\r\n```\r\n\r\n--mmproj option is not supported by docker. \r\n\r\nThe documentation mentions this option though.\r\nhttps://github.com/ggerganov/llama.cpp/tree/master/examples/server#llamacpp-http-server\r\n",
+    "labels": [
+      "server/webui",
+      "bug-unconfirmed",
+      "stale",
+      "llava"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-22T07:52:31+00:00",
+    "closed_at": "2024-05-07T01:06:30+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6226/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6226"
+  },
+  {
+    "number": 6027,
+    "title": "llava-cli: improve llava-cli and the API for using LLaVA",
+    "body": "From:\r\n - https://github.com/ggerganov/llama.cpp/issues/4216#issuecomment-1991730224\r\n\r\n1. cleaning up the clip/llava libs and improving the API\r\n2. in the old implementation, there were many internal object exposed to the server and the memory management was dubious\r\n3. there was no obvious path for supporting parallel multimodal slots\r\n",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "good first issue",
+      "llava"
+    ],
+    "state": "open",
+    "created_at": "2024-03-12T21:18:55+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6027/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6027"
+  },
+  {
+    "number": 5592,
+    "title": "llama cpp server not doing parallel inference for llava when using flags -np and -cb",
+    "body": "When I am trying to do parallel inferencing on llama cpp server for multimodal, I am getting the correct output for slot 0, but for other slots, I am not. Does that mean that clip is only being loaded on one slot? I can see some clip layers failing to load.\r\n\r\nHere is my llama cpp server code that I use.\r\n\r\n`./server -m ../models/llava13b1_5/llava13b1_5_f16.gguf -c 40960 --n-gpu-layers 41 --port 8001 --mmproj ../models/llava13b1_5/llava13b1_5_mmproj_f16.gguf -np 10 -cb --host 0.0.0.0 --threads 24`\r\n\r\nThe model I am using - \r\n[https://huggingface.co/mys/ggml_llava-v1.5-13b/tree/main](model)\r\n\r\nI am using the F16 model with mmproj file.\r\n\r\nDocumentation reference\r\n\r\n[https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md](documentation)\r\n\r\nMy GPU specs\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/137015071/c7e6506e-1261-47a5-85c3-665d75fe3e7d)\r\n\r\nMy CPU specs\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/137015071/8169172c-6ac3-4bea-a2f7-6262f5f5caa7)\r\n\r\nLoading llama cpp server for llava, using slot 0 for inference.\r\n\r\n```ggml_init_cublas: GGML_CUDA_FORCE_MMQ:   no\r\nggml_init_cublas: CUDA_USE_TENSOR_CORES: yes\r\nggml_init_cublas: found 1 CUDA devices:\r\n  Device 0: NVIDIA A100-SXM4-80GB, compute capability 8.0, VMM: yes\r\n{\"timestamp\":1708365483,\"level\":\"INFO\",\"function\":\"main\",\"line\":2536,\"message\":\"build info\",\"build\":2167,\"commit\":\"5bf2b94d\"}\r\n{\"timestamp\":1708365483,\"level\":\"INFO\",\"function\":\"main\",\"line\":2539,\"message\":\"system info\",\"n_threads\":24,\"n_threads_batch\":-1,\"total_threads\":28,\"system_info\":\"AVX = 1 | AVX_VNNI = 0 | AVX2 = 1 | AVX512 = 0 | AVX512_VBMI = 0 | AVX512_VNNI = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 1 | SSE3 = 1 | SSSE3 = 1 | VSX = 0 | MATMUL_INT8 = 0 | \"}\r\n\r\nllama server listening at http://0.0.0.0:8001\r\n\r\n{\"timestamp\":1708365483,\"level\":\"INFO\",\"function\":\"main\",\"line\":2643,\"message\":\"HTTP server listening\",\"port\":\"8001\",\"hostname\":\"0.0.0.0\"}\r\nMulti Modal Mode Enabledclip_model_load: model name:   openai/clip-vit-large-patch14-336\r\nclip_model_load: description:  image encoder for LLaVA\r\nclip_model_load: GGUF version: 2\r\nclip_model_load: alignment:    32\r\nclip_model_load: n_tensors:    377\r\nclip_model_load: n_kv:         18\r\nclip_model_load: ftype:        f16\r\n\r\nclip_model_load: loaded meta data with 18 key-value pairs and 377 tensors from ../models/llava13b1_5/llava13b1_5_mmproj_f16.gguf\r\nclip_model_load: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nclip_model_load: - kv   0:                       general.architecture str              = clip\r\nclip_model_load: - kv   1:                      clip.has_text_encoder bool             = false\r\nclip_model_load: - kv   2:                    clip.has_vision_encoder bool             = true\r\nclip_model_load: - kv   3:                   clip.has_llava_projector bool             = true\r\nclip_model_load: - kv   4:                          general.file_type u32              = 1\r\nclip_model_load: - kv   5:                               general.name str              = openai/clip-vit-large-patch14-336\r\nclip_model_load: - kv   6:                        general.description str              = image encoder for LLaVA\r\nclip_model_load: - kv   7:                     clip.vision.image_size u32              = 336\r\nclip_model_load: - kv   8:                     clip.vision.patch_size u32              = 14\r\nclip_model_load: - kv   9:               clip.vision.embedding_length u32              = 1024\r\nclip_model_load: - kv  10:            clip.vision.feed_forward_length u32              = 4096\r\nclip_model_load: - kv  11:                 clip.vision.projection_dim u32              = 768\r\nclip_model_load: - kv  12:           clip.vision.attention.head_count u32              = 16\r\nclip_model_load: - kv  13:   clip.vision.attention.layer_norm_epsilon f32              = 0.000010\r\nclip_model_load: - kv  14:                    clip.vision.block_count u32              = 23\r\nclip_model_load: - kv  15:                     clip.vision.image_mean arr[f32,3]       = [0.481455, 0.457828, 0.408211]\r\nclip_model_load: - kv  16:                      clip.vision.image_std arr[f32,3]       = [0.268630, 0.261303, 0.275777]\r\nclip_model_load: - kv  17:                              clip.use_gelu bool             = false\r\nclip_model_load: - type  f32:  235 tensors\r\nclip_model_load: - type  f16:  142 tensors\r\nclip_model_load: CLIP using CUDA backend\r\nclip_model_load: text_encoder:   0\r\nclip_model_load: vision_encoder: 1\r\nclip_model_load: llava_projector:  1\r\nclip_model_load: model size:     615.49 MB\r\nclip_model_load: metadata size:  0.14 MB\r\nclip_model_load: params backend buffer size =  615.49 MB (377 tensors)\r\nkey clip.vision.image_grid_pinpoints not found in file\r\nkey clip.vision.mm_patch_merge_type not found in file\r\nkey clip.vision.image_crop_resolution not found in file\r\nclip_model_load: compute allocated memory: 32.89 MB\r\nllama_model_loader: loaded meta data with 18 key-value pairs and 363 tensors from ../models/llava13b1_5/llava13b1_5_f16.gguf (version GGUF V2)\r\nllama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.\r\nllama_model_loader: - kv   0:                       general.architecture str              = llama\r\nllama_model_loader: - kv   1:                               general.name str              = LLaMA v2\r\nllama_model_loader: - kv   2:                       llama.context_length u32              = 4096\r\nllama_model_loader: - kv   3:                     llama.embedding_length u32              = 5120\r\nllama_model_loader: - kv   4:                          llama.block_count u32              = 40\r\nllama_model_loader: - kv   5:                  llama.feed_forward_length u32              = 13824\r\nllama_model_loader: - kv   6:                 llama.rope.dimension_count u32              = 128\r\nllama_model_loader: - kv   7:                 llama.attention.head_count u32              = 40\r\nllama_model_loader: - kv   8:              llama.attention.head_count_kv u32              = 40\r\nllama_model_loader: - kv   9:     llama.attention.layer_norm_rms_epsilon f32              = 0.000010\r\nllama_model_loader: - kv  10:                          general.file_type u32              = 1\r\nllama_model_loader: - kv  11:                       tokenizer.ggml.model str              = llama\r\nllama_model_loader: - kv  12:                      tokenizer.ggml.tokens arr[str,32000]   = [\"<unk>\", \"<s>\", \"</s>\", \"<0x00>\", \"<...\r\nllama_model_loader: - kv  13:                      tokenizer.ggml.scores arr[f32,32000]   = [0.000000, 0.000000, 0.000000, 0.0000...\r\nllama_model_loader: - kv  14:                  tokenizer.ggml.token_type arr[i32,32000]   = [2, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, ...\r\nllama_model_loader: - kv  15:                tokenizer.ggml.bos_token_id u32              = 1\r\nllama_model_loader: - kv  16:                tokenizer.ggml.eos_token_id u32              = 2\r\nllama_model_loader: - kv  17:            tokenizer.ggml.padding_token_id u32              = 0\r\nllama_model_loader: - type  f32:   81 tensors\r\nllama_model_loader: - type  f16:  282 tensors\r\nllm_load_vocab: special tokens definition check successful ( 259/32000 ).\r\nllm_load_print_meta: format           = GGUF V2\r\nllm_load_print_meta: arch             = llama\r\nllm_load_print_meta: vocab type       = SPM\r\nllm_load_print_meta: n_vocab          = 32000\r\nllm_load_print_meta: n_merges         = 0\r\nllm_load_print_meta: n_ctx_train      = 4096\r\nllm_load_print_meta: n_embd           = 5120\r\nllm_load_print_meta: n_head           = 40\r\nllm_load_print_meta: n_head_kv        = 40\r\nllm_load_print_meta: n_layer          = 40\r\nllm_load_print_meta: n_rot            = 128\r\nllm_load_print_meta: n_embd_head_k    = 128\r\nllm_load_print_meta: n_embd_head_v    = 128\r\nllm_load_print_meta: n_gqa            = 1\r\nllm_load_print_meta: n_embd_k_gqa     = 5120\r\nllm_load_print_meta: n_embd_v_gqa     = 5120\r\nllm_load_print_meta: f_norm_eps       = 0.0e+00\r\nllm_load_print_meta: f_norm_rms_eps   = 1.0e-05\r\nllm_load_print_meta: f_clamp_kqv      = 0.0e+00\r\nllm_load_print_meta: f_max_alibi_bias = 0.0e+00\r\nllm_load_print_meta: n_ff             = 13824\r\nllm_load_print_meta: n_expert         = 0\r\nllm_load_print_meta: n_expert_used    = 0\r\nllm_load_print_meta: rope scaling     = linear\r\nllm_load_print_meta: freq_base_train  = 10000.0\r\nllm_load_print_meta: freq_scale_train = 1\r\nllm_load_print_meta: n_yarn_orig_ctx  = 4096\r\nllm_load_print_meta: rope_finetuned   = unknown\r\nllm_load_print_meta: model type       = 13B\r\nllm_load_print_meta: model ftype      = F16\r\nllm_load_print_meta: model params     = 13.02 B\r\nllm_load_print_meta: model size       = 24.24 GiB (16.00 BPW) \r\nllm_load_print_meta: general.name     = LLaMA v2\r\nllm_load_print_meta: BOS token        = 1 '<s>'\r\nllm_load_print_meta: EOS token        = 2 '</s>'\r\nllm_load_print_meta: UNK token        = 0 '<unk>'\r\nllm_load_print_meta: PAD token        = 0 '<unk>'\r\nllm_load_print_meta: LF token         = 13 '<0x0A>'\r\nllm_load_tensors: ggml ctx size =    0.28 MiB\r\nllm_load_tensors: offloading 40 repeating layers to GPU\r\nllm_load_tensors: offloading non-repeating layers to GPU\r\nllm_load_tensors: offloaded 41/41 layers to GPU\r\nllm_load_tensors:        CPU buffer size =   312.50 MiB\r\nllm_load_tensors:      CUDA0 buffer size = 24514.08 MiB\r\n...................................................................................................\r\nllama_new_context_with_model: n_ctx      = 40960\r\nllama_new_context_with_model: freq_base  = 10000.0\r\nllama_new_context_with_model: freq_scale = 1\r\nllama_kv_cache_init:      CUDA0 KV buffer size = 32000.00 MiB\r\nllama_new_context_with_model: KV self size  = 32000.00 MiB, K (f16): 16000.00 MiB, V (f16): 16000.00 MiB\r\nllama_new_context_with_model:  CUDA_Host input buffer size   =    91.16 MiB\r\nllama_new_context_with_model:      CUDA0 compute buffer size =  3320.00 MiB\r\nllama_new_context_with_model:  CUDA_Host compute buffer size =    10.00 MiB\r\nllama_new_context_with_model: graph splits (measure): 3\r\nAvailable slots:\r\n -> Slot 0 - max context: 4096\r\n -> Slot 1 - max context: 4096\r\n -> Slot 2 - max context: 4096\r\n -> Slot 3 - max context: 4096\r\n -> Slot 4 - max context: 4096\r\n -> Slot 5 - max context: 4096\r\n -> Slot 6 - max context: 4096\r\n -> Slot 7 - max context: 4096\r\n -> Slot 8 - max context: 4096\r\n -> Slot 9 - max context: 4096\r\n{\"timestamp\":1708365486,\"level\":\"INFO\",\"function\":\"main\",\"line\":2664,\"message\":\"model loaded\"}\r\nall slots are idle and system prompt is empty, clear the KV cache\r\nslot 0 - loaded image\r\nslot 0 is processing [task id: 0]\r\nslot 0 : kv cache rm - [0, end)\r\nslot 0 - encoding image [id: 1]\r\n\r\nprint_timings: prompt eval time =     349.34 ms /     1 tokens (  349.34 ms per token,     2.86 tokens per second)\r\nprint_timings:        eval time =    1599.23 ms /    72 runs   (   22.21 ms per token,    45.02 tokens per second)\r\nprint_timings:       total time =    1948.57 ms\r\nslot 0 released (73 tokens in cache)\r\n```\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/137015071/011b0f24-249c-4eb3-8843-3045e38bcc1c)\r\n\r\nWhen using the other slot, that is parallel inferencing - \r\n\r\n```slot 1 - loaded image\r\nslot 1 is processing [task id: 74]\r\nslot 1 : kv cache rm - [0, end)\r\nslot 1 - encoding image [id: 1]\r\n\r\nprint_timings: prompt eval time =     278.78 ms /     1 tokens (  278.78 ms per token,     3.59 tokens per second)\r\nprint_timings:        eval time =    2573.45 ms /   113 runs   (   22.77 ms per token,    43.91 tokens per second)\r\nprint_timings:       total time =    2852.24 ms\r\nslot 1 released (114 tokens in cache)\r\n```\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/137015071/2866765b-d7bd-48fc-a0aa-7b31fcb40916)\r\n\r\nPrompt\r\nmodel_type parameter in my payload is only for a proxy server that is rerouting all the requests. \r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/137015071/1076b64a-90ca-465c-a605-2f061e446ae5)\r\n\r\nImage looks like this\r\n\r\n![image](https://github.com/ggerganov/llama.cpp/assets/137015071/9ca2cc3b-ac36-41c6-990e-d0b233ac4bf6)\r\n",
+    "labels": [
+      "server/webui",
+      "bug-unconfirmed",
+      "stale",
+      "llava"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-19T18:16:43+00:00",
+    "closed_at": "2024-05-07T01:06:42+00:00",
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5592/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5592"
+  },
+  {
+    "number": 3593,
+    "title": "Running Lllava in interactive mode just Quits after generating response without waiting for next prompt.",
+    "body": "What the title said.\r\n\r\n`llava -m ../models/llava-13b-q5_k.gguf --mmproj ../models/mmproj-model-f16.gguf -i -r \"user:\" --rope_freq_base 0 --rope_freq_scale 0 --temp 0.1 --top-p 0.9 --top-k 90 --image test.png -p \"Describe the image in detail.\"`\r\n\r\nIt describes the image and quits. Then I get a thrown into a command line prompt.\r\n\r\nHow can I run in interactive mode, so I can ask more about the response?\r\n\r\nThanks so much!",
+    "labels": [
+      "stale",
+      "llava"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-12T04:23:58+00:00",
+    "closed_at": "2024-10-02T01:11:36+00:00",
+    "comments": 15,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3593/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3593"
+  }
+]

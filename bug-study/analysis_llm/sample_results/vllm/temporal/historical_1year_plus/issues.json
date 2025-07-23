@@ -1,0 +1,772 @@
+[
+  {
+    "number": 6026,
+    "title": "[Usage]: Gemma-2-9b is not supported",
+    "body": "### Your current environment\r\nThis is my vllm versions\r\nvllm                              0.5.0.post1\r\nvllm-flash-attn                   2.5.9\r\nvllm-nccl-cu11                    2.18.1.0.4.0\r\n\r\n\r\n\r\n\r\n### How would you like to use vllm\r\n\r\nI want to run inference of a gemma-2-9b, which appears in the supported models list in the website.\r\n\r\n\r\n\r\nThis is the code\r\n\r\n```\r\nfrom vllm import LLM, SamplingParams\r\nmodel_name = \"google/gemma-2-9b\"  # You can change this to any other supported model\r\nllm = LLM(model=model_name, dtype=torch.float16, device=\"auto\", tensor_parallel_size=2)\r\n\r\n```\r\n\r\nI'm getting the error:\r\n\r\n(VllmWorkerProcess pid=225845) ERROR 07-01 10:50:45 multiproc_worker_utils.py:226] ValueError: Model architectures ['Gemma2ForCausalLM'] are not supported for now. Supported architectures: ['AquilaModel', 'AquilaForCausalLM', 'BaiChuanForCausalLM', 'BaichuanForCausalLM', 'BloomForCausalLM', 'ChatGLMModel', 'ChatGLMForConditionalGeneration', 'CohereForCausalLM', 'DbrxForCausalLM', 'DeciLMForCausalLM', 'DeepseekForCausalLM', 'FalconForCausalLM', 'GemmaForCausalLM', 'GPT2LMHeadModel', 'GPTBigCodeForCausalLM', 'GPTJForCausalLM', 'GPTNeoXForCausalLM', 'InternLMForCausalLM', 'InternLM2ForCausalLM', 'JAISLMHeadModel', 'LlamaForCausalLM', 'LlavaForConditionalGeneration', 'LlavaNextForConditionalGeneration', 'LLaMAForCausalLM', 'MistralForCausalLM', 'MixtralForCausalLM', 'QuantMixtralForCausalLM', 'MptForCausalLM', 'MPTForCausalLM', 'MiniCPMForCausalLM', 'OlmoForCausalLM', 'OPTForCausalLM', 'OrionForCausalLM', 'PhiForCausalLM', 'Phi3ForCausalLM', 'QWenLMHeadModel', 'Qwen2ForCausalLM', 'Qwen2MoeForCausalLM', 'RWForCausalLM', 'StableLMEpochForCausalLM', 'StableLmForCausalLM', 'Starcoder2ForCausalLM', 'ArcticForCausalLM', 'XverseForCausalLM', 'Phi3SmallForCausalLM', 'MistralModel']\r\n\r\n\r\n",
+    "labels": [
+      "usage"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-01T11:00:37+00:00",
+    "closed_at": "2024-07-01T19:26:02+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6026/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6026"
+  },
+  {
+    "number": 3271,
+    "title": "High CPU Usage in Kubernetes with Double T4 Running Zephyr 7b Model",
+    "body": "Thanks for your wonderful work.\r\n\r\nI am using below docker file to build image \r\n\r\n> FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04\r\n> RUN apt-get update \\\r\n>     && apt-get -yqq upgrade \\\r\n>     && apt-get -yqq install python3-pip python-is-python3 \\\r\n>     && apt-get -qqy autoremove --purge \\\r\n>     && apt-get clean \\\r\n>     && rm -rf /var/lib/apt/lists/* /var/cache/apt/* \\\r\n>     && rm -rf /usr/share/man\r\n> \r\n> COPY requirements.txt requirements.txt\r\n> RUN pip3 install -r requirements.txt \\\r\n>     && pip3 cache purge\r\n> \r\n> ENTRYPOINT [\"python\",\"-m\", \"vllm.entrypoints.openai.api_server\"]\r\n\r\nUtilizing the above image, we create a pod with ample resources, including 2 T4 GPUs, 8 vCPUs, and 32GB RAM. However, after receiving several requests (sometimes even at starting of pod itself and at no request), the CPU usage spikes significantly to around 1400-1500%. Surprisingly, it does not decrease during idle periods.\r\n\r\nCould you please help me to resolve the issue.",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-08T07:07:08+00:00",
+    "closed_at": "2024-11-30T02:01:56+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3271/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3271"
+  },
+  {
+    "number": 4383,
+    "title": "[Bug]: ncclSystemError when use two gpus",
+    "body": "### Your current environment\n\n```text\r\nThe output of `python collect_env.py`\r\n```\r\nCollecting environment information...\r\nPyTorch version: 2.2.1+cu118\r\nIs debug build: False\r\nCUDA used to build PyTorch: 11.8\r\nROCM used to build PyTorch: N/A\r\n\r\nOS: Ubuntu 22.04.4 LTS (x86_64)\r\nGCC version: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\r\nClang version: Could not collect\r\nCMake version: version 3.29.2\r\nLibc version: glibc-2.35\r\n\r\nPython version: 3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0] (64-bit runtime)\r\nPython platform: Linux-5.11.0-40-generic-x86_64-with-glibc2.35\r\nIs CUDA available: True\r\nCUDA runtime version: 11.8.89\r\nCUDA_MODULE_LOADING set to: LAZY\r\nGPU models and configuration: \r\nGPU 0: NVIDIA GeForce RTX 3090\r\nGPU 1: NVIDIA GeForce RTX 3090\r\n\r\nNvidia driver version: 535.129.03\r\ncuDNN version: Probably one of the following:\r\n/usr/lib/x86_64-linux-gnu/libcudnn.so.8.9.6\r\n/usr/lib/x86_64-linux-gnu/libcudnn_adv_infer.so.8.9.6\r\n/usr/lib/x86_64-linux-gnu/libcudnn_adv_train.so.8.9.6\r\n/usr/lib/x86_64-linux-gnu/libcudnn_cnn_infer.so.8.9.6\r\n/usr/lib/x86_64-linux-gnu/libcudnn_cnn_train.so.8.9.6\r\n/usr/lib/x86_64-linux-gnu/libcudnn_ops_infer.so.8.9.6\r\n/usr/lib/x86_64-linux-gnu/libcudnn_ops_train.so.8.9.6\r\nHIP runtime version: N/A\r\nMIOpen runtime version: N/A\r\nIs XNNPACK available: True\r\n\r\nCPU:\r\nArchitecture:                    x86_64\r\nCPU op-mode(s):                  32-bit, 64-bit\r\nAddress sizes:                   46 bits physical, 48 bits virtual\r\nByte Order:                      Little Endian\r\nCPU(s):                          40\r\nOn-line CPU(s) list:             0-39\r\nVendor ID:                       GenuineIntel\r\nModel name:                      Intel(R) Xeon(R) Silver 4210R CPU @ 2.40GHz\r\nCPU family:                      6\r\nModel:                           85\r\nThread(s) per core:              2\r\nCore(s) per socket:              10\r\nSocket(s):                       2\r\nStepping:                        7\r\nCPU max MHz:                     3200.0000\r\nCPU min MHz:                     1000.0000\r\nBogoMIPS:                        4800.00\r\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cdp_l3 invpcid_single intel_ppin ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm mpx rdt_a avx512f avx512dq rdseed adx smap clflushopt clwb intel_pt avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local dtherm ida arat pln pts hwp hwp_act_window hwp_epp hwp_pkg_req pku ospke avx512_vnni md_clear flush_l1d arch_capabilities\r\nVirtualization:                  VT-x\r\nL1d cache:                       640 KiB (20 instances)\r\nL1i cache:                       640 KiB (20 instances)\r\nL2 cache:                        20 MiB (20 instances)\r\nL3 cache:                        27.5 MiB (2 instances)\r\nNUMA node(s):                    2\r\nNUMA node0 CPU(s):               0-9,20-29\r\nNUMA node1 CPU(s):               10-19,30-39\r\nVulnerability Itlb multihit:     KVM: Mitigation: VMX disabled\r\nVulnerability L1tf:              Not affected\r\nVulnerability Mds:               Not affected\r\nVulnerability Meltdown:          Not affected\r\nVulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp\r\nVulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization\r\nVulnerability Spectre v2:        Mitigation; Enhanced IBRS, IBPB conditional, RSB filling\r\nVulnerability Srbds:             Not affected\r\nVulnerability Tsx async abort:   Mitigation; TSX disabled\r\n\r\nVersions of relevant libraries:\r\n[pip3] numpy==1.26.3\r\n[pip3] nvidia-nccl-cu11==2.19.3\r\n[pip3] torch==2.2.1+cu118\r\n[pip3] torchaudio==2.2.1+cu118\r\n[pip3] torchvision==0.17.1+cu118\r\n[pip3] triton==2.2.0\r\n[pip3] vllm-nccl-cu11==2.18.1.0.4.0\r\n[conda] Could not collectROCM Version: Could not collect\r\nNeuron SDK Version: N/A\r\nvLLM Version: 0.4.1\r\nvLLM Build Flags:\r\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\r\nGPU Topology:\r\nGPU0    GPU1    CPU Affinity    NUMA Affinity   GPU NUMA ID\r\nGPU0     X      SYS     0-9,20-29       0               N/A\r\nGPU1    SYS      X      10-19,30-39     1               N/A\r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n\n\n### \ud83d\udc1b Describe the bug\n\n**My command line order is:**\r\n python3 -m vllm.entrypoints.openai.api_server --tensor-parallel-size 2 --gpu-memory-utilization 0.9 --model /data/Qwen/Qwen1.5-7B-Chat/ --tokenizer /data/Qwen/Qwen1.5-7B-Chat/ --max-model-len 4096\r\n\r\n**And the outputs are:**\r\n\r\nINFO 04-26 01:58:56 api_server.py:151] vLLM API server version 0.4.1\r\nINFO 04-26 01:58:56 api_server.py:152] args: Namespace(host=None, port=8000, uvicorn_log_level='info', allow_credentials=False, allowed_origins=['*'], allowed_methods=['*'], allowed_headers=['*'], api_key=None, served_model_name=None, lora_modules=None, chat_template=None, response_role='assistant', ssl_keyfile=None, ssl_certfile=None, ssl_ca_certs=None, ssl_cert_reqs=0, root_path=None, middleware=[], model='/data/Qwen/Qwen1.5-7B-Chat/', tokenizer='/data/Qwen/Qwen1.5-7B-Chat/', skip_tokenizer_init=False, revision=None, code_revision=None, tokenizer_revision=None, tokenizer_mode='auto', trust_remote_code=False, download_dir=None, load_format='auto', dtype='auto', kv_cache_dtype='auto', quantization_param_path=None, max_model_len=4096, guided_decoding_backend='outlines', worker_use_ray=False, pipeline_parallel_size=1, tensor_parallel_size=2, max_parallel_loading_workers=None, ray_workers_use_nsight=False, block_size=16, enable_prefix_caching=False, use_v2_block_manager=False, num_lookahead_slots=0, seed=0, swap_space=4, gpu_memory_utilization=0.9, num_gpu_blocks_override=None, max_num_batched_tokens=None, max_num_seqs=256, max_logprobs=5, disable_log_stats=False, quantization=None, enforce_eager=False, max_context_len_to_capture=8192, disable_custom_all_reduce=False, tokenizer_pool_size=0, tokenizer_pool_type='ray', tokenizer_pool_extra_config=None, enable_lora=False, max_loras=1, max_lora_rank=16, lora_extra_vocab_size=256, lora_dtype='auto', max_cpu_loras=None, device='auto', image_input_type=None, image_token_id=None, image_input_shape=None, image_feature_size=None, scheduler_delay_factor=0.0, enable_chunked_prefill=False, speculative_model=None, num_speculative_tokens=None, speculative_max_model_len=None, model_loader_extra_config=None, engine_use_ray=False, disable_log_requests=False, max_log_len=None)\r\n2024-04-26 01:58:58,742 WARNING services.py:1996 -- WARNING: The object store is using /tmp instead of /dev/shm because /dev/shm has only 47824896 bytes available. This will harm performance! You may be able to free up space by deleting files in /dev/shm. If you are inside a Docker container, you can increase /dev/shm size by passing '--shm-size=10.24gb' to 'docker run' (or add it to the run_options list in a Ray cluster config). Make sure to set this to more than 30% of available RAM.\r\n2024-04-26 01:58:59,936 INFO worker.py:1749 -- Started a local Ray instance.\r\nINFO 04-26 01:59:00 llm_engine.py:98] Initializing an LLM engine (v0.4.1) with config: model='/data/Qwen/Qwen1.5-7B-Chat/', speculative_config=None, tokenizer='/data/Qwen/Qwen1.5-7B-Chat/', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=2, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto, quantization_param_path=None, device_config=cuda, decoding_config=DecodingConfig(guided_decoding_backend='outlines'), seed=0)\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nINFO 04-26 01:59:06 utils.py:608] Found nccl from library /root/.config/vllm/nccl/cu11/libnccl.so.2.18.1\r\n(RayWorkerWrapper pid=5280) INFO 04-26 01:59:06 utils.py:608] Found nccl from library /root/.config/vllm/nccl/cu11/libnccl.so.2.18.1\r\nINFO 04-26 01:59:06 selector.py:28] Using FlashAttention backend.\r\n(RayWorkerWrapper pid=5280) INFO 04-26 01:59:06 selector.py:28] Using FlashAttention backend.\r\nINFO 04-26 01:59:06 pynccl_utils.py:43] vLLM is using nccl==2.18.1\r\na46f6c76528f:2777:2777 [0] NCCL INFO Bootstrap : Using eth0:172.17.0.4<0>\r\na46f6c76528f:2777:2777 [0] NCCL INFO NET/Plugin : Plugin load (libnccl-net.so) returned 2 : libnccl-net.so: cannot open shared object file: No such file or directory\r\na46f6c76528f:2777:2777 [0] NCCL INFO NET/Plugin : No plugin found, using internal implementation\r\na46f6c76528f:2777:2777 [0] NCCL INFO cudaDriverVersion 12020\r\nNCCL version 2.18.1+cuda11.0\r\n(RayWorkerWrapper pid=5280) INFO 04-26 01:59:06 pynccl_utils.py:43] vLLM is using nccl==2.18.1\r\na46f6c76528f:2777:2777 [0] NCCL INFO Failed to open libibverbs.so[.1]\r\na46f6c76528f:2777:2777 [0] NCCL INFO NET/Socket : Using [0]eth0:172.17.0.4<0>\r\na46f6c76528f:2777:2777 [0] NCCL INFO Using network Socket\r\na46f6c76528f:2777:2777 [0] NCCL INFO Setting affinity for GPU 0 to 3ff003ff\r\na46f6c76528f:2777:2777 [0] NCCL INFO Channel 00/02 :    0   1\r\na46f6c76528f:2777:2777 [0] NCCL INFO Channel 01/02 :    0   1\r\na46f6c76528f:2777:2777 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1\r\na46f6c76528f:2777:2777 [0] NCCL INFO P2P Chunksize set to 131072\r\na46f6c76528f:2777:2777 [0] NCCL INFO Channel 00 : 0[73000] -> 1[d5000] via SHM/direct/direct\r\na46f6c76528f:2777:2777 [0] NCCL INFO Channel 01 : 0[73000] -> 1[d5000] via SHM/direct/direct\r\na46f6c76528f:2777:2777 [0] NCCL INFO Connected all rings\r\na46f6c76528f:2777:2777 [0] NCCL INFO Connected all trees\r\na46f6c76528f:2777:2777 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512\r\na46f6c76528f:2777:2777 [0] NCCL INFO 2 coll channels, 0 nvls channels, 2 p2p channels, 2 p2p channels per peer\r\na46f6c76528f:2777:2777 [0] NCCL INFO comm 0x5648f6cd5b30 rank 0 nranks 2 cudaDev 0 busId 73000 commId 0xfd02faf687db7405 - Init COMPLETE\r\nINFO 04-26 01:59:06 utils.py:129] reading GPU P2P access cache from /root/.config/vllm/gpu_p2p_access_cache_for_0,1.json\r\nWARNING 04-26 01:59:06 custom_all_reduce.py:74] Custom allreduce is disabled because your platform lacks GPU P2P capability or P2P test failed. To silence this warning, specify disable_custom_all_reduce=True explicitly.\r\na46f6c76528f:2777:2777 [0] NCCL INFO Bootstrap : Using eth0:172.17.0.4<0>\r\na46f6c76528f:2777:2777 [0] NCCL INFO NET/Plugin : dlerror=libnccl-net.so: cannot open shared object file: No such file or directory No plugin found (libnccl-net.so), using internal implementation\r\na46f6c76528f:2777:2777 [0] NCCL INFO cudaDriverVersion 12020\r\nNCCL version 2.19.3+cuda11.0\r\n(RayWorkerWrapper pid=5280) INFO 04-26 01:59:06 utils.py:129] reading GPU P2P access cache from /root/.config/vllm/gpu_p2p_access_cache_for_0,1.json\r\n(RayWorkerWrapper pid=5280) WARNING 04-26 01:59:06 custom_all_reduce.py:74] Custom allreduce is disabled because your platform lacks GPU P2P capability or P2P test failed. To silence this warning, specify disable_custom_all_reduce=True explicitly.\r\na46f6c76528f:2777:5429 [0] NCCL INFO Failed to open libibverbs.so[.1]\r\na46f6c76528f:2777:5429 [0] NCCL INFO NET/Socket : Using [0]eth0:172.17.0.4<0>\r\na46f6c76528f:2777:5429 [0] NCCL INFO Using non-device net plugin version 0\r\na46f6c76528f:2777:5429 [0] NCCL INFO Using network Socket\r\na46f6c76528f:2777:5429 [0] NCCL INFO comm 0x5648f9641550 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 73000 commId 0x21e81c737f151ebb - Init START\r\na46f6c76528f:2777:5429 [0] NCCL INFO Setting affinity for GPU 0 to 3ff003ff\r\na46f6c76528f:2777:5429 [0] NCCL INFO Channel 00/02 :    0   1\r\na46f6c76528f:2777:5429 [0] NCCL INFO Channel 01/02 :    0   1\r\na46f6c76528f:2777:5429 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1\r\na46f6c76528f:2777:5429 [0] NCCL INFO P2P Chunksize set to 131072\r\n\r\na46f6c76528f:2777:5429 [0] misc/shmutils.cc:72 NCCL WARN Error: failed to extend /dev/shm/nccl-v2jS20 to 9637892 bytes\r\n\r\na46f6c76528f:2777:5429 [0] misc/shmutils.cc:113 NCCL WARN Error while creating shared memory segment /dev/shm/nccl-v2jS20 (size 9637888)\r\na46f6c76528f:2777:5429 [0] NCCL INFO transport/shm.cc:114 -> 2\r\na46f6c76528f:2777:5429 [0] NCCL INFO transport.cc:33 -> 2\r\na46f6c76528f:2777:5429 [0] NCCL INFO transport.cc:97 -> 2\r\na46f6c76528f:2777:5429 [0] NCCL INFO init.cc:1117 -> 2\r\na46f6c76528f:2777:5429 [0] NCCL INFO init.cc:1396 -> 2\r\na46f6c76528f:2777:5429 [0] NCCL INFO group.cc:64 -> 2 [Async thread]\r\na46f6c76528f:2777:2777 [0] NCCL INFO group.cc:418 -> 2\r\na46f6c76528f:2777:2777 [0] NCCL INFO group.cc:95 -> 2\r\nERROR 04-26 01:59:07 worker_base.py:157] Error executing method init_device. This might cause deadlock in distributed execution.\r\nERROR 04-26 01:59:07 worker_base.py:157] Traceback (most recent call last):\r\nERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker_base.py\", line 149, in execute_method\r\nERROR 04-26 01:59:07 worker_base.py:157]     return executor(*args, **kwargs)\r\nERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 110, in init_device\r\nERROR 04-26 01:59:07 worker_base.py:157]     init_worker_distributed_environment(self.parallel_config, self.rank,\r\nERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 313, in init_worker_distributed_environment\r\nERROR 04-26 01:59:07 worker_base.py:157]     torch.distributed.all_reduce(torch.zeros(1).cuda())\r\nERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/c10d_logger.py\", line 72, in wrapper\r\nERROR 04-26 01:59:07 worker_base.py:157]     return func(*args, **kwargs)\r\nERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/distributed_c10d.py\", line 1992, in all_reduce\r\nERROR 04-26 01:59:07 worker_base.py:157]     work = group.allreduce([tensor], opts)\r\nERROR 04-26 01:59:07 worker_base.py:157] torch.distributed.DistBackendError: NCCL error in: ../torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1691, unhandled system error (run with NCCL_DEBUG=INFO for details), NCCL version 2.19.3\r\nERROR 04-26 01:59:07 worker_base.py:157] ncclSystemError: System call (e.g. socket, malloc) or external library call failed or device error. \r\nERROR 04-26 01:59:07 worker_base.py:157] Last error:\r\nERROR 04-26 01:59:07 worker_base.py:157] Error while creating shared memory segment /dev/shm/nccl-v2jS20 (size 9637888)\r\nTraceback (most recent call last):\r\n  File \"/usr/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\r\n    return _run_code(code, main_globals, None,\r\n  File \"/usr/lib/python3.10/runpy.py\", line 86, in _run_code\r\n    exec(code, run_globals)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/entrypoints/openai/api_server.py\", line 159, in <module>\r\n    engine = AsyncLLMEngine.from_engine_args(\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/async_llm_engine.py\", line 361, in from_engine_args\r\n    engine = cls(\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/async_llm_engine.py\", line 319, in __init__\r\n    self.engine = self._init_engine(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/async_llm_engine.py\", line 437, in _init_engine\r\n    return engine_class(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/llm_engine.py\", line 148, in __init__\r\n    self.model_executor = executor_class(\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/executor/ray_gpu_executor.py\", line 382, in __init__\r\n    super().__init__(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/executor/executor_base.py\", line 41, in __init__\r\n    self._init_executor()\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/executor/ray_gpu_executor.py\", line 45, in _init_executor\r\n    self._init_workers_ray(placement_group)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/executor/ray_gpu_executor.py\", line 181, in _init_workers_ray\r\n    self._run_workers(\"init_device\")\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/executor/ray_gpu_executor.py\", line 318, in _run_workers\r\n    driver_worker_output = self.driver_worker.execute_method(\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker_base.py\", line 158, in execute_method\r\n    raise e\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker_base.py\", line 149, in execute_method\r\n    return executor(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 110, in init_device\r\n    init_worker_distributed_environment(self.parallel_config, self.rank,\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 313, in init_worker_distributed_environment\r\n    torch.distributed.all_reduce(torch.zeros(1).cuda())\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/c10d_logger.py\", line 72, in wrapper\r\n    return func(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/distributed_c10d.py\", line 1992, in all_reduce\r\n    work = group.allreduce([tensor], opts)\r\ntorch.distributed.DistBackendError: NCCL error in: ../torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1691, unhandled system error (run with NCCL_DEBUG=INFO for details), NCCL version 2.19.3\r\nncclSystemError: System call (e.g. socket, malloc) or external library call failed or device error. \r\nLast error:\r\nError while creating shared memory segment /dev/shm/nccl-v2jS20 (size 9637888)\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] Error executing method init_device. This might cause deadlock in distributed execution.\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] Traceback (most recent call last):\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker_base.py\", line 149, in execute_method\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]     return executor(*args, **kwargs)\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 110, in init_device\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]     init_worker_distributed_environment(self.parallel_config, self.rank,\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 313, in init_worker_distributed_environment\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]     torch.distributed.all_reduce(torch.zeros(1).cuda())\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/c10d_logger.py\", line 72, in wrapper\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]     return func(*args, **kwargs)\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 INFO 04-26 01:58:56 api_server.py:151] vLLM API server version 0.4.1\r\nINFO 04-26 01:58:56 api_server.py:152] args: Namespace(host=None, port=8000, uvicorn_log_level='info', allow_credentials=False, allowed_origins=['*'], allowed_methods=['*'], allowed_headers=['*'], api_key=None, served_model_name=None, lora_modules=None, chat_template=None, response_role='assistant', ssl_keyfile=None, ssl_certfile=None, ssl_ca_certs=None, ssl_cert_reqs=0, root_path=None, middleware=[], model='/data/Qwen/Qwen1.5-7B-Chat/', tokenizer='/data/Qwen/Qwen1.5-7B-Chat/', skip_tokenizer_init=False, revision=None, code_revision=None, tokenizer_revision=None, tokenizer_mode='auto', trust_remote_code=False, download_dir=None, load_format='auto', dtype='auto', kv_cache_dtype='auto', quantization_param_path=None, max_model_len=4096, guided_decoding_backend='outlines', worker_use_ray=False, pipeline_parallel_size=1, tensor_parallel_size=2, max_parallel_loading_workers=None, ray_workers_use_nsight=False, block_size=16, enable_prefix_caching=False, use_v2_block_manager=False, num_lookahead_slots=0, seed=0, swap_space=4, gpu_memory_utilization=0.9, num_gpu_blocks_override=None, max_num_batched_tokens=None, max_num_seqs=256, max_logprobs=5, disable_log_stats=False, quantization=None, enforce_eager=False, max_context_len_to_capture=8192, disable_custom_all_reduce=False, tokenizer_pool_size=0, tokenizer_pool_type='ray', tokenizer_pool_extra_config=None, enable_lora=False, max_loras=1, max_lora_rank=16, lora_extra_vocab_size=256, lora_dtype='auto', max_cpu_loras=None, device='auto', image_input_type=None, image_token_id=None, image_input_shape=None, image_feature_size=None, scheduler_delay_factor=0.0, enable_chunked_prefill=False, speculative_model=None, num_speculative_tokens=None, speculative_max_model_len=None, model_loader_extra_config=None, engine_use_ray=False, disable_log_requests=False, max_log_len=None)\r\n2024-04-26 01:58:58,742 WARNING services.py:1996 -- WARNING: The object store is using /tmp instead of /dev/shm because /dev/shm has only 47824896 bytes available. This will harm performance! You may be able to free up space by deleting files in /dev/shm. If you are inside a Docker container, you can increase /dev/shm size by passing '--shm-size=10.24gb' to 'docker run' (or add it to the run_options list in a Ray cluster config). Make sure to set this to more than 30% of available RAM.\r\n2024-04-26 01:58:59,936 INFO worker.py:1749 -- Started a local Ray instance.\r\nINFO 04-26 01:59:00 llm_engine.py:98] Initializing an LLM engine (v0.4.1) with config: model='/data/Qwen/Qwen1.5-7B-Chat/', speculative_config=None, tokenizer='/data/Qwen/Qwen1.5-7B-Chat/', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=2, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto, quantization_param_path=None, device_config=cuda, decoding_config=DecodingConfig(guided_decoding_backend='outlines'), seed=0)\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nINFO 04-26 01:59:06 utils.py:608] Found nccl from library /root/.config/vllm/nccl/cu11/libnccl.so.2.18.1\r\n(RayWorkerWrapper pid=5280) INFO 04-26 01:59:06 utils.py:608] Found nccl from library /root/.config/vllm/nccl/cu11/libnccl.so.2.18.1\r\nINFO 04-26 01:59:06 selector.py:28] Using FlashAttention backend.\r\n(RayWorkerWrapper pid=5280) INFO 04-26 01:59:06 selector.py:28] Using FlashAttention backend.\r\nINFO 04-26 01:59:06 pynccl_utils.py:43] vLLM is using nccl==2.18.1\r\na46f6c76528f:2777:2777 [0] NCCL INFO Bootstrap : Using eth0:172.17.0.4<0>\r\na46f6c76528f:2777:2777 [0] NCCL INFO NET/Plugin : Plugin load (libnccl-net.so) returned 2 : libnccl-net.so: cannot open shared object file: No such file or directory\r\na46f6c76528f:2777:2777 [0] NCCL INFO NET/Plugin : No plugin found, using internal implementation\r\na46f6c76528f:2777:2777 [0] NCCL INFO cudaDriverVersion 12020\r\nNCCL version 2.18.1+cuda11.0\r\n(RayWorkerWrapper pid=5280) INFO 04-26 01:59:06 pynccl_utils.py:43] vLLM is using nccl==2.18.1\r\na46f6c76528f:2777:2777 [0] NCCL INFO Failed to open libibverbs.so[.1]\r\na46f6c76528f:2777:2777 [0] NCCL INFO NET/Socket : Using [0]eth0:172.17.0.4<0>\r\na46f6c76528f:2777:2777 [0] NCCL INFO Using network Socket\r\na46f6c76528f:2777:2777 [0] NCCL INFO Setting affinity for GPU 0 to 3ff003ff\r\na46f6c76528f:2777:2777 [0] NCCL INFO Channel 00/02 :    0   1\r\na46f6c76528f:2777:2777 [0] NCCL INFO Channel 01/02 :    0   1\r\na46f6c76528f:2777:2777 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1\r\na46f6c76528f:2777:2777 [0] NCCL INFO P2P Chunksize set to 131072\r\na46f6c76528f:2777:2777 [0] NCCL INFO Channel 00 : 0[73000] -> 1[d5000] via SHM/direct/direct\r\na46f6c76528f:2777:2777 [0] NCCL INFO Channel 01 : 0[73000] -> 1[d5000] via SHM/direct/direct\r\na46f6c76528f:2777:2777 [0] NCCL INFO Connected all rings\r\na46f6c76528f:2777:2777 [0] NCCL INFO Connected all trees\r\na46f6c76528f:2777:2777 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512\r\na46f6c76528f:2777:2777 [0] NCCL INFO 2 coll channels, 0 nvls channels, 2 p2p channels, 2 p2p channels per peer\r\na46f6c76528f:2777:2777 [0] NCCL INFO comm 0x5648f6cd5b30 rank 0 nranks 2 cudaDev 0 busId 73000 commId 0xfd02faf687db7405 - Init COMPLETE\r\nINFO 04-26 01:59:06 utils.py:129] reading GPU P2P access cache from /root/.config/vllm/gpu_p2p_access_cache_for_0,1.json\r\nWARNING 04-26 01:59:06 custom_all_reduce.py:74] Custom allreduce is disabled because your platform lacks GPU P2P capability or P2P test failed. To silence this warning, specify disable_custom_all_reduce=True explicitly.\r\na46f6c76528f:2777:2777 [0] NCCL INFO Bootstrap : Using eth0:172.17.0.4<0>\r\na46f6c76528f:2777:2777 [0] NCCL INFO NET/Plugin : dlerror=libnccl-net.so: cannot open shared object file: No such file or directory No plugin found (libnccl-net.so), using internal implementation\r\na46f6c76528f:2777:2777 [0] NCCL INFO cudaDriverVersion 12020\r\nNCCL version 2.19.3+cuda11.0\r\n(RayWorkerWrapper pid=5280) INFO 04-26 01:59:06 utils.py:129] reading GPU P2P access cache from /root/.config/vllm/gpu_p2p_access_cache_for_0,1.json\r\n(RayWorkerWrapper pid=5280) WARNING 04-26 01:59:06 custom_all_reduce.py:74] Custom allreduce is disabled because your platform lacks GPU P2P capability or P2P test failed. To silence this warning, specify disable_custom_all_reduce=True explicitly.\r\na46f6c76528f:2777:5429 [0] NCCL INFO Failed to open libibverbs.so[.1]\r\na46f6c76528f:2777:5429 [0] NCCL INFO NET/Socket : Using [0]eth0:172.17.0.4<0>\r\na46f6c76528f:2777:5429 [0] NCCL INFO Using non-device net plugin version 0\r\na46f6c76528f:2777:5429 [0] NCCL INFO Using network Socket\r\na46f6c76528f:2777:5429 [0] NCCL INFO comm 0x5648f9641550 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 73000 commId 0x21e81c737f151ebb - Init START\r\na46f6c76528f:2777:5429 [0] NCCL INFO Setting affinity for GPU 0 to 3ff003ff\r\na46f6c76528f:2777:5429 [0] NCCL INFO Channel 00/02 :    0   1\r\na46f6c76528f:2777:5429 [0] NCCL INFO Channel 01/02 :    0   1\r\na46f6c76528f:2777:5429 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1\r\na46f6c76528f:2777:5429 [0] NCCL INFO P2P Chunksize set to 131072\r\n\r\na46f6c76528f:2777:5429 [0] misc/shmutils.cc:72 NCCL WARN Error: failed to extend /dev/shm/nccl-v2jS20 to 9637892 bytes\r\n\r\na46f6c76528f:2777:5429 [0] misc/shmutils.cc:113 NCCL WARN Error while creating shared memory segment /dev/shm/nccl-v2jS20 (size 9637888)\r\na46f6c76528f:2777:5429 [0] NCCL INFO transport/shm.cc:114 -> 2\r\na46f6c76528f:2777:5429 [0] NCCL INFO transport.cc:33 -> 2\r\na46f6c76528f:2777:5429 [0] NCCL INFO transport.cc:97 -> 2\r\na46f6c76528f:2777:5429 [0] NCCL INFO init.cc:1117 -> 2\r\na46f6c76528f:2777:5429 [0] NCCL INFO init.cc:1396 -> 2\r\na46f6c76528f:2777:5429 [0] NCCL INFO group.cc:64 -> 2 [Async thread]\r\na46f6c76528f:2777:2777 [0] NCCL INFO group.cc:418 -> 2\r\na46f6c76528f:2777:2777 [0] NCCL INFO group.cc:95 -> 2\r\nERROR 04-26 01:59:07 worker_base.py:157] Error executing method init_device. This might cause deadlock in distributed execution.\r\nERROR 04-26 01:59:07 worker_base.py:157] Traceback (most recent call last):\r\nERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker_base.py\", line 149, in execute_method\r\nERROR 04-26 01:59:07 worker_base.py:157]     return executor(*args, **kwargs)\r\nERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 110, in init_device\r\nERROR 04-26 01:59:07 worker_base.py:157]     init_worker_distributed_environment(self.parallel_config, self.rank,\r\nERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 313, in init_worker_distributed_environment\r\nERROR 04-26 01:59:07 worker_base.py:157]     torch.distributed.all_reduce(torch.zeros(1).cuda())\r\nERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/c10d_logger.py\", line 72, in wrapper\r\nERROR 04-26 01:59:07 worker_base.py:157]     return func(*args, **kwargs)\r\nERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/distributed_c10d.py\", line 1992, in all_reduce\r\nERROR 04-26 01:59:07 worker_base.py:157]     work = group.allreduce([tensor], opts)\r\nERROR 04-26 01:59:07 worker_base.py:157] torch.distributed.DistBackendError: NCCL error in: ../torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1691, unhandled system error (run with NCCL_DEBUG=INFO for details), NCCL version 2.19.3\r\nERROR 04-26 01:59:07 worker_base.py:157] ncclSystemError: System call (e.g. socket, malloc) or external library call failed or device error. \r\nERROR 04-26 01:59:07 worker_base.py:157] Last error:\r\nERROR 04-26 01:59:07 worker_base.py:157] Error while creating shared memory segment /dev/shm/nccl-v2jS20 (size 9637888)\r\nTraceback (most recent call last):\r\n  File \"/usr/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\r\n    return _run_code(code, main_globals, None,\r\n  File \"/usr/lib/python3.10/runpy.py\", line 86, in _run_code\r\n    exec(code, run_globals)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/entrypoints/openai/api_server.py\", line 159, in <module>\r\n    engine = AsyncLLMEngine.from_engine_args(\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/async_llm_engine.py\", line 361, in from_engine_args\r\n    engine = cls(\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/async_llm_engine.py\", line 319, in __init__\r\n    self.engine = self._init_engine(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/async_llm_engine.py\", line 437, in _init_engine\r\n    return engine_class(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/llm_engine.py\", line 148, in __init__\r\n    self.model_executor = executor_class(\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/executor/ray_gpu_executor.py\", line 382, in __init__\r\n    super().__init__(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/executor/executor_base.py\", line 41, in __init__\r\n    self._init_executor()\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/executor/ray_gpu_executor.py\", line 45, in _init_executor\r\n    self._init_workers_ray(placement_group)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/executor/ray_gpu_executor.py\", line 181, in _init_workers_ray\r\n    self._run_workers(\"init_device\")\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/executor/ray_gpu_executor.py\", line 318, in _run_workers\r\n    driver_worker_output = self.driver_worker.execute_method(\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker_base.py\", line 158, in execute_method\r\n    raise e\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker_base.py\", line 149, in execute_method\r\n    return executor(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 110, in init_device\r\n    init_worker_distributed_environment(self.parallel_config, self.rank,\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 313, in init_worker_distributed_environment\r\n    torch.distributed.all_reduce(torch.zeros(1).cuda())\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/c10d_logger.py\", line 72, in wrapper\r\n    return func(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/distributed_c10d.py\", line 1992, in all_reduce\r\n    work = group.allreduce([tensor], opts)\r\ntorch.distributed.DistBackendError: NCCL error in: ../torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1691, unhandled system error (run with NCCL_DEBUG=INFO for details), NCCL version 2.19.3\r\nncclSystemError: System call (e.g. socket, malloc) or external library call failed or device error. \r\nLast error:\r\nError while creating shared memory segment /dev/shm/nccl-v2jS20 (size 9637888)\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] Error executing method init_device. This might cause deadlock in distributed execution.\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] Traceback (most recent call last):\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker_base.py\", line 149, in execute_method\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]     return executor(*args, **kwargs)\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 110, in init_device\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]     init_worker_distributed_environment(self.parallel_config, self.rank,\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 313, in init_worker_distributed_environment\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]     torch.distributed.all_reduce(torch.zeros(1).cuda())\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/c10d_logger.py\", line 72, in wrapper\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]     return func(*args, **kwargs)\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/distributed_c10d.py\", line 1992, in all_reduce\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]     work = group.allreduce([tensor], opts)\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] torch.distributed.DistBackendError: NCCL error in: ../torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1691, unhandled system error (run with NCCL_DEBUG=INFO for details), NCCL version 2.19.3\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] ncclSystemError: System call (e.g. socket, malloc) or external library call failed or device error. \r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] Last error:\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] Error while creating shared memory segment /dev/shm/nccl-KlAZn3 (size 9637888)\r\na46f6c76528f:2777:2777 [0] NCCL INFO comm 0x5648f6cd5b30 rank 0 nranks 2 cudaDev 0 busId 73000 - Destroy COMPLETEworker_base.py:157]   File \"/usr/local/lib/python3.10/dist-packages/torch/distributed/distributed_c10d.py\", line 1992, in all_reduce\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157]     work = group.allreduce([tensor], opts)\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] torch.distributed.DistBackendError: NCCL error in: ../torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:1691, unhandled system error (run with NCCL_DEBUG=INFO for details), NCCL version 2.19.3\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] ncclSystemError: System call (e.g. socket, malloc) or external library call failed or device error. \r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] Last error:\r\n(RayWorkerWrapper pid=5280) ERROR 04-26 01:59:07 worker_base.py:157] Error while creating shared memory segment /dev/shm/nccl-KlAZn3 (size 9637888)\r\na46f6c76528f:2777:2777 [0] NCCL INFO comm 0x5648f6cd5b30 rank 0 nranks 2 cudaDev 0 busId 73000 - Destroy COMPLETE",
+    "labels": [
+      "bug"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-26T02:08:20+00:00",
+    "closed_at": "2024-04-26T02:22:43+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4383/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4383"
+  },
+  {
+    "number": 1683,
+    "title": "In Qwen-14B, using vllm for reasoning with long prompts yields poor results | \u5728Qwen-14B\u4e2d\uff0c\u4f7f\u7528vllm\u5bf9long prompt\u8fdb\u884c\u63a8\u7406\uff0c\u6548\u679c\u5f88\u5dee",
+    "body": "Hello, I have modified qwen-14B using PI to support long text inference.\r\nThe validation of the HF model has been completed and the results are okay.\r\nHowever, when using vllm inference, the answers for long prompts are far from the answers generated by the HF model, and they are not coherent (the answers for short prompts are normal).\r\nFor example, when I ask a summarization question, the HF model can provide a proper summary, but the vllm answer looks something like this:\r\n\"Reasonable use. And, the plaintiff, and the defendant (Caesar, reconciliatory).\"\r\n(It is basically gibberish)\r\nI have checked other issues and tried adjusting parameters like max_tokens, top_k, and top_p (keeping them consistent with HF's settings), but the conclusion remains the same.\r\nI would like to know if vllm currently does not support long text inference, or if it does not support the modified qwen-14B with linear interpolation, or if there is an issue with my usage.\r\n\r\n-------------------------------------\r\n\r\n\u4f60\u597d\uff0c\u6211\u4f7f\u7528PI\u5bf9qwen-14B\u8fdb\u884c\u4e86\u6539\u9020\uff0c\u4f7f\u5176\u53ef\u4ee5\u652f\u6301\u957f\u6587\u672c\u63a8\u7406\u3002\r\nHF\u6a21\u578b\u7684\u9a8c\u8bc1\u5df2\u7ecf\u5b8c\u6210\uff0c\u6548\u679c\u662fok\u7684\u3002\r\n\u4f46\u662f\u4f7f\u7528vllm\u63a8\u7406\u65f6\uff0c\u957fprompt\u56de\u7b54\u4e0eHF\u6a21\u578b\u7684\u56de\u7b54\u76f8\u5dee\u751a\u8fdc\uff0c\u57fa\u672c\u4e0d\u8bf4\u4eba\u8bdd\u4e86\uff08\u77edprompt\u7684\u56de\u7b54\u662f\u6b63\u5e38\u7684\uff09\u3002\r\n\r\n\u4f8b\u5982\u6211\u8be2\u95ee\u4e00\u4e2a\u603b\u7ed3\u6027\u7684\u95ee\u9898\uff0cHF\u6a21\u578b\u53ef\u4ee5\u6b63\u5e38\u603b\u7ed3\uff0cvllm\u56de\u7b54\u7c7b\u4f3c\u8fd9\u6837\uff1a\r\n\u201c\u5408\u7406\u4f7f\u7528\u3002\u5e76\u4e14\uff0c\u8d77\u8bc9\u4eba\uff0c\u4ee5\u53ca\u539f\u544a\uff08\u51ef\u6492\uff0c\u548c\u89e3\u6027\uff0c\u88ab\u544a\u3002\u201d\r\n\uff08\u57fa\u672c\u662f\u5728\u80e1\u8a00\u4e71\u8bed\uff09\r\n\r\n\u6211\u67e5\u770b\u4e86\u5176\u4ed6\u7684issue\uff0c\u5bf9max_tokens\uff0ctop_k\uff0ctop_p\u7b49\u53c2\u6570\u8fdb\u884c\u4e86\u8bbe\u7f6e\uff08\u4e0eHF\u7684\u8bbe\u7f6e\u4fdd\u6301\u4e86\u4e00\u81f4\uff09\uff0c\u7ed3\u8bba\u4f9d\u7136\u540c\u4e0a\u3002\r\n\r\n\u8bf7\u95ee\u662fvllm\u76ee\u524d\u786e\u5b9e\u4e0d\u652f\u6301\u957f\u6587\u672c\u63a8\u7406\uff0c\u8fd8\u662f\u8bf4\u4e0d\u652f\u6301\u7ebf\u6027\u63d2\u503c\u6539\u9020\u540e\u7684qwen-14B\uff0c\u8fd8\u662f\u8bf4\u6211\u4f7f\u7528\u7684\u6709\u95ee\u9898\u5462",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-11-16T06:26:12+00:00",
+    "closed_at": "2023-11-20T09:53:34+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1683/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1683"
+  },
+  {
+    "number": 807,
+    "title": "No CUDA GPUs are available",
+    "body": "We are planning to deploy the vLLM using the docker image. Please find below the code for  docker image\r\n\r\n```\r\nARG base=nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04\r\n\r\nARG commit=main\r\n\r\nFROM ${base}\r\n\r\nENV DEBIAN_FRONTEND=noninteractive LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8\r\n\r\nARG CONDA_VERSION=py310_23.3.1-0\r\n\r\nRUN apt update && \\\r\n    apt install -y --no-install-recommends \\\r\n        wget \\\r\n        git \\\r\n        build-essential \\\r\n        ca-certificates && \\\r\n    rm -rf /var/lib/apt/lists/*\r\n\r\nRUN set -x && \\\r\n    UNAME_M=\"$(uname -m)\" && \\\r\n    if [ \"${UNAME_M}\" = \"x86_64\" ]; then \\\r\n        MINICONDA_URL=\"[https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh](https://repo.anaconda.com/miniconda/Miniconda3-$%7BCONDA_VERSION%7D-Linux-x86_64.sh)\"; \\\r\n        SHA256SUM=\"aef279d6baea7f67940f16aad17ebe5f6aac97487c7c03466ff01f4819e5a651\"; \\\r\n    elif [ \"${UNAME_M}\" = \"s390x\" ]; then \\\r\n        MINICONDA_URL=\"[https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-s390x.sh](https://repo.anaconda.com/miniconda/Miniconda3-$%7BCONDA_VERSION%7D-Linux-s390x.sh)\"; \\\r\n        SHA256SUM=\"ed4f51afc967e921ff5721151f567a4c43c4288ac93ec2393c6238b8c4891de8\"; \\\r\n    elif [ \"${UNAME_M}\" = \"aarch64\" ]; then \\\r\n        MINICONDA_URL=\"[https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-aarch64.sh](https://repo.anaconda.com/miniconda/Miniconda3-$%7BCONDA_VERSION%7D-Linux-aarch64.sh)\"; \\\r\n        SHA256SUM=\"6950c7b1f4f65ce9b87ee1a2d684837771ae7b2e6044e0da9e915d1dee6c924c\"; \\\r\n    elif [ \"${UNAME_M}\" = \"ppc64le\" ]; then \\\r\n        MINICONDA_URL=\"[https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-ppc64le.sh](https://repo.anaconda.com/miniconda/Miniconda3-$%7BCONDA_VERSION%7D-Linux-ppc64le.sh)\"; \\\r\n        SHA256SUM=\"b3de538cd542bc4f5a2f2d2a79386288d6e04f0e1459755f3cefe64763e51d16\"; \\\r\n    fi && \\\r\n    wget \"${MINICONDA_URL}\" -O miniconda.sh -q && \\\r\n    echo \"${SHA256SUM} miniconda.sh\" > shasum && \\\r\n    if [ \"${CONDA_VERSION}\" != \"latest\" ]; then sha256sum --check --status shasum; fi && \\\r\n    mkdir -p /opt && \\\r\n    bash miniconda.sh -b -p /opt/conda && \\\r\n    rm miniconda.sh shasum && \\\r\n    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \\\r\n    echo \". /opt/conda/etc/profile.d/conda.sh\" >> ~/.bashrc && \\\r\n    echo \"conda activate base\" >> ~/.bashrc && \\\r\n    find /opt/conda/ -follow -type f -name '*.a' -delete && \\\r\n    find /opt/conda/ -follow -type f -name '*.js.map' -delete && \\\r\n    /opt/conda/bin/conda clean -afy\r\n\r\nENV PYTHON_PREFIX=/opt/conda/bin\r\n\r\nRUN update-alternatives --install /usr/bin/python python ${PYTHON_PREFIX}/python 1 && \\\r\n    update-alternatives --install /usr/bin/python3 python3 ${PYTHON_PREFIX}/python3 1 && \\\r\n    update-alternatives --install /usr/bin/pip pip ${PYTHON_PREFIX}/pip 1 && \\\r\n    update-alternatives --install /usr/bin/pip3 pip3 ${PYTHON_PREFIX}/pip3 1\r\n\r\n# torch should be installed before the vllm to avoid some bugs\r\nRUN pip install torch\r\n\r\nRUN mkdir -p /workspace\r\nWORKDIR /workspace\r\n\r\nRUN git clone https://github.com/vllm-project/vllm.git /workspace/vllm && \\\r\n    cd /workspace/vllm && \\\r\n    git checkout ${commit} && \\\r\n    pip install -e .\r\n\r\nENTRYPOINT [ \"python\", \"-m\", \"vllm.entrypoints.openai.api_server\", \"--tensor-parallel-size\", \"4\", \"--worker-use-ray\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\" ]\r\n```\r\n\r\nWe are deploying the docker image in kubernetes cluster. In K8 cluster the driver is already installed. While deploying I am getting the below error.\r\n\r\n`RuntimeError: No CUDA GPUs are available\r\n`\r\nKindly help",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-08-21T05:07:04+00:00",
+    "closed_at": "2024-03-08T12:12:23+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/807/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/807"
+  },
+  {
+    "number": 2816,
+    "title": "VLLM Multi-Lora with embed_tokens and lm_head in adapter weights ",
+    "body": "Hi there!\r\n\r\nI've encountered an issue with the `adatpter_model.safetensors` in my project, and I'm seeking guidance on how to handle `lm_head` and `embed_tokens` within the specified modules. Here's the current state:\r\n\r\n```\r\n['base_model.model.lm_head.weight',\r\n 'base_model.model.model.embed_tokens.weight',\r\n 'base_model.model.model.layers.0.self_attn.k_proj.lora_A.weight',\r\n 'base_model.model.model.layers.0.self_attn.k_proj.lora_B.weight',\r\n 'base_model.model.model.layers.0.self_attn.o_proj.lora_A.weight',\r\n 'base_model.model.model.layers.0.self_attn.o_proj.lora_B.weight',\r\n ...]\r\n ```\r\n \r\nFirstly, in [vllm/lora/utils.py](https://github.com/vllm-project/vllm/blob/0e163fce18594c7e29dc5a143dd6b33d213fcbf3/vllm/lora/utils.py#L33), modifications are needed to work with `lm_head` and `embed_tokens`. My question is, what should be the appropriate name for the new module? For instance, from `base_model.model.model.layers.0.self_attn.k_proj.lora_A.weight`, we extract `model.layers.0.self_attn.k_proj`. What should I use for `base_model.model.lm_head.weight` and `base_model.model.model.embed_tokens.weight`? Are `model.lm_head` and `model.embed_tokens` suitable, or do you have alternative suggestions?\r\n\r\nAdditionally, in [vllm/lora/models.py](https://github.com/vllm-project/vllm/blob/931746bc6d7c1c0ab40b2c4f58b51b855f0b2c94/vllm/lora/models.py#L176), there is a check for `if embedding:` followed by placement in `embedding_tensor`, which is optional in [LoRALayerWeights](https://github.com/vllm-project/vllm/blob/f0d4e145575bf6fb96c141d776ce92c9bfc79c49/vllm/lora/lora.py#L17C9-L17C26). However, `lora_a` and `lora_b` are not optional there. When using `activate_lora` with [module.set_lora](https://github.com/vllm-project/vllm/blob/f0d4e145575bf6fb96c141d776ce92c9bfc79c49/vllm/lora/models.py#L370C24-L370C32), should we set lora to `lm_head` and `embed_tokens` if they are part of adapter weights? Is it `set_lora` and not `reset_lora`?\r\n\r\nFinally, there's an error in [set_lora](https://github.com/vllm-project/vllm/blob/main/vllm/lora/layers.py#L226) when `lora_a is None`, causing issues with `.shape`. @Yard1, do you have any insights or suggestions on working with loras involving special tokens? Classic loras seem to work well with multi-lora setups.\r\n\r\nThank you for your assistance!",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-08T17:10:12+00:00",
+    "closed_at": "2025-01-05T02:04:46+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2816/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2816"
+  },
+  {
+    "number": 3611,
+    "title": "[Bug]: Mixtral-8x7B-Instruct-v0.1 not loading",
+    "body": "### Your current environment\r\n\r\n```text\r\nCollecting environment information...\r\nPyTorch version: 2.1.2+cu121\r\nIs debug build: False\r\nCUDA used to build PyTorch: 12.1\r\nROCM used to build PyTorch: N/A\r\n\r\nOS: Ubuntu 22.04.4 LTS (x86_64)\r\nGCC version: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\r\nClang version: Could not collect\r\nCMake version: version 3.28.4\r\nLibc version: glibc-2.35\r\n\r\nPython version: 3.9.19 (main, Mar 21 2024, 17:11:28)  [GCC 11.2.0] (64-bit runtime)\r\nPython platform: Linux-4.18.0-408.el8.x86_64-x86_64-with-glibc2.35\r\nIs CUDA available: True\r\nCUDA runtime version: 12.0.140\r\nCUDA_MODULE_LOADING set to: LAZY\r\nGPU models and configuration: \r\nGPU 0: NVIDIA A30\r\nGPU 1: NVIDIA A30\r\nGPU 2: NVIDIA A30\r\nGPU 3: NVIDIA A30\r\nGPU 4: NVIDIA A30\r\nGPU 5: NVIDIA A30\r\nGPU 6: NVIDIA A30\r\nGPU 7: NVIDIA A30\r\n\r\nNvidia driver version: 535.86.10\r\ncuDNN version: Could not collect\r\nHIP runtime version: N/A\r\nMIOpen runtime version: N/A\r\nIs XNNPACK available: True\r\n\r\nCPU:\r\nArchitecture:                    x86_64\r\nCPU op-mode(s):                  32-bit, 64-bit\r\nAddress sizes:                   46 bits physical, 57 bits virtual\r\nByte Order:                      Little Endian\r\nCPU(s):                          96\r\nOn-line CPU(s) list:             0-95\r\nVendor ID:                       GenuineIntel\r\nModel name:                      Intel(R) Xeon(R) Gold 6442Y\r\nCPU family:                      6\r\nModel:                           143\r\nThread(s) per core:              2\r\nCore(s) per socket:              24\r\nSocket(s):                       2\r\nStepping:                        8\r\nFrequency boost:                 enabled\r\nCPU max MHz:                     2601.0000\r\nCPU min MHz:                     800.0000\r\nBogoMIPS:                        5200.00\r\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cat_l2 cdp_l3 invpcid_single cdp_l2 ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect avx_vnni avx512_bf16 wbnoinvd dtherm ida arat pln pts hfi avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq la57 rdpid bus_lock_detect cldemote movdiri movdir64b enqcmd fsrm md_clear serialize tsxldtrk pconfig arch_lbr amx_bf16 avx512_fp16 amx_tile amx_int8 flush_l1d arch_capabilities\r\nVirtualization:                  VT-x\r\nL1d cache:                       2.3 MiB (48 instances)\r\nL1i cache:                       1.5 MiB (48 instances)\r\nL2 cache:                        96 MiB (48 instances)\r\nL3 cache:                        120 MiB (2 instances)\r\nNUMA node(s):                    2\r\nNUMA node0 CPU(s):               0-23,48-71\r\nNUMA node1 CPU(s):               24-47,72-95\r\nVulnerability Itlb multihit:     Not affected\r\nVulnerability L1tf:              Not affected\r\nVulnerability Mds:               Not affected\r\nVulnerability Meltdown:          Not affected\r\nVulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp\r\nVulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization\r\nVulnerability Spectre v2:        Mitigation; Enhanced IBRS, IBPB conditional, RSB filling\r\nVulnerability Srbds:             Not affected\r\nVulnerability Tsx async abort:   Not affected\r\n\r\nVersions of relevant libraries:\r\n[pip3] numpy==1.26.4\r\n[pip3] torch==2.1.2\r\n[pip3] triton==2.1.0\r\n[conda] numpy                     1.26.4                   pypi_0    pypi\r\n[conda] torch                     2.1.2                    pypi_0    pypi\r\n[conda] triton                    2.1.0                    pypi_0    pypiROCM Version: Could not collect\r\nNeuron SDK Version: N/A\r\nvLLM Version: 0.3.3\r\nvLLM Build Flags:\r\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\r\nGPU Topology:\r\nGPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    CPU Affinity    NUMA Affinity   GPU NUMA ID\r\nGPU0     X      NODE    NODE    NV4     SYS     SYS     SYS     SYS     0-23,48-71      0               N/A\r\nGPU1    NODE     X      NV4     PIX     SYS     SYS     SYS     SYS     0-23,48-71      0               N/A\r\nGPU2    NODE    NV4      X      PIX     SYS     SYS     SYS     SYS     0-23,48-71      0               N/A\r\nGPU3    NV4     PIX     PIX      X      SYS     SYS     SYS     SYS     0-23,48-71      0               N/A\r\nGPU4    SYS     SYS     SYS     SYS      X      NV4     NODE    NODE    24-47,72-95     1               N/A\r\nGPU5    SYS     SYS     SYS     SYS     NV4      X      NODE    NODE    24-47,72-95     1               N/A\r\nGPU6    SYS     SYS     SYS     SYS     NODE    NODE     X      NV4     24-47,72-95     1               N/A\r\nGPU7    SYS     SYS     SYS     SYS     NODE    NODE    NV4      X      24-47,72-95     1               N/A\r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n```\r\n\r\n\r\n### \ud83d\udc1b Describe the bug\r\n\r\n![mixtral_bug](https://github.com/vllm-project/vllm/assets/67603207/458607f1-cb63-404a-98de-ad45a3a86a3a)\r\nWhen trying to run mixtral with the command: \r\n```bashCUDA_VISIBLE_DEVICES=\"4,5,6,7\" python -m vllm.entrypoints.api_server \\\r\n--model public-llm/mixtral/Mixtral-8x7B-Instruct-v0.1 \\\r\n--tensor-parallel-size 4 \\\r\n--max-model-len 8192 \\\r\n--dtype bfloat16 \\\r\n--kv-cache-dtype fp8_e5m2 \\\r\n--gpu-memory-utilization 0.8 \\\r\n--port 9999\r\n```\r\nI encountered the error: **ValueError: not enough values to unpack (expected 3, got 2)**. When trying to load Mixtral using vllm on 4xA30.\r\nI tried with 2 models, **Mixtral-8x7B-Instruct-v0.1** and **Mixtral-8x7B-Instruct-v0.1-AWQ,** and both encountered the same error like this. I installed via the vllm GitHub source. I've tried using the recommended Docker, but still encountered a similar error.",
+    "labels": [
+      "bug"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-25T09:02:03+00:00",
+    "closed_at": "2024-03-26T03:52:28+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3611/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3611"
+  },
+  {
+    "number": 4379,
+    "title": "[Installation]: Question: Does pip package comes with PUNICA kernels? ",
+    "body": "### Your current environment\r\n\r\n```text\r\nIrrelevant \r\n```\r\n\r\n\r\n### How you are installing vllm\r\n\r\n```sh\r\npip install vllm==v0.4.0.post1\r\n```\r\nMy question is: Is my assumption that pip package comes with punica kernels, and is there any intention to change this in the future? \r\n\r\nI ran a couple of tests and it seems that at least `v0.4.0.post1` comes with punica kernels:\r\n```\r\nroot@oandreeva-dt:/opt/tritonserver# python3\r\nPython 3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0] on linux\r\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\r\n>>> import vllm._punica_C as punica_kernels\r\n>>> exit()\r\n```\r\n\r\nI believe, this is intended: https://github.com/vllm-project/vllm/blob/15e7c675b0dc36109c7b591f856f102e96493a94/.github/workflows/scripts/build.sh#L16\r\n\r\nP.S. please feel free to re-direct me to a dedicated Q&A resource for next time. \r\n",
+    "labels": [
+      "installation"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-25T23:55:12+00:00",
+    "closed_at": "2024-04-26T00:46:52+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4379/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4379"
+  },
+  {
+    "number": 4250,
+    "title": "Diverse Beam Search",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nNow vllm cannot support diverse beam search which transformers already supports(https://huggingface.co/docs/transformers/generation_strategies#diverse-beam-search-decoding), will you implement diverse beam search in vllm?\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-22T03:20:27+00:00",
+    "closed_at": "2024-11-29T02:06:38+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4250/reactions",
+      "total_count": 4,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 1,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 3
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4250"
+  },
+  {
+    "number": 813,
+    "title": "Stream Tokens operation integration into LLM class (which uses LLMEngine behind the scenes)",
+    "body": "Hey,\r\nI wonder why the token streaming via LLM class is not implemented, but for LLMEngine it does?\r\nhttps://github.com/vllm-project/vllm/blob/main/vllm/entrypoints/llm.py\r\nLLM is using behind the scene the LLMEngine. LLM class is much simpler (to me I guess, not sure if to everyone else) and also utilize batch processing on top (on top  LLMEngine) of tensor parallel, so it would be nice to get also a stream with batch process together if possible, or either of them. It shouldn't be much work to do as I read the code and after I talked with @naed90 about that feature.\r\nThanks, Orel",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-08-21T11:21:55+00:00",
+    "closed_at": "2024-03-20T12:44:54+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/813/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/813"
+  },
+  {
+    "number": 4899,
+    "title": "[Usage]: Passing a guided_json in offline inference",
+    "body": "### Your current environment\n\n```text\r\nvllm 0.4.2\r\n```\r\n\n\n### How would you like to use vllm\n\nI'm trying to force a json generation using outlines in offline inference. I don't see anything related in the documentation.\r\n\r\nI haven't found an example of chat completion for offline inference, but I've managed to mimic it using chat templates, this is why I need to force a json generation.\r\n",
+    "labels": [
+      "usage",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-18T09:08:07+00:00",
+    "closed_at": "2024-11-27T02:08:12+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4899/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4899"
+  },
+  {
+    "number": 5248,
+    "title": "[Misc]: vllm ONLY allocate KVCache on the first device in CUDA_VISIBLE_DEVICES",
+    "body": "### KVCache usage\r\n\r\nit seems like the KVCache is only allocated on the first device in CUDA_VISIBLE_DEVICES, even if using `tensor-parallel-size` > 1. Is there any plan to support full KVCache allocated in all devices?\r\n\r\n[cache_engine.py](https://github.com/vllm-project/vllm/tree/main/vllm/worker)\r\n```python\r\n        # Initialize the cache. # line 56\r\n        self.gpu_cache = self._allocate_kv_cache(self.num_gpu_blocks, \"cuda\")\r\n```",
+    "labels": [
+      "misc",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-04T11:44:47+00:00",
+    "closed_at": "2024-11-30T02:01:45+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/5248/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/5248"
+  },
+  {
+    "number": 2782,
+    "title": "support set logprobs to model vocab size",
+    "body": "set logprobs to model vocab size is hard, some model can use len(tokenizer), some use tokenizer.vocab_size, some will raise an error. so need to support set logprobs to model vocab size",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-06T06:40:00+00:00",
+    "closed_at": "2024-11-30T02:02:40+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2782/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2782"
+  },
+  {
+    "number": 2603,
+    "title": "Add documentation for multi-LoRA",
+    "body": "Add some documentation on how multi-LoRA works and how to use it.",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-01-25T17:30:23+00:00",
+    "closed_at": "2024-02-12T16:24:46+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2603/reactions",
+      "total_count": 13,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 6
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2603"
+  },
+  {
+    "number": 2513,
+    "title": "prefix caching error with baichuan model",
+    "body": "## Machine Info\r\n- Ubuntu\r\n- cuda driver 12.1\r\n- T4 GPU x4\r\n\r\n## Reproduce Step\r\n\r\nOnly change llm line in `examples/offline_inference_with_prefix.py` with\r\n```\r\nllm = LLM(model=\"baichuan-inc/Baichuan2-13B-Chat\", tensor_parallel_size=4, enforce_eager=True, dtype=\"half\", trust_remote_code=True)\r\n``` \r\n\r\n## Error message:\r\n```\r\ntriton.runtime.autotuner.OutOfResources: out of resource: shared memory, Required: 65538, Hardware limit: 65536. Reducing block sizes or `num_stages` may help.\u0000\r\n```\r\n\r\nWhen i use a common llama arch like `TInyllama` model, it's ok. Might related `Alibi`? \r\n\r\n@DouHappy @caoshiyi @zhuohan123  Please take a look!",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-01-20T00:16:16+00:00",
+    "closed_at": "2024-01-20T13:45:55+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2513/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2513"
+  },
+  {
+    "number": 1271,
+    "title": "Can't load fine-tuned LLama2 model stored in local",
+    "body": "I have a fine-tuned LLama2 model (LoRA Layers merged). Model folder contains following files:\r\n\r\n- config.json\r\n- generation_config.json\r\n- model-00001-of-00002.safetensors \r\n- model-00002-of-00002.safetensors\r\n- model.safetensors.index.json \r\n- special_tokens_map.json\r\n- tokenizer_config.json \r\n- tokenizer.json\r\n\r\nWhen I try to load the model it throws following error. Any idea on how to resolve this?\r\n\r\n`llm = LLM(model=\"./llama-ft/merged_model\")`\r\n\r\n\r\n> ---------------------------------------------------------------------------\r\n> AssertionError                            Traceback (most recent call last)\r\n> Cell In[16], line 11\r\n>       3 prompts = [\r\n>       4     \"Hello, my name is\",\r\n>       5     \"The president of the United States is\",\r\n>       6     \"The capital of France is\",\r\n>       7     \"The future of AI is\",\r\n>       8 ]\r\n>       9 sampling_params = SamplingParams(temperature=0.8, top_p=0.95)\r\n> ---> 11 llm = LLM(model=\"./llama-ft/merged_model\")\r\n> \r\n> File /opt/conda/lib/python3.10/site-packages/vllm/entrypoints/llm.py:89, in LLM.__init__(self, model, tokenizer, tokenizer_mode, trust_remote_code, tensor_parallel_size, dtype, quantization, revision, seed, gpu_memory_utilization, swap_space, **kwargs)\r\n>      74     kwargs[\"disable_log_stats\"] = True\r\n>      75 engine_args = EngineArgs(\r\n>      76     model=model,\r\n>      77     tokenizer=tokenizer,\r\n>    (...)\r\n>      87     **kwargs,\r\n>      88 )\r\n> ---> 89 self.llm_engine = LLMEngine.from_engine_args(engine_args)\r\n>      90 self.request_counter = Counter()\r\n> \r\n> File /opt/conda/lib/python3.10/site-packages/vllm/engine/llm_engine.py:229, in LLMEngine.from_engine_args(cls, engine_args)\r\n>     226 distributed_init_method, placement_group = initialize_cluster(\r\n>     227     parallel_config)\r\n>     228 # Create the LLM engine.\r\n> --> 229 engine = cls(*engine_configs,\r\n>     230              distributed_init_method,\r\n>     231              placement_group,\r\n>     232              log_stats=not engine_args.disable_log_stats)\r\n>     233 return engine\r\n> \r\n> File /opt/conda/lib/python3.10/site-packages/vllm/engine/llm_engine.py:108, in LLMEngine.__init__(self, model_config, cache_config, parallel_config, scheduler_config, distributed_init_method, placement_group, log_stats)\r\n>     106     self._init_workers_ray(placement_group)\r\n>     107 else:\r\n> --> 108     self._init_workers(distributed_init_method)\r\n>     110 # Profile the memory usage and initialize the cache.\r\n>     111 self._init_cache()\r\n> \r\n> File /opt/conda/lib/python3.10/site-packages/vllm/engine/llm_engine.py:140, in LLMEngine._init_workers(self, distributed_init_method)\r\n>     132 worker = Worker(\r\n>     133     self.model_config,\r\n>     134     self.parallel_config,\r\n>    (...)\r\n>     137     distributed_init_method,\r\n>     138 )\r\n>     139 self.workers.append(worker)\r\n> --> 140 self._run_workers(\r\n>     141     \"init_model\",\r\n>     142     get_all_outputs=True,\r\n>     143 )\r\n> \r\n> File /opt/conda/lib/python3.10/site-packages/vllm/engine/llm_engine.py:692, in LLMEngine._run_workers(self, method, get_all_outputs, *args, **kwargs)\r\n>     689     else:\r\n>     690         executor = getattr(worker, method)\r\n> --> 692     output = executor(*args, **kwargs)\r\n>     693     all_outputs.append(output)\r\n>     695 if self.parallel_config.worker_use_ray:\r\n> \r\n> File /opt/conda/lib/python3.10/site-packages/vllm/worker/worker.py:63, in Worker.init_model(self)\r\n>      60 torch.cuda.set_device(self.device)\r\n>      62 # Initialize the distributed environment.\r\n> ---> 63 _init_distributed_environment(self.parallel_config, self.rank,\r\n>      64                               self.distributed_init_method)\r\n>      66 # Initialize the model.\r\n>      67 set_random_seed(self.model_config.seed)\r\n> \r\n> File /opt/conda/lib/python3.10/site-packages/vllm/worker/worker.py:358, in _init_distributed_environment(parallel_config, rank, distributed_init_method)\r\n>     356 # A small all_reduce for warmup.\r\n>     357 torch.distributed.all_reduce(torch.zeros(1).cuda())\r\n> --> 358 initialize_model_parallel(parallel_config.tensor_parallel_size,\r\n>     359                           parallel_config.pipeline_parallel_size)\r\n> \r\n> File /opt/conda/lib/python3.10/site-packages/vllm/model_executor/parallel_utils/parallel_state.py:116, in initialize_model_parallel(tensor_model_parallel_size, pipeline_model_parallel_size, virtual_pipeline_model_parallel_size, pipeline_model_parallel_split_rank)\r\n>     114 global _DATA_PARALLEL_GROUP\r\n>     115 global _DATA_PARALLEL_GLOBAL_RANKS\r\n> --> 116 assert _DATA_PARALLEL_GROUP is None, 'data parallel group is already initialized'\r\n>     117 all_data_parallel_group_ranks = []\r\n>     118 for i in range(pipeline_model_parallel_size):\r\n> \r\n> AssertionError: data parallel group is already initialized\r\n> \r\n> \r\n> ",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-10-06T04:20:55+00:00",
+    "closed_at": "2024-03-13T11:21:00+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1271/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1271"
+  },
+  {
+    "number": 5679,
+    "title": "[Bug]: When cuda_graph is enabled, RunTimeError:NCCL error is reported using nvidia-nccl-cu11",
+    "body": "### Your current environment\n\n1\u3001\r\ntorch 2.3.0+cu118\r\nvllm 0.4.3+cu118\r\n2\u3001\r\n[root@master1 v2]# pip show torch\r\nName: torch\r\nVersion: 2.3.0+cu118\r\nSummary: Tensors and Dynamic neural networks in Python with strong GPU acceleration\r\nHome-page: https://pytorch.org/\r\nAuthor: PyTorch Team\r\nAuthor-email: [packages@pytorch.org](mailto:packages@pytorch.org)\r\nLicense: BSD-3\r\nLocation: /opt/anaconda3/envs/vllm4/lib/python3.10/site-packages\r\nRequires: filelock, fsspec, jinja2, networkx, nvidia-cublas-cu11, nvidia-cuda-cupti-cu11, nvidia-cuda-nvrtc-cu11, nvidia-cuda-runtime-cu11, nvidia-cudnn-cu11, nvidia-cufft-cu11, nvidia-curand-cu11, nvidia-cusolver-cu11, nvidia-cusparse-cu11, nvidia-nccl-cu11, nvidia-nvtx-cu11, sympy, triton, typing-extensions\r\n3\u3001(vllm4) [root@master1 v2]# pip list |grep nccl\r\nnvidia-nccl-cu11 2.20.5\n\n### \ud83d\udc1b Describe the bug\n\nWhen cuda_graph is enabled, RunTimeError:NCCL error is reported using nvidia-nccl-cu11\r\npip install nvidia-nccl-cu12 is ok.",
+    "labels": [
+      "bug",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-19T08:27:17+00:00",
+    "closed_at": "2024-11-25T02:05:39+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/5679/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/5679"
+  },
+  {
+    "number": 4243,
+    "title": "[Usage]: slow inference for fine-tuned model",
+    "body": "### Your current environment\n\nI am using SFT of huggingface transformers to fine tune model mistral 7b. https://github.com/huggingface/trl/blob/main/examples/scripts/sft.py\r\n\r\nAfter fine-tuning, the model works well, by loading via langchain - vllm  (vllm version: 0.4.0)(https://python.langchain.com/docs/integrations/llms/vllm/), \r\n```\r\nfrom langchain_community.llms import VLLM\r\nllm = VLLM(\r\n    model=\"mistralai/Mistral-7B-Instruct-v0.2\", # or drop-in replacement of fine-tuned model with local path\r\n    trust_remote_code=True,  # mandatory for hf models\r\n    max_new_tokens=128,\r\n    top_k=10,\r\n    top_p=0.95,\r\n    temperature=0.8,\r\n)\r\n```\r\nHowever, the inference latency is round 2-3 times slower than the original \"mistralai/Mistral-7B-Instruct-v0.2\".\r\nMay I ask is there any specific settings that i have missed for applying vllm on SFT model ?\r\nThanks.\n\n### How would you like to use vllm\n\nrun vllm on fine-tuned model.",
+    "labels": [
+      "usage",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-21T20:07:55+00:00",
+    "closed_at": "2024-11-29T02:06:41+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4243/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4243"
+  },
+  {
+    "number": 1793,
+    "title": "How to compile the `csrc` into an object file with `nvcc`?",
+    "body": "Hello everybody,\r\n\r\nI am trying to compile the `csrc` part of `vllm` into an object file (excluding the Python bindings). However, I cannot find a way to do this. This is the command I was using:\r\n```\r\n\"nvcc\" \"-ccbin=c++\" \"-Xcompiler\" \"-O0\" \"-Xcompiler\" \"-ffunction-sections\" \"-Xcompiler\" \"-fdata-sections\" \"-Xcompiler\" \"-fPIC\" \"-G\" \"-Xcompiler\" \"-gdwarf-4\" \"-Xcompiler\" \"-fno-omit-frame-pointer\" \"-m64\" \"-Xcompiler\" \"-Wall\" \"-Xcompiler\" \"-Wextra\" \"-I /home/ericbuehler/.local/lib/python3.10/site-packages/torch/include\" \"-I /home/ericbuehler/.local/lib/python3.10/site-packages/torch/include/torch/csrc/api/include\" \"-I /usr/include/python3.10\" \"-gencode\" \"arch=compute_62,code=sm_62\" \"-o\" \"/home/ericbuehler/candle-vllm/target/debug/build/candle-vllm-40c333732b7323b5/out/csrc/attention/attention_kernels.o\" \"-c\" \"csrc/attention/attention_kernels.cu\"\r\n```\r\nIt simply attempts to compile all `*.cu` files for a Jetson TX2 GPU (compute 6.2) as a test case, and provides paths to my libraries. However, it fails with an error code 1 and an error message that I could not find in the log.\r\n\r\nI have read the `setup.py` and see [this](https://github.com/vllm-project/vllm/blob/7c600440f7560348e571f021f2b2d1469de5264d/setup.py#L145) line which seems to be loading the CUDA kernel, but I cannot understand how the files do not appear to be compiled before use? How can I compile the `csrc` CUDA kernel using `ops.h` as the API binding? Where can I find some pointers for how to do this, perhaps an example? \r\n\r\nThanks for any help!",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-11-26T20:40:27+00:00",
+    "closed_at": "2023-11-27T20:56:45+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1793/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1793"
+  },
+  {
+    "number": 3585,
+    "title": "[Misc]: How to call the paged_attention_v2 on my own q and kv caches?",
+    "body": "### Anything you want to discuss about vllm.\r\n\r\nHi, I am trying to use the `paged_attention_v2` function on my own data, qkv.\r\n\r\nHowever, I find it is not giving the correct result. I test with the following script:\r\n\r\n```\r\nfrom typing import Optional\r\nimport argparse\r\nimport random\r\nimport time\r\n\r\nimport torch\r\nfrom flash_attn import flash_attn_func\r\nfrom vllm._C import ops, cache_ops\r\nfrom vllm.utils import create_kv_caches_with_random\r\n\r\nNUM_BLOCKS = 1024\r\nBLOCK_SIZE = 32\r\nPARTITION_SIZE = 512\r\n\r\ntorch.set_default_device('cuda:0')\r\ntorch.set_default_dtype(torch.float16)\r\n\r\ndef expand_heads(tensor, num_heads=32, num_heads_kv=8):\r\n    assert tensor.dim() == 3\r\n    _, length, dim_head = tensor.shape\r\n    num_group = num_heads // num_heads_kv\r\n    tensor = tensor.view((num_heads_kv, 1, length, dim_head))\r\n    tensor = tensor.expand((num_heads_kv, num_group, length, dim_head)).reshape((num_heads, length, dim_head))\r\n    return tensor\r\n\r\n\r\ndef make_qkv(len_k, num_head, num_head_kv, head_dim):\r\n    q = torch.randn(num_head, 1, head_dim)\r\n    k = torch.randn(num_head_kv, len_k, head_dim)\r\n    v = torch.randn(num_head_kv, len_k, head_dim)\r\n\r\n    return q, k, v\r\n\r\n\r\ndef ref_attention(q, k, v):\r\n    head_dim = q.shape[2]\r\n    scale = float(1.0 / (head_dim**0.5))\r\n    k, v = expand_heads(k), expand_heads(v)\r\n    qk = q @ k.transpose(1, 2)\r\n    qk = qk * scale\r\n    p = torch.nn.functional.softmax(qk, dim=-1)\r\n    o = p @ v\r\n    return o\r\n\r\n\r\ndef ref_flashattn(q, k, v):\r\n    q = q.unsqueeze(0).permute(0, 2, 1, 3)\r\n    k = k.unsqueeze(0).permute(0, 2, 1, 3)\r\n    v = v.unsqueeze(0).permute(0, 2, 1, 3)\r\n\r\n    o = flash_attn_func(q, k, v).squeeze(0).permute(1, 0, 2)\r\n    return o\r\n\r\n\r\ndef paged_attention(q, k, v):\r\n    '''\r\n    q = torch.randn(num_head, 1, head_dim)\r\n    k = torch.randn(num_head_kv, len_k, head_dim)\r\n    v = torch.randn(num_head_kv, len_k, head_dim)\r\n    '''\r\n    num_head = q.shape[0]\r\n    num_head_kv = k.shape[0]\r\n    head_dim = k.shape[2]\r\n    len_k = k.shape[1]\r\n    activated_block = (len_k + BLOCK_SIZE - 1) // BLOCK_SIZE\r\n    block_tables = torch.arange(activated_block, dtype=torch.int32).unsqueeze(0)\r\n\r\n    k_caches, v_caches = create_kv_caches_with_random(NUM_BLOCKS, BLOCK_SIZE, 1, num_head_kv, head_dim, \"auto\", q.dtype)\r\n    k_cache, v_cache = k_caches[0], v_caches[0]\r\n    q = q.permute(1, 0, 2)\r\n    k = k.permute(1, 0, 2)\r\n    v = v.permute(1, 0, 2)\r\n\r\n    slots = torch.tensor(range(len_k), dtype=torch.long)\r\n    print(q.shape, k.shape, v.shape, slots)\r\n    cache_ops.reshape_and_cache(k, v, k_cache, v_cache, slots, \"auto\")\r\n\r\n    q = q.reshape(1, num_head, head_dim)\r\n\r\n    output = torch.empty(1, num_head, head_dim, dtype=q.dtype)\r\n\r\n    num_partitions = ((len_k + PARTITION_SIZE - 1) //\r\n                        PARTITION_SIZE)\r\n    assert PARTITION_SIZE % BLOCK_SIZE == 0\r\n    num_seqs, num_heads, head_size = output.shape\r\n    tmp_output = torch.empty(\r\n        size=(num_seqs, num_heads, num_partitions, head_size),\r\n        dtype=output.dtype\r\n    )\r\n    exp_sums = torch.empty(\r\n        size=(num_seqs, num_heads, num_partitions),\r\n        dtype=torch.float32\r\n    )\r\n    max_logits = torch.empty_like(exp_sums)\r\n\r\n    ops.paged_attention_v2(\r\n        output,\r\n        exp_sums,\r\n        max_logits,\r\n        tmp_output,\r\n        q,\r\n        k_cache,\r\n        v_cache,\r\n        num_head_kv,\r\n        float(1.0 / (head_dim**0.5)),\r\n        block_tables,\r\n        torch.tensor([len_k], dtype=torch.int32, device=q.device),\r\n        BLOCK_SIZE,\r\n        len_k,\r\n        None,\r\n        \"auto\"\r\n    )\r\n    return output.squeeze(0)\r\n\r\n\r\nq, k, v = make_qkv(10, 32, 8, 128)\r\no_ref = ref_attention(q, k, v)[:, 0]\r\no_fa = ref_flashattn(q, k, v)[:, 0]\r\no_pa = paged_attention(q, k, v)\r\nprint('Vanilla attention:')\r\nprint(o_ref)\r\nprint('\\nFlash attention:')\r\nprint(o_fa)\r\nprint('\\nPaged attention:')\r\nprint(o_pa, o_pa.shape)\r\n```\r\n\r\nIn my above code, I set the length of `kv` to be `10`, and the block size to be 32. Therefore, only the first block should be used, thus the `block_table` is `[[0]]`. However, the output looks wrong:\r\n\r\n```\r\nVanilla attention:\r\ntensor([[-0.1760, -0.3501,  0.0952,  ...,  0.1364, -0.5576, -0.0062],\r\n        [-0.0789, -0.4060,  0.1804,  ...,  0.5312, -0.4551,  0.0644],\r\n        [ 0.0455,  0.0097, -0.0822,  ...,  0.3403, -0.3801, -0.5190],\r\n        ...,\r\n        [-0.7676,  0.2522, -0.1274,  ...,  0.1797, -0.3899, -0.6133],\r\n        [-0.4763,  0.6548, -0.2444,  ..., -0.0674, -0.5127,  0.1484],\r\n        [-0.5444,  0.5742,  0.4604,  ...,  0.5264, -0.6250,  0.4282]],\r\n       device='cuda:0')\r\n\r\nFlash attention:\r\ntensor([[-0.1760, -0.3501,  0.0952,  ...,  0.1362, -0.5576, -0.0062],\r\n        [-0.0789, -0.4060,  0.1805,  ...,  0.5312, -0.4553,  0.0645],\r\n        [ 0.0455,  0.0097, -0.0821,  ...,  0.3406, -0.3804, -0.5190],\r\n        ...,\r\n        [-0.7676,  0.2524, -0.1274,  ...,  0.1796, -0.3899, -0.6128],\r\n        [-0.4763,  0.6548, -0.2444,  ..., -0.0674, -0.5127,  0.1484],\r\n        [-0.5439,  0.5747,  0.4602,  ...,  0.5264, -0.6255,  0.4290]],\r\n       device='cuda:0')\r\n\r\nPaged attention:\r\ntensor([[-0.1761, -0.3499,  0.0952,  ...,  0.1360, -0.5576, -0.0064],\r\n        [-0.0789, -0.4060,  0.1807,  ...,  0.5312, -0.4553,  0.0645],\r\n        [ 0.0456,  0.0097, -0.0825,  ...,  0.3403, -0.3804, -0.5186],\r\n        ...,\r\n        [-0.3254, -0.7471,  0.5620,  ...,  0.4473,  0.1311, -0.3809],\r\n        [-0.3582, -0.2439, -0.1754,  ...,  0.0427, -0.3494, -0.0677],\r\n        [-0.3640,  0.4548,  0.1381,  ...,  0.0438, -0.0980, -0.0275]],\r\n       device='cuda:0') torch.Size([32, 128])\r\n```\r\nAs you can see, only the first several lines of output are correct.\r\n\r\nI further check the output starting from the first head, and I found the following:\r\n```\r\nprint_first = 5\r\nprint('Vanilla attention:')\r\nprint(o_ref[:print_first, 57:69], o_ref.shape)\r\nprint('\\nFlash attention:')\r\nprint(o_fa[:print_first, 57:69], o_fa.shape)\r\nprint('\\nPaged attention:')\r\nprint(o_pa[:print_first, 57:69], o_pa.shape)\r\n\r\nVanilla attention:\r\ntensor([[ 0.2207,  0.5747,  0.4590, -0.5278,  0.2886,  0.0807, -0.1776,  0.4517,\r\n         -0.2893,  0.0796, -0.2537, -0.4487],\r\n        [ 0.0433,  0.8745,  0.6284, -0.7466, -0.1093,  0.5020, -0.8545, -0.5391,\r\n          0.4675, -0.0595,  0.3262, -0.1733],\r\n        [ 0.4810,  0.3066,  0.5342, -0.5845,  0.1986,  0.4680,  0.2181,  0.3647,\r\n         -0.4055,  0.3743, -0.0800, -0.4871],\r\n        [ 0.5420,  0.2603,  0.4045, -0.5083,  0.0301,  0.3479,  0.1927,  0.1514,\r\n         -0.4016,  0.2983,  0.0888, -0.5322],\r\n        [ 0.2203, -0.2715, -0.4641, -0.0901, -0.4060,  0.5386,  0.1970,  0.2397,\r\n         -0.3032,  0.4636, -0.2035, -0.3083]], device='cuda:0') torch.Size([32, 128])\r\n\r\nFlash attention:\r\ntensor([[ 0.2206,  0.5752,  0.4590, -0.5278,  0.2886,  0.0807, -0.1776,  0.4514,\r\n         -0.2896,  0.0796, -0.2534, -0.4487],\r\n        [ 0.0430,  0.8750,  0.6284, -0.7466, -0.1093,  0.5015, -0.8545, -0.5391,\r\n          0.4675, -0.0595,  0.3259, -0.1731],\r\n        [ 0.4812,  0.3066,  0.5342, -0.5845,  0.1986,  0.4680,  0.2181,  0.3647,\r\n         -0.4058,  0.3745, -0.0800, -0.4871],\r\n        [ 0.5420,  0.2603,  0.4045, -0.5083,  0.0300,  0.3479,  0.1929,  0.1514,\r\n         -0.4016,  0.2983,  0.0888, -0.5322],\r\n        [ 0.2203, -0.2712, -0.4641, -0.0900, -0.4060,  0.5386,  0.1971,  0.2397,\r\n         -0.3030,  0.4634, -0.2035, -0.3086]], device='cuda:0') torch.Size([32, 128])\r\n\r\nPaged attention:\r\ntensor([[ 0.2205,  0.5747,  0.4587, -0.5278,  0.2886,  0.0807, -0.1775,  0.4514,\r\n         -0.2893,  0.0797, -0.2534, -0.4487],\r\n        [ 0.0431,  0.8750,  0.6284, -0.7466, -0.1094,  0.5015, -0.8550, -0.5391,\r\n          0.4675, -0.0595,  0.3259, -0.1731],\r\n        [ 0.4812,  0.3069,  0.5342, -0.5845,  0.1987,  0.4678,  0.2181,  0.3647,\r\n         -0.4058,  0.3745, -0.0798, -0.4868],\r\n        [ 0.5425,  0.2603,  0.4043, -0.5083,  0.0299,  0.3479,  0.1929,  0.1511,\r\n         -0.4016,  0.2983,  0.0889, -0.5317],\r\n        [ 0.5698,  0.3608,  0.4990, -0.5796,  0.2260,  0.4634, -0.0039,  0.5776,\r\n         -0.2742,  0.1831, -0.4377, -0.4846]], device='cuda:0') torch.Size([32, 128])\r\n```\r\nIt looks like the first 4 heads are correct, but rest of heads are incorrect. Since I am using `num_head_kv=8` and `num_head=32`, which gives a group of 4, would this be the cause of the problem?\r\n\r\n\r\nI'd appreciate it if you could guide me on this. \r\nThanks!",
+    "labels": [
+      "misc"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-23T15:39:13+00:00",
+    "closed_at": "2024-03-23T23:30:29+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3585/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3585"
+  },
+  {
+    "number": 65,
+    "title": "Add documents on how to add new models",
+    "body": null,
+    "labels": [
+      "documentation"
+    ],
+    "state": "closed",
+    "created_at": "2023-05-04T09:05:56+00:00",
+    "closed_at": "2023-06-06T03:01:28+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/65/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/65"
+  },
+  {
+    "number": 1850,
+    "title": "Profile and optimize list operations in scheduling",
+    "body": "BTW, we are considering using Numpy to reduce the list operations. I believe this can be done in another PR.\r\n\r\n_Originally posted by @WoosukKwon in https://github.com/vllm-project/vllm/pull/1843#discussion_r1410054638_\r\n            ",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-30T06:16:10+00:00",
+    "closed_at": "2024-10-26T16:43:35+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1850/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1850"
+  },
+  {
+    "number": 3052,
+    "title": "Can the VLLM framework support Huawei's 910B chip in the later stage?",
+    "body": "Can the VLLM framework support Huawei's 910B chip in the later stage?",
+    "labels": [
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-27T08:49:03+00:00",
+    "closed_at": "2025-01-19T02:02:09+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3052/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3052"
+  },
+  {
+    "number": 3908,
+    "title": "[Usage]: I have two Gpus, how do I make my model run on 2 gpus",
+    "body": "### Your current environment\n\n```text\r\npython -m vllm.entrypoints.openai.api_server --served-model-name Qwen1.5-0.5B-Chat --model /home/project/models/qwen-0.5b\r\n```\r\n\n\n### How would you like to use vllm\n\nI want to run inference of a [specific model](put link here). I don't know how to integrate it with vllm.\r\n",
+    "labels": [
+      "usage"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-08T02:32:44+00:00",
+    "closed_at": "2024-04-20T00:04:36+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3908/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3908"
+  },
+  {
+    "number": 764,
+    "title": "How to set cache dir?",
+    "body": "How to set cache_dir for the model like huggingface AutoModel...",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2023-08-15T12:03:51+00:00",
+    "closed_at": "2024-03-13T11:48:32+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/764/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/764"
+  },
+  {
+    "number": 404,
+    "title": "T5 model support",
+    "body": "Any plans on adding T5 models?\r\nFLAN-T5 are particularly interesting",
+    "labels": [
+      "new-model"
+    ],
+    "state": "closed",
+    "created_at": "2023-07-08T20:07:00+00:00",
+    "closed_at": "2024-03-06T08:58:35+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/404/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/404"
+  },
+  {
+    "number": 6328,
+    "title": "[Bug]: VLLM's output is unstable version==0.5.1",
+    "body": "### Your current environment\n\nusing version==0.5.1 docker images:\r\ncommand:\r\nusing model qwen2-GPTQ-Int4\r\ndocker run -it --rm --gpus  '\"device=0,7,8,9\"'  -p 8090:8090 -e NCCL_P2P_DISABLE=1 -e NCCL_SHM_DISABLE=1 -v /nfs2:/nfs2  -v /var:/var  -v /nfs3:/nfs3 -v /nfs5:/nfs5 --shm-size 20g XXXXXXXXX:XXXXXXX python3 -m vllm.entrypoints.openai.api_server --host=0.0.0.0 --port=8090 --model=XXXX/source/deps --served-model-name=qwen2-GPTQ-Int4 --gpu-memory-utilization 0.9 --tensor-parallel-size 4 --seed 42;\r\n\n\n### \ud83d\udc1b Describe the bug\n\nI generated 50 results by using http://XXXX/v1/chat/completions with params like:\r\n```markdown\r\n   \"model\": \"qwen2-GPTQ-Int4\",\r\n    \"temperature\": 0,\r\n    \"n\": 1,\r\n    \"best_of\":1,\r\n    \"presence_penalty\":0.0,\r\n    \"frequency_penalty\":0.0,\r\n    \"repetition_penalty\":1.0,\r\n    \"top_p\": 1.0,\r\n    \"top_k\":1.0,\r\n    \"min_p\":0.0\r\n```\r\n**But I got different results eventhough most of them are the same(>90% are same)**\uff0c .\r\nResults LIKE:\r\n['P41T33', 'P76T139', 'P76T140', 'P77T142', 'P111T257', 'P111T260', 'P111T261']\r\n['P41T33', 'P76T139', 'P76T140', 'P77T142', 'P111T257', 'P111T260', 'P111T261']\r\n['P41T33', 'P76T139', 'P76T140', 'P77T142', 'P111T257', 'P111T260', 'P111T261']\r\n['P41T33', 'P76T139', 'P77T142', 'P111T257', 'P111T260', 'P111T261']\r\n\r\n**The instability increases with inputs larger than 8K. When I use 30K inputs, less than 70% of the results are stable**\r\n\r\nI'm not sure what's causing this.\r\nIs it due to the quantized version, or something else? \r\nCould you please help check if there's an issue with the parameters? \r\nIf stability in output is desired, where can I make adjustments?\r\n\r\n\r\n",
+    "labels": [
+      "bug",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-11T09:37:53+00:00",
+    "closed_at": "2024-11-24T02:08:29+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6328/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6328"
+  },
+  {
+    "number": 6518,
+    "title": "(not planned)",
+    "body": "(not planned)",
+    "labels": [
+      "RFC"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-17T20:18:52+00:00",
+    "closed_at": "2024-07-17T20:21:29+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6518/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6518"
+  },
+  {
+    "number": 4229,
+    "title": "[Bug]: NameError: name 'vllm_ops' is not defined",
+    "body": "### Your current environment\n\nvllm version: 0.4.0.post1\r\n\r\n\n\n### \ud83d\udc1b Describe the bug\n\n`CUDA_VISIBLE_DEVICES=\"4\"  python -u -m vllm.entrypoints.openai.api_server     --model mistralai/Mistral-7B-Instruct-v0.2     --dtype auto --api-key yanan     --tensor-parallel-size 1 --port 1703 --host 0.0.0.0     --worker-use-ray --gpu-memory-utilization 1`\r\n\r\n\r\nerror:\r\n\r\n> INFO 04-20 20:39:58 api_server.py:149] vLLM API server version 0.4.1\r\n> INFO 04-20 20:39:58 api_server.py:150] args: Namespace(host='0.0.0.0', port=1703, uvicorn_log_level='info', allow_credentials=False, allowed_origins=['*'], allowed_methods=['*'], allowed_headers=['*'], api_key='yanan', served_model_name=None, lora_modules=None, chat_template=None, response_role='assistant', ssl_keyfile=None, ssl_certfile=None, ssl_ca_certs=None, ssl_cert_reqs=0, root_path=None, middleware=[], model='mistralai/Mistral-7B-Instruct-v0.2', tokenizer=None, revision=None, code_revision=None, tokenizer_revision=None, tokenizer_mode='auto', trust_remote_code=False, download_dir=None, load_format='auto', dtype='auto', kv_cache_dtype='auto', quantization_param_path=None, max_model_len=None, guided_decoding_backend='outlines', worker_use_ray=True, pipeline_parallel_size=1, tensor_parallel_size=1, max_parallel_loading_workers=None, ray_workers_use_nsight=False, block_size=16, enable_prefix_caching=False, use_v2_block_manager=False, num_lookahead_slots=0, seed=0, swap_space=4, gpu_memory_utilization=1.0, num_gpu_blocks_override=None, max_num_batched_tokens=None, max_num_seqs=256, max_logprobs=5, disable_log_stats=False, quantization=None, enforce_eager=False, max_context_len_to_capture=8192, disable_custom_all_reduce=False, tokenizer_pool_size=0, tokenizer_pool_type='ray', tokenizer_pool_extra_config=None, enable_lora=False, max_loras=1, max_lora_rank=16, lora_extra_vocab_size=256, lora_dtype='auto', max_cpu_loras=None, device='auto', image_input_type=None, image_token_id=None, image_input_shape=None, image_feature_size=None, scheduler_delay_factor=0.0, enable_chunked_prefill=False, speculative_model=None, num_speculative_tokens=None, model_loader_extra_config=None, engine_use_ray=False, disable_log_requests=False, max_log_len=None)\r\n> 2024-04-20 20:40:01,364 INFO worker.py:1749 -- Started a local Ray instance.\r\n> INFO 04-20 20:40:02 llm_engine.py:98] Initializing an LLM engine (v0.4.1) with config: model='mistralai/Mistral-7B-Instruct-v0.2', speculative_config=None, tokenizer='mistralai/Mistral-7B-Instruct-v0.2', tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=32768, download_dir=None, load_format=auto, tensor_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto, quantization_param_path=None, device_config=cuda, decoding_config=DecodingConfig(guided_decoding_backend='outlines'), seed=0)\r\n> INFO 04-20 20:40:05 utils.py:580] Found nccl from library /home/chenyanan/.config/vllm/nccl/cu12/libnccl.so.2.18.1\r\n> INFO 04-20 20:40:06 selector.py:77] Cannot use FlashAttention backend because the flash_attn package is not found. Please install it for better performance.\r\n> INFO 04-20 20:40:06 selector.py:33] Using XFormers backend.\r\n> INFO 04-20 20:40:08 weight_utils.py:193] Using model weights format ['*.safetensors']\r\n> INFO 04-20 20:40:10 model_runner.py:173] Loading model weights took 13.4966 GB\r\n> ERROR 04-20 20:40:11 worker_base.py:153] Error executing method determine_num_available_blocks. This might cause deadlock in distributed execution.\r\n> ERROR 04-20 20:40:11 worker_base.py:153] Traceback (most recent call last):\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/vllm/vllm/worker/worker_base.py\", line 145, in execute_method\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return executor(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return func(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/vllm/vllm/worker/worker.py\", line 138, in determine_num_available_blocks\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     self.model_runner.profile_run()\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return func(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/vllm/vllm/worker/model_runner.py\", line 927, in profile_run\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     self.execute_model(seqs, kv_caches)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return func(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/vllm/vllm/worker/model_runner.py\", line 848, in execute_model\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     hidden_states = model_executable(**execute_model_kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1518, in _wrapped_call_impl\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return self._call_impl(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1527, in _call_impl\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return forward_call(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/vllm/vllm/model_executor/models/llama.py\", line 360, in forward\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     hidden_states = self.model(input_ids, positions, kv_caches,\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1518, in _wrapped_call_impl\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return self._call_impl(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1527, in _call_impl\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return forward_call(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/vllm/vllm/model_executor/models/llama.py\", line 286, in forward\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     hidden_states, residual = layer(\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1518, in _wrapped_call_impl\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return self._call_impl(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1527, in _call_impl\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return forward_call(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/vllm/vllm/model_executor/models/llama.py\", line 224, in forward\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     hidden_states = self.input_layernorm(hidden_states)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1518, in _wrapped_call_impl\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return self._call_impl(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1527, in _call_impl\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     return forward_call(*args, **kwargs)\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/vllm/vllm/model_executor/layers/layernorm.py\", line 60, in forward\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     ops.rms_norm(\r\n> ERROR 04-20 20:40:11 worker_base.py:153]   File \"/home/chenyanan/vllm/vllm/_custom_ops.py\", line 106, in rms_norm\r\n> ERROR 04-20 20:40:11 worker_base.py:153]     vllm_ops.rms_norm(out, input, weight, epsilon)\r\n> ERROR 04-20 20:40:11 worker_base.py:153] NameError: name 'vllm_ops' is not defined\r\n> Traceback (most recent call last):\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\r\n>     return _run_code(code, main_globals, None,\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/runpy.py\", line 86, in _run_code\r\n>     exec(code, run_globals)\r\n>   File \"/home/chenyanan/vllm/vllm/entrypoints/openai/api_server.py\", line 157, in <module>\r\n>     engine = AsyncLLMEngine.from_engine_args(\r\n>   File \"/home/chenyanan/vllm/vllm/engine/async_llm_engine.py\", line 356, in from_engine_args\r\n>     engine = cls(\r\n>   File \"/home/chenyanan/vllm/vllm/engine/async_llm_engine.py\", line 319, in __init__\r\n>     self.engine = self._init_engine(*args, **kwargs)\r\n>   File \"/home/chenyanan/vllm/vllm/engine/async_llm_engine.py\", line 432, in _init_engine\r\n>     return engine_class(*args, **kwargs)\r\n>   File \"/home/chenyanan/vllm/vllm/engine/llm_engine.py\", line 153, in __init__\r\n>     self._initialize_kv_caches()\r\n>   File \"/home/chenyanan/vllm/vllm/engine/llm_engine.py\", line 228, in _initialize_kv_caches\r\n>     self.model_executor.determine_num_available_blocks())\r\n>   File \"/home/chenyanan/vllm/vllm/executor/ray_gpu_executor.py\", line 199, in determine_num_available_blocks\r\n>     num_blocks = self._run_workers(\"determine_num_available_blocks\", )\r\n>   File \"/home/chenyanan/vllm/vllm/executor/ray_gpu_executor.py\", line 323, in _run_workers\r\n>     driver_worker_output = self.driver_worker.execute_method(\r\n>   File \"/home/chenyanan/vllm/vllm/worker/worker_base.py\", line 154, in execute_method\r\n>     raise e\r\n>   File \"/home/chenyanan/vllm/vllm/worker/worker_base.py\", line 145, in execute_method\r\n>     return executor(*args, **kwargs)\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n>     return func(*args, **kwargs)\r\n>   File \"/home/chenyanan/vllm/vllm/worker/worker.py\", line 138, in determine_num_available_blocks\r\n>     self.model_runner.profile_run()\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n>     return func(*args, **kwargs)\r\n>   File \"/home/chenyanan/vllm/vllm/worker/model_runner.py\", line 927, in profile_run\r\n>     self.execute_model(seqs, kv_caches)\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n>     return func(*args, **kwargs)\r\n>   File \"/home/chenyanan/vllm/vllm/worker/model_runner.py\", line 848, in execute_model\r\n>     hidden_states = model_executable(**execute_model_kwargs)\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1518, in _wrapped_call_impl\r\n>     return self._call_impl(*args, **kwargs)\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1527, in _call_impl\r\n>     return forward_call(*args, **kwargs)\r\n>   File \"/home/chenyanan/vllm/vllm/model_executor/models/llama.py\", line 360, in forward\r\n>     hidden_states = self.model(input_ids, positions, kv_caches,\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1518, in _wrapped_call_impl\r\n>     return self._call_impl(*args, **kwargs)\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1527, in _call_impl\r\n>     return forward_call(*args, **kwargs)\r\n>   File \"/home/chenyanan/vllm/vllm/model_executor/models/llama.py\", line 286, in forward\r\n>     hidden_states, residual = layer(\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1518, in _wrapped_call_impl\r\n>     return self._call_impl(*args, **kwargs)\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1527, in _call_impl\r\n>     return forward_call(*args, **kwargs)\r\n>   File \"/home/chenyanan/vllm/vllm/model_executor/models/llama.py\", line 224, in forward\r\n>     hidden_states = self.input_layernorm(hidden_states)\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1518, in _wrapped_call_impl\r\n>     return self._call_impl(*args, **kwargs)\r\n>   File \"/home/chenyanan/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py\", line 1527, in _call_impl\r\n>     return forward_call(*args, **kwargs)\r\n>   File \"/home/chenyanan/vllm/vllm/model_executor/layers/layernorm.py\", line 60, in forward\r\n>     ops.rms_norm(\r\n>   File \"/home/chenyanan/vllm/vllm/_custom_ops.py\", line 106, in rms_norm\r\n>     vllm_ops.rms_norm(out, input, weight, epsilon)\r\n> NameError: name 'vllm_ops' is not defined",
+    "labels": [
+      "bug"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-21T00:43:20+00:00",
+    "closed_at": "2024-05-31T07:07:46+00:00",
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4229/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4229"
+  },
+  {
+    "number": 4509,
+    "title": "[Bug] FP8 MoE performance regression since updating to torch 2.3.0",
+    "body": "### Your current environment\r\n\r\nH100 80GB, torch 2.3.0\r\n\r\n\r\n### \ud83d\udc1b Describe the bug\r\n\r\nSince https://github.com/vllm-project/vllm/pull/4454, the performance on the FP8 MoE kernel has been pretty bad. On FP8, for qps 6 (1000 input, 50 output tokens) and static activation scales on H100, the mixtral 8x7b ITL goes from 12ms to over 40ms.",
+    "labels": [
+      "bug"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-01T00:32:49+00:00",
+    "closed_at": "2024-07-12T19:04:27+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4509/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4509"
+  }
+]

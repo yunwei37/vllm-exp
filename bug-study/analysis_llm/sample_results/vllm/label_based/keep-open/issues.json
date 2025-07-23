@@ -1,0 +1,406 @@
+[
+  {
+    "number": 5827,
+    "title": "[Bug]: Internal Server Error when hosting Alibaba-NLP/gte-Qwen2-7B-instruct",
+    "body": "### Your current environment\n\nUsing latest available docker image: vllm/vllm-openai:v0.5.0.post1\r\n\n\n### \ud83d\udc1b Describe the bug\n\nI am getting as response \"Internal Server Error\" when calling the /v1/embeddings endpoint of the Kubernetes-deployed version of the model x. I am using the following json request as body:\r\n```json\r\n{\r\n  \"model\": \"/mnt/models/\",\r\n  \"input\": [\r\n    \"test\"\r\n  ],\r\n  \"user\": \"user\"\r\n}\r\n```\r\n\r\nFor reference, here is the log of the vLLM container:\r\n```\r\nINFO 06-25 14:21:47 api_server.py:177] vLLM API server version 0.5.0.post1\r\nINFO 06-25 14:21:47 api_server.py:178] args: Namespace(host=None, port=8080, uvicorn_log_level='info', allow_credentials=False, allowed_origins=['*'], allowed_methods=['*'], allowed_headers=['*'], api_key=None, lora_modules=None, chat_template=None, response_role='assistant', ssl_keyfile=None, ssl_certfile=None, ssl_ca_certs=None, ssl_cert_reqs=0, root_path=None, middleware=[], model='/mnt/models/', tokenizer=None, skip_tokenizer_init=False, revision=None, code_revision=None, tokenizer_revision=None, tokenizer_mode='auto', trust_remote_code=True, download_dir='/models-cache', load_format='auto', dtype='auto', kv_cache_dtype='auto', quantization_param_path=None, max_model_len=8000, guided_decoding_backend='outlines', distributed_executor_backend=None, worker_use_ray=False, pipeline_parallel_size=1, tensor_parallel_size=1, max_parallel_loading_workers=None, ray_workers_use_nsight=False, block_size=16, enable_prefix_caching=False, disable_sliding_window=False, use_v2_block_manager=False, num_lookahead_slots=0, seed=0, swap_space=4, gpu_memory_utilization=0.9, num_gpu_blocks_override=None, max_num_batched_tokens=None, max_num_seqs=256, max_logprobs=20, disable_log_stats=False, quantization=None, rope_scaling=None, rope_theta=None, enforce_eager=False, max_context_len_to_capture=None, max_seq_len_to_capture=8192, disable_custom_all_reduce=False, tokenizer_pool_size=0, tokenizer_pool_type='ray', tokenizer_pool_extra_config=None, enable_lora=False, max_loras=1, max_lora_rank=16, lora_extra_vocab_size=256, lora_dtype='auto', long_lora_scaling_factors=None, max_cpu_loras=None, fully_sharded_loras=False, device='auto', image_input_type=None, image_token_id=None, image_input_shape=None, image_feature_size=None, image_processor=None, image_processor_revision=None, disable_image_processor=False, scheduler_delay_factor=0.0, enable_chunked_prefill=False, speculative_model=None, num_speculative_tokens=None, speculative_max_model_len=None, speculative_disable_by_batch_size=None, ngram_prompt_lookup_max=None, ngram_prompt_lookup_min=None, model_loader_extra_config=None, preemption_mode=None, served_model_name=None, qlora_adapter_name_or_path=None, engine_use_ray=False, disable_log_requests=False, max_log_len=None)\r\nINFO 06-25 14:21:47 config.py:1197] Casting torch.float32 to torch.float16.\r\nINFO 06-25 14:21:47 config.py:1218] Downcasting torch.float32 to torch.float16.\r\nINFO 06-25 14:21:47 llm_engine.py:161] Initializing an LLM engine (v0.5.0.post1) with config: model='/mnt/models/', speculative_config=None, tokenizer='/mnt/models/', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, rope_scaling=None, rope_theta=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.float16, max_seq_len=8000, download_dir='/models-cache', load_format=LoadFormat.AUTO, tensor_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto, quantization_param_path=None, device_config=cuda, decoding_config=DecodingConfig(guided_decoding_backend='outlines'), seed=0, served_model_name=/mnt/models/)\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nINFO 06-25 14:22:53 model_runner.py:160] Loading model weights took 14.2655 GB\r\nINFO 06-25 14:22:54 gpu_executor.py:83] # GPU blocks: 27913, # CPU blocks: 4681\r\nINFO 06-25 14:22:56 model_runner.py:889] Capturing the model for CUDA graphs. This may lead to unexpected consequences if the model is not static. To run the model in eager mode, set 'enforce_eager=True' or use '--enforce-eager' in the CLI.\r\nINFO 06-25 14:22:56 model_runner.py:893] CUDA graphs can take additional 1~3 GiB memory per GPU. If you are running out of memory, consider decreasing `gpu_memory_utilization` or enforcing eager mode. You can also reduce the `max_num_seqs` as needed to decrease memory usage.\r\nINFO 06-25 14:23:03 model_runner.py:965] Graph capturing finished in 7 secs.\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nINFO 06-25 14:23:03 serving_chat.py:92] Using default chat template:\r\nINFO 06-25 14:23:03 serving_chat.py:92] {% for message in messages %}{{'<|im_start|>' + message['role'] + '\r\nINFO 06-25 14:23:03 serving_chat.py:92] ' + message['content'] + '<|im_end|>' + '\r\nINFO 06-25 14:23:03 serving_chat.py:92] '}}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\r\nINFO 06-25 14:23:03 serving_chat.py:92] ' }}{% endif %}\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nWARNING 06-25 14:23:04 serving_embedding.py:141] embedding_mode is False. Embedding API will not work.\r\nINFO:     Started server process [1]\r\nINFO:     Waiting for application startup.\r\nINFO:     Application startup complete.\r\nINFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)\r\nINFO 06-25 14:23:14 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"GET / HTTP/1.1\" 404 Not Found\r\nINFO:     127.0.0.6:0 - \"GET /favicon.ico HTTP/1.1\" 404 Not Found\r\nINFO:     127.0.0.6:0 - \"GET /docs HTTP/1.1\" 200 OK\r\nINFO:     127.0.0.6:0 - \"GET /openapi.json HTTP/1.1\" 200 OK\r\nINFO 06-25 14:23:24 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:23:34 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"POST /v1/embeddings HTTP/1.1\" 400 Bad Request\r\nINFO 06-25 14:23:44 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:23:54 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"POST /v1/embeddings HTTP/1.1\" 400 Bad Request\r\nINFO 06-25 14:24:04 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:24:14 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"POST /v1/embeddings HTTP/1.1\" 400 Bad Request\r\nINFO 06-25 14:24:24 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"POST /v1/embeddings HTTP/1.1\" 400 Bad Request\r\nINFO 06-25 14:24:34 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"POST /v1/embeddings HTTP/1.1\" 400 Bad Request\r\nINFO 06-25 14:24:44 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:24:54 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"POST /v1/embeddings HTTP/1.1\" 400 Bad Request\r\nINFO 06-25 14:25:04 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:25:14 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:25:24 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"POST /v1/embeddings HTTP/1.1\" 400 Bad Request\r\nINFO 06-25 14:25:34 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:25:44 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:25:54 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:26:04 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:26:14 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:26:24 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"POST /v1/embeddings HTTP/1.1\" 400 Bad Request\r\nINFO 06-25 14:26:34 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:26:44 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"POST /v1/embeddings HTTP/1.1\" 404 Not Found\r\nINFO 06-25 14:26:54 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"POST /v1/embeddings HTTP/1.1\" 400 Bad Request\r\nINFO 06-25 14:27:04 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO:     127.0.0.6:0 - \"POST /v1/embeddings HTTP/1.1\" 400 Bad Request\r\nINFO 06-25 14:27:14 metrics.py:341] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\r\nINFO 06-25 14:27:21 async_llm_engine.py:564] Received request cmpl-9ccf6a32602244ee80e83071838e6693-0: prompt: '!', params: PoolingParams(additional_metadata=string), prompt_token_ids: [0], lora_request: None.\r\nERROR 06-25 14:27:21 async_llm_engine.py:52] Engine background task failed\r\nERROR 06-25 14:27:21 async_llm_engine.py:52] Traceback (most recent call last):\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/async_llm_engine.py\", line 42, in _log_task_completion\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     return_value = task.result()\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/async_llm_engine.py\", line 532, in run_engine_loop\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     has_requests_in_progress = await asyncio.wait_for(\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/lib/python3.10/asyncio/tasks.py\", line 445, in wait_for\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     return fut.result()\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/async_llm_engine.py\", line 506, in engine_step\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     request_outputs = await self.engine.step_async()\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/async_llm_engine.py\", line 235, in step_async\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     output = await self.model_executor.execute_model_async(\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/vllm/executor/gpu_executor.py\", line 117, in execute_model_async\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     output = await make_async(self.driver_worker.execute_model\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/lib/python3.10/concurrent/futures/thread.py\", line 58, in run\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     result = self.fn(*self.args, **self.kwargs)\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     return func(*args, **kwargs)\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 280, in execute_model\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     output = self.model_runner.execute_model(seq_group_metadata_list,\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     return func(*args, **kwargs)\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/model_runner.py\", line 735, in execute_model\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     ) = self.prepare_input_tensors(seq_group_metadata_list)\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/model_runner.py\", line 682, in prepare_input_tensors\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     sampling_metadata = SamplingMetadata.prepare(\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/vllm/model_executor/sampling_metadata.py\", line 116, in prepare\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     ) = _prepare_seq_groups(seq_group_metadata_list, seq_lens, query_lens,\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]   File \"/usr/local/lib/python3.10/dist-packages/vllm/model_executor/sampling_metadata.py\", line 208, in _prepare_seq_groups\r\nERROR 06-25 14:27:21 async_llm_engine.py:52]     if sampling_params.seed is not None:\r\nERROR 06-25 14:27:21 async_llm_engine.py:52] AttributeError: 'NoneType' object has no attribute 'seed'\r\nException in callback functools.partial(<function _log_task_completion at 0x7f9a51e90b80>, error_callback=<bound method AsyncLLMEngine._error_callback of <vllm.engine.async_llm_engine.AsyncLLMEngine object at 0x7f9a3a136560>>)\r\nhandle: <Handle functools.partial(<function _log_task_completion at 0x7f9a51e90b80>, error_callback=<bound method AsyncLLMEngine._error_callback of <vllm.engine.async_llm_engine.AsyncLLMEngine object at 0x7f9a3a136560>>)>\r\n```\r\n\r\nWould be great if somebody could help me to get the model running as embedding model for our colleagues. Any idea what could be wrong? \r\n\r\nThanks in advance!",
+    "labels": [
+      "bug",
+      "keep-open"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-25T14:40:21+00:00",
+    "closed_at": "2024-11-15T04:23:11+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/5827/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/5827"
+  },
+  {
+    "number": 4982,
+    "title": "[New Model]: DeepSeek VL",
+    "body": "### The model to consider.\r\n\r\nhttps://huggingface.co/deepseek-ai/deepseek-vl-7b-chat\r\n\r\n### The closest model vllm already supports.\r\n\r\nLlava\r\n\r\n### What's your difficulty of supporting the model you want?\r\n\r\n",
+    "labels": [
+      "new-model",
+      "keep-open"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-22T12:54:25+00:00",
+    "closed_at": "2025-02-25T19:04:23+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4982/reactions",
+      "total_count": 2,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 1,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4982"
+  },
+  {
+    "number": 3126,
+    "title": "Conda Forge Package",
+    "body": "Any plans to release vllm via conda-forge? It's generally much easier to manage CUDA versions, etc. with conda.\r\n\r\nHappy to take a stab at a feedstock if there's interest but would prefer if one of the project owners could be a maintainer.",
+    "labels": [
+      "keep-open"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-29T22:11:12+00:00",
+    "closed_at": "2025-06-19T08:00:29+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3126/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3126"
+  },
+  {
+    "number": 2405,
+    "title": "Feature request: Expert parallel for MoE architectures",
+    "body": "Can we implement the expert parallel strategy for MoE to fully exploit the sparse activation property? Ideally, MoE should only use compute at the order of active parameters, but the current implementation uses the same compute as a dense model.\r\n\r\nExpert parallelism is very similar to data parallelism across multiple GPUs, the only difference is that the experts are on separate GPUs and the tokens are permuted during MoE layer forward pass, as shown in the figure below.\r\n\r\nI can help implement the MoE layer, but I'm curious how to implement data parallel with vLLM?\r\n\r\n![Diagram](https://github.com/vllm-project/vllm/assets/26354659/c04c1e05-30c6-458e-b791-67562fabc76f)\r\n(Diagram from [FastMoE](https://github.com/laekov/fastmoe))",
+    "labels": [
+      "feature request",
+      "keep-open"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-10T13:20:22+00:00",
+    "closed_at": "2025-03-11T13:55:51+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2405/reactions",
+      "total_count": 9,
+      "+1": 9,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2405"
+  },
+  {
+    "number": 17657,
+    "title": "Migrating from `yapf` to `ruff format`",
+    "body": "### Motivation.\n\nWe would like to transition vLLM from `yapf` to `ruff format`. This will give us:\n- Increased line length\n- Better formatting style which is more effectively enforced by tooling rather than by maintainers\n- Fewer formatting tools fighting eachother\n\n### Proposed Change.\n\nWe plan to make this change gradually using the following process.\n\nIf we are converting directory `x`:\n- In `x`, we add a local `pyproject.toml` which:\n  - overrides `ruff`'s line length to 88 (it's own default)\n  - removes the deprecated type ignores\n  - enables `isort` in ruff\n  - enables formatting of code in docstrings (good for the API docs)\n- We add `x` to the list of files to run `ruff-format` on in `.pre-commit-config.yaml`\n- We add `x` to the list of ignores in the `yapf` and `isort` config in the root `pyproject.toml`\n\nHere is the list of PRs used to make the transition:\n\n- [x] https://github.com/vllm-project/vllm/pull/17656\n- [x] https://github.com/vllm-project/vllm/pull/18068\n- [x] https://github.com/vllm-project/vllm/pull/18400\n- [ ] https://github.com/vllm-project/vllm/pull/21129",
+    "labels": [
+      "RFC",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2025-05-05T13:59:22+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/17657/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/17657"
+  },
+  {
+    "number": 15658,
+    "title": "[Feature]: Refactor the logic in tool parser manager and reasoning parser manager",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nhttps://github.com/vllm-project/vllm/pull/14428#discussion_r2015661446 / https://github.com/vllm-project/vllm/pull/14428#discussion_r2015662511\n\nThe implementation of the tool parser manager and reasoning parser manager could be optimized.\n\n/cc @aarnphm \n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2025-03-28T00:55:57+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15658/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15658"
+  },
+  {
+    "number": 13981,
+    "title": "[RFC]: Drop support for prompt adapter",
+    "body": "### Motivation.\n\nFor code cleanup, we plan to drop the support for prompt adapter. Please let us know if you are using this feature.\n\n### Proposed Change.\n\nDropping the prompt adapter and relevant code.\n\n### Feedback Period.\n\n2 weeks.\n\n### CC List.\n\n_No response_\n\n### Any Other Things.\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "RFC",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2025-02-27T17:58:49+00:00",
+    "closed_at": null,
+    "comments": 11,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13981/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13981"
+  },
+  {
+    "number": 12761,
+    "title": "[RFC]: Initial support for multi-model models using cross attention in V1",
+    "body": "### Motivation.\n\nThe goal of this RFC is to propose a simple initial design to support multi-modal models that use cross attention for the V1 architecture.  Whisper is a prime example of such a model.  The design aims to be as simple as possible and easily replaceable without disrupting other ongoing V1 work.  Currently in V1, the only encoder/decoder models that are supported are ones that do not use cross attention.  These models use the `EncoderCacheManager` to communicate the outputs of the encode to the decoder.  Multi-modal models that use cross attention need a separate KV cache for the encoder portion of the model.  This cross attention KV cache has to be populated by the encoder and is used by the decoder's cross attention layers (as read only).  The cross attention KV cache is separate from the existing decoder KV cache and has to be managed separately.\n        \n### Non-goals\nSince we are focusing on Whisper for the initial design, there are certain features/optimizations that can be deferred.\nFor now, the following optimizations will be disabled for cross attention models since they probably won't provide much benefit:\n\n- Chunked prefill for the encoder\n- Prefix caching\n\nSupporting attention backends other than flash attention.\n\nAbstracting the `GPUModelRunner`\n\nFor additional background see: [](https://github.com/vllm-project/vllm/issues/7366)\n\n### Proposed Change.\n\nThe proposed changes touch the following areas of the code:\n- `Scheduler`/`Request`\n- `GPUModelRunner`\n- `FlashAttentionImpl`\n- cross attention models, e.g. `WhisperForConditionalGeneration`\n\n### `Scheduler`/`Request`\nThe scheduler will be updated to allocate the cross attention KV cache when the encoder portion of a encoder/decoder cross attention model is executed.  This can be determined via the model config.  The cache will be stored in the `Request` object since it is persistent (and read only by the decoder) once filled.\n\n### `GPUModelRunner`\nCurrently, in `execute_model`, the first stage is to generate the encoder outputs if the model is multi-modal.  This stage will be updated to handle cross-attention multi-modal models.\n \n1. add an `_execute_encoder_decoder function` (separate from `_execute_encoder`).  This function will do the following:\n- Construct a cross attention metadata object and initialize with the KV cache information from the `Request`/`SchedulerOutput`.\n- Run a forward pass on the encoder model while updating the cross attention KV cache.\n- Returns an instance of the cross-attention meta data class.\n\n2. `_execute_encoder_decoder` will be called during the first stage of `execute_model` instead of `_execute_encoder`, when the model is multi-modal and uses cross-attention.  It returns an instance of `FlashAttentionMetadata` that is populated with the cross attention KV cache.  Optionally, this could be moved to a separate `_gather_cross_metadata`, analogous to `_gather_encoder_outputs`.\n \n3. The `profile_run`/`_dummy_run` functions also need to be updated to follow the same general steps as execute_model.\n\n### `FlashAttentionImpl`\nAdd support for `AttentionType.ENCODER` and `AttentionType.ENCODER_DECODER`.\n\n\n### Cross attention models, e.g. `WhisperForConditionalGeneration`\nAdd an extra `AttentionMetadata` parameter for the cross attention layers.\n\n\n### Feedback Period.\n\n_No response_\n\n### CC List.\n\n_No response_\n\n### Any Other Things.\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "RFC",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2025-02-05T03:18:54+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/12761/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/12761"
+  },
+  {
+    "number": 8779,
+    "title": "vLLM's V1 Engine Architecture",
+    "body": "This issues describes the high level directions that \"create LLM Engine V1\". We want the design to be as transparent as possible and created this issue to track progress and solicit feedback. \r\n\r\nGoal:\r\n* The new engine will be simple and performant. We found the first iteration of the engine to be simple, the multistep engine to be performant, but we want best of the both worlds. For it to be performat, we want to **minimize GPU idle time**. \r\n* The new architecture will be extensible and modular. We found the current codebase becoming difficult to extend and add new features (both production and experimental features) due to the hard tangling of different features. In the new design, features should be compatible with each other.\r\n* Tech debts will be cleaned up. We will remove optimizations that compromise code readability. We will also redo ad-hoc implementations to support certain features/models. \r\n\r\nNon-goals, the following are important but orthogonal:\r\n* Optimize GPU time/kernels\r\n* Add new features/optimizations\r\n* Performance in rare cases\r\n\r\nThe scope is exclusively in the scheduler, memory manager, distributed architecture. We will not touch APIs, models, kernels, and most parts of the model runner. \r\n\r\nHighlights of the new design:\r\n* **Driver process + SPMD workers**\r\n    * When TP=n & PP=m, vLLM engine will have n*m + 1 processes in total.\r\n        * Corollary: even when using a single GPU, we will have 2 processes.\r\n    * The driver process will have the scheduler, memory manager, etc.\r\n    * The workers are stateful, maintaining most of the request states.\r\n        * The driver will only send the \u201cdiffs\u201d\r\n            * New request: input token IDs & block tables & sampling params, etc.\r\n            * In-flight request: scheduled request IDs, new block IDs (no token IDs, sampling params, etc.)\r\n    * Clean up data structures like SeqGroupMetadata\r\n* **Async single-step scheduling**, instead of multi-step scheduling\r\n    * Scheduler will schedule the n+1-th step, while the worker is executing the n-th step. \r\n    * We will reuse the code from multi-step scheduling to incrementally update the model inputs.\r\n    * Needs a special care for PP, since the output token IDs from the last stage should be sent to the first stage.\r\n* **De-tokenizer moves to the driver process**\r\n    * Async de-tokenization can be regarded as part of async scheduling\r\n* **Native support for different types of model states**\r\n    * Regular KV cache, Mamba cache, encoder cache, etc.\r\n    * Dedicated memory manager & block table for each type of cache\r\n* **Drop beam search from vLLM engine**\r\n    * Provide a solution to emulate beam search outside vLLM engine\r\n* **Prefix-caching as a first-class feature**\r\n    * Implement parallel sampling via prefix caching\r\n    * Remove the concept of SequenceGroup\r\n    * Optimize prefix caching overheads\r\n* **Remove/minimize PyObjectCache**\r\n\r\nLessons we learned from V1:\r\n\r\n* To achieve high GPU utilization, we should care about everything happening on the CPU.\r\n    * Python is slow.\r\n    * Fast GPUs like H100 do not necessarily have fast CPUs. They may have hundreds of CPU cores, but each with low clock speed.\r\n    * Moreover, GPUs will get faster and faster, while CPUs will not.\r\n* Scheduling is not cheap.\r\n    * For every step, the vLLM scheduler goes over the whole `self.running` queue and performs some operations for each request (e.g., allocating a new block). And this is written in Python.\r\n* Input broadcasting is expensive.\r\n    * Instead of sending request information from scheduler to workers every step, **the workers should be stateful** and maintain most of the request states.\r\n* Preparing the model & sampler inputs (e.g., block table) is expensive.\r\n    * We should cache the inputs of the previous steps, and** build new inputs incrementally from the cached inputs**, if possible.\r\n    * However, not every state should be kept in GPU memory. It\u2019s OK to cache & incrementally build some inputs in CPU memory, and send them to GPU every step.\r\n* De-tokenization is expensive.\r\n    * For every step, vLLM de-tokenizes the generated output token IDs and checks the stop criteria.\r\n    * The overhead becomes significant for large batch sizes.\r\n* Sampler is expensive.\r\n    * The GPU operations themselves are not very expensive.\r\n    * However, \u201cpythonizing\u201d the sampler outputs is expensive.\r\n    * Plus, the sampler can launch many small GPU kernels with CPU-GPU synchronizations. \r\n* Supporting different types of model states (e.g., KV cache, Mamba cache, encoder cache) is challenging.\r\n    * We need native cache managers for these different types of caches.\r\n    * We need to deal with memory fragmentation due to the different sizes of the different states\r\n\r\nTimeline wise, we plan to execute the changes incrementally. Overtime we will add PRs and issues related to the new architecture here. \r\n\r\n- [x] #8726\r\n\r\nThe design is led by the vLLM maintainers @WoosukKwon @zhuohan123 @youkaichao @simon-mo @LiuXiaoxuanPKU @comaniac @alexm-neuralmagic @njhill @robertgshaw2-neuralmagic @rkooo567  and many others!",
+    "labels": [
+      "RFC",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2024-09-24T18:25:22+00:00",
+    "closed_at": null,
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/8779/reactions",
+      "total_count": 86,
+      "+1": 53,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 33,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/8779"
+  },
+  {
+    "number": 6801,
+    "title": "[RFC]: Performance Roadmap ",
+    "body": "### Anything you want to discuss about vllm.\r\n\r\nThis is a meta RFC tracking some of the performance enhancement works we are prioritizing. \r\n\r\n- [ ]  https://github.com/vllm-project/vllm/issues/6797\r\n- [x] https://github.com/vllm-project/vllm/issues/6556\r\n- [x] https://github.com/vllm-project/vllm/issues/6378\r\n- [x] #6854\r\n- [x] https://github.com/vllm-project/vllm/issues/6913",
+    "labels": [
+      "RFC",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2024-07-25T21:32:34+00:00",
+    "closed_at": null,
+    "comments": 37,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6801/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6801"
+  },
+  {
+    "number": 6678,
+    "title": "[Feature]: Publish container images to additional registry (qhcr or quay.io)",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\r\n\r\nCurrently release artifacts in the form of OCI / container images are only published to DockerHub (https://hub.docker.com/r/vllm/vllm)\r\n\r\nI like to suggest publishing the images to another registry for redundancy. The [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) is an obvious choice, but also quay.io might be worth a look. In the end this is more or less a build once, retag and a push to another registry.\r\n\r\n### Alternatives\r\n\r\n_No response_\r\n\r\n### Additional context\r\n\r\n_No response_",
+    "labels": [
+      "feature request",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2024-07-23T07:42:19+00:00",
+    "closed_at": null,
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6678/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6678"
+  },
+  {
+    "number": 5751,
+    "title": "[RFC]: Support sparse KV cache framework",
+    "body": "### Motivation\r\n\r\nFor current large model inference, KV cache occupies a significant portion of GPU memory, so reducing the size of KV cache is an important direction for improvement. Recently, several papers have approached this issue from different angles, detailed comparison in the table, including:\r\n\r\n- FastDecode: This method offloads all computation of KV cache to the CPU. The computation and storage of KV cache occurs on CPU.\r\n\r\n- Compression methods based on quantization (GEAR, Mixed Precision): By applying various quantization techniques, the size of individual token KV caches is reduced without decreasing the number of tokens stored in the KV cache. This method may also result in corresponding residual and outlier matrices, which need to be stored in memory but not in the KV cache. It may also involve quantizing unimportant token KV caches to reduce the memory footprint of the KV cache.\r\n\r\n- Partial KV cache eviction (H2O, SnapKV, LESS, Adaptive Compression, Scissorhands, Dynamic Memory Compression, StreamingLLM): By removing some relatively useless KV cache entries, the memory footprint of the KV cache is reduced. Essentially, this reduces the number of tokens stored in the KV cache without reducing the size of individual token KV caches.\r\n\r\nWhen addressing the sparse KV cache issue, we have previously considered supporting quantization (VLLM has already implemented this), implementing quantization + outlier + residual like GEAR (not widely applicable as it requires generating outlier and residual for each token generation, which is costly), and implementing KV cache accumulation + appendix (not widely applicable as it requires models to be trained using the same method). Finally, the idea is to implement partial KV cache eviction, primarily aiming for generality and abstraction rather than being specific to one or two approaches. Considering that six of the sparse KV cache methods we found are based on evicting cache entries, this method is also suitable for modification as part of a framework to be integrated into VLLM.\r\n\r\n\r\n### Sparse KV Cache Workflow\r\nFirst, let's clarify the required parameters, including:\r\n\r\n- An optional flag \"--sparse-kv-cache-type\" indicating if we want to specify any sparse KV cache type. Default is \u2018auto\u2019 without using any sparse KV cache type, otherwise, there could be various methods, such as attention scores for H2O.\r\n\r\n- Compression ratio for evicting KV cache entries: 20% if we want to achieve 80% reduction of KV cache usage. We can calculate the value of 'n' for recreating KV cache every 'n' step based on the compression ratio.\r\n\r\nThe entire workflow includes:\r\n\r\n- During the first decoding pass, besides computing the KV values for all input tokens, we also need to calculate and retain information about the priority ranking of all token pairs, such as attention scores in H2O.\r\n\r\n- During each scheduling of VLLM, we need to check whether 'n' steps have been completed, indicating the necessity for KV cache compression. If necessary, based on the priority ranking of tokens, one or more new KV cache blocks will be allocated, modifying the position information of input positions. The block manager will then manage the transfer of corresponding KV blocks from the original sequence group to the latest KV block. Finally, the reference count of the original KV block will be decremented, and the corresponding original KV blocks may even be released.\r\n\r\n- The corresponding KV values are added to the KV cache until the next compression of the KV cache after 'n' steps, repeating this process until the entire process is completed.\r\n\r\n### Proposed Change\r\n\r\nModified files mainly include\r\n\r\n- Modify vllm/core/scheduler.py: Add the corresponding logic for checking if sparse KV cache actions should be taken or not.\r\n\r\n- Modify vllm/core/block_manager_v1.py: Add the corresponding logic for updating block table mapping and manage the related allocated/free blocks.\r\n\r\n- Modify vllm/worker/model_runner.py: Update the position related code after sparse KV cache and pass the blocks_to_sparse_copy to the corresponding models.\r\n\r\n- Modify models, such as vllm/model_executor/models/opt.py: Indicating which KV should be filtered out.\r\n\r\n- Modify csrc/attention/attention_kernels.cu, csrc/cache_kernels.cu: Calculate attention score for selecting \"important\" tokens' KV and support sparse_cache_copy for copying \"important\" tokens' KV.\r\n\r\n\r\n### PR\r\nPR link: https://github.com/vllm-project/vllm/pull/5752\r\n\r\n### Design doc\r\nhttps://docs.google.com/document/d/13_cpb31P9VOmPGa_tZ70s7z1vXGP_UenXf1WVuIppCk/\r\n\r\n### Feedback Period.\r\n\r\n_No response_\r\n\r\n### CC List.\r\n\r\n@simon-mo @youkaichao @zhuohan123 @cadedaniel @ywang96 @WoosukKwon @LiuXiaoxuanPKU\r\n\r\n### Any Other Things.\r\n\r\n_No response_",
+    "labels": [
+      "RFC",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2024-06-21T20:21:39+00:00",
+    "closed_at": null,
+    "comments": 17,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/5751/reactions",
+      "total_count": 13,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/5751"
+  },
+  {
+    "number": 5543,
+    "title": "[Bug]: prefix-caching: inconsistent completions",
+    "body": "### Your current environment\r\n\r\n```text\r\nvLLM version 0.5.0.post1\r\n```\r\n\r\n\r\n\r\n\r\n### \ud83d\udc1b Describe the bug\r\n\r\nHi,\r\n\r\nSeems that there is a dirty cache issue with `--enable-prefix-caching`.  We noticed it as we saw internal eval scores significantly degrade when running with `--enable-prefix-caching` and here I'll show how to reproduce it with a short snippet.\r\n\r\nRunning 2 vLLM servers with:\r\n\r\nwithout prefix caching:\r\n```bash\r\npython -m vllm.entrypoints.openai.api_server --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --port 8001\r\n```\r\nand another with prefix caching:\r\n```bash\r\npython -m vllm.entrypoints.openai.api_server --model TinyLlama/TinyLlama-1.1B-Chat-v1.0 --port 8002 --enable-prefix-caching\r\n```\r\n\r\nThen running this snippet:\r\n```python\r\nimport string \r\nimport random\r\n\r\nimport openai\r\n\r\nvllms = {\r\n    \"no-prefix-caching\": \"http://localhost:8001/v1\",\r\n    \"with-prefix-caching\": \"http://localhost:8002/v1\",\r\n}\r\n\r\nrandom.seed(0)\r\nprompts = []\r\nfor i in range(16):\r\n    prompts.append(''.join(random.choices(string.ascii_lowercase + string.digits, k=512)))\r\n\r\nruns = []\r\nfor run in range(2):\r\n    print(f\"\\n\ud83c\udfc3 run #{run+1}\")\r\n\r\n    completions = {k: [] for k in vllms.keys()}\r\n    runs.append(completions)\r\n    for name, endpoint in vllms.items():\r\n        print(f\"vLLM {name=}, {endpoint=}\")\r\n        client = openai.OpenAI(\r\n            base_url=endpoint,\r\n            api_key=\"foo\"\r\n        )\r\n\r\n        for prompt in prompts:\r\n            response = client.completions.create(\r\n                    model=\"TinyLlama/TinyLlama-1.1B-Chat-v1.0\",\r\n                    prompt=prompt,\r\n                    temperature=0,\r\n                    max_tokens=4,\r\n            )\r\n            completion = response.choices[0].text\r\n            completions[name].append(completion)\r\n\r\n        print(f\"completions: {completions[name]}\")\r\n\r\n        if run > 0 and runs[run][name] != runs[run-1][name]:\r\n            print(f\"\u274c completions for vLLM {name=} differs from previous run!\")\r\n    \r\n    if completions[\"with-prefix-caching\"] != completions[\"no-prefix-caching\"]:\r\n        print(\"\ud83d\uded1 completions differ between with & without prefix\")\r\n        \r\n```\r\n\r\nprints: \r\n```\r\n\ud83c\udfc3 run #1\r\nvLLM name='no-prefix-caching', endpoint='http://localhost:8001/v1'\r\ncompletions: ['6x2w', 'zwg9v', 'xjuwf', 'hu5qw', 'jg0m', '1tzkb', '4w0q', '5zx5', 'zxqj', '7v16', '0ty57', 'vk0j', 'jjnj', 'xw95', 'vxjj', 't6x7']\r\nvLLM name='with-prefix-caching', endpoint='http://localhost:8002/v1'\r\ncompletions: ['6x2w', 'zwg9v', 'xjuwf', 'hu5qw', 'jg0m', '1tzkb', '4w0q', '5zx5', 'zxqj', '7v16', '0ty57', 'vk0j', 'jjnj', 'xw95', 'vxjj', 't6x7']\r\n\r\n\ud83c\udfc3 run #2\r\nvLLM name='no-prefix-caching', endpoint='http://localhost:8001/v1'\r\ncompletions: ['6x2w', 'zwg9v', 'xjuwf', 'hu5qw', 'jg0m', '1tzkb', '4w0q', '5zx5', 'zxqj', '7v16', '0ty57', 'vk0j', 'jjnj', 'xw95', 'vxjj', 't6x7']\r\nvLLM name='with-prefix-caching', endpoint='http://localhost:8002/v1'\r\ncompletions: ['6x2w', 'zwma71', '37wk', 'hu5qw', 'jg0m', '1tzkb', '4h7a', '5zq7', 'zxqj', '7k4n', '0ty57', 'vk0j', 'jjnj', 'xw95', 'vxjj', 't6x7']\r\n\u274c completions for vLLM name='with-prefix-caching' differs from previous run!\r\n\ud83d\uded1 completions differ between with & without prefix\r\n```\r\n\r\nThis happens also with 0.4.3. With 0.4.2 this snippet crashes the server with prefix-caching enabled.\r\n\r\nHopefully one of these PR resolves the issue \ud83e\udd1e :\r\n- https://github.com/vllm-project/vllm/pull/5188\r\n- https://github.com/vllm-project/vllm/pull/5364 \r\n(will be able to try building these branches and reproducing only in few days, hope tagging the PRs can help till then)\r\nEdit: built and tried both PRs and they don't resolve the issue",
+    "labels": [
+      "bug",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2024-06-14T14:18:02+00:00",
+    "closed_at": null,
+    "comments": 22,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/5543/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/5543"
+  },
+  {
+    "number": 4873,
+    "title": "[RFC]: Add control panel support for vLLM",
+    "body": "### Motivation.\r\n\r\nThe Fastchat-vLLM operational model offers significant advantages in deploying large language models (LLMs) for product services. [1](https://blog.vllm.ai/2023/06/20/vllm.html)\r\n\r\nThe controller architecture in Fastchat is particularly beneficial for LLM deployment, owing to its loosely coupled design with the vLLM backend. This allows for:\r\n\r\n* Autoscaling: The vLLM backend can join and exit the cluster freely, enabling dynamic scaling capabilities.\r\n\r\n* Rolling Updates: The introduction of new models with distinct names allows the cluster to gradually update models, a process known as rolling updates.\r\n\r\n* Centralized Access: Users are relieved from the burden of tagging different URLs or IPs for various models; they simply send their requests to the controller, which then manages the rest, including dispatching requests to the appropriate backend based on the model name and ensuring effective load balancing.\r\n\r\nHowever, the challenge for Fastchat lies in managing multiple backends, including vLLM. This complexity appears to hinder its ability to keep pace with the rapid evolution of vLLM. It is disheartening to observe that Fastchat currently does not support the latest vLLM features, such as multi-LoRA, fragmented chat stream support, and guidance decoding, among others.\r\n\r\nRefence:\r\n[1] https://blog.vllm.ai/2023/06/20/vllm.html\r\n\r\n### Proposed Change.\r\n\r\n\r\nSo just head it up, I port the key feature of controller from fastchat, and make it at minimal shape, which for interface like /v1/../completions, it simply extract model name, and forward anything towards the backend, so that all feature of vllm could be used.\r\n\r\nCurrent implement: #4861 \r\n\r\n- [x] /v1/completions:  same interface of vllm's\r\n- [x] /v1/chat/completions:  same interface of vllm's\r\n- [x] /list_models: list models' name registered into controller\r\n- [x] /health: check controller health status\r\n- [x] /list_workers: list worker's detailed status, models provided by each worker, and its serving status\r\n- [x] load balance with shortest queue algo\r\n- [x] heart beat keep alive between controller and worker\r\n\r\nFuture directions:\r\n- [ ] maybe rust could be used for reimplement the controller, if we find the performance could be improved a lot\r\n- [ ] more algo for load balance\r\n- [ ] unified metrics exposed by controller, which collected from each worker\r\n- [ ] more interface support, like embeding\r\n\r\n\r\n\r\n\r\n### Feedback Period.\r\n\r\n_No response_\r\n\r\n### CC List.\r\n\r\n@simon-mo @robertgshaw2-neuralmagic \r\n\r\n### Any Other Things.\r\n\r\n_No response_",
+    "labels": [
+      "RFC",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2024-05-17T02:20:50+00:00",
+    "closed_at": null,
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4873/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4873"
+  },
+  {
+    "number": 4838,
+    "title": "[Feature]: Build and publish Neuron docker image",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nIt seems like the current docker images don't support Neuron (Inferentia).\r\nIt would be very helpful if there was a tested, managed Neuron docker image to use.\r\nWhile at the same subject, it would be even better if some documentation would be added on running vLlm Neuron using containers.\n\n### Alternatives\n\nDJL?\n\n### Additional context\n\n_No response_",
+    "labels": [
+      "feature request",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2024-05-15T15:27:17+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4838/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4838"
+  }
+]

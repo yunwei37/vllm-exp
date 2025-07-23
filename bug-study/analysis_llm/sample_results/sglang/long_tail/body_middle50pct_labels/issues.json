@@ -1,0 +1,819 @@
+[
+  {
+    "number": 7998,
+    "title": "Instruction for Running DeepSeek with PD, EP, and MTP",
+    "body": "# Using Main Branch\n\n## Environment Preparation\nUse SGLang and DeepEP on master is sufficient. Also remember to upgrade Mooncake. It will be better to create customized expert distribution data for MTP (follow the related instructions in #6017)\n\n\n## xP + 2D, max_running_requests=32, draft_token_num=3\n\n### Command for decode\n```\nSGL_DISABLE_TP_MEMORY_INBALANCE_CHECK=1 SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=10000000 SGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=256 MC_TE_METRIC=true python3 -m sglang.launch_server --model-path /mnt/shared-fs/models/deepseek-ai/DeepSeek-V3-0324 --disaggregation-ib-device mlx5_1 --disaggregation-mode decode --dist-init-addr 10.0.7.67:5757 --tp-size 16 --dp-size 16 --enable-dp-attention --decode-log-interval 1 --enable-deepep-moe --page-size 64 --host 0.0.0.0 --trust-remote-code --moe-dense-tp-size 1 --enable-dp-lm-head --disable-radix-cache --watchdog-timeout 1000000 --deepep-mode low_latency --mem-fraction-static 0.8 --max-running-requests 32 --context-length 73728 --ep-num-redundant-experts 32 --disable-shared-experts-fusion --cuda-graph-max-bs 2 --init-expert-location /mnt/shared-fs/stats-qiaolin/mtp_213.pt --speculative-algorithm EAGLE --speculative-num-steps 2 --speculative-eagle-topk 1 --speculative-num-draft-tokens 3 --nnodes 2 --node-rank 0\n```\n\n\n\n### Benchmark for decode\n```\n# slow down D nodes\ncurl -X POST -H 'Content-Type: application/json' 'http://10.0.7.67:30000/slow_down' -d '{\"forward_sleep_time\": 90.0}' \n\n# start benchmark; do not wait for this to finish before running the next line\npython3 -m sglang.bench_one_batch_server  --base-url http://10.5.38.77:8000 --model-path /mnt/shared-fs/models/deepseek-ai/DeepSeek-V3-0324 --batch-size 128 --input-len 65000 --output-len 4000 --skip-warmup \n\n# after some time (e.g. 10 minute), the D nodes are saturated, then this command should be executed\n# finish slowing down D nodes\ncurl -X POST -H 'Content-Type: application/json' 'http://10.0.7.67:30000/slow_down' -d '{\"forward_sleep_time\": null}' \n```\n\n\n\n## xP + 12D, max_running_requests=12288, draft_token_num=2\n### Command for decode\n```\nSGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=512 SGLANG_NUM_RESERVED_DECODE_TOKENS=176 MC_TE_METRIC=true SGLANG_DISAGGREGATION_HEARTBEAT_INTERVAL=10000000 SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT=100000 SGLANG_DUMPER_DIR=/mnt/shared-fs/zbx/tmp SGLANG_EXPERT_DISTRIBUTION_RECORDER_DIR=/mnt/shared-fs/zbx/temp_sglang_server2local SGLANG_TORCH_PROFILER_DIR=/mnt/shared-fs/zbx/temp_sglang_server2local PYTHONUNBUFFERED=1 /home/ql/sglang_ql/bin/python3 -m sglang.launch_server --model-path /dev/shm/DeepSeek-V3-0324 --trust-remote-code --disaggregation-mode decode --dist-init-addr 10.5.45.38:5757 --nnodes 12 --node-rank 11 --tp-size 96 --dp-size 96 --enable-dp-attention --host 10.0.47.189 --decode-log-interval 1 --context-length 2176 --disable-radix-cache --enable-deepep-moe --moe-dense-tp-size 1 --enable-dp-lm-head --disable-shared-experts-fusion --watchdog-timeout 1000000 --enable-two-batch-overlap --disaggregation-ib-device mlx5_1 --disable-overlap-schedule --speculative-algo EAGLE --speculative-num-steps 1 --speculative-eagle-topk 1 --speculative-num-draft-tokens 2  --init-expert-location /mnt/shared-fs/configs/ep_statistics/decode_in2000out100.json --deepep-mode low_latency --mem-fraction-static 0.75 --cuda-graph-bs 128 --max-running-requests 12288 --ep-num-redundant-experts 32\n```\n\n\n### Benchmark for decode\n```\n# slow down D nodes\ncurl -X POST -H 'Content-Type: application/json' 'http://10.5.45.38:30000/slow_down' -d '{\"forward_sleep_time\": 90.0}' \n\n# start benchmark; do not wait for this to finish before running the next line\npython3 -m sglang.bench_one_batch_server  --base-url http://10.5.39.245:8000 --model-path /dev/shm/DeepSeek-V3-0324 --batch-size 24576 --input-len 2000 --output-len 100 --skip-warmup\n\n# after some time (e.g. 10 minute), the D nodes are saturated, then this command should be executed\n# finish slowing down D nodes\ncurl -X POST -H 'Content-Type: application/json' 'http://10.5.45.38:30000/slow_down' -d '{\"forward_sleep_time\": null}' \n```\n\nNote that since MTP doesn't support overlap scheduling yet, the performance in this case is still not optimal. We're actively working on it \u2014 stay tuned.\n",
+    "labels": [
+      "deepseek"
+    ],
+    "state": "open",
+    "created_at": "2025-07-13T18:21:14+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7998/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7998"
+  },
+  {
+    "number": 5313,
+    "title": "[Feature] support NVRTC for DeepGEMM",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-12T06:17:24+00:00",
+    "closed_at": "2025-05-13T08:45:22+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5313/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5313"
+  },
+  {
+    "number": 3695,
+    "title": "[Bug] sglang crashed when using /health_generate",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nWhen deploying DeepSeek-V3/DeepSeek-R1 on two 8xH20 nodes, configuring a health probe (using health_generate) causes the service to crash after approximately 40 minutes.\n\nthe crash log:\n\n```2025-02-19 11:45:37 TP0] Prefill batch. #new-seq: 1, #new-token: 1, #cached-token: 0, cache hit rate: 0.00%, token usage: 0.00, #running-req: 0, #queue-req: 0\n[2025-02-19 11:45:37] INFO:     172.17.0.109:43128 - \"GET /health_generate HTTP/1.1\" 200 OK\n[2025-02-19 11:45:42 TP0] Prefill batch. #new-seq: 1, #new-token: 1, #cached-token: 0, cache hit rate: 0.00%, token usage: 0.00, #running-req: 0, #queue-req: 0\n[2025-02-19 11:45:46] Abort request a96186a3d0f8424eb67e822d7cc66c57\nTraceback (most recent call last):\n  File \"/usr/lib/python3.10/asyncio/locks.py\", line 214, in wait\n    await fut\nasyncio.exceptions.CancelledError\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/usr/lib/python3.10/asyncio/tasks.py\", line 456, in wait_for\n    return fut.result()\nasyncio.exceptions.CancelledError\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tokenizer_manager.py\", line 418, in _wait_one_response\n    await asyncio.wait_for(state.event.wait(), timeout=4)\n  File \"/usr/lib/python3.10/asyncio/tasks.py\", line 458, in wait_for\n    raise exceptions.TimeoutError() from exc\nasyncio.exceptions.TimeoutError\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/sgl-workspace/sglang/python/sglang/srt/entrypoints/http_server.py\", line 137, in health_generate\n    async for _ in _global_state.tokenizer_manager.generate_request(gri, request):\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tokenizer_manager.py\", line 293, in generate_request\n    async for response in self._wait_one_response(obj, request):\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tokenizer_manager.py\", line 422, in _wait_one_response\n    raise ValueError(f\"Abort request {obj.rid}\")\nValueError: Abort request a96186a3d0f8424eb67e822d7cc66c57\n[2025-02-19 11:45:51] Abort request 3c93d049629f429ebfd86160bb321ac8\nTraceback (most recent call last):\n  File \"/usr/lib/python3.10/asyncio/locks.py\", line 214, in wait\n    await fut\nasyncio.exceptions.CancelledError\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/usr/lib/python3.10/asyncio/tasks.py\", line 456, in wait_for\n    return fut.result()\nasyncio.exceptions.CancelledError\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tokenizer_manager.py\", line 418, in _wait_one_response\n    await asyncio.wait_for(state.event.wait(), timeout=4)\n  File \"/usr/lib/python3.10/asyncio/tasks.py\", line 458, in wait_for\n    raise exceptions.TimeoutError() from exc\nasyncio.exceptions.TimeoutError\n\nDuring handling of the above exception, another exception occurred:\n````\n\n### Reproduction\n\nrun command \n`python3 -m sglang.launch_server --model-path /opt/ml/ti/model_cache/deepseek-r1 --served-model-name ds-r1 --tp 16 --trust-remote-code --host 0.0.0.0 --port 8501 --context-length 16384 --enable-metrics --dist-init-addr x.x.x.x:23456 --nnodes 2 --node-rank 1 --enable-torch-compile --allow-auto-truncate  `\n\nmodel \nDeepSeek-V3/DeepSeek-R1\n\n### Environment\n\nPython: 3.10.16 (main, Dec  4 2024, 08:53:37) [GCC 9.4.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA H20\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.5, V12.5.82\nCUDA Driver Version: 535.161.07\nPyTorch: 2.5.1+cu124\nflashinfer: 0.2.0.post2+cu124torch2.5\ntriton: 3.1.0\ntransformers: 4.48.2\ntorchao: 0.8.0\nnumpy: 1.26.4\naiohttp: 3.11.11\nfastapi: 0.115.8\nhf_transfer: 0.1.9\nhuggingface_hub: 0.28.1\ninteregular: 0.3.3\nmodelscope: 1.22.3\norjson: 3.10.15\npackaging: 24.2\npsutil: 6.1.1\npydantic: 2.10.6\nmultipart: 0.0.20\nzmq: 26.2.1\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.6.4.post1\nopenai: 1.61.0\nanthropic: 0.45.2\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    NIC0    NIC1    NIC2    NIC3    NIC4    NIC5    NIC6    NIC7    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    PIX     NODE    NODE    NODE    SYS     SYS     SYS     SYS     0-95,192-287    0               N/A\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    NODE    PIX     PHB     NODE    SYS     SYS     SYS     SYS     0-95,192-287    0               N/A\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    NODE    PHB     PIX     NODE    SYS     SYS     SYS     SYS     0-95,192-287    0               N/A\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    NODE    NODE    NODE    PIX     SYS     SYS     SYS     SYS     0-95,192-287    0               N/A\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    SYS     SYS     SYS     SYS     PIX     NODE    NODE    NODE    96-191,288-383  1               N/A\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    SYS     SYS     SYS     SYS     NODE    PIX     NODE    NODE    96-191,288-383  1               N/A\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    SYS     SYS     SYS     SYS     NODE    NODE    PIX     PHB     96-191,288-383  1               N/A\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      SYS     SYS     SYS     SYS     NODE    NODE    PHB     PIX     96-191,288-383  1               N/A\nNIC0    PIX     NODE    NODE    NODE    SYS     SYS     SYS     SYS      X      NODE    NODE    NODE    SYS     SYS     SYS     SYS\nNIC1    NODE    PIX     PHB     NODE    SYS     SYS     SYS     SYS     NODE     X      PHB     NODE    SYS     SYS     SYS     SYS\nNIC2    NODE    PHB     PIX     NODE    SYS     SYS     SYS     SYS     NODE    PHB      X      NODE    SYS     SYS     SYS     SYS\nNIC3    NODE    NODE    NODE    PIX     SYS     SYS     SYS     SYS     NODE    NODE    NODE     X      SYS     SYS     SYS     SYS\nNIC4    SYS     SYS     SYS     SYS     PIX     NODE    NODE    NODE    SYS     SYS     SYS     SYS      X      NODE    NODE    NODE\nNIC5    SYS     SYS     SYS     SYS     NODE    PIX     NODE    NODE    SYS     SYS     SYS     SYS     NODE     X      NODE    NODE\nNIC6    SYS     SYS     SYS     SYS     NODE    NODE    PIX     PHB     SYS     SYS     SYS     SYS     NODE    NODE     X      PHB\nNIC7    SYS     SYS     SYS     SYS     NODE    NODE    PHB     PIX     SYS     SYS     SYS     SYS     NODE    NODE    PHB      X \n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_bond_0\n  NIC1: mlx5_bond_1\n  NIC2: mlx5_bond_2\n  NIC3: mlx5_bond_3\n  NIC4: mlx5_bond_4\n  NIC5: mlx5_bond_5\n  NIC6: mlx5_bond_6\n  NIC7: mlx5_bond_7\n\n\nulimit soft: 1048576",
+    "labels": [
+      "inactive",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-19T10:45:57+00:00",
+    "closed_at": "2025-05-26T00:19:58+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3695/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3695"
+  },
+  {
+    "number": 1335,
+    "title": "[Feature] Per-request random seed",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nI believe there is an option for fixing the random seed for the backend, but I think there isn't a feature for per-request random seeds.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-05T13:16:11+00:00",
+    "closed_at": "2024-12-14T00:17:29+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1335/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1335"
+  },
+  {
+    "number": 2559,
+    "title": "lora speed",
+    "body": "I measured the speed of starting multiple loras using sglang and vllm. Why is vllm faster than sglang? What acceleration method is sglang? I haven\u2019t enabled it yet?\r\nGraphics card 4090\r\nsglang sever\uff1a\r\npython -m sglang.launch_server --model-path /mnt/models/source/model/qwen2_5-7b-instruct/Qwen2___5-7B-Instruct \\\r\n  --host 0.0.0.0 \\\r\n  --port 8000 \\\r\n  --tp-size 1 \\\r\n  --mem-fraction-static 0.9 \\\r\n  --served-model-name \"Qwen2.5-7B-Instruct\" \\\r\n  --chunked-prefill-size 4096 \\\r\n  --disable-cuda-graph \\\r\n  --disable-radix-cache \\\r\n  --show-time-cost \\\r\n  --enable-torch-compile \\\r\n  --schedule-conservativeness 0.03 \\\r\n  --schedule-policy fcfs \\\r\n  --lora-paths lora0=\u201c\u201d lora_batch=\"\" \\\r\n  --max-loras-per-batch 32 \\\r\n  --dtype bfloat16\r\n\r\nvllm sever\r\npython -m vllm.entrypoints.openai.api_server --model /mnt/models/source/model/qwen2_5-7b-instruct/Qwen2___5-7B-Instruct \\\r\n   --port 8899 \\\r\n   --served-model-name Qwen2.5-7B-Instruct \\\r\n   --enable-lora \\\r\n   --lora-moduleslora0=\u201c\u201d lora_batch=\"\" \\\r\n   --gpu_memory_utilization 0.90 \\\r\n   --enable-prefix-caching \\\r\n   --max-num-seqs 128\r\n\r\nsglang post\r\nurl = \"http://localhost:8000\"\r\njson_data = {\r\n\"text\": problems_token_completions,\r\n\"sampling_params\": {\"max_new_tokens\": 10,\"temperature\": 0, \"top_p\": 1,\"top_k\":1},\r\n\"lora_path\": [\"lora0\",\"lora_batch\"]*32,}\r\n\r\nimport time\r\ntime_start=time.time()\r\nresponse = requests.post(\r\n        url + \"/generate\",\r\n        json=json_data,\r\n)\r\ntime_end=time.time()\r\nprint(time_end-time_start)\r\n\r\nvllm post\r\n\r\nimport time\r\nurl = \"http://localhost:8899\"\r\njson_data={\"model\": \"reranker_classify_catalog_rough_model\", \"messages\": [{\"role\":\"user\",\"content\":problem[10]}],\"max_tokens\": 100,\"temperature\": 0, \"top_p\": 1}\r\ntime_start=time.time()\r\nresponse = requests.post(\r\n        url + \"/v1/chat/completions\",\r\n        json=json_data,\r\n)\r\ntime_end=time.time()\r\nprint(time_end-time_start)\r\nprint(response.json())\r\n\r\nsglang speed\r\ngen throughput (token/s): 33.28\r\nvllm speed\r\nAvg generation throughput: 55.9 tokens/s",
+    "labels": [
+      "enhancement",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-23T14:28:48+00:00",
+    "closed_at": "2025-02-22T00:16:12+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2559/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2559"
+  },
+  {
+    "number": 2549,
+    "title": "[Feature] Set outlines and xgrammar as addtional dependency",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nI am trying to integrate SGLang and vllm into OpenRLHF. For the grammar backend, could we set it as additional requirements, i.e. import it when we use it? Like:\r\n\r\n```python\r\n\r\ndef __init__():\r\n    if use_constrained_decoding:\r\n        if grammar_backend == \"xgrammar\":\r\n            import xgrammar\r\n            xgrammar.function()\r\n        if grammar_backend == \"outlines\":\r\n            import outlines\r\n            outlines.function()\r\n```\r\n\r\nThis to avoid the version conflicts with vllm.\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "enhancement",
+      "inactive",
+      "grammar-backend"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-23T02:35:28+00:00",
+    "closed_at": "2025-02-22T00:16:13+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2549/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2549"
+  },
+  {
+    "number": 3200,
+    "title": "[Bug] Tried to run DeepSeek V3 by amd instructions",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI tried to use [AMD instruction](https://www.amd.com/en/developer/resources/technical-articles/amd-instinct-gpus-power-deepseek-v3-revolutionizing-ai-development-with-sglang.html) but i have an error.\n\n### Reproduction\n\nAfter running in a container\n```\npython3 -m sglang.launch_server --model-path deepseek-ai/DeepSeek-V3 --port 30000 --tp 8 --trust-remote-code\n```\n\nLog:\n```\n/opt/conda/envs/py_3.9/lib/python3.9/site-packages/scipy/__init__.py:138: UserWarning: A NumPy version >=1.16.5 and <1.23.0 is required for this version of SciPy (detected version 1.26.4)\n  warnings.warn(f\"A NumPy version >={np_minversion} and <{np_maxversion} is required for this version of \"\n[2025-01-28 22:32:01 TP6] Process 97 gpu_id 6 is running on CPUs: [6, 14]\n[2025-01-28 22:32:01 TP2] Process 63 gpu_id 2 is running on CPUs: [2, 10]\n[2025-01-28 22:32:01 TP7] Process 113 gpu_id 7 is running on CPUs: [7, 15]\n[2025-01-28 22:32:02 TP5] Process 66 gpu_id 5 is running on CPUs: [5, 13]\n[2025-01-28 22:32:02 TP4] Process 65 gpu_id 4 is running on CPUs: [4, 12]\n[2025-01-28 22:32:02 TP3] Process 64 gpu_id 3 is running on CPUs: [3, 11]\n[2025-01-28 22:32:02 TP1] Process 62 gpu_id 1 is running on CPUs: [1, 9]\n[2025-01-28 22:32:03 TP0] Process 61 gpu_id 0 is running on CPUs: [0, 8]\n[2025-01-28 22:32:03 TP2] MLA optimization is turned on. Use triton backend.\n[2025-01-28 22:32:03 TP2] Init torch distributed begin.\n[2025-01-28 22:32:03 TP2] Scheduler hit an exception: Traceback (most recent call last):\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 1609, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 203, in __init__\n    self.tp_worker = TpWorkerClass(\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker_overlap_thread.py\", line 63, in __init__\n    self.worker = TpModelWorker(server_args, gpu_id, tp_rank, dp_rank, nccl_port)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker.py\", line 68, in __init__\n    self.model_runner = ModelRunner(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 159, in __init__\n    min_per_gpu_memory = self.init_torch_distributed()\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 197, in init_torch_distributed\n    torch.get_device_module(self.device).set_device(self.gpu_id)\n  File \"/opt/conda/envs/py_3.9/lib/python3.9/site-packages/torch/cuda/__init__.py\", line 478, in set_device\n    torch._C._cuda_setDevice(device)\nRuntimeError: HIP error: invalid device ordinal\nHIP kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing AMD_SERIALIZE_KERNEL=3\nCompile with `TORCH_USE_HIP_DSA` to enable device-side assertions.\n\n\nKilled\n```\n\n### Environment\n\n```\nPython: 3.9.19 (main, May  6 2024, 19:43:03) [GCC 11.2.0]\nROCM available: True\nGPU 0: AMD Radeon RX 6800 XT\nGPU 0 Compute Capability: 10.3\nROCM_HOME: /opt/rocm\nHIPCC: HIP version: 6.2.41133-dd7f95766\nROCM Driver Version: 6.12.10-zen1-1-zen\nPyTorch: 2.5.0a0+gitcedc116\nsglang: 0.4.1.post4\nflashinfer: Module Not Found\ntriton: 3.0.0\ntransformers: 4.46.1\ntorchao: 0.7.0\nnumpy: 1.26.4\naiohttp: 3.10.10\nfastapi: 0.115.4\nhf_transfer: 0.1.8\nhuggingface_hub: 0.26.2\ninteregular: 0.3.3\nmodelscope: 1.21.1\norjson: 3.10.13\npackaging: 24.1\npsutil: 6.1.0\npydantic: 2.9.2\nmultipart: 0.0.20\nzmq: 26.2.0\nuvicorn: 0.32.0\nuvloop: 0.21.0\nvllm: 0.6.3.post2.dev1+g1ef171e0\nopenai: 1.59.3\nanthropic: 0.42.0\ndecord: 0.6.0\nAMD Topology: \n\n\n============================ ROCm System Management Interface ============================\n=============================== Link Type between two GPUs ===============================\n       GPU0         \nGPU0   0            \n================================== End of ROCm SMI Log ===================================\n\nulimit soft: 1024\n```",
+    "labels": [
+      "documentation",
+      "help wanted",
+      "inactive",
+      "amd"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-28T22:33:58+00:00",
+    "closed_at": "2025-04-03T00:17:38+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3200/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3200"
+  },
+  {
+    "number": 3077,
+    "title": "[Feature] docs: Improve documentation on how to use EAGLE speculative docoding",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe recent addition of EAGLE speculative decoding in [here](https://github.com/SafeAILab/EAGLE/pull/173) is powerful. Thank you for creating and maintaining such a useful tool! The existing codebase gives insufficient examples of how it can be used (e.g for Llama3 models, for example) together with `docker compose`. It would be great if another file like https://github.com/sgl-project/sglang/blob/main/docker/compose.yaml can be added to illustrate how the feature can be used in docker environments. Thanks for looking into this issue!",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-23T10:06:08+00:00",
+    "closed_at": "2025-05-24T15:47:25+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3077/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3077"
+  },
+  {
+    "number": 2661,
+    "title": "[Feature] Add docs for pass in token ids directly",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nIn most of RLHF frameworks, the prompts are pre-tokenized when data processing, so they can directly pass in token ids to the sglang engine rather than the prompts. So we should add docs on how to do this and how to get tokens directly.\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "RLHF"
+    ],
+    "state": "open",
+    "created_at": "2024-12-30T07:51:00+00:00",
+    "closed_at": null,
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2661/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2661"
+  },
+  {
+    "number": 1129,
+    "title": "[Feature] Support TRI-ML/prismatic-vlms",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nI'm trying to speed up inference for new VLM models on huggingface: https://huggingface.co/TRI-ML/prismatic-vlms/tree/main. I'm wondering if there are additional documentation on how to adapt new models? \n\n### Related resources\n\nThe model I'm trying to adapt is detailed here: https://arxiv.org/pdf/2402.07865. ",
+    "labels": [
+      "good first issue",
+      "feature",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2024-08-16T18:15:10+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1129/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1129"
+  },
+  {
+    "number": 3524,
+    "title": "[Feature] Extend CustomLogitProcessor to Support input_ids in call Method",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThanks @hongpeng-guo for PR #2396. After reviewing your work, I'd like to propose an enhancement to the `CustomLogitProcessor`. Specifically, I suggest modifying its `__call__` method to accept `input_ids` as an additional parameter\u2014similar to the implementation in Huggingface (see this [doc](https://huggingface.co/docs/transformers.js/en/api/generation/logits_process#module_generation/logits_process.LogitsProcessor)). This change would allow constraints to be applied conditionally based on the entire history of input tokens, enabling more flexible and context-aware processing.\n\nThank you for considering this feature request!\n\n### Related resources\n\n[Huggingface LogitsProcessor.](https://huggingface.co/docs/transformers.js/en/api/generation/logits_process#module_generation/logits_process.LogitsProcessor)",
+    "labels": [
+      "inactive",
+      "feature"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-12T12:48:38+00:00",
+    "closed_at": "2025-06-25T00:20:02+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3524/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3524"
+  },
+  {
+    "number": 2542,
+    "title": "[Feature] (Willing to PR) Avoid KV cache occupying GPU memory when not used",
+    "body": "### Checklist\r\n\r\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 2. Please use English, otherwise it will be closed.\r\n\r\n### Motivation\r\n\r\nHi thank you for the library! The use case is that, when doing online PPO, I hope to use SGLang to generate llm completions, and then use RL to do gradient descent on those completions.\r\n\r\nThe problem is, to do this on a single GPU, the timeline is \"SGLang generate - Torch backward - repeat it\". Thus, when torch doing backprop, I hope SGLang can free its KV cache memory consumption, otherwise torch will not have enough memory.\r\n\r\nThanks for any suggestions!\r\n\r\n### Related resources\r\n\r\n_No response_",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "inactive",
+      "feature"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-22T09:07:26+00:00",
+    "closed_at": "2025-03-16T14:34:36+00:00",
+    "comments": 43,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2542/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2542"
+  },
+  {
+    "number": 1945,
+    "title": "[Bug] tp-size=2\uff0cmodel launch error",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\ntp-size=2, model launch is frozen.\n\n### Reproduction\n\n python3 -m sglang.launch_server --model-path  /root/.xinference/cache/qwen2_5-instruct-gptq-7b-Int8/ --port 30000 --mem-fraction-static  0.8 --tp-size 2 --kv-cache-dtype int8 --attention-backend triton --sampling-backend pytorch --enable-torch-compile\n\n### Environment\n\namd gpu RTX 7900xtx\r\n  Name:                    gfx1100\r\n  Uuid:                    GPU-b1d1b7e55cd7ec87\r\n  Marketing Name:          Radeon RX 7900 XTX\r\n  Vendor Name:             AMD\r\n  Feature:                 KERNEL_DISPATCH\r\n  Profile:                 BASE_PROFILE\r\n  Float Round Mode:        NEAR\r\n  Max Queue Number:        128(0x80)\r\n  Queue Min Size:          64(0x40)\r\n  Queue Max Size:          131072(0x20000)\r\n  Queue Type:              MULTI\r\n  Node:                    3\r\n  Device Type:             GPU\r\n  Cache Info:\r\n    L1:                      32(0x20) KB\r\n    L2:                      6144(0x1800) KB\r\n    L3:                      98304(0x18000) KB\r\n  Chip ID:                 29772(0x744c)\r\n  ASIC Revision:           0(0x0)\r\n  Cacheline Size:          64(0x40)\r\n  Max Clock Freq. (MHz):   2070\r\n  BDFID:                   49920\r\n  Internal Node ID:        3\r\n  Compute Unit:            96\r\n  SIMDs per CU:            2\r\n  Shader Engines:          6\r\n  Shader Arrs. per Eng.:   2\r\n  WatchPts on Addr. Ranges:4\r\n  Coherent Host Access:    FALSE\r\n  Features:                KERNEL_DISPATCH\r\n  Fast F16 Operation:      TRUE\r\n  Wavefront Size:          32(0x20)\r\n  Workgroup Max Size:      1024(0x400)\r\n  Workgroup Max Size per Dimension:\r\n    x                        1024(0x400)\r\n    y                        1024(0x400)\r\n    z                        1024(0x400)\r\n  Max Waves Per CU:        32(0x20)\r\n  Max Work-item Per CU:    1024(0x400)\r\n  Grid Max Size:           4294967295(0xffffffff)\r\n  Grid Max Size per Dimension:\r\n    x                        4294967295(0xffffffff)\r\n    y                        4294967295(0xffffffff)\r\n    z                        4294967295(0xffffffff)\r\n  Max fbarriers/Workgrp:   32\r\n  Packet Processor uCode:: 202\r\n  SDMA engine uCode::      20\r\n  IOMMU Support::          None\r\n  Pool Info:\r\n    Pool 1\r\n      Segment:                 GLOBAL; FLAGS: COARSE GRAINED\r\n      Size:                    25149440(0x17fc000) KB\r\n      Allocatable:             TRUE\r\n      Alloc Granule:           4KB\r\n      Alloc Recommended Granule:2048KB\r\n      Alloc Alignment:         4KB\r\n      Accessible by all:       FALSE\r\n    Pool 2\r\n      Segment:                 GLOBAL; FLAGS: EXTENDED FINE GRAINED\r\n      Size:                    25149440(0x17fc000) KB\r\n      Allocatable:             TRUE\r\n      Alloc Granule:           4KB\r\n      Alloc Recommended Granule:2048KB\r\n      Alloc Alignment:         4KB\r\n      Accessible by all:       FALSE\r\n    Pool 3\r\n      Segment:                 GROUP\r\n      Size:                    64(0x40) KB\r\n      Allocatable:             FALSE\r\n      Alloc Granule:           0KB\r\n      Alloc Recommended Granule:0KB\r\n      Alloc Alignment:         0KB\r\n      Accessible by all:       FALSE\r\n  ISA Info:\r\n    ISA 1\r\n      Name:                    amdgcn-amd-amdhsa--gfx1100\r\n      Machine Models:          HSA_MACHINE_MODEL_LARGE\r\n      Profiles:                HSA_PROFILE_BASE\r\n      Default Rounding Mode:   NEAR\r\n      Default Rounding Mode:   NEAR\r\n      Fast f16:                TRUE\r\n      Workgroup Max Size:      1024(0x400)\r\n      Workgroup Max Size per Dimension:\r\n        x                        1024(0x400)\r\n        y                        1024(0x400)\r\n        z                        1024(0x400)\r\n      Grid Max Size:           4294967295(0xffffffff)\r\n      Grid Max Size per Dimension:\r\n        x                        4294967295(0xffffffff)\r\n        y                        4294967295(0xffffffff)\r\n        z                        4294967295(0xffffffff)\r\n      FBarrier Max Size:       32\r\n*** Done ***\r\n",
+    "labels": [
+      "await-response",
+      "inactive",
+      "amd"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-07T06:14:03+00:00",
+    "closed_at": "2025-01-29T00:16:26+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1945/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1945"
+  },
+  {
+    "number": 3392,
+    "title": "[Bug] AttributeError: module 'vllm._custom_ops' has no attribute 'silu_and_mul'",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nHell folks,\n\n I'm attempting to deploy DeepSeek-R1 with SGLang on an AMD MI300X, but I'm encountering compatibility issues. \nCould someone please help me troubleshoot these issues?\n\n\n### Reproduction\n\n1. build and install **triton 3.0.0** from source\n2. build and install **vllm v0.7.2** from source\n3. build and install **sglang** (rev 0a6f18f068e4095fc228e798454e8496c9749214) from source\n4. run `python3 -m sglang.launch_server --host 0.0.0.0 --port 30000 \\\n--model-path ~/deepseek/DeepSeek-R1/ \\\n--tp 8 --trust-remote-code \\\n--mem-fraction-static 0.70 \\\n--served-model-name \"DeepSeek-R1\" \\\n--log-level debug \\\n--log-level-http debug \\\n--log-requests \\\n--enable-metrics \\\n--show-time-cost`\n\nThen I got this error:\n```\n[2025-02-08 05:57:37 TP6] Scheduler hit an exception: Traceback (most recent call last):\n  File \"/home/deepseek/sglang/python/sglang/srt/managers/scheduler.py\", line 1787, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/managers/scheduler.py\", line 240, in __init__\n    self.tp_worker = TpWorkerClass(\n                     ^^^^^^^^^^^^^^\nFile \"/home/deepseek/sglang/python/sglang/srt/managers/tp_worker_overlap_thread.py\", line 63, in __init__                                                                                                       [604/1865]\n    self.worker = TpModelWorker(server_args, gpu_id, tp_rank, dp_rank, nccl_port)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/managers/tp_worker.py\", line 68, in __init__\n    self.model_runner = ModelRunner(\n                        ^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/model_executor/model_runner.py\", line 215, in __init__\n    self.init_cuda_graphs()\n  File \"/home/deepseek/sglang/python/sglang/srt/model_executor/model_runner.py\", line 730, in init_cuda_graphs\n    self.cuda_graph_runner = CudaGraphRunner(self)\n                             ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/model_executor/cuda_graph_runner.py\", line 232, in __init__\n    self.capture()\n  File \"/home/deepseek/sglang/python/sglang/srt/model_executor/cuda_graph_runner.py\", line 298, in capture\n    ) = self.capture_one_batch_size(bs, forward)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/model_executor/cuda_graph_runner.py\", line 375, in capture_one_batch_size\n    run_once()\n  File \"/home/deepseek/sglang/python/sglang/srt/model_executor/cuda_graph_runner.py\", line 368, in run_once\n    logits_output = forward(input_ids, forward_batch.positions, forward_batch)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/.conda/envs/py312B/lib/python3.12/site-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/models/deepseek_v2.py\", line 858, in forward\n    hidden_states = self.model(input_ids, positions, forward_batch)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/.conda/envs/py312B/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/.conda/envs/py312B/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)                                                                                                                                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/models/deepseek_v2.py\", line 819, in forward\n    hidden_states, residual = layer(\n                              ^^^^^^\n  File \"/home/.conda/envs/py312B/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/.conda/envs/py312B/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/models/deepseek_v2.py\", line 774, in forward\n    hidden_states = self.mlp(hidden_states)\n                    ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/.conda/envs/py312B/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/.conda/envs/py312B/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/models/deepseek_v2.py\", line 177, in forward\n    self.experts(hidden_states=hidden_states, router_logits=router_logits)\n  File \"/home/.conda/envs/py312B/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/.conda/envs/py312B/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/layers/moe/fused_moe_triton/layer.py\", line 587, in forward\n    final_hidden_states = self.quant_method.apply(\n                          ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/layers/quantization/fp8.py\", line 820, in apply\n    return fused_experts(\n           ^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/layers/moe/fused_moe_triton/fused_moe.py\", line 835, in fused_experts\n    torch.ops.sglang.inplace_fused_experts(\n  File \"/home/.conda/envs/py312B/lib/python3.12/site-packages/torch/_ops.py\", line 1123, in __call__\n    return self._op(*args, **(kwargs or {}))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deepseek/sglang/python/sglang/srt/layers/moe/fused_moe_triton/fused_moe.py\", line 715, in inplace_fused_experts\n    fused_experts_impl(\n  File \"/home/deepseek/sglang/python/sglang/srt/layers/moe/fused_moe_triton/fused_moe.py\", line 992, in fused_experts_impl\n    ops.silu_and_mul(intermediate_cache2, intermediate_cache1.view(-1, N))\n    ^^^^^^^^^^^^^^^^\nAttributeError: module 'vllm._custom_ops' has no attribute '**silu_and_mul**'\n```\n\n\n\n### Environment\n\n> Python: 3.12.8 | packaged by Anaconda, Inc. | (main, Dec 11 2024, 16:31:09) [GCC 11.2.0]\n> ROCM available: True\n> GPU 0,1,2,3,4,5,6,7: AMD Instinct MI300X VF\n> GPU 0,1,2,3,4,5,6,7 Compute Capability: 9.4\n> ROCM_HOME: /opt/rocm-6.1.0\n> HIPCC: HIP version: 6.1.40091-a8dbc0c19\n> ROCM Driver Version: 6.8.1\n> PyTorch: 2.6.0+rocm6.1\n> sglang: 0.4.2.post3\n> flashinfer: 0.2.0.post2\n> triton: 3.0.0\n> transformers: 4.48.3\n> torchao: 0.8.0\n> numpy: 1.26.4\n> aiohttp: 3.11.12\n> fastapi: 0.115.8\n> hf_transfer: 0.1.9\n> huggingface_hub: 0.28.1\n> interegular: 0.3.3\n> modelscope: 1.22.3\n> orjson: 3.10.15\n> packaging: 24.2\n> psutil: 6.1.1\n> pydantic: 2.10.6\n> multipart: 0.0.20\n> zmq: 26.2.1\n> uvicorn: 0.34.0\n> uvloop: 0.21.0\n> vllm: 0.7.2\n> openai: 1.61.1\n> anthropic: 0.45.2\n> decord: 0.6.0\n> AMD Topology:\n> \n> \n> ============================ ROCm System Management Interface ============================\n> =============================== Link Type between two GPUs ===============================\n>        GPU0         GPU1         GPU2         GPU3         GPU4         GPU5         GPU6         GPU7\n> GPU0   0            XGMI         XGMI         XGMI         XGMI         XGMI         XGMI         XGMI\n> GPU1   XGMI         0            XGMI         XGMI         XGMI         XGMI         XGMI         XGMI\n> GPU2   XGMI         XGMI         0            XGMI         XGMI         XGMI         XGMI         XGMI\n> GPU3   XGMI         XGMI         XGMI         0            XGMI         XGMI         XGMI         XGMI\n> GPU4   XGMI         XGMI         XGMI         XGMI         0            XGMI         XGMI         XGMI\n> GPU5   XGMI         XGMI         XGMI         XGMI         XGMI         0            XGMI         XGMI\n> GPU6   XGMI         XGMI         XGMI         XGMI         XGMI         XGMI         0            XGMI\n> GPU7   XGMI         XGMI         XGMI         XGMI         XGMI         XGMI         XGMI         0\n> ================================== End of ROCm SMI Log ===================================\n> \n> ",
+    "labels": [
+      "inactive",
+      "amd",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-08T06:32:39+00:00",
+    "closed_at": "2025-05-03T00:18:16+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3392/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3392"
+  },
+  {
+    "number": 3823,
+    "title": "[Feature] GPU inference on AMD Ryzen AI (370HX-890M) iGPU + NPU",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nRyzen AI devices have been out since mid 2024 yet there's no end user friendly local inference engine that can use the iGPU or the NPU for inference. Some people seem to be able to make it working using hacks but it's still a hit or miss and you need to build your own custom room and hip packages to it to kind of work. \n\n### Related resources\n\n_No response_",
+    "labels": [
+      "inactive",
+      "feature",
+      "amd"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-24T15:49:18+00:00",
+    "closed_at": "2025-04-26T00:17:55+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3823/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3823"
+  },
+  {
+    "number": 6017,
+    "title": "Instruction for Running DeepSeek with Large-scale PD and EP",
+    "body": "## Using main branch\n\n~~NOTE: The feature is already on main, but the performance still needs some improvements on main branch.~~ will be good after a few already opened PRs - PR 6680, 6727, 6728\n\n~~NOTE: I will try other config like 4 node for P and 9 node for D later.~~ updated\n\n### Environment Preparation\n\nUse SGLang and DeepEP on master is sufficient. Also remember to upgrade Mooncake.\n\n### 4P + 9D experiments\n\nStart server\nwhere DeepEP config can be tuned by https://github.com/sgl-project/sglang/pull/6742\n\n```python\n# prefill nodes\nMC_TE_METRIC=true SGLANG_TBO_DEBUG=1 python3 -m sglang.launch_server --model-path /dev/shm/DeepSeek-V3-0324 --disaggregation-ib-device mlx5_1 --disaggregation-mode prefill --dist-init-addr 10.5.55.3:5757 --nnodes 4 --node-rank 0 --tp-size 32 --dp-size 32 --enable-dp-attention --decode-log-interval 1 --enable-deepep-moe --page-size 1 --host 0.0.0.0 --trust-remote-code --moe-dense-tp-size 1 --enable-dp-lm-head --disable-radix-cache --watchdog-timeout 1000000 --enable-two-batch-overlap --deepep-mode normal --mem-fraction-static 0.85 --chunked-prefill-size 524288 --max-running-requests 8192 --max-total-tokens 131072 --context-length 8192 --init-expert-location YOUR_PATH --ep-num-redundant-experts 32 --ep-dispatch-algorithm dynamic --eplb-algorithm deepseek --deepep-config YOUR_PATH\n\n# decode nodes\nMC_TE_METRIC=true SGLANG_TBO_DEBUG=1 python3 -m sglang.launch_server --model-path /dev/shm/DeepSeek-V3-0324 --disaggregation-ib-device mlx5_1 --disaggregation-mode decode --dist-init-addr 10.5.55.7:5757 --nnodes 9 --node-rank 0 --tp-size 72 --dp-size 72 --enable-dp-attention --decode-log-interval 1 --enable-deepep-moe --page-size 1 --host 0.0.0.0 --trust-remote-code --moe-dense-tp-size 1 --enable-dp-lm-head --disable-radix-cache --watchdog-timeout 1000000 --enable-two-batch-overlap --deepep-mode low_latency --mem-fraction-static 0.835 --max-running-requests 18432 --context-length 4500 --init-expert-location YOUR_PATH --ep-num-redundant-experts 32 --cuda-graph-bs 256 --num-reserved-decode-tokens YOUR_VALUE\n\n# load balancer\npython3 -m sglang.srt.disaggregation.mini_lb --prefill \"http://YOUR_FIRST_PREFILL_NODE_IP:30000\" --decode \"http://YOUR_FIRST_DECODE_NODE_IP:30000\"\n```\n\nBenchmark for prefill\n\n```\n# benchmark\npython3 -m sglang.bench_one_batch_server --model-path ${model_path} --base-url http://YOUR_IP:8000 --batch-size 8192 --input-len 4096 --output-len 5 --skip-warmup\n```\n\nBenchmark for decode\n\n- It is suggested to use 3 prefill nodes and 9 decode nodes to reproduce our results, since 9 decode nodes is half the size of that in DeepSeek\u2019s blog.\n- `SGLANG_HACK_PD_DECODE_NUM_RESERVED_DECODE_TOKENS` can be set to `benchmark-output-len + 2` to maximize batch size.\n- The example below demonstrates how to use the slow_down debug feature to stress test decode nodes when there are not enough prefill nodes. If your test workload has enough prefill nodes, this can be omitted.\n\n```\n# slow down D nodes\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": 90.0}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n\n# start benchmark; do not wait for this to finish before running the next line\npython3 -m sglang.bench_one_batch_server --model-path /dev/shm/DeepSeek-V3-0324 --base-url http://10.10.37.16:7000 --batch-size 40000 --input-len 2000 --output-len 100 --skip-warmup\n\n# after some time (e.g. 10 minute), the D nodes are saturated, then this command should be executed\n# finish slowing down D nodes\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": null}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n```\n\n### 4P + 9D + dynamic EPLB\n\nMay still have room for improvements, just preliminary tests.\n\n```\n# prefill\nMC_TE_METRIC=true SGLANG_TORCH_PROFILER_DIR=/host_home/temp_sglang_server2local SGLANG_TBO_DEBUG=1 PYTHONUNBUFFERED=1 python3 -m sglang.launch_server --model-path /dev/shm/DeepSeek-V3-0324 --disaggregation-ib-device mlx5_1 --disaggregation-mode prefill --dist-init-addr 10.5.55.3:5757 --nnodes 4 --node-rank 0 --tp-size 32 --dp-size 32 --enable-dp-attention --decode-log-interval 1 --enable-deepep-moe --page-size 1 --host 0.0.0.0 --trust-remote-code --moe-dense-tp-size 1 --enable-dp-lm-head --disable-radix-cache --watchdog-timeout 1000000 --enable-two-batch-overlap --deepep-mode normal --mem-fraction-static 0.85 --chunked-prefill-size 524288 --max-running-requests 8192 --max-total-tokens 65536 --context-length 8192 --enable-eplb --ep-num-redundant-experts 32 --eplb-rebalance-num-iterations YOUR_VALUE --ep-dispatch-algorithm dynamic --deepep-config YOUR_PATH\n\n# decode\nMC_TE_METRIC=true SGLANG_TORCH_PROFILER_DIR=/host_home/temp_sglang_server2local SGLANG_TBO_DEBUG=1 PYTHONUNBUFFERED=1 python3 -m sglang.launch_server --model-path /dev/shm/DeepSeek-V3-0324 --disaggregation-ib-device mlx5_1 --disaggregation-mode decode --dist-init-addr 10.5.55.7:5757 --nnodes 9 --node-rank 0 --tp-size 72 --dp-size 72 --enable-dp-attention --decode-log-interval 1 --enable-deepep-moe --page-size 1 --host 0.0.0.0 --trust-remote-code --moe-dense-tp-size 1 --enable-dp-lm-head --disable-radix-cache --watchdog-timeout 1000000 --enable-two-batch-overlap --deepep-mode low_latency --mem-fraction-static 0.82 --max-running-requests 18432 --context-length 4500 --enable-eplb --ep-num-redundant-experts 32 --eplb-rebalance-num-iterations YOUR_VALUE --cuda-graph-bs 256  --num-reserved-decode-tokens YOUR_VALUE\n```\n\n### Create expert distribution data\n\nNeed PR 6964, 6967\n\n```\n# prefill\nSGLANG_DISAGGREGATION_THREAD_POOL_SIZE=4 MC_TE_METRIC=true SGLANG_TORCH_PROFILER_DIR=/host_home/temp_sglang_server2local SGLANG_EXPERT_DISTRIBUTION_RECORDER_DIR=/host_home/temp_sglang_server2local SGLANG_TBO_DEBUG=1 PYTHONUNBUFFERED=1 python3 -m sglang.launch_server --model-path /dev/shm/DeepSeek-V3-0324 --disaggregation-ib-device mlx5_1 --disaggregation-mode prefill --dist-init-addr 10.5.55.1:5757 --nnodes 4 --node-rank 0 --tp-size 32 --dp-size 32 --enable-dp-attention --decode-log-interval 1 --enable-deepep-moe --page-size 1 --host 0.0.0.0 --trust-remote-code --moe-dense-tp-size 1 --enable-dp-lm-head --disable-radix-cache --watchdog-timeout 1000000 --enable-two-batch-overlap --expert-distribution-recorder-mode stat --disable-overlap-schedule --expert-distribution-recorder-buffer-size -1 --deepep-mode normal --mem-fraction-static 0.82 --chunked-prefill-size 524288 --max-running-requests 8192 --max-total-tokens 131072 --context-length 8192 --ep-num-redundant-experts 32 --ep-dispatch-algorithm dynamic --eplb-algorithm deepseek --deepep-config /host_home/primary_synced/tom_sglang_server/misc/deepep_vp.json\n\n# decode\nMC_TE_METRIC=true SGLANG_TORCH_PROFILER_DIR=/host_home/temp_sglang_server2local SGLANG_EXPERT_DISTRIBUTION_RECORDER_DIR=/host_home/temp_sglang_server2local SGLANG_TBO_DEBUG=1 PYTHONUNBUFFERED=1 python3 -m sglang.launch_server --model-path /dev/shm/DeepSeek-V3-0324 --disaggregation-ib-device mlx5_1 --disaggregation-mode decode --dist-init-addr 10.5.55.5:5757 --nnodes 9 --node-rank 0 --tp-size 72 --dp-size 72 --enable-dp-attention --decode-log-interval 1 --enable-deepep-moe --page-size 1 --host 0.0.0.0 --trust-remote-code --moe-dense-tp-size 1 --enable-dp-lm-head --disable-radix-cache --watchdog-timeout 1000000 --enable-two-batch-overlap --expert-distribution-recorder-mode stat --disable-overlap-schedule --expert-distribution-recorder-buffer-size -1 --deepep-mode low_latency --mem-fraction-static 0.81 --max-running-requests 18432 --context-length 4500 --ep-num-redundant-experts 32 --cuda-graph-bs 256  --num-reserved-decode-tokens YOUR_VALUE\n\ncurl -X POST -H 'Content-Type: application/json' 'http://10.5.55.1:30000/start_expert_distribution_record' -d '{}' \ncurl -X POST -H 'Content-Type: application/json' 'http://10.5.55.5:30000/start_expert_distribution_record' -d '{}' \ncurl -X POST -H 'Content-Type: application/json' 'http://10.5.55.5:30000/slow_down' -d '{\"forward_sleep_time\": 90.0}' \npython3 -m sglang.bench_one_batch_server  --base-url http://10.5.55.1:8000 --model-path /dev/shm/DeepSeek-V3-0324 --batch-size 40000 --input-len 2000 --output-len 100 --skip-warmup \n# after a while\ncurl -X POST -H 'Content-Type: application/json' 'http://10.5.55.5:30000/slow_down' -d '{\"forward_sleep_time\": null}' \n# after a while\ncurl -X POST -H 'Content-Type: application/json' 'http://10.5.55.1:30000/dump_expert_distribution_record' -d '{}' \ncurl -X POST -H 'Content-Type: application/json' 'http://10.5.55.5:30000/dump_expert_distribution_record' -d '{}' \n```\n\nThen you will get one .pt file for prefill and one for decode. They can be used in --init-expert-location.\n\n## Using the blog branch\n\n<details>\n\n### Environment Preparation\n\n- Install SGLang on branch https://github.com/sgl-project/sglang/tree/deepseek_ep\n    - ~~https://github.com/sgl-project/sglang/pull/5524~~ (EDIT: do not use this branch since I am adding more code to it after the blog, please use deepseek_ep instead)\n- ~~Install DeepEP on branch https://github.com/deepseek-ai/DeepEP/pull/142~~\n    - 2025.05.08 UPDATE: Directly use latest DeepEP main is enough, since my PR has been merged\n- Install latest mooncake\n\nIt is suggested to use this Dockerfile https://github.com/sgl-project/sglang/blob/main/docker/Dockerfile.deepep to prepare dependencies of DeepEP.\n\n### Stress-testing Prefill Nodes\n\n```python\n# prefill nodes\nMC_TE_METRIC=true SGLANG_HACK_DEEPEP_NEW_MODE=0 SGL_ENABLE_JIT_DEEPGEMM=1 python3 -m sglang.launch_server --model-path ${model_path} --disaggregation-mode prefill --disaggregation-ib-device ${device_name} --host ${node_ip} --trust-remote-code --dist-init-addr ${master_ip}:5757 --nnodes ${num_prefill} --node-rank ${node_rank} --tp-size $((${num_prefill}*8)) --dp-size $((${num_prefill}*8)) --enable-dp-attention --enable-deepep-moe --deepep-mode normal --mem-fraction-static 0.85 --chunked-prefill-size $((${num_prefill}*131072)) --max-running-requests $((${num_prefill}*2048)) --max-total-tokens 131072 --context-length 8192 --init-expert-location YOUR_EXPERT_LOCATION_HERE --ep-num-redundant-experts 32 --enable-two-batch-overlap --moe-dense-tp-size 1 --disable-radix-cache --ep-dispatch-algorithm random\n\n# decode nodes\nSGLANG_HACK_DEEPEP_NEW_MODE=0 SGLANG_HACK_PD_DECODE_NUM_RESERVED_DECODE_TOKENS=102 SGL_ENABLE_JIT_DEEPGEMM=1 python3 -m sglang.launch_server --model-path ${model_path} --disaggregation-mode decode --disaggregation-ib-device ${device_name} --host ${node_ip} --trust-remote-code --dist-init-addr ${master_ip}:5757 --nnodes ${num_decode} --node-rank ${node_rank} --tp-size $((${num_decode}*8)) --dp-size $((${num_decode}*8)) --enable-dp-attention --enable-deepep-moe --deepep-mode low_latency --mem-fraction-static 0.82 --max-running-requests $((${num_decode}*1024)) --context-length 4500 --init-expert-location YOUR_EXPERT_LOCATION_HERE --enable-two-batch-overlap --moe-dense-tp-size 1 --cuda-graph-bs 128 --disable-radix-cache --decode-log-interval 1\n\n# load balancer\npython3 -m sglang.srt.disaggregation.mini_lb --prefill \"http://YOUR_FIRST_PREFILL_NODE_IP:30000\" --decode \"http://YOUR_FIRST_DECODE_NODE_IP:30000\"\n\n# benchmark\npython3 -m sglang.bench_one_batch_server --model-path ${model_path} --base-url http://YOUR_IP:8000 --batch-size 8192 --input-len 4096 --output-len 5 --skip-warmup\n```\n\n### Stress-testing Decode Nodes\n\n```python\n# prefill nodes\nSGLANG_HACK_DEEPEP_NEW_MODE=0 SGL_ENABLE_JIT_DEEPGEMM=1 python3 -m sglang.launch_server --model-path ${model_path} --disaggregation-mode prefill --disaggregation-ib-device ${device_name} --host ${node_ip} --trust-remote-code --dist-init-addr ${master_ip}:5050 --nnodes ${num_prefill} --node-rank ${node_rank} --tp-size $((${num_prefill}*8)) --dp-size $((${num_prefill}*8)) --enable-dp-attention --enable-deepep-moe --deepep-mode normal --mem-fraction-static 0.85 --chunked-prefill-size $((${num_prefill}*65536)) --max-running-requests $((${num_prefill}*2048)) --max-total-tokens 131076 --context-length 8192 --init-expert-location YOUR_EXPERT_LOCATION_HERE --ep-num-redundant-experts 32 --enable-two-batch-overlap --moe-dense-tp-size 1 --disable-radix-cache\n\n# decode nodes\nSGLANG_HACK_DEEPEP_NEW_MODE=0 SGLANG_HACK_PD_DECODE_NUM_RESERVED_DECODE_TOKENS=YOUR_NUM_HERE SGL_ENABLE_JIT_DEEPGEMM=1 python3 -m sglang.launch_server --model-path ${model_path} --disaggregation-mode decode --disaggregation-ib-device ${device_name} --host ${node_ip} --trust-remote-code --dist-init-addr ${master_ip}:5050 --nnodes ${num_decode} --node-rank ${node_rank} --tp-size $((${num_decode}*8)) --dp-size $((${num_decode}*8)) --enable-dp-attention --enable-deepep-moe --deepep-mode low_latency --mem-fraction-static 0.846 --chunked-prefill-size 81920 --max-running-requests $((${num_decode}*2048)) --context-length 4096 --init-expert-location YOUR_EXPERT_LOCATION_HERE --ep-num-redundant-experts 32 --enable-two-batch-overlap --moe-dense-tp-size 1 --cuda-graph-bs 256 --disable-radix-cache --decode-log-interval 1\n\n# load balancer\npython3 -m sglang.srt.disaggregation.mini_lb --prefill \"http://YOUR_FIRST_PREFILL_NODE_IP:30000\" --decode \"http://YOUR_FIRST_DECODE_NODE_IP:30000\"\n\n# slow down D nodes\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": 90.0}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n\n# start benchmark; do not wait for this to finish before running the next line\npython3 -m sglang.bench_one_batch_server --model-path /dev/shm/DeepSeek-V3-0324 --base-url http://10.10.37.16:7000 --batch-size 40000 --input-len 2000 --output-len 100 --skip-warmup\n\n# after some time (e.g. 10 minute), the D nodes are saturated, then this command should be executed\n# finish slowing down D nodes\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": null}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n```\n\n</details>\n\n## Analyzing Results\n\nSince we are stress testing one side of P or D, we need to look at the server logs instead of benchmark script outputs.\n\n- Prefill: For logs like `Prefill batch. ... #new-token: 16384 ... gap_latency: 2.561`, the performance is `16384 / 2.561` token/second/device.\n- Decode: The result can be read from `gen throughput (token/s)` in the logs.\n\n## Remarks\n\n- Please ensure the batch size is full and avoid padding, because the performance is suboptimal otherwise due to a bug we will address soon.\n    - For example, to ensure a batch size of 256 for 72 decode GPUs, it is reasonable to send 40000 requests.\n- The sample command above only captures a CUDA graph of size 256 to save memory, which can be modified to suit your scenarios.\n- For optimal performance, you may need to tune components such as DeepEP on your cluster.\n- DeepGEMM warmup during execution will cause seemingly slow overall performance, and should be excluded from analyzation.\n- We rushed in the last few days, so the code is really ugly now with many hacks. We will make it elegant when merging into master.\n- For expert distribution statistics, our experiments use the same as input/output data and provide them as follows for reproducibility: [attachment_ep_statistics.zip](https://github.com/user-attachments/files/20036217/attachment_ep_statistics.zip)\n- To debug prefill performance, it may be useful to temporarily use `--ep-dispatch-algorithm fake_grouped_uniform` to simulate a fake perfect EPLB, and should match the corresponding performance reported in the blog\n- To analyze performance, it is suggested to use the log instead of benchmark script output, because the script output is mixed with the starting and ending part, where the system is not fully utilized and is slow.\n\n## Report Template\n\nIf you face any issues, feel free to discuss here or in Slack channel, and it would be great to provide the following information:\n\n* Full command to start server and benchmark\n* Logs of all server nodes and benchmark",
+    "labels": [
+      "collaboration",
+      "deepseek"
+    ],
+    "state": "open",
+    "created_at": "2025-05-05T04:48:15+00:00",
+    "closed_at": null,
+    "comments": 504,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6017/reactions",
+      "total_count": 63,
+      "+1": 57,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 6,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6017"
+  },
+  {
+    "number": 2488,
+    "title": "[Feature] Benchmarking Performance on General Devices",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nWe need to benchmark the speed performance of SGLang on various devices, at least different types of GPUs. This could give users a standard of the engine and whether their engines are working appropriately.\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "enhancement",
+      "collaboration",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-16T08:01:21+00:00",
+    "closed_at": "2025-05-11T00:20:28+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2488/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2488"
+  },
+  {
+    "number": 6553,
+    "title": "[PD] Support Multi-Process for TokenizerManager",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe engine consists of three components:\n        1. TokenizerManager: Tokenizes the requests and sends them to the scheduler.\n        2. Scheduler (subprocess): Receives requests from the Tokenizer Manager, schedules batches, forwards them, and sends the output tokens to the Detokenizer Manager.\n        3. DetokenizerManager (subprocess): Detokenizes the output tokens and sends the result back to the Tokenizer Manager.\nThe diagram below briefly outlines the process of a request from input to output\uff1a[Detailed Documentation]\n\n<img width=\"789\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/2e95df40-c9bd-4078-80da-77098881e62e\" />\n\n\nThe TokenizerManager is responsible for three main tasks:\n\n1.  Receiving requests  \n2. Tokenizing \n3. Streaming results\n\nAll operations are executed on a single CPU core in the Tokenizer Manager (due to the GIL and its single-process design), which is likely to become a significant bottleneck under high-concurrency workloads. \nFor instance, this design may negatively affect throughput under specified SLOs and significantly degrade the Time to First Token (TTFT) performance in high-concurrency scenarios.\n\n\n### Related resources\nBased on this, we\u2019ve proposed a preliminary design to optimize the current architecture. For more details, please refer to [link/section].\n\nhttps://github.com/sgl-project/sglang/pull/6555\n\n\nCC @shuaills @zhyncs @ByronHsu @ShangmingCai @lw9527\n",
+    "labels": [
+      "enhancement",
+      "collaboration",
+      "deepseek"
+    ],
+    "state": "open",
+    "created_at": "2025-05-23T09:19:04+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6553/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6553"
+  },
+  {
+    "number": 1118,
+    "title": "[Feature] add disable_custom_all_reduce",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nSometimes, we need to turn off Custom allreduce. \r\nPlease  support disable_custom_all_reduce.\r\n\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "await-response"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-16T04:59:48+00:00",
+    "closed_at": "2024-08-21T04:53:40+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1118/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1118"
+  },
+  {
+    "number": 680,
+    "title": "[Bug] process not terminated after PM2 is kill",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n\n### Describe the bug\n\nI use pm2 to run the server and it appears the python process is still running after the pm2 is killed, the GPUs were still occupied. How do I properly terminate the process?\n\n### Reproduction\n\npm2 start /usr/bin/python --name sglang-launch-server -- -m sglang.launch_server --model-path meta-llama/Meta-Llama-3-8B-Instruct --port 30000\n\n### Environment\n\n```Shell\nN/A\n```\n",
+    "labels": [
+      "await-response"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-21T00:11:31+00:00",
+    "closed_at": "2024-08-01T10:51:40+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/680/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/680"
+  },
+  {
+    "number": 1203,
+    "title": "Accuracy degrading in concurrent scenario",
+    "body": "Hi, I have tested that when the concurrency is 1, the accuracy is expected. However, when concurrency increases, accuracy degrades. I have checked that no decoding oom happened. From the log, there also seems to have no exception.\r\n\r\nThe model is qwen2-7b-awq.",
+    "labels": [
+      "await-response"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-25T03:00:16+00:00",
+    "closed_at": "2024-09-22T12:51:30+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1203/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1203"
+  },
+  {
+    "number": 6608,
+    "title": "[Feature] Customized mapping for LoRA weight names",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe current LoRA impl in SGL maps LoRA weight to modules by (layer index, op_type) tuple, where op_type operation looks like `qkv_proj`, `o_proj`, `gate_up`, etc. This works fine for most standard cases, however, there are some limitations:\n1. For models where there are more than one attention stacks (e.g., VLM), there could be multiple modules with the same (layer index, op_type), e.g., one from vision tower, the other from the language model. Currently SGL cannot handle such cases correctly and would usually fail during loading due to incorrect mapping.\n2. Users cannot enable/disable application of LoRA at module-level, e.g., if user only wants to apply LoRA at language model but not vision (common); or when user only wants to apply LoRA at some layers but not the others (less common?), they cannot do that today. \n3. (Less common?) Models with non-standard LoRA weight / module names. \n\n### Proposal: \n\n* (Short-term) add an optional hook `should_apply_lora` at model level to allow model to customize LoRA application at model level. This would unblock most cases in 1 & 2. For example, for most VLMs, LoRAs should only be applied to language model but not vision tower. In these cases, model authors could simply disable LoRA application for modules in the vision tower, This would address the current LoRA loading failures due to incorrect mapping.\n* (Long-term) generalize the hook to `map_lora_module_name` to allow model owner to map a given module to a specific LoRA weight name or return None when LoRA should not be applied. This would address 3 and some less common cases in 1 (e.g., when LoRA needs to be applied at both vision tower and language model)\n\n(cc @Fridge003 )\n\n\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "low-priority",
+      "lora"
+    ],
+    "state": "open",
+    "created_at": "2025-05-26T04:08:39+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6608/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6608"
+  },
+  {
+    "number": 3323,
+    "title": "[Feature] optimize group gemm",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nRewrite the  Grouped GEMM used by LoRA with cuBLAS 12.5 in sgl-kernel for improved speed.\n\nhttps://developer.nvidia.com/blog/introducing-grouped-gemm-apis-in-cublas-and-more-performance-updates/\nhttps://github.com/zhihu/ZhiLight/blob/main/src/nn/linear/gemm_grouped.cpp\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "performance",
+      "lora"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-05T22:56:43+00:00",
+    "closed_at": "2025-02-20T08:26:59+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3323/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3323"
+  },
+  {
+    "number": 7910,
+    "title": "[Feature] Cutlass kernels for LoRA",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nCreating an issue to track the work for supporting a CUTLASS / CUTE kernel for LoRA to see if there is any perf gain comparing with the current Triton one.\n\nDependency: this task should happen after #7809 as the FlashInfer deprecation is expected to change / simplify the kernel interface.\n\n(cc @Fridge003 @Ying1123 )\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "lora"
+    ],
+    "state": "open",
+    "created_at": "2025-07-09T21:43:29+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7910/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7910"
+  },
+  {
+    "number": 6863,
+    "title": "[Bug] FA3 + EAGLE2: speculative_token_map not supported",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nWe conducted a large-scale load test with speculative decoding using EAGLE2. According to our results, enabling speculative_token_map effectively reduces overhead for larger batch sizes. However, this feature only works with the flashinfer backend, while the FA3 backend does not support it.\n\nHere is our graph demonstrating this:\n\n+FR is running with speculative_token_map. Qwen2.5\n\n![Image](https://github.com/user-attachments/assets/81420e3b-0c21-418e-bf18-264f91115d90)\n\n![Image](https://github.com/user-attachments/assets/d2a42f0c-2fad-4f7f-8442-ec787a79eb01)\n\n![Image](https://github.com/user-attachments/assets/994dd5cc-2151-4eac-bdd2-61f296022598)\n\n### Reproduction\n\n-\n\n### Environment\n\nsglang docker 0.4.6.post5",
+    "labels": [
+      "speculative-decoding"
+    ],
+    "state": "closed",
+    "created_at": "2025-06-04T08:14:37+00:00",
+    "closed_at": "2025-06-27T21:00:23+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6863/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6863"
+  },
+  {
+    "number": 5361,
+    "title": "[Feature] support merge_state in sgl-kernel",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nI have talked to @deftruth, and he will support it in the sgl-kernel today\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "speculative-decoding"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-14T00:56:57+00:00",
+    "closed_at": "2025-04-15T04:32:18+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5361/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5361"
+  },
+  {
+    "number": 7263,
+    "title": "[Bug] Error when running Qwen2 EAGLE spec decoding with the official OFFLINE inference example",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nHi, I am running eagle offline speculative decoding example (examples/runtime/engine/offline_batch_inference_eagle.py), and I encountered an error as shown below. Specifically, I modified the target model to Qwen/Qwen2-7B-Instruct and draft model to yuhuili/EAGLE-Qwen2-7B-Instruct.\nI did notice there was a previous [issue](https://github.com/sgl-project/sglang/issues/3315) report similar problem, but in the sgl server mode. Could you please look into this offline inference bug? Thanks!\n\n## The error encountered is as follow: (similar to the previous issue)\nCapturing batches (avail_mem=11.24 GB): 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 8/8 [00:03<00:00,  2.59it/s]\nLoading pt checkpoint shards:   0% Completed | 0/1 [00:00<?, ?it/s]\n[2025-06-17 05:21:52] Scheduler hit an exception: Traceback (most recent call last):\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/scheduler.py\", line 2490, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, pp_rank, dp_rank)\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/scheduler.py\", line 295, in __init__\n    self.draft_worker = EAGLEWorker(\n  File \"/home/ubuntu/sglang/python/sglang/srt/speculative/eagle_worker.py\", line 113, in __init__\n    super().__init__(\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/tp_worker.py\", line 78, in __init__\n    self.model_runner = ModelRunner(\n  File \"/home/ubuntu/sglang/python/sglang/srt/model_executor/model_runner.py\", line 212, in __init__\n    self.initialize(min_per_gpu_memory)\n  File \"/home/ubuntu/sglang/python/sglang/srt/model_executor/model_runner.py\", line 253, in initialize\n    self.load_model()\n  File \"/home/ubuntu/sglang/python/sglang/srt/model_executor/model_runner.py\", line 547, in load_model\n    self.model = get_model(\n  File \"/home/ubuntu/sglang/python/sglang/srt/model_loader/__init__.py\", line 22, in get_model\n    return loader.load_model(\n  File \"/home/ubuntu/sglang/python/sglang/srt/model_loader/loader.py\", line 381, in load_model\n    self.load_weights_and_postprocess(\n  File \"/home/ubuntu/sglang/python/sglang/srt/model_loader/loader.py\", line 389, in load_weights_and_postprocess\n    model.load_weights(weights)\n  File \"/home/ubuntu/sglang/python/sglang/srt/models/qwen2.py\", line 513, in load_weights\n    param = params_dict[name]\nKeyError: 'layers.0.self_attn.qkv_proj.weight'\n\nLoading pt checkpoint shards:   0% Completed | 0/1 [00:00<?, ?it/s]\n\n\n\n\n### Reproduction\n\n## Scripts and reproduction:\nscripts: spec.py (modified from examples/runtime/engine/offline_batch_inference_eagle.py with qwen model)\n```\nimport sglang as sgl\ndef main():\n    # Sample prompts.\n    prompts = [\n        \"Hello, my name is\",\n        \"The president of the United States is\",\n        \"The capital of France is\",\n        \"The future of AI is\",\n    ]\n\n    # Create a sampling params object.\n    sampling_params = {\"temperature\": 0, \"max_new_tokens\": 30}\n\n    # Create an LLM.\n    llm = sgl.Engine(\n        # model_path=\"meta-llama/Llama-2-7b-chat-hf\",\n        model_path=\"Qwen/Qwen2-7B-Instruct\",\n        speculative_algorithm=\"EAGLE\",\n        # speculative_draft_model_path=\"lmsys/sglang-EAGLE-llama2-chat-7B\",\n        speculative_draft_model_path=\"yuhuili/EAGLE-Qwen2-7B-Instruct\",\n        speculative_num_steps=3,\n        speculative_eagle_topk=4,\n        speculative_num_draft_tokens=16,\n        cuda_graph_max_bs=8,\n    )\n\n    outputs = llm.generate(prompts, sampling_params)\n\n    # Print the outputs.\n    for prompt, output in zip(prompts, outputs):\n        print(\"===============================\")\n        print(f\"Prompt: {prompt}\\nGenerated text: {output['text']}\")\n\n\n# The __main__ condition is necessary here because we use \"spawn\" to create subprocesses\n# Spawn starts a fresh program every time, if there is no __main__, it will run into infinite loop to keep spawning processes from sgl.Engine\nif __name__ == \"__main__\":\n    main()\n```\nto run the script: ``python spec.py``\n\n### Environment\n\n\n## environment:\naccelerate                1.7.0\naiohappyeyeballs          2.6.1\naiohttp                   3.12.12\naiosignal                 1.3.2\nairportsdata              20250523\nannotated-types           0.7.0\nanthropic                 0.53.0\nantlr4-python3-runtime    4.9.3\nanyio                     4.9.0\nasttokens                 3.0.0\nasync-timeout             5.0.1\nattrs                     25.3.0\nblobfile                  3.0.0\ncachetools                6.0.0\ncertifi                   2025.4.26\ncffi                      1.17.1\ncharset-normalizer        3.4.2\nclick                     8.2.1\ncloudpickle               3.1.1\ncodetiming                1.4.0\ncompressed-tensors        0.10.1\ncuda-bindings             12.9.0\ncuda-python               12.9.0\ndatasets                  3.6.0\ndecorator                 5.2.1\ndecord                    0.6.0\ndill                      0.3.8\ndiskcache                 5.6.3\ndistro                    1.9.0\neinops                    0.8.1\nexceptiongroup            1.3.0\nexecuting                 2.2.0\nfastapi                   0.115.12\nfilelock                  3.18.0\nflash_attn                2.7.4.post1\nflashinfer-python         0.2.6.post1\nfrozenlist                1.7.0\nfsspec                    2025.3.0\ngitdb                     4.0.12\nGitPython                 3.1.44\nh11                       0.16.0\nhf_transfer               0.1.9\nhf-xet                    1.1.3\nhttpcore                  1.0.9\nhttpx                     0.28.1\nhuggingface-hub           0.32.5\nhydra-core                1.3.2\nidna                      3.10\nimportlib_metadata        8.7.0\ninteregular               0.3.3\nipython                   8.37.0\njedi                      0.19.2\nJinja2                    3.1.6\njiter                     0.10.0\njsonschema                4.24.0\njsonschema-specifications 2025.4.1\nlark                      1.2.2\nlitellm                   1.72.3\nllguidance                0.7.29\nlxml                      5.4.0\nMarkupSafe                3.0.2\nmatplotlib-inline         0.1.7\nmodelscope                1.26.0\nmpmath                    1.3.0\nmsgpack                   1.1.0\nmsgspec                   0.19.0\nmultidict                 6.4.4\nmultiprocess              0.70.16\nnest-asyncio              1.6.0\nnetworkx                  3.4.2\nninja                     1.11.1.4\nnumpy                     2.2.6\nnvidia-cublas-cu12        12.6.4.1\nnvidia-cuda-cupti-cu12    12.6.80\nnvidia-cuda-nvrtc-cu12    12.6.77\nnvidia-cuda-runtime-cu12  12.6.77\nnvidia-cudnn-cu12         9.5.1.17\nnvidia-cufft-cu12         11.3.0.4\nnvidia-cufile-cu12        1.11.1.6\nnvidia-curand-cu12        10.3.7.77\nnvidia-cusolver-cu12      11.7.1.2\nnvidia-cusparse-cu12      12.5.4.2\nnvidia-cusparselt-cu12    0.6.3\nnvidia-ml-py              12.575.51\nnvidia-nccl-cu12          2.26.2\nnvidia-nvjitlink-cu12     12.6.85\nnvidia-nvtx-cu12          12.6.77\nomegaconf                 2.3.0\nopenai                    1.86.0\norjson                    3.10.18\noutlines                  0.1.11\noutlines_core             0.1.26\npackaging                 25.0\npandas                    2.3.0\nparso                     0.8.4\npartial-json-parser       0.2.1.1.post5\npeft                      0.15.2\npexpect                   4.9.0\npillow                    11.2.1\npip                       25.1\nplatformdirs              4.3.8\nprometheus_client         0.22.1\nprompt_toolkit            3.0.51\npropcache                 0.3.2\nprotobuf                  6.31.1\npsutil                    7.0.0\nptyprocess                0.7.0\npure_eval                 0.2.3\npyarrow                   20.0.0\npycountry                 24.6.1\npycparser                 2.22\npycryptodomex             3.23.0\npydantic                  2.11.5\npydantic_core             2.33.2\nPygments                  2.19.1\npynvml                    12.0.0\npython-dateutil           2.9.0.post0\npython-dotenv             1.1.0\npython-multipart          0.0.20\npytz                      2025.2\nPyYAML                    6.0.2\npyzmq                     26.4.0\nray                       2.46.0\nreferencing               0.36.2\nregex                     2024.11.6\nrequests                  2.32.4\nrpds-py                   0.25.1\nsafetensors               0.5.3\nscipy                     1.15.3\nsentencepiece             0.2.0\nsentry-sdk                2.29.1\nsetproctitle              1.3.6\nsetuptools                78.1.1\nsgl-kernel                0.1.7\nsglang                    0.4.7         /home/ubuntu/sglang/python\nsix                       1.17.0\nsmmap                     5.0.2\nsniffio                   1.3.1\nsoundfile                 0.13.1\nstack-data                0.6.3\nstarlette                 0.46.2\nsympy                     1.14.0\ntensordict                0.8.3\ntiktoken                  0.9.0\ntokenizers                0.21.1\ntorch                     2.7.1\ntorch_memory_saver        0.0.6\ntorchao                   0.9.0\ntorchaudio                2.7.1\ntorchdata                 0.11.0\ntorchvision               0.22.1\ntqdm                      4.67.1\ntraitlets                 5.14.3\ntransformers              4.52.3\ntriton                    3.3.1\ntyping_extensions         4.14.0\ntyping-inspection         0.4.1\ntzdata                    2025.2\nurllib3                   2.4.0\nuvicorn                   0.34.3\nuvloop                    0.21.0\nwandb                     0.20.1\nwcwidth                   0.2.13\nwheel                     0.45.1\nxgrammar                  0.1.19\nxxhash                    3.5.0\nyarl                      1.20.1\nzipp                      3.23.0",
+    "labels": [
+      "speculative-decoding"
+    ],
+    "state": "open",
+    "created_at": "2025-06-17T05:37:21+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7263/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7263"
+  },
+  {
+    "number": 3746,
+    "title": "Qwen2.5 VL sglang's output much worse than transformers",
+    "body": "I tried serving qwen2.5 vl 72B using sglang on a node with 4*A40 GPUs.\nThe image I used is the official sglang:v0.4.3.post2-cu125\nThe command:\n```bash\npython3 -m sglang.launch_server \\\n  --tp $NUM_SHARD \\\n  --mem-fraction-static 0.99 \\\n  --disable-cuda-graph \\\n  --model-path /model/Qwen2.5-VL-72B-Instruct \\\n  --host 0.0.0.0 \\\n  --port 23333\n```\n\nI tested  using an internal image classification dataset, the results were much worse than when using transformers, acc droped from 87% to 80%.\nAnd I tried another image2code task, the rendered images were much worse, too.",
+    "labels": [
+      "MLLM"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-21T06:38:34+00:00",
+    "closed_at": "2025-05-16T06:24:46+00:00",
+    "comments": 17,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3746/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3746"
+  },
+  {
+    "number": 4456,
+    "title": "[Track] VLM accuracy in MMMU benchmark",
+    "body": "This issue keeps track of all vlm models accuracy in MMMU benchmark. Keep updating\n\n``` python\npython benchmark/mmmu/bench_sglang.py\npython benchmark/mmmu/bench_hf.py --model-path model\n\n```\n\n| | sglang | hf |\n|--|--|--|\n| Qwen2-VL-7B-Instruct |  0.485 | 0.255 |\n| Qwen2.5-VL-7B-Instruct | 0.477 | 0.242 |\n| MiniCPM-V-2_6 |  0.426 |  |\n| MiniCPM-O-2_6 | 0.481| 0.49 |\n| Deepseek-vl2 | 0.496 | 0.499|\n|Deepseek-vl2-small | 0.464 | 0.453|\n|Deepseek-vl2-tiny | 0.382 | 0.369|\n| Deepseek-Janus-Pro-7B| | |\n| Llava + Llama| | |\n| Llava + qwen| | |\n| Llava + Mistral| | |\n| Mlama | | |\n| Gemma-3-it-4B| 0.409 | 0.403 |\n| InternVL2.5-38B | 0.61 | |\n\n",
+    "labels": [
+      "good first issue",
+      "MLLM"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-15T17:09:50+00:00",
+    "closed_at": "2025-04-25T07:23:54+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4456/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4456"
+  },
+  {
+    "number": 8072,
+    "title": "[Feature] Benchmark with audio input",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nWe need scripts to bench audio input for supported MLLM like minicpmo and gemma3n.\n\n### Related resources\n\nhttps://github.com/vllm-project/vllm/issues/16354",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "MLLM"
+    ],
+    "state": "open",
+    "created_at": "2025-07-15T22:28:51+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/8072/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/8072"
+  }
+]

@@ -1,0 +1,292 @@
+[
+  {
+    "number": 6425,
+    "title": "convert-hf-to-gguf.py  XVERSE-13B-256K  error",
+    "body": "Please include information about your system, the steps to reproduce the bug, and the version of llama.cpp that you are using. If possible, please provide a minimal code example that reproduces the bug.\r\n\r\nModel: \r\nhttps://huggingface.co/xverse/XVERSE-13B-256K\r\n\r\npython convert-hf-to-gguf.py /Volumes/FanData/models/XVERSE-13B-256K --outfile /Volumes/FanData/models/GGUF/xverse-13b-256k-f16.gguf --outtype f16\r\n\r\n`\r\npython convert-hf-to-gguf.py /Volumes/FanData/models/XVERSE-13B-256K --outfile /Volumes/FanData/models/GGUF/xverse-13b-256k-f16.gguf --outtype f16\r\nLoading model: XVERSE-13B-256K\r\ngguf: This GGUF file is for Little Endian only\r\nSet model parameters\r\nSet model tokenizer\r\ngguf: Setting special token type bos to 2\r\ngguf: Setting special token type eos to 3\r\ngguf: Setting special token type pad to 1\r\nExporting model to '/Volumes/FanData/models/GGUF/xverse-13b-256k-f16.gguf'\r\ngguf: loading model part 'pytorch_model-00001-of-00015.bin'\r\nTraceback (most recent call last):\r\n  File \"/Users/fanmac/AI/llama.cpp/convert-hf-to-gguf.py\", line 2296, in <module>\r\n    main()\r\n  File \"/Users/fanmac/AI/llama.cpp/convert-hf-to-gguf.py\", line 2290, in main\r\n    model_instance.write()\r\n  File \"/Users/fanmac/AI/llama.cpp/convert-hf-to-gguf.py\", line 175, in write\r\n    self.write_tensors()\r\n  File \"/Users/fanmac/AI/llama.cpp/convert-hf-to-gguf.py\", line 858, in write_tensors\r\n    model_kv = dict(self.get_tensors())\r\n               ^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/Users/fanmac/AI/llama.cpp/convert-hf-to-gguf.py\", line 83, in get_tensors\r\n    ctx = contextlib.nullcontext(torch.load(str(self.dir_model / part_name), map_location=\"cpu\", mmap=True, weights_only=True))\r\n                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/Users/fanmac/.miniconda3/envs/llamacpp/lib/python3.11/site-packages/torch/serialization.py\", line 993, in load\r\n    with _open_zipfile_reader(opened_file) as opened_zipfile:\r\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/Users/fanmac/.miniconda3/envs/llamacpp/lib/python3.11/site-packages/torch/serialization.py\", line 447, in __init__\r\n    super().__init__(torch._C.PyTorchFileReader(name_or_buffer))\r\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: PytorchStreamReader failed reading zip archive: failed finding central directory\r\n`\r\n\r\nIf the bug concerns the server, please try to reproduce it first using the [server test scenario framework](https://github.com/ggerganov/llama.cpp/tree/master/examples/server/tests).\r\n",
+    "labels": [
+      "invalid"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-01T13:07:59+00:00",
+    "closed_at": "2024-04-03T23:53:56+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6425/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6425"
+  },
+  {
+    "number": 5375,
+    "title": "\u062f\u0644",
+    "body": "Please include information about your system, the steps to reproduce the bug, and the version of llama.cpp that you are using. If possible, please provide a minimal code example that reproduces the bug.",
+    "labels": [
+      "invalid"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-06T21:22:59+00:00",
+    "closed_at": "2024-02-06T21:54:25+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5375/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5375"
+  },
+  {
+    "number": 4768,
+    "title": "Unable to convert bloom models",
+    "body": "When trying to convert bloom model downloaded from Huggingface (https://huggingface.co/bigscience/bloomz-1b7) using the following command\r\n```shell\r\npython3.10 convert.py /root/bloomz-1b7/\r\n```\r\nit outputs the following messages\r\n```\r\nLoading model file /root/bloomz-1b7/model.safetensors\r\nTraceback (most recent call last):\r\n  File \"/root/workspace/llama.cpp/convert.py\", line 1295, in <module>\r\n    main()\r\n  File \"/root/workspace/llama.cpp/convert.py\", line 1234, in main\r\n    params = Params.load(model_plus)\r\n  File \"/root/workspace/llama.cpp/convert.py\", line 318, in load\r\n    params = Params.loadHFTransformerJson(model_plus.model, hf_config_path)\r\n  File \"/root/workspace/llama.cpp/convert.py\", line 237, in loadHFTransformerJson\r\n    raise Exception(\"failed to guess 'n_ctx'. This model is unknown or unsupported.\\n\"\r\nException: failed to guess 'n_ctx'. This model is unknown or unsupported.\r\nSuggestion: provide 'config.json' of the model in the same directory containing model files.\r\n```\r\nAnd config.json is in the same directory containing the model file\r\nAny one knows what caused the problem and how to solve it?\r\n\r\n",
+    "labels": [
+      "invalid"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-04T07:45:54+00:00",
+    "closed_at": "2024-01-05T15:11:20+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/4768/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/4768"
+  },
+  {
+    "number": 3964,
+    "title": "http://localhost:6800/jsonrpc",
+    "body": "# Prerequisites\n\nPlease answer the following questions for yourself before submitting an issue.\n\n- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\n- [x] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\n- [x] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\n- [x] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\n\n# Expected Behavior\n\nPlease provide a detailed written description of what you were trying to do, and what you expected `llama.cpp` to do.\n\n# Current Behavior\n\nPlease provide a detailed written description of what `llama.cpp` did, instead.\n\n# Environment and Context\n\nPlease provide detailed information about your computer setup. This is important in case the issue is not reproducible except for under certain specific conditions.\n\n* Physical (or virtual) hardware you are using, e.g. for Linux:\n\n`$ lscpu`\n\n* Operating System, e.g. for Linux:\n\n`$ uname -a`\n\n* SDK version, e.g. for Linux:\n\n```\n$ python3 --version\n$ make --version\n$ g++ --version\n```\n\n# Failure Information (for bugs)\n\nPlease help provide information about the failure / bug.\n\n# Steps to Reproduce\n\nPlease provide detailed steps for reproducing the issue. We are not sitting in front of your screen, so the more detail the better.\n\n1. step 1\n2. step 2\n3. step 3\n4. etc.\n\n# Failure Logs\n\nPlease include any relevant log snippets or files. If it works under one configuration but not under another, please provide logs for both configurations and their corresponding outputs so it is easy to see where behavior changes.\n\nAlso, please try to **avoid using screenshots** if at all possible. Instead, copy/paste the console output and use [Github's markdown](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) to cleanly format your logs for easy readability.\n\nExample environment info:\n```\nllama.cpp$ git log | head -1\ncommit 2af23d30434a677c6416812eea52ccc0af65119c\n\nllama.cpp$ lscpu | egrep \"AMD|Flags\"\nVendor ID:                       AuthenticAMD\nModel name:                      AMD Ryzen Threadripper 1950X 16-Core Processor\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid amd_dcm aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb hw_pstate ssbd ibpb vmmcall fsgsbase bmi1 avx2 smep bmi2 rdseed adx smap clflushopt sha_ni xsaveopt xsavec xgetbv1 xsaves clzero irperf xsaveerptr arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif overflow_recov succor smca sme sev\nVirtualization:                  AMD-V\n\nllama.cpp$ python3 --version\nPython 3.10.9\n\nllama.cpp$ pip list | egrep \"torch|numpy|sentencepiece\"\nnumpy                         1.24.2\nnumpydoc                      1.5.0\nsentencepiece                 0.1.97\ntorch                         1.13.1\ntorchvision                   0.14.1\n\nllama.cpp$ make --version | head -1\nGNU Make 4.3\n\n$ md5sum ./models/65B/ggml-model-q4_0.bin\ndbdd682cce80e2d6e93cefc7449df487  ./models/65B/ggml-model-q4_0.bin\n```\n\nExample run with the Linux command [perf](https://www.brendangregg.com/perf.html)\n```\nllama.cpp$ perf stat ./main -m ./models/65B/ggml-model-q4_0.bin -t 16 -n 1024 -p \"Please close your issue when it has been answered.\"\nmain: seed = 1679149377\nllama_model_load: loading model from './models/65B/ggml-model-q4_0.bin' - please wait ...\nllama_model_load: n_vocab = 32000\nllama_model_load: n_ctx   = 512\nllama_model_load: n_embd  = 8192\nllama_model_load: n_mult  = 256\nllama_model_load: n_head  = 64\nllama_model_load: n_layer = 80\nllama_model_load: n_rot   = 128\nllama_model_load: f16     = 2\nllama_model_load: n_ff    = 22016\nllama_model_load: n_parts = 8\nllama_model_load: ggml ctx size = 41477.73 MB\nllama_model_load: memory_size =  2560.00 MB, n_mem = 40960\nllama_model_load: loading model part 1/8 from './models/65B/ggml-model-q4_0.bin'\nllama_model_load: .......................................................................................... done\nllama_model_load: model size =  4869.09 MB / num tensors = 723\nllama_model_load: loading model part 2/8 from './models/65B/ggml-model-q4_0.bin.1'\nllama_model_load: .......................................................................................... done\nllama_model_load: model size =  4869.09 MB / num tensors = 723\nllama_model_load: loading model part 3/8 from './models/65B/ggml-model-q4_0.bin.2'\nllama_model_load: .......................................................................................... done\nllama_model_load: model size =  4869.09 MB / num tensors = 723\nllama_model_load: loading model part 4/8 from './models/65B/ggml-model-q4_0.bin.3'\nllama_model_load: .......................................................................................... done\nllama_model_load: model size =  4869.09 MB / num tensors = 723\nllama_model_load: loading model part 5/8 from './models/65B/ggml-model-q4_0.bin.4'\nllama_model_load: .......................................................................................... done\nllama_model_load: model size =  4869.09 MB / num tensors = 723\nllama_model_load: loading model part 6/8 from './models/65B/ggml-model-q4_0.bin.5'\nllama_model_load: .......................................................................................... done\nllama_model_load: model size =  4869.09 MB / num tensors = 723\nllama_model_load: loading model part 7/8 from './models/65B/ggml-model-q4_0.bin.6'\nllama_model_load: .......................................................................................... done\nllama_model_load: model size =  4869.09 MB / num tensors = 723\nllama_model_load: loading model part 8/8 from './models/65B/ggml-model-q4_0.bin.7'\nllama_model_load: .......................................................................................... done\nllama_model_load: model size =  4869.09 MB / num tensors = 723\n\nsystem_info: n_threads = 16 / 32 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 1 | VSX = 0 |\n\nmain: prompt: 'Please close your issue when it has been answered.'\nmain: number of tokens in prompt = 11\n     1 -> ''\n 12148 -> 'Please'\n  3802 -> ' close'\n   596 -> ' your'\n  2228 -> ' issue'\n   746 -> ' when'\n   372 -> ' it'\n   756 -> ' has'\n  1063 -> ' been'\n  7699 -> ' answered'\n 29889 -> '.'\n\nsampling parameters: temp = 0.800000, top_k = 40, top_p = 0.950000, repeat_last_n = 64, repeat_penalty = 1.300000\n\n\nPlease close your issue when it has been answered.\n@duncan-donut: I'm trying to figure out what kind of \"support\" you need for this script and why, exactly? Is there a question about how the code works that hasn't already been addressed in one or more comments below this ticket, or are we talking something else entirely like some sorta bugfixing job because your server setup is different from mine??\nI can understand if your site needs to be running smoothly and you need help with a fix of sorts but there should really be nothing wrong here that the code itself could not handle. And given that I'm getting reports about how it works perfectly well on some other servers, what exactly are we talking? A detailed report will do wonders in helping us get this resolved for ya quickly so please take your time and describe the issue(s) you see as clearly & concisely as possible!!\n@duncan-donut: I'm not sure if you have access to cPanel but you could try these instructions. It is worth a shot! Let me know how it goes (or what error message, exactly!) when/if ya give that code a go? [end of text]\n\n\nmain: mem per token = 71159620 bytes\nmain:     load time = 19309.95 ms\nmain:   sample time =   168.62 ms\nmain:  predict time = 223895.61 ms / 888.47 ms per token\nmain:    total time = 246406.42 ms\n\n Performance counter stats for './main -m ./models/65B/ggml-model-q4_0.bin -t 16 -n 1024 -p Please close your issue when it has been answered.':\n\n        3636882.89 msec task-clock                #   14.677 CPUs utilized\n             13509      context-switches          #    3.714 /sec\n              2436      cpu-migrations            #    0.670 /sec\n          10476679      page-faults               #    2.881 K/sec\n    13133115082869      cycles                    #    3.611 GHz                      (16.77%)\n       29314462753      stalled-cycles-frontend   #    0.22% frontend cycles idle     (16.76%)\n    10294402631459      stalled-cycles-backend    #   78.39% backend cycles idle      (16.74%)\n    23479217109614      instructions              #    1.79  insn per cycle\n                                                  #    0.44  stalled cycles per insn  (16.76%)\n     2353072268027      branches                  #  647.002 M/sec                    (16.77%)\n        1998682780      branch-misses             #    0.08% of all branches          (16.76%)\n\n     247.802177522 seconds time elapsed\n\n    3618.573072000 seconds user\n      18.491698000 seconds sys\n```",
+    "labels": [
+      "invalid",
+      "need more info",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-05T19:00:15+00:00",
+    "closed_at": "2024-04-02T01:12:12+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3964/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3964"
+  },
+  {
+    "number": 3344,
+    "title": "[User] covert.py thows KeyError: 'rms_norm_eps' on persimmon-8b-chat",
+    "body": "#python3 llama.cpp/convert.py persimmon-8b-chat --outfile persimmon-8b-chat.gguf --outtype q8_0\r\n# Expected Behavior\r\nproduce a gguf of persimmon 8b at q8_0\r\n\r\n\r\n# Current Behavior\r\n\r\nTraceback (most recent call last):\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 1208, in <module>\r\n    main()\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 1157, in main\r\n    params = Params.load(model_plus)\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 288, in load\r\n    params = Params.loadHFTransformerJson(model_plus.model, hf_config_path)\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 208, in loadHFTransformerJson\r\n    f_norm_eps       = config[\"rms_norm_eps\"]\r\nKeyError: 'rms_norm_eps'\r\n# Environment and Context\r\n\r\nPlease provide detailed information about your computer setup. This is important in case the issue is not reproducible except for under certain specific conditions.\r\n\r\nLinux ubuntu 22.04\r\n\r\n`$ lscpu`\r\n\r\nArchitecture:            x86_64\r\n  CPU op-mode(s):        32-bit, 64-bit\r\n  Address sizes:         36 bits physical, 48 bits virtual\r\n  Byte Order:            Little Endian\r\nCPU(s):                  38\r\n  On-line CPU(s) list:   0-37\r\nVendor ID:               GenuineIntel\r\n  Model name:            Intel(R) Xeon(R) CPU E5-2680 v2 @ 2.80GHz\r\n    CPU family:          6\r\n    Model:               62\r\n    Thread(s) per core:  1\r\n    Core(s) per socket:  19\r\n    Socket(s):           2\r\n    Stepping:            4\r\n    CPU max MHz:         2800.0000\r\n    CPU min MHz:         0.0000\r\n    BogoMIPS:            5600.00\r\n    Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse s\r\n                         se2 ss ht syscall nx rdtscp lm pni pclmulqdq ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_d\r\n                         eadline_timer aes xsave osxsave avx f16c rdrand hypervisor lahf_lm fsgsbase tsc_adjust smep er\r\n                         ms ibrs ibpb stibp ssbd\r\n\r\n`$ uname -a`\r\n\r\n* SDK version, e.g. for Linux:\r\n\r\n```\r\n$ python3 --version Python 3.10.12 \r\n$ make --version GNU Make 4.3\r\n$ g++ --version \r\n```g++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\r\n# Failure Information (for bugs)\r\n\r\npython3 llama.cpp/convert.py persimmon-8b-chat --outfile persimmon-8b-chat.gguf --outtype q8_0\r\nLoading model file persimmon-8b-chat/pytorch_model-00001-of-00002.bin\r\nLoading model file persimmon-8b-chat/pytorch_model-00001-of-00002.bin\r\nLoading model file persimmon-8b-chat/pytorch_model-00002-of-00002.bin\r\nTraceback (most recent call last):\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 1208, in <module>\r\n    main()\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 1157, in main\r\n    params = Params.load(model_plus)\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 288, in load\r\n    params = Params.loadHFTransformerJson(model_plus.model, hf_config_path)\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 208, in loadHFTransformerJson\r\n    f_norm_eps       = config[\"rms_norm_eps\"]\r\nKeyError: 'rms_norm_eps'\r\n\r\n# Steps to Reproduce\r\ngit clone  http://huggingface.co/adept/persimmon-8b-chat\r\n\r\ngit clone https://github.com/ggerganov/llama.cpp.git\r\npython3 -r llama.ccp/requirements.txt\r\npython3 llama.cpp/convert.py persimmon-8b-chat --outfile persimmon-8b-chat.gguf --outtype q8_0\r\n# Failure Logs\r\n\r\nLoading model file persimmon-8b-chat/pytorch_model-00001-of-00002.bin\r\nLoading model file persimmon-8b-chat/pytorch_model-00001-of-00002.bin\r\nLoading model file persimmon-8b-chat/pytorch_model-00002-of-00002.bin\r\nTraceback (most recent call last):\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 1208, in <module>\r\n    main()\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 1157, in main\r\n    params = Params.load(model_plus)\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 288, in load\r\n    params = Params.loadHFTransformerJson(model_plus.model, hf_config_path)\r\n  File \"/mnt/c/Users/admin/src/llama.cpp/convert.py\", line 208, in loadHFTransformerJson\r\n    f_norm_eps       = config[\"rms_norm_eps\"]\r\nKeyError: 'rms_norm_eps'",
+    "labels": [
+      "invalid"
+    ],
+    "state": "closed",
+    "created_at": "2023-09-26T16:44:23+00:00",
+    "closed_at": "2023-11-07T22:51:56+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3344/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3344"
+  },
+  {
+    "number": 2241,
+    "title": "[User] faild to find n_mult number from range 256, with n_ff = 3072",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [x] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [x] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [x] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\n\r\ni'm not sure if i should\r\nchange this line to `for n_mult in range(3000, 1, -1):`\r\n\r\n# Current Behavior\r\nmodel tried to convert https://huggingface.co/symanto/sn-xlm-roberta-base-snli-mnli-anli-xnli/tree/main\r\n\r\nparams: `n_vocab:250000 n_embd:768 n_head:12 n_layer:12`\r\nfailed to find n_mult number\r\n\r\nwhen i change the range started from 3000:\r\n```\r\nroot@jenkins-ddt:~/github/llama.cpp# ./quantize models/sn-xlm-roberta-base-snli-mnli-anli-xnli/ggml-model-f16.bin models/sn-xlm-roberta-base-snli-mnli-anli-xnli/ggml-model-q4_0.bin q4_0\r\nmain: build = 812 (1d16309)\r\nmain: quantizing 'models/sn-xlm-roberta-base-snli-mnli-anli-xnli/ggml-model-f16.bin' to 'models/sn-xlm-roberta-base-snli-mnli-anli-xnli/ggml-model-q4_0.bin' as Q4_0\r\nllama.cpp: loading model from models/sn-xlm-roberta-base-snli-mnli-anli-xnli/ggml-model-f16.bin\r\nllama.cpp: saving model to models/sn-xlm-roberta-base-snli-mnli-anli-xnli/ggml-model-q4_0.bin\r\nllama_model_quantize_internal: model size  =     0.00 MB\r\nllama_model_quantize_internal: quant size  =     0.00 MB\r\n\r\nmain: quantize time =   275.42 ms\r\nmain:    total time =   275.42 ms\r\n```\r\n# Environment and Context\r\n\r\nPlease provide detailed information about your computer setup. This is important in case the issue is not reproducible except for under certain specific conditions.\r\n\r\n* Physical (or virtual) hardware you are using, e.g. for Linux:\r\n\r\n`$ lscpu`\r\n```\r\nArchitecture:                    x86_64\r\nCPU op-mode(s):                  32-bit, 64-bit\r\nByte Order:                      Little Endian\r\nAddress sizes:                   40 bits physical, 48 bits virtual\r\nCPU(s):                          8\r\nOn-line CPU(s) list:             0-7\r\nThread(s) per core:              1\r\nCore(s) per socket:              1\r\nSocket(s):                       8\r\nNUMA node(s):                    1\r\nVendor ID:                       GenuineIntel\r\nCPU family:                      6\r\nModel:                           85\r\nModel name:                      Intel(R) Xeon(R) Gold 6140 CPU @ 2.30GHz\r\nStepping:                        4\r\nCPU MHz:                         2294.608\r\nBogoMIPS:                        4589.21\r\nVirtualization:                  VT-x\r\nHypervisor vendor:               KVM\r\nVirtualization type:             full\r\nL1d cache:                       128 KiB\r\nL1i cache:                       128 KiB\r\nL2 cache:                        4 MiB\r\nL3 cache:                        24.8 MiB\r\nNUMA node0 CPU(s):               0-7\r\nVulnerability Itlb multihit:     KVM: Mitigation: Split huge pages\r\nVulnerability L1tf:              Mitigation; PTE Inversion; VMX conditional cache flushes, SMT disabled\r\nVulnerability Mds:               Mitigation; Clear CPU buffers; SMT Host state unknown\r\nVulnerability Meltdown:          Mitigation; PTI\r\nVulnerability Mmio stale data:   Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown\r\nVulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp\r\nVulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization\r\nVulnerability Spectre v2:        Mitigation; Retpolines, IBPB conditional, IBRS_FW, STIBP disabled, RSB filling, PBRSB-eIBRS Not affected\r\nVulnerability Srbds:             Not affected\r\nVulnerability Tsx async abort:   Mitigation; Clear CPU buffers; SMT Host state unknown\r\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon rep_good nopl cpuid tsc_known_freq pni pclmu\r\n                                 lqdq vmx ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch cpuid_fault invpcid_single pti ssbd ibrs ibpb tpr_shado\r\n                                 w vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx avx512f avx512dq rdseed adx smap clflushopt clwb avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1\r\n                                  xsaves pku ospke md_clear\r\n\r\n```\r\n\r\n* Operating System, e.g. for Linux:\r\n\r\n`$ uname -a`\r\n```\r\nLinux jenkins-tdd 5.4.0-131-generic #147-Ubuntu SMP Fri Oct 14 17:07:22 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux\r\n```\r\n* SDK version, e.g. for Linux:\r\n\r\n```\r\n$ python3 --version\r\nPython 3.10.11\r\n$ make --version\r\nGNU Make 4.2.1\r\nBuilt for x86_64-pc-linux-gnu\r\n\r\n$ g++ --version\r\ng++ (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0\r\n```\r\n\r\n",
+    "labels": [
+      "invalid"
+    ],
+    "state": "closed",
+    "created_at": "2023-07-16T10:42:50+00:00",
+    "closed_at": "2023-07-17T03:39:24+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2241/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2241"
+  },
+  {
+    "number": 2114,
+    "title": "[User] convert.py KeyError for redpajama chat 3B",
+    "body": "# Expected Behavior\r\nI'm trying to convert the [redpajama 3b chat model](https://huggingface.co/togethercomputer/RedPajama-INCITE-Chat-3B-v1) to a ggml model from the `pytorch_model.bin`.\r\n\r\nI saw in [this discussion](https://github.com/ggerganov/llama.cpp/discussions/1394#discussion-5182815) that this is expected to work.\r\n\r\n\r\n# Current Behavior\r\nI get a failure running convert.py on a directory containing the `pytorch_model.bin` from HF as:\r\n```\r\npython3 convert.py models/RedPajama-INCITE-Chat-3B-v1/\r\n```\r\n\r\n\r\n# Environment and Context\r\nI am on an m2 mba with 16gb of ram with macOS Ventura.\r\n\r\npython version: 3.10.11\r\nmake: 3.81\r\ng++: Apple clang version 14.0.0 (clang-1400.0.29.202)\r\n\r\n\r\n# Failure Information (for bugs):\r\n`convert.py` raises:\r\n```\r\nLoading model file models/RedPajama-INCITE-Chat-3B-v1/pytorch_model.bin\r\nTraceback (most recent call last):\r\n  File \"/Users/lachlangray/local/llama.cpp/convert.py\", line 1256, in <module>\r\n    main()\r\n  File \"/Users/lachlangray/local/llama.cpp/convert.py\", line 1236, in main\r\n    model_plus = load_some_model(args.model)\r\n  File \"/Users/lachlangray/local/llama.cpp/convert.py\", line 1157, in load_some_model\r\n    models_plus.append(lazy_load_file(path))\r\n  File \"/Users/lachlangray/local/llama.cpp/convert.py\", line 947, in lazy_load_file\r\n    return lazy_load_torch_file(fp, path)\r\n  File \"/Users/lachlangray/local/llama.cpp/convert.py\", line 819, in lazy_load_torch_file\r\n    model = unpickler.load()\r\n  File \"/Users/lachlangray/local/llama.cpp/convert.py\", line 808, in find_class\r\n    return self.CLASSES[(module, name)]\r\nKeyError: ('torch', 'BoolStorage')\r\n```\r\n\r\n# Steps to Reproduce\r\n1. `pip install -r requirements.txt` in a conda environment\r\n2. compile llama.cpp with make\r\n3. clone HF repository into `models`\r\n4. run `convert.py` on cloned directory\r\n\r\nI also re-installed the latest pytorch release",
+    "labels": [
+      "invalid"
+    ],
+    "state": "closed",
+    "created_at": "2023-07-05T16:53:30+00:00",
+    "closed_at": "2023-11-07T22:55:01+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2114/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2114"
+  },
+  {
+    "number": 1317,
+    "title": "Try Modular - Mojo",
+    "body": "https://www.modular.com/",
+    "labels": [
+      "invalid"
+    ],
+    "state": "closed",
+    "created_at": "2023-05-04T12:32:34+00:00",
+    "closed_at": "2023-05-04T18:49:00+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1317/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1317"
+  },
+  {
+    "number": 739,
+    "title": "[User] Insert summary of your issue or enhancement..",
+    "body": "Hello, is it possible to save the robot's response in a variable? to then read it in a request?\r\nExample\r\nMe : Hello how are you ?\r\nBot : I'm fine and you ?\r\n\r\nSave result response in new_varifable for use this :\r\nhttp://127.0.0.1:8888/?tts=new_variable",
+    "labels": [
+      "invalid"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-03T09:37:50+00:00",
+    "closed_at": "2023-04-04T19:29:01+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/739/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/739"
+  },
+  {
+    "number": 650,
+    "title": "How do i download the models? ",
+    "body": "`65B 30B 13B 7B tokenizer_checklist.chk tokenizer.model`\r\n\r\nThis command in the readme.md file says to add the models into the models directory but the models arent even there in the directory.\r\nPlease let me know how to download the 7B model to run on my computer.\r\nThanks",
+    "labels": [
+      "good first issue",
+      "invalid",
+      "wontfix"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-31T11:55:15+00:00",
+    "closed_at": "2023-03-31T13:40:17+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/650/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/650"
+  },
+  {
+    "number": 538,
+    "title": "Error loading llama 65b 4bit model (HFv2) converted from .pt format",
+    "body": "I used this command to get the converted model:\r\n\r\n`python3 convert-gptq-to-ggml.py \"path/to/llama-65b-4bit.pt\" \"path/to/tokenizer.model\" \"./models/ggml-llama-65b-q4_0.bin\"`\r\n\r\nI run it with this command:\r\n\r\n`./main -m ./models/ggml-llama-65b-q4_0.bin -n 128`\r\n\r\nAnd this is what I get at the end of the output:\r\n\r\n```\r\nllama_model_load: loading model part 1/8 from './models/ggml-llama-65b-q4_0.bin'\r\nllama_model_load: llama_model_load: tensor 'tok_embeddings.weight' has wrong size in model file\r\nllama_init_from_file: failed to load model\r\nmain: error: failed to load model './models/ggml-llama-65b-q4_0.bin'\r\n```\r\n\r\nP. S. Yes, I'm using the latest (or at least today's) version of this repo. While I'm at it, many thanks to ggerganov and everyone else involved! Great job.",
+    "labels": [
+      "invalid"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-26T20:26:54+00:00",
+    "closed_at": "2023-03-27T05:22:28+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/538/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/538"
+  }
+]

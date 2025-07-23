@@ -1,0 +1,330 @@
+[
+  {
+    "number": 18008,
+    "title": "[Feature]: Support FP8 Marlin MoE for CompressedTensorsW8A8Fp8MoEMethod",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nLike what was added in https://github.com/vllm-project/vllm/pull/16850 for enabling marlin in fp8.py MoE layers, we should enable FP8 Marlin MoE for compressed tensors models to support users wanting to run them on older hardware.\n\nBasically you want to take the changes in fp8.py's moe method (https://github.com/vllm-project/vllm/pull/16850/files#diff-5511bfcc9c53f7d96517ad43e4087f6777bef21302da983f42cafae40a866644) and apply them to `CompressedTensorsW8A8Fp8MoEMethod`\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "good first issue",
+      "feature request",
+      "quantization"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-12T18:02:12+00:00",
+    "closed_at": "2025-05-20T11:58:40+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/18008/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/18008"
+  },
+  {
+    "number": 8784,
+    "title": "[Bug]: Disabling Marlin by setting --quantization gptq doesn't work when using a draft model",
+    "body": "### Your current environment\n\n.\n\n### Model Input Dumps\n\n_No response_\n\n### \ud83d\udc1b Describe the bug\n\nIt seems that setting --quantization gptq only disables the marlin for the main model. \r\n\r\nMaybe this can be fixed by adding a --quantization-draft-model setting or forcing the draft model to gptq when main model is forced.\r\n\r\n```\r\nINFO 09-24 15:46:11 gptq_marlin.py:112] Detected that the model can run with gptq_marlin, **however you specified quantization=gptq explicitly, so forcing gptq. Use quantization=gptq_marlin for faster inference**\r\nWARNING 09-24 15:46:11 config.py:335] gptq quantization is not fully optimized yet. The speed can be slower than non-quantized models.\r\nINFO 09-24 15:46:11 config.py:904] Defaulting to use mp for distributed inference\r\n**INFO 09-24 15:46:11 gptq_marlin.py:108] The model is convertible to gptq_marlin during runtime. Using gptq_marlin kernel.**\r\n```\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "bug",
+      "quantization",
+      "speculative-decoding",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-24T22:51:58+00:00",
+    "closed_at": "2025-01-24T01:58:42+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/8784/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/8784"
+  },
+  {
+    "number": 3975,
+    "title": "[RFC]: Int8 Activation Quantization",
+    "body": "# Summary\r\n* We (engineering at @neuralmagic) are working on support for int8 quantized activations.\r\n* This RFC is proposing an _incremental_ approach to quantization, where the initial support for quantization will make _minimal_ and _local_ changes to the PyTorch model definitions.  We propose swapping out Linear and Attention modules with their quantized counterparts without modifying the graphs around them. The upside to this will be quicker support for quantized models. The downside is that we will be quantizing the activations on the fly prior to computation.\r\n* To reduce the additional data movement from quantizing the activations on the fly, the activations will need to remain quantized throughout the graph, requiring more extensive and nonlocal modifications to the model definitions. We will be working on abstractions for the quantized model definitions to make adding support for new models as easy as possible. \r\n* Activation quantization will introduce additional elementwise operations to the model. To reduce the additional data movement of the activations from these operations, operator fusion will be needed. Rather than manually writing fused kernels for these, this RFC proposes committing to a torch.compile-based solution, to be explored in a future RFC.\r\n\r\n# Motivation and Scope\r\n\r\nThe high-level goal of this RFC is to speed up Prefill by increasing the rate of computation by using int8 tensor cores. We don't anticipate improving decode performance except for very large batch sizes, as inference time in that case is dominated by loading the weights and is already well-served by weight-only quantization.\r\n\r\nInt4 activation quantization is out of scope for _this_ RFC, but we are interested in support for it. Successful int4 activation quantization (namely [QuaRot](https://arxiv.org/abs/2404.00456)) requires more work and more extensive modifications to the model definitions than int8 activation quantization, so it's natural to do this after int8 quantization.\r\n\r\nFor this RFC, we are focusing on support for Nvidia GPUs, and leaving other systems as out of scope. \r\n\r\n# Quantization Schemes and Zero Points\r\nWe are considering quantization of the form:\r\n$$\\widehat X = \\lfloor \\frac{X}{s_x} \\rceil + z_x$$\r\nIn this case, $X$ is floating point, and $\\widehat X$ will be its int8 quantized representation. $s_x$ is the scale or tensor of scales, and $z_x$ is a zero point.\r\n\r\nThere are several cases to consider, with performance and accuracy tradeoffs in each case.\r\n* **Static vs dynamic quantization.** The scales and zero points may be known ahead of time, or may instead be determined at runtime after inspecting the values of the tensor. Dynamic quantization will provide more accuracy, but requires multiple passes over the activation.\r\n* **Asymmetric vs symmetric quantization.** In symmetric quantization, $z_x$ is equal to 0. In asymmetric quantization $z_x$ is nonzero. When upconverting before quantization, $z_x$ can be applied as a shift prior to computation. If there is no upconversion, then an additional term (which this RFC will call a _zero point correction term_ ) can be computed and added to the output. This costs an additional $\\mathcal O(n^2)$, either at runtime or computed offline.\r\n* **Per-tensor vs per-token quantized activations.** Generally per-token quantization has higher accuracy but requires more data movement. The particular case of per-token and asymmetric is unfavorable as it increases the dimensionality of the _zero point correction term_.\r\n* **Per-tensor vs per-column vs group quantized weights.** Group quantization will require kernel work for the activation quantization case, so is out of scope for this PR. If weight quantization is symmetric symmetric quantization, per-tensor or per-column quantization can be handled by scaling the output tensor of a linear layer, either by a scalar value in the case of per-tensor quantization or by a vector (with tensor expansion) in the case of per-column quantization.\r\n\r\nIn light of these considerations, this RFC proposes initially supporting the following cases.\r\n\r\nFor the weights:\r\n* w8a8 case: Static, symmetric and either per-tensor or per-column.\r\n\r\nFor the activations:\r\n* Static, either symmetric or asymmetric, per-tensor quantization.\r\n* Dynamic, symmetric, per-token quantization.\r\n\r\nOther cases left as future work, out of scope for this RFC: asymmetric w8a8 weights and asymmetric per-token activations, can be handled by additional $\\mathcal O(n^2)$ terms that are be computed during inference. \r\nFor asymmetric quantized weights where the activation is stored in a higher precision, such as w4a8, the zero points may be handled via a shift after the weights are up-converted to the activation's precision for computation.\r\n\r\n## Zero Point Correction Terms\r\n\r\nThis section is a zoom-in on the linear algebra for the zero point correction terms, to further motivate some of the decisions made above on support for asymmetric vs symmetric and per-token vs per-tensor cases.\r\n\r\nSuppose we want to compute a quantized GEMM operation $C = AB$, where $A$ is $m \\times k$, $B$ is $k \\times n$, and $C$ is $m \\times n$. In this setting, $A$ is the input activation matrix and $B$ is the weight matrix, known offline. We quantize we quantize the matrices as $C = s_C (\\widehat C - z_C J_C)$, $B = s_B (\\widehat B - z_B J_B)$, $A = s_A (\\widehat A - z_A J_A)$.\r\nThis is per-tensor quantization where $s_X$ is the scale of matrix $X$, $z_X$ is the zero point of $X$, and $J_X$ is the conformal matrix of all ones. Here we are ignoring any rounding for quantization for simplicity. Let's furthermore assume that $z_C = 0$ and $s_A, s_B, s_C = 1$ just to get them out of the way -- the scales of all matrices and the output's zero point are pretty easy to deal with.\r\n\r\nLet's substitute the above equations into $C = AB$ to see how to compute $\\widehat C$.\r\n$C = AB$\r\n$\\widehat C = (\\widehat A - z_A J_A) (\\widehat B - z_B J_B)$\r\n$\\widehat C = \\widehat A \\widehat B - z_A J_A \\widehat B - z_B \\widehat A J_B + z_A z_B J_A J_B$\r\n\r\nA brief remark on each term:\r\n* $\\widehat A \\widehat B$: will be computed by our quantized GEMM kernel.\r\n* $z_A z_B J_A J_B$: If per-tensor quantization is used, every value of $z_A z_B J_A J_B$, is the same and depends only on $k$ and the zero points of $A$ and $B$.\r\n* $z_A J_A \\widehat B$: A few remarks on this one.\r\n  - This term can be computed offline, since $\\widehat B$ is known ahead of time.\r\n  - Each _row_ of $J_A \\widehat B$ is the same and is equal to $z_A \\mathbf 1 \\widehat B$, where $\\mathbf 1$ is the vector of all ones. This can be computed via a ReduceSum operation or a GEMV operation with a vector of ones. \r\n  - If per-tensor quantization is used, then  $z_A \\mathbf 1 \\widehat B$ can be computed and subtracted from the output via tensor expansion. If we further have static quantization and know $z_A$ in the Linear module's constructor, we can fully compute this term and possibly fold it into the bias if it exists. In that case, asymmetric activation quantization can be implemented at zero cost as compared to the symmetric case. \r\n  - If we are using per-token quantization, this term becomes $z_A \\circ (J_A \\widehat B)$ where $\\circ$ is the Hadamard product with tensor expansion, and $z_A$ is a column-vector. This is equivalent to the outer product of $z_A$ with $\\mathbf 1 \\widehat B$. This is more expensive to handle than the per-tensor case but can be applied with a rank-1 update to avoid materializing  $z_A \\circ (J_A \\widehat B)$, which is the size of the output matrix.\r\n\r\n* $z_B \\widehat A J_B$: This term depends on the activation matrix, so must be computed at runtime if asymmetric weight quantization is used.\r\n",
+    "labels": [
+      "quantization",
+      "RFC",
+      "misc"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-10T17:20:09+00:00",
+    "closed_at": "2024-09-30T18:10:25+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3975/reactions",
+      "total_count": 10,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 7,
+      "rocket": 0,
+      "eyes": 2
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3975"
+  },
+  {
+    "number": 2551,
+    "title": "Implement 60% faster context processing for AWQ",
+    "body": "After some experimentation, I found that dequantizing and running FP16 matmul is faster in cases where `batch_size * n_tokens >= 1024`. This should help with throughput.\r\n\r\nhttps://github.com/casper-hansen/AutoAWQ/pull/316",
+    "labels": [
+      "quantization"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-22T16:51:07+00:00",
+    "closed_at": "2024-01-30T21:48:51+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2551/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2551"
+  },
+  {
+    "number": 2543,
+    "title": "Mixtral Quantization Issues",
+    "body": "I'm currently working with quantized versions of Mixtral 8x7B provided by TheBloke, and I load them with vLLM. I'm currently with these issues:\r\n`TheBloke/Mixtral-8x7B-Instruct-v0.1-GPTQ` can be well loaded, but even if the temperature has been fixed to 0, the model gives different outputs on the same prompt. The lack of deterministic is not found on traditional models.\r\n`TheBloke/Mixtral-8x7B-Instruct-v0.1-AWQ` keeps outputting nothing (is mentioned in huggingface discussions [here](https://huggingface.co/TheBloke/Mixtral-8x7B-Instruct-v0.1-AWQ/discussions/3)\r\nIs there anyone having faced and resolved such a problem? I know it may not be directly related to vLLM. And is there anyone having tested a quantized Mixtral model with vLLM well? Great thx.",
+    "labels": [
+      "bug",
+      "quantization"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-22T07:46:07+00:00",
+    "closed_at": "2024-04-04T12:36:41+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2543/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2543"
+  },
+  {
+    "number": 2149,
+    "title": "GPTQ does not support bfloat16",
+    "body": "Currently, our GPTQ kernels only support the float16 precision.",
+    "labels": [
+      "help wanted",
+      "feature request",
+      "quantization",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-12-17T06:06:30+00:00",
+    "closed_at": "2024-11-30T02:03:24+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2149/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2149"
+  },
+  {
+    "number": 2147,
+    "title": "GPTQ models don't support CUDA graph",
+    "body": "Got the following error while running `python examples/llm_engine_example.py --model TheBloke/Mixtral-8x7B-v0.1-GPTQ --dtype half`:\r\n```\r\n  File \"/home/wskwon/workspace/vllm/vllm/model_executor/layers/sampler.py\", line 396, in _random_sample\r\n    random_samples = torch.multinomial(probs,\r\nRuntimeError: probability tensor contains either `inf`, `nan` or element < 0\r\n```\r\nThe error didn't appear when the `--enforce-eager` flag was set.\r\n\r\n*AWQ models did not raise errors.\r\n\r\nI guess this is somehow related to exllama v2 kernels.",
+    "labels": [
+      "bug",
+      "quantization"
+    ],
+    "state": "closed",
+    "created_at": "2023-12-17T05:54:30+00:00",
+    "closed_at": "2024-01-03T17:52:30+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2147/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2147"
+  },
+  {
+    "number": 2074,
+    "title": "error when inferencing Mixtral AWQ",
+    "body": "When I try to run a AsyncEngine with ybelkada/Mixtral-8x7B-Instruct-v0.1-AWQ\r\nI get Traceback (most recent call last):\r\n  File \"/home/marco/Scrivania/TESI/serving/vllm_server.py\", line 91, in <module>\r\n    engine = AsyncLLMEngine.from_engine_args(engine_args)\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/engine/async_llm_engine.py\", line 495, in from_engine_args\r\n    engine = cls(parallel_config.worker_use_ray,\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/engine/async_llm_engine.py\", line 269, in __init__\r\n    self.engine = self._init_engine(*args, **kwargs)\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/engine/async_llm_engine.py\", line 314, in _init_engine\r\n    return engine_class(*args, **kwargs)\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/engine/llm_engine.py\", line 107, in __init__\r\n    self._init_workers_ray(placement_group)\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/engine/llm_engine.py\", line 194, in _init_workers_ray\r\n    self._run_workers(\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/engine/llm_engine.py\", line 750, in _run_workers\r\n    self._run_workers_in_batch(workers, method, *args, **kwargs))\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/engine/llm_engine.py\", line 727, in _run_workers_in_batch\r\n    all_outputs = ray.get(all_outputs)\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/ray/_private/auto_init_hook.py\", line 24, in auto_init_wrapper\r\n    return fn(*args, **kwargs)\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/ray/_private/client_mode_hook.py\", line 103, in wrapper\r\n    return func(*args, **kwargs)\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/ray/_private/worker.py\", line 2563, in get\r\n    raise value.as_instanceof_cause()\r\nray.exceptions.RayTaskError(AssertionError): ray::RayWorkerVllm.execute_method() (pid=350356, ip=192.168.1.124, actor_id=66f23bb9293ad0acf277904701000000, repr=<vllm.engine.ray_utils.RayWorkerVllm object at 0x7f43c5397a90>)\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/engine/ray_utils.py\", line 32, in execute_method\r\n    return executor(*args, **kwargs)\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/worker/worker.py\", line 72, in load_model\r\n    self.model_runner.load_model()\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/worker/model_runner.py\", line 36, in load_model\r\n    self.model = get_model(self.model_config)\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/model_executor/model_loader.py\", line 117, in get_model\r\n    model = model_class(model_config.hf_config, linear_method)\r\n  File \"/home/marco/miniconda3/envs/serving/lib/python3.10/site-packages/vllm/model_executor/models/mixtral.py\", line 453, in __init__\r\n    assert linear_method is None\r\nAssertionError",
+    "labels": [
+      "quantization"
+    ],
+    "state": "closed",
+    "created_at": "2023-12-13T02:33:06+00:00",
+    "closed_at": "2023-12-18T18:56:13+00:00",
+    "comments": 30,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2074/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2074"
+  },
+  {
+    "number": 1703,
+    "title": "bug of opt awq model",
+    "body": "Hi @zhuohan123, I found two bugs of opt awq model in the latest code because of the code refactor. \r\n1. in https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/models/opt.py#L215, some opt model may not use quantized linear in project_in/project_out, \r\n2. in https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/models/opt.py#L254, project_in/project_out have two return value",
+    "labels": [
+      "bug",
+      "quantization"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-17T11:21:14+00:00",
+    "closed_at": "2023-11-19T01:56:49+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1703/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1703"
+  },
+  {
+    "number": 1682,
+    "title": "load_weights KeyError with quantized GPTBigCodeForCausalLM",
+    "body": "I trying load awq quantized [bigcode/octocoder](https://huggingface.co/bigcode/octocoder)\r\n(GPTBigCodeForCausalLM) model wth vLLM.\r\n\r\n**Environ**\r\n- docker image based nvcr.io/nvidia/pytorch:23.08-py3\r\n- CUDA 12.2.1\r\n- pytorch 2.1.0a0+29c30b1\r\n- transformers==4.35.0\r\n- autoawq==0.1.6\r\n- vllm local build from github sourece\r\n\r\n**repro**\r\n- quantize bigcode/octocoder with AutoAWQ\r\n- load model with Transformer and inferencing\r\nIt works fine.\r\n\r\n- clone `refactor-quantization` branch from [PR1622](https://github.com/vllm-project/vllm/pull/1622)\r\n- try load model\r\n\r\n```\r\nInitializing an LLM engine with config: model='/usr/local/model/llm', tokenizer='/usr/local/model/llm', tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=2, quantization=awq, seed=0)\r\n```\r\n- RayWorker dead with Error\r\n\r\n```\r\nray.exceptions.RayTaskError(KeyError): ray::RayWorker.execute_method() (pid=9510, ip=192.168.16.3, actor_id=9528afa7f50796c535e2572901000000, repr=<vllm.engine.ray_utils.RayWorker object at 0x7f718f9ddbd0>)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/engine/ray_utils.py\", line 32, in execute_method\r\n    return executor(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/worker/worker.py\", line 70, in init_model\r\n    self.model = get_model(self.model_config)\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/model_executor/model_loader.py\", line 96, in get_model\r\n    model.load_weights(model_config.model, model_config.download_dir,\r\n  File \"/usr/local/lib/python3.10/dist-packages/vllm/model_executor/models/gpt_bigcode.py\", line 280, in load_weights\r\n    param = params_dict[name]\r\nKeyError: 'transformer.h.0.mlp.act.scales'\r\n```\r\n\r\nAWQ support still incomplete? \r\nAnyone have any solution?",
+    "labels": [
+      "bug",
+      "quantization"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-16T05:58:24+00:00",
+    "closed_at": "2023-12-13T19:08:11+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1682/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1682"
+  },
+  {
+    "number": 1345,
+    "title": "Quantization for V100",
+    "body": "Similar to #1252 , do we have any plans for supporting V100. For now I can see that the place need to be modified is ldmatrix instruction and m16n8k16, as an example we may need to load the matrix manually and perform the mma in a smaller size, for example, maybe we need something similar to these\r\n```c++\r\n#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ == 700\r\n          // Manually loading each fragment, ldmatrix only available on sm_75 and after\r\n          __asm__ __volatile__(\r\n              \"ld.shared.b16 %0, [%4];\\n\"\r\n              \"ld.shared.b16 %1, [%4 + 2];\\n\"\r\n              \"ld.shared.b16 %2, [%4 + 4];\\n\"\r\n              \"ld.shared.b16 %3, [%4 + 6];\\n\"\r\n              : \"=r\"(((unsigned *)(B_shared_warp + (ax1_0 * 8)))[0]), \r\n                \"=r\"(((unsigned *)(B_shared_warp + (ax1_0 * 8)))[1]), \r\n                \"=r\"(((unsigned *)(B_shared_warp + (ax1_0 * 8)))[2]), \r\n                \"=r\"(((unsigned *)(B_shared_warp + (ax1_0 * 8)))[3])\r\n              : \"r\"(addr)\r\n          );\r\n#else\r\n          __asm__ __volatile__(\r\n            \"ldmatrix.sync.aligned.m8n8.x4.trans.shared.b16\"\r\n            \"{%0, %1, %2, %3}, [%4];\\n\"\r\n            : \"=r\"(((unsigned *)(B_shared_warp + (ax1_0 * 8)))[0]), \"=r\"(((unsigned *)(B_shared_warp + (ax1_0 * 8)))[1]), \"=r\"(((unsigned *)(B_shared_warp + (ax1_0 * 8)))[2]), \"=r\"(((unsigned *)(B_shared_warp + (ax1_0 * 8)))[3])\r\n            : \"r\"(addr)\r\n          );\r\n#endif\r\n```\r\n\r\nand \r\n\r\n```c++\r\n#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ == 700\r\n      for (int m_idx = 0; m_idx < 2; m_idx++) {\r\n          for (int k_idx = 0; k_idx < 4; k_idx++) { // original K was 16\r\n            unsigned *A_addr = &(((unsigned *)(A_shared_warp))[m_idx * 2 + k_idx * 8]); // 2 elements per 8x4 block, adjusted for K             \r\n            for (int n_idx = 0; n_idx < 2; n_idx++) {\r\n              unsigned *B_addr = &(((unsigned *)(B_shared_warp + (j_0_4 * 8) + (n_idx * 4)))[k_idx * 8]); // adjusted for K\r\n              float *C_addr = &(((float *)(C_warp + (j_0_4 * 8) + (m_idx * 4)))[n_idx * 4]);\r\n              __asm__ volatile(\r\n                  \"mma.sync.aligned.m8n8k4.row.col.f32.f16.f16.f32 \"\r\n                  \"{%0,%1,%2,%3,%4,%5,%6,%7}, {%8,%9}, {%10,%11}, \"\r\n                  \"{%12,%13,%14,%15,%16,%17,%18,%19};\\n\"\r\n                  : \"=f\"(C_addr[0]), \"=f\"(C_addr[1]), \"=f\"(C_addr[2]), \"=f\"(C_addr[3]),\r\n                    \"=f\"(C_addr[4]), \"=f\"(C_addr[5]), \"=f\"(C_addr[6]), \"=f\"(C_addr[7])\r\n                  : \"r\"(A_addr[0]), \"r\"(A_addr[1]), \"r\"(B_addr[0]), \"r\"(B_addr[1]),\r\n                    \"f\"(C_addr[0]), \"f\"(C_addr[1]), \"f\"(C_addr[2]), \"f\"(C_addr[3]),\r\n                    \"f\"(C_addr[4]), \"f\"(C_addr[5]), \"f\"(C_addr[6]), \"f\"(C_addr[7])\r\n              );\r\n            }\r\n          }\r\n        }\r\n#elif defined(__CUDA_ARCH__) && __CUDA_ARCH__ == 750\r\n        {\r\n          __asm__ __volatile__(\r\n            \"mma.sync.aligned.m16n8k8.row.col.f32.f16.f16.f32\"\r\n            \"{%0, %1, %2, %3}, {%4, %5}, {%6}, {%7, %8, %9, %10};\\n\"\r\n            :  \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[0]), \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[1]), \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[2]), \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[3])\r\n            : \"r\"(((unsigned *)(A_shared_warp + 0))[0]), \"r\"(((unsigned *)(A_shared_warp + 0))[1]), \"r\"(((unsigned *)(B_shared_warp + (j_0_4 * 8)))[0]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[0]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[1]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[2]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[3]));\r\n        }\r\n\r\n        {\r\n          __asm__ __volatile__(\r\n            \"mma.sync.aligned.m16n8k8.row.col.f32.f16.f16.f32\"\r\n            \"{%0, %1, %2, %3}, {%4, %5}, {%6}, {%7, %8, %9, %10};\\n\"\r\n            :  \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[0]), \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[1]), \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[2]), \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[3])\r\n            : \"r\"(((unsigned *)(A_shared_warp + 0))[0]), \"r\"(((unsigned *)(A_shared_warp + 0))[1]), \"r\"(((unsigned *)(B_shared_warp + ((j_0_4 * 8) + 4)))[0]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[0]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[1]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[2]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[3]));\r\n        }\r\n\r\n        {\r\n          __asm__ __volatile__(\r\n            \"mma.sync.aligned.m16n8k8.row.col.f32.f16.f16.f32\"\r\n            \"{%0, %1, %2, %3}, {%4, %5}, {%6}, {%7, %8, %9, %10};\\n\"\r\n            :  \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[0]), \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[1]), \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[2]), \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[3])\r\n            : \"r\"(((unsigned *)(A_shared_warp + 0))[2]), \"r\"(((unsigned *)(A_shared_warp + 0))[3]), \"r\"(((unsigned *)(B_shared_warp + (j_0_4 * 8)))[1]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[0]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[1]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[2]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[3]));\r\n        }\r\n\r\n        {\r\n          __asm__ __volatile__(\r\n            \"mma.sync.aligned.m16n8k8.row.col.f32.f16.f16.f32\"\r\n            \"{%0, %1, %2, %3}, {%4, %5}, {%6}, {%7, %8, %9, %10};\\n\"\r\n            :  \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[0]), \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[1]), \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[2]), \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[3])\r\n            : \"r\"(((unsigned *)(A_shared_warp + 0))[2]), \"r\"(((unsigned *)(A_shared_warp + 0))[3]), \"r\"(((unsigned *)(B_shared_warp + ((j_0_4 * 8) + 4)))[1]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[0]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[1]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[2]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[3]));\r\n        }\r\n#else\r\n        {\r\n          __asm__ __volatile__(\r\n            \"mma.sync.aligned.m16n8k16.row.col.f32.f16.f16.f32\"\r\n            \"{%0, %1, %2, %3}, {%4, %5, %6, %7}, {%8, %9}, {%10, %11, %12, %13};\\n\"\r\n            :  \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[0]), \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[1]), \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[2]), \"=f\"(((float *)(C_warp + (j_0_4 * 8)))[3])\r\n            : \"r\"(((unsigned *)(A_shared_warp + 0))[0]), \"r\"(((unsigned *)(A_shared_warp + 0))[1]), \"r\"(((unsigned *)(A_shared_warp + 0))[2]), \"r\"(((unsigned *)(A_shared_warp + 0))[3]), \"r\"(((unsigned *)(B_shared_warp + (j_0_4 * 8)))[0]), \"r\"(((unsigned *)(B_shared_warp + (j_0_4 * 8)))[1]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[0]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[1]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[2]), \"f\"(((float *)(C_warp + (j_0_4 * 8)))[3]));\r\n        }\r\n\r\n        {\r\n          __asm__ __volatile__(\r\n            \"mma.sync.aligned.m16n8k16.row.col.f32.f16.f16.f32\"\r\n            \"{%0, %1, %2, %3}, {%4, %5, %6, %7}, {%8, %9}, {%10, %11, %12, %13};\\n\"\r\n            :  \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[0]), \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[1]), \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[2]), \"=f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[3])\r\n            : \"r\"(((unsigned *)(A_shared_warp + 0))[0]), \"r\"(((unsigned *)(A_shared_warp + 0))[1]), \"r\"(((unsigned *)(A_shared_warp + 0))[2]), \"r\"(((unsigned *)(A_shared_warp + 0))[3]), \"r\"(((unsigned *)(B_shared_warp + ((j_0_4 * 8) + 4)))[0]), \"r\"(((unsigned *)(B_shared_warp + ((j_0_4 * 8) + 4)))[1]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[0]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[1]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[2]), \"f\"(((float *)(C_warp + ((j_0_4 * 8) + 4)))[3]));\r\n        }\r\n#endif\r\n      }\r\n```",
+    "labels": [
+      "quantization",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-13T16:44:17+00:00",
+    "closed_at": "2024-12-01T02:16:03+00:00",
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1345/reactions",
+      "total_count": 3,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 3
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1345"
+  },
+  {
+    "number": 1242,
+    "title": "Huge latency increase with AWQ models at medium context lengths",
+    "body": "Using an awq quantized model from thebloke (TheBloke/manticore-13b-chat-pyg-AWQ), generation is fine and starts after a few seconds with only a few sentences in the context window, but anything more than three or four makes it take ~30 seconds to start generation. Tried different awq models, and the issue doesn't happen with unquantized models. Is this normal/something to do with the way it handles awq models?",
+    "labels": [
+      "performance",
+      "quantization"
+    ],
+    "state": "closed",
+    "created_at": "2023-10-01T17:10:40+00:00",
+    "closed_at": "2024-03-20T12:47:49+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1242/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1242"
+  }
+]

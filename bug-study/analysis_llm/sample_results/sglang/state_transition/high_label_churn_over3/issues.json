@@ -1,0 +1,877 @@
+[
+  {
+    "number": 2591,
+    "title": "[Feature] DeepSeek V3 optimization",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Adoption\n\n[SGLang adoption for DeepSeek V3 and R1](https://github.com/sgl-project/sglang/discussions/3322)\n\n### Usage\n\nUser Guide for Existing System (Installation & Launch)\n\nhttps://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3\n\nPlease use the latest version [v0.4.2.post4](https://pypi.org/project/sglang/0.4.2.post4/). Please prefer to use docker image. `docker pull lmsysorg/sglang:latest`\n\nFor running on AMD MI300X, use this as a reference. [Running DeepSeek-R1 on a single NDv5 MI300X VM](https://techcommunity.microsoft.com/blog/azurehighperformancecomputingblog/running-deepseek-r1-on-a-single-ndv5-mi300x-vm/4372726)\n\n### Features\n\n- [x] Support CUDA Graph @HandH1998 @ispobock \n- [x] Support Torch compile @ispobock \n- [x] Use BF16 for bmm @zhyncs \n- [x] Improve the accuracy for FP8 @HandH1998 @zhyncs @ispobock \n- [x] Tuning FP8 GEMM @HandH1998 @zhyncs \n- [x] Replace `moe_align_block_size` @HandH1998 @zhyncs @BBuf \n- [x] FusedMoE tuning for H200 `E=256,N=256,device_name=NVIDIA_H200,dtype=fp8_w8a8.json` @BBuf \n- [x] TP+DP Attention @Ying1123 \n- [x] Support overlap scheduler with DP attention @merrymercy\n- [x] Fuse Sigmoid Gate  [moe_kernels.cu](https://github.com/NVIDIA/TensorRT-LLM/blob/main/cpp/tensorrt_llm/kernels/mixtureOfExperts/moe_kernels.cu) @NovTi @BBuf (torch compile is sufficient for this use case, so the priority and ROI to support it are not high. Closing for now.)\n- [x] Support `nextn` speculative decoding @ispobock  https://github.com/sgl-project/sglang/issues/3472\n- [x] FP8 GEMM CUTLASS implementation @yizhang2077 \n- [x] Better [fused_experts](https://github.com/sgl-project/sglang/blob/34e405e01f7ff15ad56399999b9c00859a0b5134/python/sglang/srt/layers/moe/fused_moe_triton/fused_moe.py#L1123) @bbuf @zhyncs \n- [x] FlashInfer Prefill and MLA Decoding @zhyncs @ispobock \n- [x] Integrate DeepGemm #4199 #4343\n- [x] Integrate FlashMLA #4472 #4514 \n- [ ] FP8 GEMM Composable Kernel implementation @HaiShaw \n- [ ] Support Pipeline Parallelism @Ying1123  \n\nMore things (e.g., PD disaggregation, cache) are tracked at https://github.com/sgl-project/sglang/issues/4042",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "performance",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-26T08:52:39+00:00",
+    "closed_at": "2025-03-25T04:10:46+00:00",
+    "comments": 52,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2591/reactions",
+      "total_count": 98,
+      "+1": 64,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 14,
+      "rocket": 7,
+      "eyes": 13
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2591"
+  },
+  {
+    "number": 3614,
+    "title": "[Feature] support torch compile cache for DeepSeek V3/R1",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\nThe time taken for each startup is currently too long when torch compile is enabled. It needs optimization.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-16T16:18:21+00:00",
+    "closed_at": "2025-02-21T18:18:09+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3614/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3614"
+  },
+  {
+    "number": 3472,
+    "title": "[Track] DeepSeek V3/R1 nextn progress",
+    "body": "## Triton Backend\n\n@ispobock @pankajroark \n\n- [x] [refactor triton backend 1](https://github.com/sgl-project/sglang/pull/3292), [2](https://github.com/sgl-project/sglang/pull/3309)\n\n- [x] [support custom mask](https://github.com/sgl-project/sglang/pull/3317)\n\n- [x] [support EAGLE 2](https://github.com/sgl-project/sglang/pull/3466)\n\n- [x] [compatible with CUDA Graph](https://github.com/sgl-project/sglang/pull/3500)\n\n- [x] [support nextn I (single MTP head)](https://github.com/sgl-project/sglang/pull/3582)\n\n- [x] support next II (multi MTP heads) (WIP @pankajroark )\n\n## FlashInfer Backend\n\n@zhyncs @yzh119 \n\n- [x] compatible with disable MLA\n\n- [x] support FlashInfer nightly MLA ragged prefill and CUDA Core MLA decoding\n\n- [x] support FlashInfer v0.2.0.post3 MLA ragged, paged prefill and decoding (@zhyncs @yzh119 )\n\n- [x] nextn parts can be shared with Triton Backend\n\n## EAGLE 2\n\n@zhyncs @Ying1123 \n\n- [x] implement sampling kernel in [sgl-kernel](https://github.com/sgl-project/sglang/tree/main/sgl-kernel) (drop cutex) [kernel part](https://github.com/sgl-project/sglang/pull/3373), [python part](https://github.com/sgl-project/sglang/pull/3378)\n\n- [x] bunch of fixes [non greedy fix](https://github.com/sgl-project/sglang/pull/3407), [disable cuda graph fix 1](https://github.com/sgl-project/sglang/pull/3412), [fix 2](https://github.com/sgl-project/sglang/pull/3411), [cleanup 1](https://github.com/sgl-project/sglang/pull/3415), [cleanup 2](https://github.com/sgl-project/sglang/pull/3422), [fix cuda graph capture failure](https://github.com/sgl-project/sglang/pull/3430), [fix 2](https://github.com/sgl-project/sglang/pull/3431), [reduce one draft forward](https://github.com/sgl-project/sglang/pull/3468)\n\n- [x] compatible with radix cache and chunked prefill (WIP @Ying1123 )",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "flashinfer",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-10T14:46:03+00:00",
+    "closed_at": "2025-03-25T04:13:25+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3472/reactions",
+      "total_count": 16,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 3
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3472"
+  },
+  {
+    "number": 2620,
+    "title": "[Feature] FlashInfer new version integration",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "inactive",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-27T18:14:29+00:00",
+    "closed_at": "2025-03-11T00:17:39+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2620/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2620"
+  },
+  {
+    "number": 2660,
+    "title": "[Feature] Rewrite the SRT Backend docs",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThis doc has been outdated for a long time:\r\n\r\nhttps://sgl-project.github.io/backend/backend.html#backend-sglang-runtime-srt\r\n\r\n1. Only keep an explanation for server arguments and give the link to sampling parameters.\r\n2. Add essential explanation for server arguments. Remember to add these kinds of arguments. https://lmsys.org/blog/2024-12-04-sglang-v0-4/#data-parallelism-attention-for-deepseek-models\r\n3. A group of parameters have ##, ### is not allowed.\r\n4. Use Models From ModelScope and Run Llama 3.1 405B move to reference, and potentially adds docs for deepseek.\r\n5. change main readme.md.\r\n\n\n### Related resources\n\nNo such.",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted",
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-30T07:49:17+00:00",
+    "closed_at": "2025-05-24T21:27:16+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2660/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2660"
+  },
+  {
+    "number": 2472,
+    "title": "[Feature] Integrate CUTLASS FP8 GEMM into sgl-kernel",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nref \r\nhttps://github.com/NVIDIA/cutlass/pull/1932/files\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "inactive",
+      "performance",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-12T20:08:31+00:00",
+    "closed_at": "2025-02-12T00:16:40+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2472/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2472"
+  },
+  {
+    "number": 5938,
+    "title": "[Tracker] FA3 performance on sm80",
+    "body": "```bash\ngit clone https://github.com/sgl-project/sglang\ncd sglang\npip3 install -e \"python[all]\"\n```\n\n```bash\n--attention-backend fa3\n```",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "collaboration"
+    ],
+    "state": "open",
+    "created_at": "2025-05-01T02:14:42+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5938/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5938"
+  },
+  {
+    "number": 4748,
+    "title": "[Feature] beat torch compile",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\nLast year and in the first few months of this year, a significant part of my work focused on removing vLLM dependency. Many reliable teammates joined in this process, and we successfully removed the vLLM dependency on the NVIDIA platform for SGLang. Next, I will co-lead progress on beat torch compile. Past experience shows that torch compile is effective - we just need to write some simple torch ops and let torch compile handle the rest. However, in actual production serving, it is not as smooth as expected - for example, slow startup even with cache enabled, compatibility issues when upgrading torch versions leading to previous features breaking in new versions. We need to profile, benchmark, rewrite the bottleneck ops with CUDA/CUTLASS and ensure that **performance without using torch compile can surpass performance with enable torch compile**. Currently [sgl-kernel](https://github.com/sgl-project/sglang/tree/main/sgl-kernel) has secured a size of **500 MB**, I believe everything is ready and now we just need everyone to collaborate together. Cheers!\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "collaboration",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-25T06:18:28+00:00",
+    "closed_at": "2025-05-26T16:55:12+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4748/reactions",
+      "total_count": 15,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 15,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4748"
+  },
+  {
+    "number": 5250,
+    "title": "[Feature] support and turn on chunked prefill by default for VLM",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\nhttps://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "MLLM"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-10T18:45:57+00:00",
+    "closed_at": "2025-05-26T16:56:01+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5250/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5250"
+  },
+  {
+    "number": 5964,
+    "title": "[Feature] Support more multi-modal input for VLM",
+    "body": "### Motivation\n\nThe current endpoint only supports image data input, limiting its flexibility for diverse VLM use cases. We need additional input formats, particularly for RL applications:\n(Could be split into multiple PRs)\n\n- [x] Pre-computed Image Embeddings\n- [ ] Pixel Values\n- [ ] Pixel Value Range Parameters (min_pixel/max_pixel) for qwen-vl\n\nWelcome to propose more.\n\n#### Benefits\n\n1. Enhanced flexibility for RL workflows\n2. Reduced preprocessing overhead\n3. Better integration with existing pipelines",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "feature",
+      "MLLM"
+    ],
+    "state": "open",
+    "created_at": "2025-05-02T02:28:40+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5964/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5964"
+  },
+  {
+    "number": 5514,
+    "title": "[Tracker] SGLang v0.4.5.post1 performance on H200",
+    "body": "**Update**:\n**see the latest benchmark results in another post https://github.com/sgl-project/sglang/pull/5611#issuecomment-2819965621** \n\n\n```bash\n# launch server\n# First, warm up for DeepGEMM\n# SGLang uses FA3 backend by default since v0.4.5.post1\n# Use dp 8 for offline use case\nSGL_ENABLE_JIT_DEEPGEMM=1 python3 -m sglang.launch_server --model deepseek-ai/DeepSeek-V3 --tp 8 --trust-remote-code --enable-dp-attention --dp-size 8\n\n# Random 1k, 2k\npython3 -m sglang.bench_serving --backend sglang-oai --num-prompts 50 --request-rate 10 --dataset-name random --random-input-len 1000 --random-output-len 2000 --random-range-ratio 1\n\n# Random 5k, 1k\npython3 -m sglang.bench_serving --backend sglang-oai --num-prompts 50 --request-rate 10 --dataset-name random --random-input-len 5000 --random-output-len 1000 --random-range-ratio 1\n\n# Random 10k, 500\npython3 -m sglang.bench_serving --backend sglang-oai --num-prompts 50 --request-rate 10 --dataset-name random --random-input-len 10000 --random-output-len 500 --random-range-ratio 1\n\n# Random 30k, 100\npython3 -m sglang.bench_serving --backend sglang-oai --num-prompts 50 --request-rate 10 --dataset-name random --random-input-len 30000 --random-output-len 100 --random-range-ratio 1\n```\n\n![Image](https://github.com/user-attachments/assets/175f2238-0299-48f3-ae65-7878f8faf459)\n\n![Image](https://github.com/user-attachments/assets/f14d4bf4-c607-4b18-9fb6-4f30d1d7a5b4)\n\n![Image](https://github.com/user-attachments/assets/336c80f4-6f26-411a-8e54-e0d1a889dbe1)\n\n![Image](https://github.com/user-attachments/assets/18293871-be6c-4631-9e26-0a631ef6ddf5)",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "performance",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-18T02:46:46+00:00",
+    "closed_at": "2025-04-29T19:47:52+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5514/reactions",
+      "total_count": 20,
+      "+1": 10,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 4,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 6,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5514"
+  },
+  {
+    "number": 3393,
+    "title": "[Feature] Can router support prometheus metrics",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nK8s is often used to deploy applications online. After the router module is introduced, related service indicator monitoring is also required. Therefore, similar to https://github.com/sgl-project/sglang/pull/1853 provided by the server, does it support the collection of monitoring indicators of the router?\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "inactive",
+      "feature",
+      "router"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-08T06:42:46+00:00",
+    "closed_at": "2025-04-28T00:19:29+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3393/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3393"
+  },
+  {
+    "number": 2898,
+    "title": "[Feature] support MiniMax",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nref https://github.com/MiniMax-AI/MiniMax-01\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2025-01-15T06:36:10+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2898/reactions",
+      "total_count": 18,
+      "+1": 18,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2898"
+  },
+  {
+    "number": 4324,
+    "title": "[Bug] fix gemma-2-2b-it-FP8 accuracy",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nThe accuracy of `neuralmagic/gemma-2-2b-it-FP8` drops from 0.62 to 0.52 in the main branch. It was detected by our nightly CI run. We need to fix this.\n\n```\nneuralmagic/gemma-2-2b-it-FP8 | 0.512 | 0.6\n```\nhttps://github.com/sgl-project/sglang/actions/runs/13800885290\n\n### Reproduction\n\nN/A\n\n### Environment\n\nN/A",
+    "labels": [
+      "bug",
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-12T01:27:58+00:00",
+    "closed_at": "2025-05-21T09:30:43+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4324/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4324"
+  },
+  {
+    "number": 4436,
+    "title": "[Feature] enable SGLang custom all reduce by default",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nWe need community users to help test these cases. After confirming that there are no issues, we will default to using the custom all reduce implemented in SGLang. You can reply with your test results below this issue. Thanks!\n\n**GPU Hardware Options**:\n- H100/H200/H20/H800/A100\n\n**Model Configurations with Tensor Parallelism (TP) Settings**:\n- Llama 8B with TP 1/2/4/8\n- Llama 70B with TP 4/8\n- Qwen 7B with TP 1/2/4/8\n- Qwen 32B with TP 4/8\n- DeepSeek V3 with TP 8/16\n\n**Environment Variables**:\n```\nexport USE_VLLM_CUSTOM_ALLREDUCE=0\nexport USE_VLLM_CUSTOM_ALLREDUCE=1\n```\n\n**Benchmarking Commands**:\n```bash\npython3 -m sglang.bench_one_batch --model-path model --batch-size --input 128 --output 8\npython3 -m sglang.bench_serving --backend sglang\n```\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-14T19:46:52+00:00",
+    "closed_at": "2025-03-29T02:50:50+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4436/reactions",
+      "total_count": 3,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 3,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4436"
+  },
+  {
+    "number": 4689,
+    "title": "[Bug] Testing new Llama-3_3-Nemotron-Super-49B-v1 by Nvidia: \"Model architectures ['DeciLMForCausalLM'] are not supported for now.\"",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI tried to run on SGLang Llama-3_3-Nemotron-Super-49B-v1 recently announced by Nvidia.\n\nIt seems not to be yet supported by SGLang since `DeciLMForCausalLM`is not yet accepted by SGLang. See below.\n\nCan you add corresponding support?\n\n```\nScheduler hit an exception: Traceback (most recent call last):\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py\", line 1748, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py\", line 218, in __init__\n    self.tp_worker = TpWorkerClass(\n                     ^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/tp_worker_overlap_thread.py\", line 63, in __init__\n    self.worker = TpModelWorker(server_args, gpu_id, tp_rank, dp_rank, nccl_port)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/managers/tp_worker.py\", line 74, in __init__\n    self.model_runner = ModelRunner(\n                        ^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py\", line 166, in __init__\n    self.initialize(min_per_gpu_memory)\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py\", line 176, in initialize\n    self.load_model()\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py\", line 361, in load_model\n    self.model = get_model(\n                 ^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/__init__.py\", line 22, in get_model\n    return loader.load_model(\n           ^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py\", line 358, in load_model\n    model = _initialize_model(\n            ^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py\", line 137, in _initialize_model\n    model_class, _ = get_model_architecture(model_config)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/model_loader/utils.py\", line 37, in get_model_architecture\n    return ModelRegistry.resolve_model_cls(architectures)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/models/registry.py\", line 65, in resolve_model_cls\n    return self._raise_for_unsupported(architectures)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/sglang/srt/models/registry.py\", line 32, in _raise_for_unsupported\n    raise ValueError(\nValueError: Model architectures ['DeciLMForCausalLM'] are not supported for now. Supported architectures: dict_keys(['BaichuanForCausalLM', 'ChatGLMModel', 'CohereForCausalLM', 'Cohere2ForCausalLM', 'DbrxForCausalLM', 'DeepseekForCausalLM', 'MultiModalityCausalLM', 'DeepseekV3ForCausalLMNextN', 'DeepseekV2ForCausalLM', 'DeepseekV3ForCausalLM', 'ExaoneForCausalLM', 'GemmaForCausalLM', 'Gemma2ForCausalLM', 'Gemma2ForSequenceClassification', 'GPT2LMHeadModel', 'GPTBigCodeForCausalLM', 'GraniteForCausalLM', 'Grok1ForCausalLM', 'Grok1ModelForCausalLM', 'InternLM2ForCausalLM', 'InternLM2ForRewardModel', 'LlamaForCausalLM', 'Phi3ForCausalLM', 'InternLM3ForCausalLM', 'LlamaForClassification', 'LlamaForCausalLMEagle', 'LlamaEmbeddingModel', 'MistralModel', 'LlamaForSequenceClassification', 'LlamaForSequenceClassificationWithNormal_Weights', 'LlavaLlamaForCausalLM', 'LlavaQwenForCausalLM', 'LlavaMistralForCausalLM', 'LlavaVidForCausalLM', 'MiniCPMForCausalLM', 'MiniCPM3ForCausalLM', 'MiniCPMV', 'MistralForCausalLM', 'MixtralForCausalLM', 'QuantMixtralForCausalLM', 'MllamaForConditionalGeneration', 'OlmoForCausalLM', 'Olmo2ForCausalLM', 'OlmoeForCausalLM', 'Phi3SmallForCausalLM', 'QWenLMHeadModel', 'Qwen2ForCausalLM', 'Qwen2_5_VLForConditionalGeneration', 'Qwen2ForCausalLMEagle', 'Qwen2MoeForCausalLM', 'Qwen2ForRewardModel', 'Qwen2VLForConditionalGeneration', 'StableLmForCausalLM', 'TorchNativeLlamaForCausalLM', 'TorchNativePhi3ForCausalLM', 'XverseForCausalLM', 'XverseMoeForCausalLM', 'YiVLForCausalLM'])\n```\n\n### Reproduction\n\nStart SGLang and with `nvidia/Llama-3_3-Nemotron-Super-49B-v1` coming from HuggingFace\nThe message above will appear right after this command\n\n### Environment\n\nAmazon Linux 2023\nSGLang 0.0.4.post1 = last officially published version as of this writing",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted",
+      "new-model"
+    ],
+    "state": "open",
+    "created_at": "2025-03-23T05:40:20+00:00",
+    "closed_at": null,
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4689/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4689"
+  },
+  {
+    "number": 2402,
+    "title": "[Feature] add kernel level benchmark",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nuse triton benchmark utils https://triton-lang.org/main/python-api/generated/triton.testing.do_bench.html#triton.testing.do_bench to benchmark kernels (flashinfer, triton, vllm, tensorrt llm, cudnn etc)\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-08T11:06:34+00:00",
+    "closed_at": "2025-05-21T09:31:00+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2402/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2402"
+  },
+  {
+    "number": 4518,
+    "title": "[Feature] support mistral small vlm",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nhttps://mistral.ai/fr/news/mistral-small-3-1\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted",
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-17T18:43:18+00:00",
+    "closed_at": "2025-05-21T15:27:30+00:00",
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4518/reactions",
+      "total_count": 4,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 2,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4518"
+  },
+  {
+    "number": 5093,
+    "title": "[Bug] SGLang on ROCm - NameError: name 'torch_memory_saver' is not defined",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n[RCOm Docker - `lmsysorg/sglang:v0.4.4.post3-rocm630-srt`]\nThe issue arises from here:\nhttps://github.com/sgl-project/sglang/blob/main/python/sglang/srt/torch_memory_saver_adapter.py#L48\n\n1. In line 6, if the code fails to import torch_memory_saver, it just bypasses instead of triggering any error. Thus, if the code calls line46 class and uses def configure_subprocess(self), it cannot find `torch_memory_saver` , thereby triggering NameError: name 'torch_memory_saver' is not defined error on later.\n2. `torch_memory_saver`  should be supported in this docker (`lmsysorg/sglang:v0.4.4.post3-rocm630-srt`)\n\n### Reproduction\n\nSee above\n\n### Environment\n\nYou can try in this (latest) docker \n```bash\ndocker run --rm -it \\\n  --device /dev/dri \\\n  --device /dev/kfd \\\n  -p 8265:8265 \\\n  --group-add video \\\n  --cap-add SYS_PTRACE \\\n  --security-opt seccomp=unconfined \\\n  --privileged \\\n  -v $HOME/.ssh:/root/.ssh \\\n  -v $HOME:$HOME \\\n  --shm-size 128G \\\n  --name sglang_rocm_test \\\n  -w $PWD \\\n  lmsysorg/sglang:v0.4.4.post3-rocm630-srt \\\n  /bin/bash\n```",
+    "labels": [
+      "high priority",
+      "inactive",
+      "amd",
+      "RLHF"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-05T23:11:55+00:00",
+    "closed_at": "2025-06-08T00:21:35+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5093/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5093"
+  },
+  {
+    "number": 4462,
+    "title": "[Bug] fix dsv3 awq issue",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nas titled\n\n### Reproduction\n\nN/A\n\n### Environment\n\nN/A",
+    "labels": [
+      "bug",
+      "high priority",
+      "performance",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-16T05:27:20+00:00",
+    "closed_at": "2025-04-07T02:17:41+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4462/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4462"
+  },
+  {
+    "number": 3142,
+    "title": "[Feature] Accuracy test of VLM",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nIn sglang, LLMs have accuracy tests with Hugging Face models:\n\nhttps://github.com/sgl-project/sglang/blob/main/test/srt/models/test_generation_models.py\n\nhttps://github.com/sgl-project/sglang/blob/main/test/srt/test_nightly_math_eval.py\n\nWe need similar one for VLM also.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "MLLM"
+    ],
+    "state": "open",
+    "created_at": "2025-01-26T06:25:40+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3142/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3142"
+  },
+  {
+    "number": 3396,
+    "title": "[Bug] fix nightly test",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nAfter upgrading FlashInfer, there are issues with the nightly tests.\n\n### Reproduction\n\nN/A\n\n### Environment\n\nN/A",
+    "labels": [
+      "bug",
+      "high priority",
+      "inactive",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-08T08:58:41+00:00",
+    "closed_at": "2025-04-10T00:17:59+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3396/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3396"
+  },
+  {
+    "number": 7124,
+    "title": "[Bug] llama 3 405b fb fp8 issue",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nas titled\n\n### Reproduction\n\nN/A\n\n### Environment\n\nN/A",
+    "labels": [
+      "bug",
+      "good first issue",
+      "help wanted",
+      "high priority"
+    ],
+    "state": "open",
+    "created_at": "2025-06-12T08:58:27+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7124/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7124"
+  },
+  {
+    "number": 3200,
+    "title": "[Bug] Tried to run DeepSeek V3 by amd instructions",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI tried to use [AMD instruction](https://www.amd.com/en/developer/resources/technical-articles/amd-instinct-gpus-power-deepseek-v3-revolutionizing-ai-development-with-sglang.html) but i have an error.\n\n### Reproduction\n\nAfter running in a container\n```\npython3 -m sglang.launch_server --model-path deepseek-ai/DeepSeek-V3 --port 30000 --tp 8 --trust-remote-code\n```\n\nLog:\n```\n/opt/conda/envs/py_3.9/lib/python3.9/site-packages/scipy/__init__.py:138: UserWarning: A NumPy version >=1.16.5 and <1.23.0 is required for this version of SciPy (detected version 1.26.4)\n  warnings.warn(f\"A NumPy version >={np_minversion} and <{np_maxversion} is required for this version of \"\n[2025-01-28 22:32:01 TP6] Process 97 gpu_id 6 is running on CPUs: [6, 14]\n[2025-01-28 22:32:01 TP2] Process 63 gpu_id 2 is running on CPUs: [2, 10]\n[2025-01-28 22:32:01 TP7] Process 113 gpu_id 7 is running on CPUs: [7, 15]\n[2025-01-28 22:32:02 TP5] Process 66 gpu_id 5 is running on CPUs: [5, 13]\n[2025-01-28 22:32:02 TP4] Process 65 gpu_id 4 is running on CPUs: [4, 12]\n[2025-01-28 22:32:02 TP3] Process 64 gpu_id 3 is running on CPUs: [3, 11]\n[2025-01-28 22:32:02 TP1] Process 62 gpu_id 1 is running on CPUs: [1, 9]\n[2025-01-28 22:32:03 TP0] Process 61 gpu_id 0 is running on CPUs: [0, 8]\n[2025-01-28 22:32:03 TP2] MLA optimization is turned on. Use triton backend.\n[2025-01-28 22:32:03 TP2] Init torch distributed begin.\n[2025-01-28 22:32:03 TP2] Scheduler hit an exception: Traceback (most recent call last):\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 1609, in run_scheduler_process\n    scheduler = Scheduler(server_args, port_args, gpu_id, tp_rank, dp_rank)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/scheduler.py\", line 203, in __init__\n    self.tp_worker = TpWorkerClass(\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker_overlap_thread.py\", line 63, in __init__\n    self.worker = TpModelWorker(server_args, gpu_id, tp_rank, dp_rank, nccl_port)\n  File \"/sgl-workspace/sglang/python/sglang/srt/managers/tp_worker.py\", line 68, in __init__\n    self.model_runner = ModelRunner(\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 159, in __init__\n    min_per_gpu_memory = self.init_torch_distributed()\n  File \"/sgl-workspace/sglang/python/sglang/srt/model_executor/model_runner.py\", line 197, in init_torch_distributed\n    torch.get_device_module(self.device).set_device(self.gpu_id)\n  File \"/opt/conda/envs/py_3.9/lib/python3.9/site-packages/torch/cuda/__init__.py\", line 478, in set_device\n    torch._C._cuda_setDevice(device)\nRuntimeError: HIP error: invalid device ordinal\nHIP kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing AMD_SERIALIZE_KERNEL=3\nCompile with `TORCH_USE_HIP_DSA` to enable device-side assertions.\n\n\nKilled\n```\n\n### Environment\n\n```\nPython: 3.9.19 (main, May  6 2024, 19:43:03) [GCC 11.2.0]\nROCM available: True\nGPU 0: AMD Radeon RX 6800 XT\nGPU 0 Compute Capability: 10.3\nROCM_HOME: /opt/rocm\nHIPCC: HIP version: 6.2.41133-dd7f95766\nROCM Driver Version: 6.12.10-zen1-1-zen\nPyTorch: 2.5.0a0+gitcedc116\nsglang: 0.4.1.post4\nflashinfer: Module Not Found\ntriton: 3.0.0\ntransformers: 4.46.1\ntorchao: 0.7.0\nnumpy: 1.26.4\naiohttp: 3.10.10\nfastapi: 0.115.4\nhf_transfer: 0.1.8\nhuggingface_hub: 0.26.2\ninteregular: 0.3.3\nmodelscope: 1.21.1\norjson: 3.10.13\npackaging: 24.1\npsutil: 6.1.0\npydantic: 2.9.2\nmultipart: 0.0.20\nzmq: 26.2.0\nuvicorn: 0.32.0\nuvloop: 0.21.0\nvllm: 0.6.3.post2.dev1+g1ef171e0\nopenai: 1.59.3\nanthropic: 0.42.0\ndecord: 0.6.0\nAMD Topology: \n\n\n============================ ROCm System Management Interface ============================\n=============================== Link Type between two GPUs ===============================\n       GPU0         \nGPU0   0            \n================================== End of ROCm SMI Log ===================================\n\nulimit soft: 1024\n```",
+    "labels": [
+      "documentation",
+      "help wanted",
+      "inactive",
+      "amd"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-28T22:33:58+00:00",
+    "closed_at": "2025-04-03T00:17:38+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3200/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3200"
+  },
+  {
+    "number": 2272,
+    "title": "[Kernel] cuDNN attention backend",
+    "body": "cuDNN provides very fast attention implementation and it is well maintained by NVIDIA. We would like to add a new attention backend based on cudnn.  \r\n\r\n## Steps\r\n1. Learn this cudnn paged attention python api. https://github.com/NVIDIA/cudnn-frontend/blob/v1.8.0/samples/python/52_scaled_dot_product_attention_with_paged_caches.ipynb\r\n2. Add a new attention backend \"cudnn\" here https://github.com/sgl-project/sglang/tree/main/python/sglang/srt/layers/attention\r\n3. We should be able to use it with `python3 -m sglang.launch_server --model meta-llama/Llama-3.1-8B-Instruct --attention-backend cudnn`",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "inactive"
+    ],
+    "state": "open",
+    "created_at": "2024-11-30T06:36:16+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2272/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2272"
+  },
+  {
+    "number": 5855,
+    "title": "[Feature] integrate FlashInfer Blackwell kernels",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "flashinfer",
+      "performance",
+      "blackwell"
+    ],
+    "state": "open",
+    "created_at": "2025-04-28T19:12:30+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5855/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5855"
+  },
+  {
+    "number": 5055,
+    "title": "[Feature] support DeepSeek R1 FP4",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled cc @Edwardf0t1 @kushanam @elfiegg \n\nOptimization is also important on Blackwell\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "inactive",
+      "performance",
+      "quant",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-04T01:11:06+00:00",
+    "closed_at": "2025-06-04T00:19:47+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5055/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5055"
+  },
+  {
+    "number": 2807,
+    "title": "[Feature] RFC for adding CPU support for SGLang",
+    "body": "### Motivation\n\nHi, SGLang folks! This is Mingfei from intel pytorch team, our team helps optimize PyTorch performance on CPU. I am also the PyTorch module maintainer for cpu performance. We would like to contribute to SGLang for CPU enabling and performance optimization.\n\n### Targets\nOur primary target is to optimize SGLang performance on Intel Xeon Scalable Processors (x86 server CPUs).\n* Optimization will be focusing on Xeon with [Intel\u00ae Advanced Matrix Extensions](https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/advanced-matrix-extensions/overview.html) support, including Sapphire Rapids(4th gen), Emerald Rapids(5th gen), Granite Rapids(6th gen).\n* Native implementations or fallbacks will be provided for CPUs with other ISA to make it functional.\n* Providing good performance per dollar.\n\n### Limitations\n\n* Kernels written in **avx512** and **amx-bf16**, requires **GCC11** or above.\n* **BFloat16/Float16** will be enabled at the same time on CPU, but we only focus on **BFloat16** performance optimization at the current stage, **Float16** optimization will be added later on.\n\n### Schedule for 25Q1\nWe will focusing on DeepSeek series at the moment to align with our internal development requirements and extend the model coverage later on.\n\n#### Generic enabling/optimizations for sglang\n\n- [x] CPU device enabling. We intend to enable CPU device with torch native backend first and then gradually replace all the performance critical components with C++ intrinsics kernels. https://github.com/sgl-project/sglang/pull/2806\n- [x] fused kernels for `rms_norm`, `silu_and_mul`, sampling and so on.\n- [x] radix attention kernels for extend and decoding.\n\n#### DeepSeek performance optimizations\n(we are currently mapping the work from [DeepSeek Multi-head Latent Attention (MLA) Throughput Optimizations](https://lmsys.org/blog/2024-09-04-sglang-v0-3/#deepseek-multi-head-latent-attention-mla-throughput-optimizations))\n- [x] MLA decoding kernel optimization with head blocking.\n- [x] DeepSeekMoE (FusedMoE)\n- [x] fp8 kv cache (experimental)\n\n#### Tensor Parallel\n- [x] Map TP to the multiple sockets (numa nodes) on a single node CPU\n- [ ] EPMoE\n\nWe hope to help more customers to build better user experience with deploying with sglang on CPU devices. Welcome any feedbacks, thanks!\n\n",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "intel",
+      "cpu"
+    ],
+    "state": "open",
+    "created_at": "2025-01-09T07:58:45+00:00",
+    "closed_at": null,
+    "comments": 13,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2807/reactions",
+      "total_count": 14,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2807"
+  },
+  {
+    "number": 7077,
+    "title": "[Feature] integrate MTP with some new features",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\n- [x] compatibility with dp attention #6081 \n- [x] compatibility with eplb\n- [x] compatibility with `enable-dp-lm-head`\n- [x] compatibility with pd disaggregation @Atream #7242 \n- [x] compatibility with two-batch-overlap @Qiaolin-Yu #7225 \n- [x] compatibility with deepep #7206 \n...\n\n### Related resources\n\nhttps://github.com/sgl-project/sglang/issues/6017\nhttps://lmsys.org/blog/2025-05-05-large-scale-ep/#large-scale-expert-parallelism",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "deepseek",
+      "speculative-decoding"
+    ],
+    "state": "open",
+    "created_at": "2025-06-11T03:33:03+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7077/reactions",
+      "total_count": 7,
+      "+1": 7,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7077"
+  },
+  {
+    "number": 2542,
+    "title": "[Feature] (Willing to PR) Avoid KV cache occupying GPU memory when not used",
+    "body": "### Checklist\r\n\r\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 2. Please use English, otherwise it will be closed.\r\n\r\n### Motivation\r\n\r\nHi thank you for the library! The use case is that, when doing online PPO, I hope to use SGLang to generate llm completions, and then use RL to do gradient descent on those completions.\r\n\r\nThe problem is, to do this on a single GPU, the timeline is \"SGLang generate - Torch backward - repeat it\". Thus, when torch doing backprop, I hope SGLang can free its KV cache memory consumption, otherwise torch will not have enough memory.\r\n\r\nThanks for any suggestions!\r\n\r\n### Related resources\r\n\r\n_No response_",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "inactive",
+      "feature"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-22T09:07:26+00:00",
+    "closed_at": "2025-03-16T14:34:36+00:00",
+    "comments": 43,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2542/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2542"
+  }
+]

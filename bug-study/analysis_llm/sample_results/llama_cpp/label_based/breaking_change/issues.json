@@ -1,0 +1,30 @@
+[
+  {
+    "number": 3957,
+    "title": "GGUF endianness cannot be determined from GGUF itself",
+    "body": "As of the time of writing, the big-endian support that was added in https://github.com/ggerganov/llama.cpp/pull/3552 doesn't encode the endianness within the file itself: \r\n\r\nhttps://github.com/ggerganov/llama.cpp/blob/3d48f42efcd05381221654376e9f6f69d76af739/gguf-py/gguf/gguf.py#L689-L698\r\n\r\nThis means that there is no way to distinguish a big-endian GGUF file from a little-endian file, which may cause some degree of consternation in the future if these files get shared around \ud83d\ude05 \r\n\r\nThe cleanest solution would be to add the endianness to the header - ideally, it would be in the metadata, but the reading of the metadata is dependent on the endianness - but that would be a breaking change.\r\n\r\nGiven that, my suggestion would be to use `FUGG` as the header for big-endian files so that a little-endian executor won't attempt to read it at all unless it knows how to deal with it. The same can go the other way, as well (a big-endian executor won't attempt to read a little-endian executor).",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "breaking change"
+    ],
+    "state": "open",
+    "created_at": "2023-11-05T14:00:47+00:00",
+    "closed_at": null,
+    "comments": 17,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3957/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3957"
+  }
+]

@@ -1,0 +1,283 @@
+[
+  {
+    "number": 2922,
+    "title": "w64devkit build segfaults at 0xFFFFFFFFFFFFFFFF",
+    "body": "Steps to reproduce:\r\n1. Install latest w64devkit\r\n2. Build with `make LLAMA_DEBUG=1`\r\n3. Simply run `./main`, regardless of whether you have a model in the default location (I don't)\r\n\r\n50% of the time, it will fail. I cannot reproduce it if I build with MSYS2's mingw-w64 toolchain instead.\r\n\r\nI bisected it to commit 0c44427df10ee024b4e7ef7bfec56e993daff1db, which adds -march=native to CXXFLAGS.\r\n\r\n~~If cv2pdb is to be trusted~~ (confirmed below), the crash happens here:\r\nhttps://github.com/ggerganov/llama.cpp/blob/8afe2280009ecbfc9de2c93b8f41283dc810609a/common/common.cpp#L723\r\n\r\nSomething is going wrong before that function call:\r\n```\r\n    llama_model * model  = llama_load_model_from_file(params.model.c_str(), lparams);\r\n00007FF7CBE59448  mov         rax,qword ptr [params]  \r\n00007FF7CBE5944F  add         rax,0C8h  \r\n00007FF7CBE59455  mov         rcx,rax  \r\n00007FF7CBE59458  call        _M_range_check+0F70h (07FF7CBEA0340h)  \r\n00007FF7CBE5945D  mov         rcx,rax  \r\n00007FF7CBE59460  vmovdqu     ymm0,ymmword ptr [lparams]  \r\n00007FF7CBE59465  vmovdqa     ymmword ptr [rbp-60h],ymm0  <-- segfault is here\r\n00007FF7CBE5946A  vmovdqu     ymm0,ymmword ptr [rbp+10h]  \r\n00007FF7CBE5946F  vmovdqa     ymmword ptr [rbp-40h],ymm0  \r\n00007FF7CBE59474  lea         rax,[rbp-60h]  \r\n00007FF7CBE59478  mov         rdx,rax  \r\n00007FF7CBE5947B  call        llama_load_model_from_file (07FF7CBE4B9D7h)\r\n```\r\nrbp is 0x0000007CA91FE0D0, so I'm not sure where 0xFFFFFFFFFFFFFFFF comes from. And it's a read violation, but that instruction is only reading from a register.",
+    "labels": [
+      "bug",
+      "windows"
+    ],
+    "state": "closed",
+    "created_at": "2023-08-31T04:42:28+00:00",
+    "closed_at": "2023-09-01T13:53:15+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/2922/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/2922"
+  },
+  {
+    "number": 1189,
+    "title": "fix (perf/UX): get physical cores for Windows",
+    "body": "Complete https://github.com/ggerganov/llama.cpp/pull/934 with the windows impl of physical cores\r\n\r\nThe impl is approximately: \r\n```c++\r\nDWORD buffer_size = 0;\r\nDWORD result = GetLogicalProcessorInformation(NULL, &buffer_size);\r\n// assert result == FALSE && GetLastError() == ERROR_INSUFFICIENT_BUFFER\r\nPSYSTEM_LOGICAL_PROCESSOR_INFORMATION buffer = (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION)malloc(buffer_size);\r\nresult = GetLogicalProcessorInformation(buffer, &buffer_size);\r\nif (result != FALSE) {\r\n    int num_physical_cores = 0;\r\n    DWORD_PTR byte_offset = 0;\r\n    while (byte_offset < buffer_size) {\r\n        if (buffer->Relationship == RelationProcessorCore) {\r\n            num_physical_cores++;\r\n        }\r\n        byte_offset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);\r\n        buffer++;\r\n    }\r\n    std::cout << \"Number of physical cores: \" << num_physical_cores << std::endl;\r\n} else {\r\n    std::cerr << \"Error getting logical processor information: \" << GetLastError() << std::endl;\r\n}\r\nfree(buffer);\r\n```\r\n\r\nThe location of the change is here: https://github.com/ggerganov/llama.cpp/blob/4a98a0f21ad63d97a643ba6fb21f613cb596cb23/examples/common.cpp#L57",
+    "labels": [
+      "enhancement",
+      "hardware",
+      "windows",
+      "threading",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-26T14:41:54+00:00",
+    "closed_at": "2024-04-09T01:09:51+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1189/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1189"
+  },
+  {
+    "number": 1092,
+    "title": "cuBLAS - windows - static not compiling",
+    "body": "When static linking is selected the CUDA::cublas_static target is not found.\r\nDynamic binary compilation works.",
+    "labels": [
+      "bug",
+      "build",
+      "windows",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-20T21:28:05+00:00",
+    "closed_at": "2024-04-09T01:10:04+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/1092/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/1092"
+  },
+  {
+    "number": 705,
+    "title": "Windows page fault disk i/o slow on first load",
+    "body": "Hello,\r\n\r\nAs of https://github.com/ggerganov/llama.cpp/pull/613 I have experienced significant regression in model loading speed (I'm on windows, compiled msvc llama.cpp, llama.cpp is located on HDD to prevent SSD wear in my case)\r\n\r\nIt takes roughly 15 minutes for model to load first time after each computer restart/hibernation, during this time my HDD usage is at 100% and my non-llama.cpp read/write operations are slowed down on my pc\r\n![hdd](https://user-images.githubusercontent.com/76458234/229345728-b597023b-f7e3-4a8b-b550-3159863ba03d.png)\r\n\r\nBefore that, previous commits took 60 - 180 seconds at worst to load model first time, and after first loading occured, model loaded within 5 - 10 seconds on each program restart until pc reboot/hibernation\r\n\r\nBefore Commit:\r\n![timings2](https://user-images.githubusercontent.com/76458234/229347345-2053d645-0f26-42ef-9f8e-5fc69ad04e1c.png)\r\n\r\nAfter:\r\n![timings1](https://user-images.githubusercontent.com/76458234/229345966-ee606c92-e7cb-42f6-8b6f-2d6924ebcfee.png)\r\n\r\nI see reason why model might load faster for some while slower (like my case) for others after recent changes, therefore in my opinion best solution is adding parameter that lets people disable llama.cpp's recent model loading changes if thats possible\r\n\r\n- Thanks",
+    "labels": [
+      "performance",
+      "windows",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-04-02T10:04:24+00:00",
+    "closed_at": "2024-04-11T01:07:14+00:00",
+    "comments": 37,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/705/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/705"
+  },
+  {
+    "number": 646,
+    "title": "Unable to enter Chinese prompt",
+    "body": "Hi!My use is compiled under Windows main.exe, when I type Chinese Prompt, I found that the model seems to be unable to understand, under debugging found that std::getline(std::cin,line) get is empty lines, then I tried Japanese, are the same result.\r\n(Since I am a native Chinese speaker, this question was translated by DeepL)\r\n![image](https://user-images.githubusercontent.com/18028414/229043234-a47c0569-07e1-4731-85d9-121f9774fdc9.png)\r\n",
+    "labels": [
+      "windows"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-31T06:43:06+00:00",
+    "closed_at": "2023-04-09T08:03:44+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/646/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/646"
+  },
+  {
+    "number": 601,
+    "title": "When running in PowerShell in windows, it works, but throws an error in interactive mode",
+    "body": "I built llama.cpp using cmake and then Visual Studio (after many trials and tribulations since I'm pretty new to this), but finally got it working.\r\n\r\nUsing the 7B model the outputs are reasonable, but when I put the -i tag, it runs, then I hit Ctrl+C, it allows me to enter text, but when I hit enter an error pops up in a windows shown below:\r\n\r\n![image](https://user-images.githubusercontent.com/65059714/228617990-0da94e0c-5df4-4311-9d41-0ed5c060df0f.png)\r\n\r\nI'm running this on my windows machine, but I have been using WSL to get some stuff to work.\r\n\r\nHere's an example of it failing:\r\n\r\n`(base) PS G:\\llama\\llama.cpp> .\\bin\\Debug\\main.exe -m ..\\LLaMA\\7B\\ggml-model-q4_0.bin -i -n 124 -t 24`\r\n\r\n`(base) PS G:\\llama\\llama.cpp> .\\bin\\Debug\\main.exe -m ..\\LLaMA\\7B\\ggml-model-q4_0.bin -i -n 124 -t 24\r\nmain: seed = 1680110536\r\nllama_model_load: loading model from '..\\LLaMA\\7B\\ggml-model-q4_0.bin' - please wait ...\r\nllama_model_load: n_vocab = 32000\r\nllama_model_load: n_ctx   = 512\r\nllama_model_load: n_embd  = 4096\r\nllama_model_load: n_mult  = 256\r\nllama_model_load: n_head  = 32\r\nllama_model_load: n_layer = 32\r\nllama_model_load: n_rot   = 128\r\nllama_model_load: f16     = 2\r\nllama_model_load: n_ff    = 11008\r\nllama_model_load: n_parts = 1\r\nllama_model_load: type    = 1\r\nllama_model_load: ggml ctx size = 4273.34 MB\r\nllama_model_load: mem required  = 6065.34 MB (+ 1026.00 MB per state)\r\nllama_model_load: loading model part 1/1 from '..\\LLaMA\\7B\\ggml-model-q4_0.bin'\r\nllama_model_load: .................................... done\r\nllama_model_load: model size =  4017.27 MB / num tensors = 291\r\nllama_init_from_file: kv self size  =  256.00 MB\r\n\r\nsystem_info: n_threads = 24 / 24 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 1 | NEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 1 | VSX = 0 |\r\nmain: interactive mode on.\r\nsampling: temp = 0.800000, top_k = 40, top_p = 0.950000, repeat_last_n = 64, repeat_penalty = 1.100000\r\ngenerate: n_ctx = 512, n_batch = 8, n_predict = 124, n_keep = 0\r\n\r\n\r\n== Running in interactive mode. ==\r\n - Press Ctrl+C to interject at any time.\r\n - Press Return to return control to LLaMa.\r\n - If you want to submit another line, end your input in '\\'.\r\n\r\n 2016 has been a big year for Uber. The ride-sharing app has\r\nSome inputted text\r\n(base) PS G:\\llama\\llama.cpp>`",
+    "labels": [
+      "bug",
+      "windows"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-29T17:23:13+00:00",
+    "closed_at": "2023-05-18T10:49:11+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/601/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/601"
+  },
+  {
+    "number": 534,
+    "title": "Build your windows binaries with Clang and not MSVC.",
+    "body": "Hello,\r\n\r\nYour [windows binaries releases](https://github.com/ggerganov/llama.cpp/releases) have probably been built with MSVC and I think there's a better way to do it.\r\n\r\n# Expected Behavior\r\n\r\nI have a Intel\u00ae Core\u2122 i7-10700K and the builds are supposed to recognize those architectures: [AVX | AVX2 | FMA | SSE3 | F16C]\r\n\r\n# Current Behavior\r\n\r\nWindows (MSVC build)\r\n```\r\nsystem_info: n_threads = 14 / 16 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 0 | \r\nNEON = 0 | ARM_FMA = 0 | F16C = 0 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 0 | VSX = 0 |\r\n```\r\nIt misses the FMA, SSE3 and the F16C architectures.\r\n\r\n# Fix with Clang\r\n\r\nIf you build with Clang you'll get all the architectures right:\r\n\r\nWindows (Clang build)\r\n```\r\nsystem_info: n_threads = 14 / 16 | AVX = 1 | AVX2 = 1 | AVX512 = 0 | FMA = 1 | \r\nNEON = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 1 | VSX = 0 |\r\n```\r\n\r\n# How to build with Clang\r\n\r\n1. Install Clang\r\nTo do this, you have to install something called [LLVM](https://github.com/llvm/llvm-project/releases/tag/llvmorg-16.0.0) \r\nI downloaded LLVM-16.0.0-win64.exe but it could be LLVM-16.0.0-win32.exe for people that has Windows 32 bit.\r\nDuring the install, Choose \"Add LLVM to the system PATH for all users\"\r\n\r\nAfter the installation you can verify if you have clang installed on your computer by running ```clang --version``` on your cmd\r\nNormally you'll get something like this\r\n```\r\nC:\\Users\\Utilisateur>clang --version\r\nclang version 16.0.0\r\nTarget: x86_64-pc-windows-msvc\r\nThread model: posix\r\nInstalledDir: C:\\Program Files\\LLVM\\bin\r\n```\r\n\r\n2. Install [chocolate](https://chocolatey.org/install#individual) (that's necessary to install Ninja (which is necessary to build with clang \ud83d\ude35 ))\r\nTo do that, open powershell as an administrator and run this command:\r\n```\r\nSet-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))\r\n```\r\n\r\n3. Install Ninja\r\nOpen powershell as an administrator and run this command:\r\n```\r\nchoco install ninja\r\n```\r\n\r\n4. Build with clang\r\nrun your cmd on the llama.cpp repository and run those commands\r\n```\r\ncmake -G \"Ninja\" -S . -B Windows-build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++\r\ncmake --build Windows-build/ --config Release\r\n```\r\n\r\nYou'll get your exe here:\r\n```\r\n.\\Windows-build\\bin\r\n```\r\n\r\n",
+    "labels": [
+      "enhancement",
+      "build",
+      "windows",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-26T17:12:25+00:00",
+    "closed_at": "2024-04-12T01:07:30+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/534/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 2,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/534"
+  },
+  {
+    "number": 103,
+    "title": "How to build on windows?",
+    "body": "Please give instructions. There is nothing in README but it says that it supports it ",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "windows"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-13T20:13:14+00:00",
+    "closed_at": "2023-07-28T19:20:41+00:00",
+    "comments": 22,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/103/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/103"
+  },
+  {
+    "number": 46,
+    "title": "llama.exe doesn't handle relative file paths in Windows correctly",
+    "body": "Please include the `ggml-model-q4_0.bin` model to actually run the code:\r\n\r\n```\r\n% make -j && ./main -m ./models/7B/ggml-model-q4_0.bin -p \"Building a website can be done in 10 simple steps:\" -t 8 -n 512\r\nI llama.cpp build info: \r\nI UNAME_S:  Darwin\r\nI UNAME_P:  arm\r\nI UNAME_M:  arm64\r\nI CFLAGS:   -I.              -O3 -DNDEBUG -std=c11   -fPIC -pthread -DGGML_USE_ACCELERATE\r\nI CXXFLAGS: -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -pthread\r\nI LDFLAGS:   -framework Accelerate\r\nI CC:       Apple clang version 14.0.0 (clang-1400.0.29.202)\r\nI CXX:      Apple clang version 14.0.0 (clang-1400.0.29.202)\r\n\r\ncc  -I.              -O3 -DNDEBUG -std=c11   -fPIC -pthread -DGGML_USE_ACCELERATE   -c ggml.c -o ggml.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -pthread -c utils.cpp -o utils.o\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -pthread main.cpp ggml.o utils.o -o main  -framework Accelerate\r\nc++ -I. -I./examples -O3 -DNDEBUG -std=c++11 -fPIC -pthread quantize.cpp ggml.o utils.o -o quantize  -framework Accelerate\r\n./main -h\r\nusage: ./main [options]\r\n\r\noptions:\r\n  -h, --help            show this help message and exit\r\n  -s SEED, --seed SEED  RNG seed (default: -1)\r\n  -t N, --threads N     number of threads to use during computation (default: 4)\r\n  -p PROMPT, --prompt PROMPT\r\n                        prompt to start generation with (default: random)\r\n  -n N, --n_predict N   number of tokens to predict (default: 128)\r\n  --top_k N             top-k sampling (default: 40)\r\n  --top_p N             top-p sampling (default: 0.9)\r\n  --repeat_last_n N     last n tokens to consider for penalize (default: 64)\r\n  --repeat_penalty N    penalize repeat sequence of tokens (default: 1.3)\r\n  --temp N              temperature (default: 0.8)\r\n  -b N, --batch_size N  batch size for prompt processing (default: 8)\r\n  -m FNAME, --model FNAME\r\n                        model path (default: models/llama-7B/ggml-model.bin)\r\n\r\nmain: seed = 1678619388\r\nllama_model_load: loading model from './models/7B/ggml-model-q4_0.bin' - please wait ...\r\nllama_model_load: failed to open './models/7B/ggml-model-q4_0.bin'\r\nmain: failed to load model from './models/7B/ggml-model-q4_0.bin'\r\n```\r\n\r\nMy pre-signed URL to download the model weights was broken.",
+    "labels": [
+      "bug",
+      "model",
+      "windows"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-12T11:13:54+00:00",
+    "closed_at": "2023-04-16T09:20:58+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/46/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/46"
+  },
+  {
+    "number": 22,
+    "title": "Windows 64-bit, Microsoft Visual Studio - it works like a charm after those fixes!",
+    "body": "First of all thremendous work Georgi! I managed to run your project with a small adjustments on:\r\n- Intel(R) Core(TM) i7-10700T CPU @ 2.00GHz / 16GB as x64 bit app, it takes around 5GB of RAM.\r\n\r\n<img width=\"622\" alt=\"image\" src=\"https://user-images.githubusercontent.com/95347171/224509962-6ed8d954-66bc-4531-8dd0-423cc2ee5e2c.png\">\r\n\r\n<img width=\"568\" alt=\"image\" src=\"https://user-images.githubusercontent.com/95347171/224510066-a8adccfa-d9db-4546-8efb-e69efc549b97.png\">\r\n\r\nHere is the list of those small fixes:\r\n\r\n- main.cpp: added ggml_time_init() at start of main (division by zero otherwise)\r\n- quantize.cpp: same as above at start of main (division by zero otherwise)\r\n- ggml.c: #define QK 32 moved to dedicated define.h (should not be in .c)\r\n- ggml.c: replace fopen with fopen_s (VS secure error message)\r\n- ggml.c: below changes due to 'expression must be a pointer or complete object type':\r\n1. 2x `(uint8_t*)(y` to: `((uint8_t*)y` \r\n2. 4x `(const uint8_t*)(x` to `((const uint8_t*)x`\r\n3. 2x `(const uint8_t*)(y` to `((const uint8_t*)y`\r\n- quantize.cpp: removed qk in ggml_quantize_q4_0 & ggml_quantize_q4_1 calls\r\n- utils.cpp: use of QK value instead of parameter value (VS raise error for: `uint8_t pp[qk / 2];`)\r\n\r\nIt would be really great if you could incorporate those small fixes.",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "good first issue",
+      "windows"
+    ],
+    "state": "closed",
+    "created_at": "2023-03-11T20:44:33+00:00",
+    "closed_at": "2023-04-16T10:25:54+00:00",
+    "comments": 40,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/22/reactions",
+      "total_count": 41,
+      "+1": 29,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 6,
+      "rocket": 0,
+      "eyes": 6
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/22"
+  }
+]

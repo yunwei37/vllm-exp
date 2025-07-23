@@ -1,0 +1,571 @@
+[
+  {
+    "number": 5855,
+    "title": "[Feature] integrate FlashInfer Blackwell kernels",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "flashinfer",
+      "performance",
+      "blackwell"
+    ],
+    "state": "open",
+    "created_at": "2025-04-28T19:12:30+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5855/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5855"
+  },
+  {
+    "number": 5514,
+    "title": "[Tracker] SGLang v0.4.5.post1 performance on H200",
+    "body": "**Update**:\n**see the latest benchmark results in another post https://github.com/sgl-project/sglang/pull/5611#issuecomment-2819965621** \n\n\n```bash\n# launch server\n# First, warm up for DeepGEMM\n# SGLang uses FA3 backend by default since v0.4.5.post1\n# Use dp 8 for offline use case\nSGL_ENABLE_JIT_DEEPGEMM=1 python3 -m sglang.launch_server --model deepseek-ai/DeepSeek-V3 --tp 8 --trust-remote-code --enable-dp-attention --dp-size 8\n\n# Random 1k, 2k\npython3 -m sglang.bench_serving --backend sglang-oai --num-prompts 50 --request-rate 10 --dataset-name random --random-input-len 1000 --random-output-len 2000 --random-range-ratio 1\n\n# Random 5k, 1k\npython3 -m sglang.bench_serving --backend sglang-oai --num-prompts 50 --request-rate 10 --dataset-name random --random-input-len 5000 --random-output-len 1000 --random-range-ratio 1\n\n# Random 10k, 500\npython3 -m sglang.bench_serving --backend sglang-oai --num-prompts 50 --request-rate 10 --dataset-name random --random-input-len 10000 --random-output-len 500 --random-range-ratio 1\n\n# Random 30k, 100\npython3 -m sglang.bench_serving --backend sglang-oai --num-prompts 50 --request-rate 10 --dataset-name random --random-input-len 30000 --random-output-len 100 --random-range-ratio 1\n```\n\n![Image](https://github.com/user-attachments/assets/175f2238-0299-48f3-ae65-7878f8faf459)\n\n![Image](https://github.com/user-attachments/assets/f14d4bf4-c607-4b18-9fb6-4f30d1d7a5b4)\n\n![Image](https://github.com/user-attachments/assets/336c80f4-6f26-411a-8e54-e0d1a889dbe1)\n\n![Image](https://github.com/user-attachments/assets/18293871-be6c-4631-9e26-0a631ef6ddf5)",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "performance",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-18T02:46:46+00:00",
+    "closed_at": "2025-04-29T19:47:52+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5514/reactions",
+      "total_count": 20,
+      "+1": 10,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 4,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 6,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5514"
+  },
+  {
+    "number": 5064,
+    "title": "[Feature] attention backend default choice",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe standards we choose prioritize **performance first**, ease of use second (such as interface and installation), while also considering compatibility (such as older arch). Therefore, if in the future, the performance of different backends changes, we will still choose **the best performing one**.\n\n1. NVIDIA\n\n```\nsm75 -> Triton\nsm80, sm86, sm89 -> FlashInfer\nsm90 -> FA3 (Llama, Qwen, Gemma), FlashInfer (Others)\nsm100 -> FlashInfer\n\nMLA\nsm90 -> FA3 (DeepSeek)\nsm100 -> FlashInfer (DeepSeek)\n\nOther options\nFlashMLA, cuDNN etc\n```\n\nSGLang will install the JIT version of FlashInfer on PyPI for a better user installation experience. Alternatively, the whl size limit of FlashInfer can be increased on PyPI. cc @yzh119 \n\nFor FlashInfer, SGLang whl will use JIT version by default, in the Docker image using AOT.\n\nCurrently, FA3 is integrated in the [sgl-kernel](https://github.com/sgl-project/sglang/tree/main/sgl-kernel), which is more convenient for users to install and use than installing from [source code](https://github.com/Dao-AILab/flash-attention/tree/main/hopper).\n\n2. AMD\n\n```\nTriton\n```\n\n@HaiShaw is currently working on improving the performance of the attention backend.\n\n\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "flashinfer",
+      "performance",
+      "MLLM",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-04T08:13:51+00:00",
+    "closed_at": "2025-05-21T09:29:52+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5064/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5064"
+  },
+  {
+    "number": 5055,
+    "title": "[Feature] support DeepSeek R1 FP4",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled cc @Edwardf0t1 @kushanam @elfiegg \n\nOptimization is also important on Blackwell\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "inactive",
+      "performance",
+      "quant",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-04T01:11:06+00:00",
+    "closed_at": "2025-06-04T00:19:47+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5055/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5055"
+  },
+  {
+    "number": 4805,
+    "title": "[Feature] VLM performance optimization",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled @mickqian @yizhang2077 \n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "inactive",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-27T05:17:30+00:00",
+    "closed_at": "2025-05-27T00:18:51+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4805/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4805"
+  },
+  {
+    "number": 4773,
+    "title": "[Feature] speedup DeepGEMM JIT compilation",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\nhttps://github.com/sgl-project/sglang/pull/4199\nhttps://github.com/sgl-project/sglang/pull/4640\n\nBefore fixing #4640, I didn't realize how slow the DeepGEMM JIT compilation was.\n\n```bash\npython3 benchmark/gsm8k/bench_sglang.py --num-shots 8 --num-questions 1319 --parallel 1319\n```\n\nEvery time the test is run, the server is newly started. We can see that the first time, due to DeepGEMM JIT compilation, gsm8k only runs at 606 token/s.\n\n```\n\u279c  sglang git:(main) python3 benchmark/gsm8k/bench_sglang.py --num-shots 8 --num-questions 1319 --parallel 1319\n100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 1319/1319 [03:37<00:00,  6.06it/s]\nAccuracy: 0.954\nInvalid: 0.000\nLatency: 223.933 s\nOutput throughput: 606.448 token/s\n\u279c  sglang git:(main) python3 benchmark/gsm8k/bench_sglang.py --num-shots 8 --num-questions 1319 --parallel 1319\n100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 1319/1319 [01:48<00:00, 12.12it/s]\nAccuracy: 0.953\nInvalid: 0.000\nLatency: 115.521 s\nOutput throughput: 1185.769 token/s\n\u279c  sglang git:(main) python3 benchmark/gsm8k/bench_sglang.py --num-shots 8 --num-questions 1319 --parallel 1319\n100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 1319/1319 [01:30<00:00, 14.52it/s]\nAccuracy: 0.952\nInvalid: 0.000\nLatency: 97.426 s\nOutput throughput: 1376.579 token/s\n\u279c  sglang git:(main) ls ~/.deep_gemm\ncache  tmp\n\u279c  sglang git:(main) tree ~/.deep_gemm\n/root/.deep_gemm\n\u251c\u2500\u2500 cache\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.040cf7e4831d\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.04718d28ff5f\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.09dab86f7dda\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.0c1f97b737cf\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.0d5888fb96de\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.1596c392f6e0\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.1a7218d80f05\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.1bf40de69c09\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.1c14d2593c15\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.1f4657712e21\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.1fb8f5ae30cf\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.203fdb37b6e3\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.2458032bc668\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.25676d8b8d5a\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.26387ed766c8\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.26a5f0667c9c\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.29971dacab04\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.2b3072ef4a94\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.315db56b09c2\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.32a6a5f3a934\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.470be1911418\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.476da8ec3c6f\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.49681fc9102b\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.4cdfc399a665\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.4fb9906addb0\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.507e5d99ad75\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.533c69b7d713\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.541c8662ebaa\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.561ceab75d70\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.5a20c345a241\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.601491f91a2d\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.64971fdc3b2c\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.689ff3ab8a57\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.6b663c6836db\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.6be0486065e2\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.6db7d9251d84\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.6f6d318c261c\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.79644dc612c8\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.7f3ad7627585\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.854beebe1db7\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.892045432630\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.8d941e282ee9\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.8f604acffd5b\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.90d8434e193e\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.94d06a6814d3\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.96c5807d4f6b\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.99b8eaa07a99\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.9f1071d19b43\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.9fb2d2d0b3dc\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.a07555ece983\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.a13831f1256c\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.a71a4f4ee298\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.a7ca24018db1\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.a865e5919dc9\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.aa886f7ba65e\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.aaff4ab414d6\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.ae0a6252f04d\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.b52cb731bdf7\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.b57a30a709a3\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.b64906ec08b5\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.b84858e956c6\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.be092239bfbf\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.c3a72718a52e\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.c5675e112307\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.d040d866c3e6\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.d08b8228d969\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.d271b812e2d2\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.d3f2e2681839\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.dbcbe256e1e7\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.e57a4e25428e\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.ee8894779a34\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.f0d6a45f1295\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.f21eb807c363\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.f67b0ea5398a\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.f8854372c661\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.fa10416bed04\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.fa645936ce7f\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.fbbefd0b3ed4\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0 \u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.so\n\u2502\u00a0\u00a0 \u2514\u2500\u2500 kernel.gemm_fp8_fp8_bf16_nt.fdb4b0f06c98\n\u2502\u00a0\u00a0     \u251c\u2500\u2500 kernel.args\n\u2502\u00a0\u00a0     \u251c\u2500\u2500 kernel.cu\n\u2502\u00a0\u00a0     \u2514\u2500\u2500 kernel.so\n\u2514\u2500\u2500 tmp\n\n81 directories, 237 files\n```\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-25T23:34:59+00:00",
+    "closed_at": "2025-05-21T09:30:26+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4773/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4773"
+  },
+  {
+    "number": 4748,
+    "title": "[Feature] beat torch compile",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\nLast year and in the first few months of this year, a significant part of my work focused on removing vLLM dependency. Many reliable teammates joined in this process, and we successfully removed the vLLM dependency on the NVIDIA platform for SGLang. Next, I will co-lead progress on beat torch compile. Past experience shows that torch compile is effective - we just need to write some simple torch ops and let torch compile handle the rest. However, in actual production serving, it is not as smooth as expected - for example, slow startup even with cache enabled, compatibility issues when upgrading torch versions leading to previous features breaking in new versions. We need to profile, benchmark, rewrite the bottleneck ops with CUDA/CUTLASS and ensure that **performance without using torch compile can surpass performance with enable torch compile**. Currently [sgl-kernel](https://github.com/sgl-project/sglang/tree/main/sgl-kernel) has secured a size of **500 MB**, I believe everything is ready and now we just need everyone to collaborate together. Cheers!\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "collaboration",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-25T06:18:28+00:00",
+    "closed_at": "2025-05-26T16:55:12+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4748/reactions",
+      "total_count": 15,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 15,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4748"
+  },
+  {
+    "number": 4462,
+    "title": "[Bug] fix dsv3 awq issue",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nas titled\n\n### Reproduction\n\nN/A\n\n### Environment\n\nN/A",
+    "labels": [
+      "bug",
+      "high priority",
+      "performance",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-16T05:27:20+00:00",
+    "closed_at": "2025-04-07T02:17:41+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4462/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4462"
+  },
+  {
+    "number": 4436,
+    "title": "[Feature] enable SGLang custom all reduce by default",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nWe need community users to help test these cases. After confirming that there are no issues, we will default to using the custom all reduce implemented in SGLang. You can reply with your test results below this issue. Thanks!\n\n**GPU Hardware Options**:\n- H100/H200/H20/H800/A100\n\n**Model Configurations with Tensor Parallelism (TP) Settings**:\n- Llama 8B with TP 1/2/4/8\n- Llama 70B with TP 4/8\n- Qwen 7B with TP 1/2/4/8\n- Qwen 32B with TP 4/8\n- DeepSeek V3 with TP 8/16\n\n**Environment Variables**:\n```\nexport USE_VLLM_CUSTOM_ALLREDUCE=0\nexport USE_VLLM_CUSTOM_ALLREDUCE=1\n```\n\n**Benchmarking Commands**:\n```bash\npython3 -m sglang.bench_one_batch --model-path model --batch-size --input 128 --output 8\npython3 -m sglang.bench_serving --backend sglang\n```\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-14T19:46:52+00:00",
+    "closed_at": "2025-03-29T02:50:50+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4436/reactions",
+      "total_count": 3,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 3,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4436"
+  },
+  {
+    "number": 3758,
+    "title": "[Feature] Optimizing DeepSeek with the DeepSeek Infra OSS component",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nref https://github.com/deepseek-ai/open-infra-index\n\n- [ ] https://github.com/deepseek-ai/DeepEP\n- [ ] https://github.com/deepseek-ai/DeepGEMM\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "performance",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-21T11:52:28+00:00",
+    "closed_at": "2025-03-10T18:28:27+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3758/reactions",
+      "total_count": 6,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 6,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3758"
+  },
+  {
+    "number": 3471,
+    "title": "[Track] long context performance sglang vs vllm",
+    "body": "Currently, the two most popular practical scenarios for LLM are chatbot-like scenario or code completion scenario. SGLang has shown good performance on the ShareGPT dataset in the past. With the increasing popularity of open source models like Qwen2.5-Coder-7B-Instruct with a context of 128k, some potential users, such as hot startups, are interested in customizing SGLang for their own use cases, especially when dealing with long contexts in code scenario. The following is a simple performance benchmark aimed at providing insights into the current capabilities of open source LLM engine rather than comparing them directly. This will help guide future optimization efforts effectively. The following content will be regularly updated.\n\nPerformance: SGLang (chunked prefill 32k) > vLLM default > SGLang default (chunked prefill 8k) > vLLM enable chunked prefill (2k)\nHardware: H200\nVersion: SGLang v0.4.2.post4, vLLM 0.7.2\n\n```bash\npython3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen2.5-Coder-7B-Instruct --disable-log-requests\npython3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen2.5-Coder-7B-Instruct --disable-log-requests --enable-chunked-prefill\npython3 -m sglang.bench_serving --dataset-name random --random-input-len 30000 --random-output-len 500 --random-range-ratio 1 --request-rate 1 --num-prompts 64 --backend vllm\n```\n\n```\nvLLM default\n\n============ Serving Benchmark Result ============\nBackend:                                 vllm\nTraffic request rate:                    1.0\nMax reqeuest concurrency:                not set\nSuccessful requests:                     62\nBenchmark duration (s):                  79.55\nTotal input tokens:                      1860000\nTotal generated tokens:                  31000\nTotal generated tokens (retokenized):    29938\nRequest throughput (req/s):              0.78\nInput token throughput (tok/s):          23381.02\nOutput token throughput (tok/s):         389.68\nTotal token throughput (tok/s):          23770.70\nConcurrency:                             39.82\n----------------End-to-End Latency----------------\nMean E2E Latency (ms):                   51091.85\nMedian E2E Latency (ms):                 51920.22\n---------------Time to First Token----------------\nMean TTFT (ms):                          4081.17\nMedian TTFT (ms):                        4106.11\nP99 TTFT (ms):                           7798.08\n-----Time per Output Token (excl. 1st token)------\nMean TPOT (ms):                          94.21\nMedian TPOT (ms):                        95.48\nP99 TPOT (ms):                           150.92\n---------------Inter-token Latency----------------\nMean ITL (ms):                           96.27\nMedian ITL (ms):                         39.60\nP99 ITL (ms):                            120.09\n==================================================\n```\n\n```\nvLLM enable chunked prefill (2k)\n\n============ Serving Benchmark Result ============\nBackend:                                 vllm\nTraffic request rate:                    1.0\nMax reqeuest concurrency:                not set\nSuccessful requests:                     62\nBenchmark duration (s):                  91.71\nTotal input tokens:                      1860000\nTotal generated tokens:                  31000\nTotal generated tokens (retokenized):    30164\nRequest throughput (req/s):              0.68\nInput token throughput (tok/s):          20282.32\nOutput token throughput (tok/s):         338.04\nTotal token throughput (tok/s):          20620.36\nConcurrency:                             33.20\n----------------End-to-End Latency----------------\nMean E2E Latency (ms):                   49099.86\nMedian E2E Latency (ms):                 50278.12\n---------------Time to First Token----------------\nMean TTFT (ms):                          13002.48\nMedian TTFT (ms):                        12155.46\nP99 TTFT (ms):                           27604.53\n-----Time per Output Token (excl. 1st token)------\nMean TPOT (ms):                          72.34\nMedian TPOT (ms):                        85.10\nP99 TPOT (ms):                           94.39\n---------------Inter-token Latency----------------\nMean ITL (ms):                           73.66\nMedian ITL (ms):                         84.39\nP99 ITL (ms):                            116.96\n==================================================\n```\n\n```bash\npython3 -m sglang.launch_server --model Qwen/Qwen2.5-Coder-7B-Instruct\npython3 -m sglang.launch_server --model Qwen/Qwen2.5-Coder-7B-Instruct --chunked-prefill-size 32000\npython3 -m sglang.bench_serving --dataset-name random --random-input-len 30000 --random-output-len 500 --random-range-ratio 1 --request-rate 1 --num-prompts 64\n```\n\n```\nSGLang default (chunked prefill 8k) \n\n============ Serving Benchmark Result ============\nBackend:                                 sglang\nTraffic request rate:                    1.0\nMax reqeuest concurrency:                not set\nSuccessful requests:                     62\nBenchmark duration (s):                  83.94\nTotal input tokens:                      1860000\nTotal generated tokens:                  31000\nTotal generated tokens (retokenized):    30164\nRequest throughput (req/s):              0.74\nInput token throughput (tok/s):          22157.42\nOutput token throughput (tok/s):         369.29\nTotal token throughput (tok/s):          22526.71\nConcurrency:                             42.20\n----------------End-to-End Latency----------------\nMean E2E Latency (ms):                   57135.08\nMedian E2E Latency (ms):                 58910.28\n---------------Time to First Token----------------\nMean TTFT (ms):                          8395.95\nMedian TTFT (ms):                        9529.31\nP99 TTFT (ms):                           17141.89\n-----Time per Output Token (excl. 1st token)------\nMean TPOT (ms):                          97.67\nMedian TPOT (ms):                        97.71\nP99 TPOT (ms):                           164.48\n---------------Inter-token Latency----------------\nMean ITL (ms):                           97.67\nMedian ITL (ms):                         29.03\nP99 ITL (ms):                            31.88\n==================================================\n```\n\n```\nSGLang (chunked prefill 32k)\n\n============ Serving Benchmark Result ============\nBackend:                                 sglang\nTraffic request rate:                    1.0\nMax reqeuest concurrency:                not set\nSuccessful requests:                     62\nBenchmark duration (s):                  74.37\nTotal input tokens:                      1860000\nTotal generated tokens:                  31000\nTotal generated tokens (retokenized):    30206\nRequest throughput (req/s):              0.83\nInput token throughput (tok/s):          25011.43\nOutput token throughput (tok/s):         416.86\nTotal token throughput (tok/s):          25428.28\nConcurrency:                             38.30\n----------------End-to-End Latency----------------\nMean E2E Latency (ms):                   45938.30\nMedian E2E Latency (ms):                 46798.18\n---------------Time to First Token----------------\nMean TTFT (ms):                          4318.49\nMedian TTFT (ms):                        3220.63\nP99 TTFT (ms):                           9065.59\n-----Time per Output Token (excl. 1st token)------\nMean TPOT (ms):                          83.41\nMedian TPOT (ms):                        84.33\nP99 TPOT (ms):                           140.39\n---------------Inter-token Latency----------------\nMean ITL (ms):                           83.74\nMedian ITL (ms):                         28.91\nP99 ITL (ms):                            953.49\n==================================================\n```",
+    "labels": [
+      "high priority",
+      "flashinfer",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-10T14:11:02+00:00",
+    "closed_at": "2025-05-26T16:54:51+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3471/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3471"
+  },
+  {
+    "number": 3323,
+    "title": "[Feature] optimize group gemm",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nRewrite the  Grouped GEMM used by LoRA with cuBLAS 12.5 in sgl-kernel for improved speed.\n\nhttps://developer.nvidia.com/blog/introducing-grouped-gemm-apis-in-cublas-and-more-performance-updates/\nhttps://github.com/zhihu/ZhiLight/blob/main/src/nn/linear/gemm_grouped.cpp\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "performance",
+      "lora"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-05T22:56:43+00:00",
+    "closed_at": "2025-02-20T08:26:59+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3323/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 1,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3323"
+  },
+  {
+    "number": 2739,
+    "title": "[Feature] adapt fused sigmoid gate for MoE model",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nref https://github.com/NVIDIA/TensorRT-LLM/blob/be1788106245496872d18e702978e59b6bfd50e0/cpp/tensorrt_llm/kernels/mixtureOfExperts/moe_kernels.cu#L232\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-05T16:55:21+00:00",
+    "closed_at": "2025-05-25T23:52:20+00:00",
+    "comments": 20,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2739/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2739"
+  },
+  {
+    "number": 2732,
+    "title": "[Feature] optimize moe_align_block_size_kernel",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe original version performs poorly and needs optimization. I suggest rewriting a new implementation.\r\n\r\nhttps://github.com/sgl-project/sglang/blob/main/sgl-kernel/src/sgl-kernel/csrc/moe_align_kernel.cu\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "high priority",
+      "wip",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-05T05:56:21+00:00",
+    "closed_at": "2025-03-25T04:11:57+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2732/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2732"
+  },
+  {
+    "number": 2591,
+    "title": "[Feature] DeepSeek V3 optimization",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Adoption\n\n[SGLang adoption for DeepSeek V3 and R1](https://github.com/sgl-project/sglang/discussions/3322)\n\n### Usage\n\nUser Guide for Existing System (Installation & Launch)\n\nhttps://github.com/sgl-project/sglang/tree/main/benchmark/deepseek_v3\n\nPlease use the latest version [v0.4.2.post4](https://pypi.org/project/sglang/0.4.2.post4/). Please prefer to use docker image. `docker pull lmsysorg/sglang:latest`\n\nFor running on AMD MI300X, use this as a reference. [Running DeepSeek-R1 on a single NDv5 MI300X VM](https://techcommunity.microsoft.com/blog/azurehighperformancecomputingblog/running-deepseek-r1-on-a-single-ndv5-mi300x-vm/4372726)\n\n### Features\n\n- [x] Support CUDA Graph @HandH1998 @ispobock \n- [x] Support Torch compile @ispobock \n- [x] Use BF16 for bmm @zhyncs \n- [x] Improve the accuracy for FP8 @HandH1998 @zhyncs @ispobock \n- [x] Tuning FP8 GEMM @HandH1998 @zhyncs \n- [x] Replace `moe_align_block_size` @HandH1998 @zhyncs @BBuf \n- [x] FusedMoE tuning for H200 `E=256,N=256,device_name=NVIDIA_H200,dtype=fp8_w8a8.json` @BBuf \n- [x] TP+DP Attention @Ying1123 \n- [x] Support overlap scheduler with DP attention @merrymercy\n- [x] Fuse Sigmoid Gate  [moe_kernels.cu](https://github.com/NVIDIA/TensorRT-LLM/blob/main/cpp/tensorrt_llm/kernels/mixtureOfExperts/moe_kernels.cu) @NovTi @BBuf (torch compile is sufficient for this use case, so the priority and ROI to support it are not high. Closing for now.)\n- [x] Support `nextn` speculative decoding @ispobock  https://github.com/sgl-project/sglang/issues/3472\n- [x] FP8 GEMM CUTLASS implementation @yizhang2077 \n- [x] Better [fused_experts](https://github.com/sgl-project/sglang/blob/34e405e01f7ff15ad56399999b9c00859a0b5134/python/sglang/srt/layers/moe/fused_moe_triton/fused_moe.py#L1123) @bbuf @zhyncs \n- [x] FlashInfer Prefill and MLA Decoding @zhyncs @ispobock \n- [x] Integrate DeepGemm #4199 #4343\n- [x] Integrate FlashMLA #4472 #4514 \n- [ ] FP8 GEMM Composable Kernel implementation @HaiShaw \n- [ ] Support Pipeline Parallelism @Ying1123  \n\nMore things (e.g., PD disaggregation, cache) are tracked at https://github.com/sgl-project/sglang/issues/4042",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "performance",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-26T08:52:39+00:00",
+    "closed_at": "2025-03-25T04:10:46+00:00",
+    "comments": 52,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2591/reactions",
+      "total_count": 98,
+      "+1": 64,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 14,
+      "rocket": 7,
+      "eyes": 13
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2591"
+  },
+  {
+    "number": 2472,
+    "title": "[Feature] Integrate CUTLASS FP8 GEMM into sgl-kernel",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nref \r\nhttps://github.com/NVIDIA/cutlass/pull/1932/files\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "inactive",
+      "performance",
+      "quant"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-12T20:08:31+00:00",
+    "closed_at": "2025-02-12T00:16:40+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2472/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2472"
+  },
+  {
+    "number": 2372,
+    "title": "[Feature] lora serving performance ",
+    "body": "lora reasoning speed is very slow, I ran a gemma's lora, found that qkv proj takes 0.0003s, but without lora only 0.0001s, so the result is a token decode time difference of 20ms+\r\n\r\nhowever, vllm lora serving is faster",
+    "labels": [
+      "inactive",
+      "performance",
+      "lora"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-06T08:22:03+00:00",
+    "closed_at": "2025-04-30T00:18:53+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2372/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2372"
+  },
+  {
+    "number": 1505,
+    "title": "AWQ performance tracking",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\n# Current Situation\r\n\r\n## SGLang\r\n\r\n```bash\r\n# v0.3.1.post3\r\npip install --upgrade pip\r\npip install \"sglang[all]\"\r\n\r\npip install flashinfer -i https://flashinfer.ai/whl/cu121/torch2.4/\r\n```\r\n\r\n```\r\npython3 -m sglang.launch_server --model hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4 --disable-radix\r\n\r\npython3 bench_serving.py --backend sglang --num-prompts 5000\r\n```\r\n\r\n```\r\n============ Serving Benchmark Result ============\r\nBackend:                                 sglang\r\nTraffic request rate:                    inf\r\nSuccessful requests:                     5000\r\nBenchmark duration (s):                  161.16\r\nTotal input tokens:                      1130466\r\nTotal generated tokens:                  971613\r\nTotal generated tokens (retokenized):    970868\r\nRequest throughput (req/s):              31.02\r\nInput token throughput (tok/s):          7014.49\r\nOutput token throughput (tok/s):         6028.81\r\n----------------End-to-End Latency----------------\r\nMean E2E Latency (ms):                   87157.00\r\nMedian E2E Latency (ms):                 87767.15\r\n---------------Time to First Token----------------\r\nMean TTFT (ms):                          52751.14\r\nMedian TTFT (ms):                        42772.56\r\nP99 TTFT (ms):                           122414.71\r\n-----Time per Output Token (excl. 1st token)------\r\nMean TPOT (ms):                          289.26\r\nMedian TPOT (ms):                        202.07\r\nP99 TPOT (ms):                           1915.65\r\n---------------Inter-token Latency----------------\r\nMean ITL (ms):                           183.11\r\nMedian ITL (ms):                         119.46\r\nP99 ITL (ms):                            686.84\r\n==================================================\r\n```\r\n\r\n## LMDeploy\r\n\r\n```bash\r\npip3 install https://github.com/zhyncs/lmdeploy-build/releases/download/bf89a01/lmdeploy-0.6.0+cu121+bf89a01-cp310-cp310-manylinux2014_x86_64.whl\r\n```\r\n\r\n```\r\npython3 -m lmdeploy serve api_server hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4\r\n\r\npython3 bench_serving.py --backend lmdeploy --num-prompts 5000\r\n```\r\n\r\n```\r\n============ Serving Benchmark Result ============\r\nBackend:                                 lmdeploy\r\nTraffic request rate:                    inf\r\nSuccessful requests:                     5000\r\nBenchmark duration (s):                  133.48\r\nTotal input tokens:                      1130466\r\nTotal generated tokens:                  971613\r\nTotal generated tokens (retokenized):    976379\r\nRequest throughput (req/s):              37.46\r\nInput token throughput (tok/s):          8469.20\r\nOutput token throughput (tok/s):         7279.11\r\n----------------End-to-End Latency----------------\r\nMean E2E Latency (ms):                   68692.60\r\nMedian E2E Latency (ms):                 69067.49\r\n---------------Time to First Token----------------\r\nMean TTFT (ms):                          57053.45\r\nMedian TTFT (ms):                        56180.29\r\nP99 TTFT (ms):                           117505.87\r\n-----Time per Output Token (excl. 1st token)------\r\nMean TPOT (ms):                          67.08\r\nMedian TPOT (ms):                        64.48\r\nP99 TPOT (ms):                           161.57\r\n---------------Inter-token Latency----------------\r\nMean ITL (ms):                           222.47\r\nMedian ITL (ms):                         196.81\r\nP99 ITL (ms):                            902.97\r\n==================================================\r\n```\r\n\r\n# TODO\r\n\r\nIntegrate TurboMind GEMM into SGLang to enhance AWQ performance.\r\n\r\nhttps://github.com/internlm/turbomind\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "inactive",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-24T14:33:27+00:00",
+    "closed_at": "2024-11-24T01:20:38+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1505/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1505"
+  },
+  {
+    "number": 1446,
+    "title": "[Bug] Performance issue on MoE with torch.compile",
+    "body": "### Checklist\r\n\r\n- [X] 1. I have searched related issues but cannot get the expected help.\r\n- [X] 2. The bug has not been fixed in the latest version.\r\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\r\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 5. Please use English, otherwise it will be closed.\r\n\r\n### Describe the bug\r\n\r\nWe have implemented the MoE with native PyTorch and used torch.compile to accelerate it (https://github.com/sgl-project/sglang/commit/5574cc8b93d0b0f5b5ba697bc146fa672d3e4945). However, the performance is poor even with batch size = 1.\r\ncc: @merrymercy \r\n\r\n### Reproduction\r\n\r\n```bash\r\n# clone code and install dependencies\r\ngit clone -b fix_moe https://github.com/ispobock/sglang.git\r\ncd sglang\r\npip install --upgrade pip\r\npip install \"sglang[all]\"\r\npip install flashinfer -i https://flashinfer.ai/whl/cu121/torch2.4/\r\n\r\n# Benchmark DeepSeek-V2-Lite (TP=1, bs=1) with torch.compile\r\n# Decode.  median latency: 0.10220 s, median throughput:      9.78 token/s\r\npython3 -m sglang.bench_latency --model deepseek-ai/DeepSeek-V2-Lite --disable-radix --trust-remote-code --input-len 128 --output-len 8 --batch 1 --enable-torch-compile --mem-frac 0.8\r\n\r\n# Benchmark DeepSeek-V2-Lite (TP=1, bs=1) without torch.compile\r\n# Decode.  median latency: 0.00970 s, median throughput:    103.11 token/s\r\npython3 -m sglang.bench_latency --model deepseek-ai/DeepSeek-V2-Lite --disable-radix --trust-remote-code --input-len 128 --output-len 8 --batch 1\r\n```\r\n\r\n### Environment\r\n\r\n```\r\nNVIDIA A100 80GB\r\nPyTorch: 2.4.0+cu118\r\nsglang: 0.3.1\r\nflashinfer: 0.1.6+cu118torch2.3\r\ntriton: 3.0.0\r\nvllm: 0.5.5\r\n```",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-17T10:08:42+00:00",
+    "closed_at": "2024-09-23T16:54:18+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1446/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1446"
+  },
+  {
+    "number": 922,
+    "title": "TTFT latency for long context (16K) is very high around 15 seconds for llama3.1 70b model. (same or worse than vLLM)",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n\n### Describe the bug\n\nI am experimenting with SGLang and vLLM for long context(16K) RAG application which requires real time responses.\r\nI am using single Nvidia A6000 48GB GPU and llaam3.1 70b awq 4 bit model.\r\n\r\nCurrently I am seeing Time for first token latency is around 15 seconds which is very high.\r\nExperimented with parameters like --chunked-prefill-size , --mem-frac etc\r\n\r\ncan you please suggest what are the parameters I need to mainly focus on to get the optimal TTFT for long context ?\n\n### Reproduction\n\nna\n\n### Environment\n\n```Shell\nna\n```\n",
+    "labels": [
+      "high priority",
+      "inactive",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-04T23:14:23+00:00",
+    "closed_at": "2024-10-09T01:10:58+00:00",
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/922/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/922"
+  }
+]

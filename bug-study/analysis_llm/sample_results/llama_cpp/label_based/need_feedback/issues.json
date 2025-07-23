@@ -1,0 +1,144 @@
+[
+  {
+    "number": 7165,
+    "title": "Add metadata override and also generate dynamic default filename when converting gguf",
+    "body": "This is a formalized ticket for this PR https://github.com/ggerganov/llama.cpp/pull/4858 so people are aware and can contribute to figuring out if this idea makes sense... and if so then what needs to be done before this can be merged in from a feature requirement perspective.\r\n\r\n\r\n# Feature Description and Motivation\r\n\r\n## Metadata Override\r\n\r\nOften safetensors provided by external parties maybe missing certain metadata or have incorrectly formatted metadata. To make things easier to find in hugging face, accurate metadata is a must.\r\n\r\nThe idea is to allow users to override metadata in the generated gguf by including a json metadata file\r\n\r\n```\r\n./llama.cpp/convert.py maykeye_tinyllama --outtype f16 --metadata maykeye_tinyllama-metadata.json\r\n```\r\n\r\nwhere the metadata override file may look like:\r\n\r\n```json\r\n{\r\n    \"general.name\": \"TinyLLama\",\r\n    \"general.version\": \"v0\",\r\n    \"general.author\": \"mofosyne\",\r\n    \"general.url\": \"https://huggingface.co/mofosyne/TinyLLama-v0-llamafile\",\r\n    \"general.description\": \"This gguf is ported from a first version of Maykeye attempt at recreating roneneldan/TinyStories-1M but using Llama architecture\",\r\n    \"general.license\": \"apache-2.0\",\r\n    \"general.source.url\": \"https://huggingface.co/Maykeye/TinyLLama-v0\",\r\n    \"general.source.huggingface.repository\": \"https://huggingface.co/Maykeye/TinyLLama-v0\"\r\n}\r\n```\r\n\r\nAt the moment the PR will only recognize metadata that is explicitly defined in python gguf writer, so any that is not yet defined will be ignored. If you think that should not be the case, then definitely make your case and I'll may see how easy it is to just allow for user defined metadata in the metadata override  json.\r\n\r\n\r\n## Default outfile name generation\r\n\r\nTo help promote consistent naming scheme I've created a `--get-outfile` and also adjusted the default file naming function to be based on this format `<Model>-<Version>-<ExpertsCount>x<Parameters>-<Quantization>.gguf` (detailed description in PR).\r\n\r\nSo for example when you call this command\r\n\r\n```\r\n./llama.cpp/convert.py ${MODEL_DIR} --metadata ${METADATA_FILE} --outtype f16 --get-outfile\r\n```\r\n\r\nyou would get \r\n\r\n```\r\nTinyLLama-v0-5M-F16\r\n```\r\n\r\nAlso when generating a gguf, if you don't name your output file it will default to a file that may look similar to `TinyLLama-v0-5M-F16.gguf`.\r\n\r\nThis format is based on what I've generally observed in how people name their files in huggingface (using vibes, so if you think my naming scheme needs adjusting, let me know).\r\n\r\n\r\n# Possible Implementation\r\n\r\nI have already tested the overall flow when generating this via this bash script https://huggingface.co/mofosyne/TinyLLama-v0-5M-F16-llamafile/blob/main/llamafile-creation.sh using `convert.py` and we already have a PR https://github.com/ggerganov/llama.cpp/pull/4858  waiting for merging.\r\n\r\nI've already merged in all the changes required to support this so the only changes that needs to be checked is `convert.py` (Other scripts may need to be adjusted to port over the file conventions and metadata... but just focusing on convert.py as that's the lowest hanging fruit and a good MVP to see if it makes sense in the real world). This should make it easier to review and then merge.",
+    "labels": [
+      "enhancement",
+      "help wanted",
+      "need feedback"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-09T06:20:12+00:00",
+    "closed_at": "2024-05-13T03:43:12+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7165/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7165"
+  },
+  {
+    "number": 7128,
+    "title": "llama : make vocabs LFS objects?",
+    "body": "It's nice to have a collection of vocabs using different pre-tokenizers in order to test tokenization more widely. However, the number of vocab files controlled in the repo will keep growing:\r\n\r\nhttps://github.com/ggerganov/llama.cpp/tree/master/models\r\n\r\nThese files are typically a few MB, so the repo size is significantly affected by them.\r\n\r\nOne option is to make these files LFS objects. Another option is to not source control them and either remove the tests, or generate them on the fly. But the latter might be flaky because we will depend on many 3rd party repositories to provide the tokenizers.\r\n\r\nAre there any better alternatives?\r\n\r\nUpdate: git lfs is not an option. I think for the short-term we will commit vocabs only for new types of pre-tokenizers. The vocab data compresses relatively good (factor ~x3), so hopefully the repo size will not be affect too badly",
+    "labels": [
+      "enhancement",
+      "need feedback",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-07T18:51:55+00:00",
+    "closed_at": "2024-06-23T01:12:22+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7128/reactions",
+      "total_count": 3,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 3,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7128"
+  },
+  {
+    "number": 6656,
+    "title": "`quantize`: add imatrix and dataset metadata in GGUF",
+    "body": "### Motivation\r\nI was reading [thanks](https://huggingface.co/spaces/ggml-org/gguf-my-repo/discussions/41#661a27157a16dc848a58a261) to @julien-c this [reddit post](https://www.reddit.com/r/LocalLLaMA/comments/1ba55rj/overview_of_gguf_quantization_methods/?rdt=36175) from @he29-net :+1: \r\n\r\n> You can't easily tell whether a model was quantized with the help of importance matrix just from the name. I first found this annoying, because it was not clear if and how the calibration dataset affects performance of the model in other than just positive ways. But recent tests in llama.cpp [discussion #5263](https://github.com/ggerganov/llama.cpp/discussions/5263) show, that while the data used to prepare the imatrix slightly affect how it performs in (un)related languages or specializations, any dataset will perform better than a \"vanilla\" quantization with no imatrix. So now, instead, I find it annoying because sometimes the only way to be sure I'm using the better imatrix version is to re-quantize the model myself.\r\n\r\n### Proposal\r\n\r\n- Add at the end of the `imatrix` binary file the dataset name on which the imatrix was computed on\r\n\r\n- Add following KV in `quantize`:\r\n  - `quantize.imatrix.file` Filename of the provided imatrix during quantization\r\n  - `quantize.imatrix.entries_count` Number of entries in the imatrix\r\n  - `quantize.imatrix.dataset` Dataset from the imatrix\r\n  - `quantize.imatrix.chunks_count` Number of chunks the imatrix was computed with\r\n \r\nIdeally I would also add both imatrix and dataset files hashes in the metadata, but I am not sure this is supported and appropriate.",
+    "labels": [
+      "enhancement",
+      "model",
+      "generation quality",
+      "need feedback"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-13T10:13:08+00:00",
+    "closed_at": "2024-04-26T18:06:34+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6656/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6656"
+  },
+  {
+    "number": 6233,
+    "title": "server: bench: continuous performance testing",
+    "body": "#### Motivation\r\n\r\n**llama.cpp** is under active development, new papers on LLM are implemented quickly (for the good) and backend device\r\noptimizations are continuously added.\r\n\r\nAll these factors have an impact on the server performances, especially the following metrics:\r\n\r\n1. **latency**: pp (prompt processing) + tg (tokens generation) per request\r\n2. **server latency**: total pp+tg per second across all requests with continuous batching\r\n3. **concurrency**: how many concurrent request/users the server can handle in parallel\r\n4. **VRAM** usage\r\n5. **RAM** usage\r\n6. **GPU** usage\r\n7. **CPU** usage\r\n\r\nIt is important to monitor and control the impact of the codebase evolution on these metrics,\r\nexample [from](https://towardsdatascience.com/increase-llama-2s-latency-and-throughput-performance-by-up-to-4x-23034d781b8c):\r\n\r\n<p align=\"center\">\r\n    <img width=\"60%\" height=\"60%\" src=\"https://github.com/ggerganov/llama.cpp/assets/5741141/2f518477-941d-41e1-9427-873ca0cb9846\" alt=\"prompt_tokens_seconds\" />\r\n</p>\r\n\r\nSince #5941, we have a server bench framework, we can now trigger it based on different events:\r\n\r\n1. scheduled on master branch\r\n2. on PR pushes\r\n\r\nThe approach should be reproducible: use the same hardware architecture, same models size and quants.\r\n\r\nIt would be nice to follow performances changes on a time series graph like it is done\r\nin [Apache Lucene](https://home.apache.org/~mikemccand/lucenebench/indexing.html).\r\n\r\n### Proposed approach\r\n\r\nBench will run on a [T4 GPU node](https://learn.microsoft.com/en-us/azure/virtual-machines/nct4-v3-series) in Azure\r\nCloud, so:\r\n\r\n- Standard_NC4as_T4_v3\r\n- 20.04.1-Ubuntu\r\n- 4 VCPU\r\n- 28GB RAM\r\n- 1 NVidia Tesla T4\r\n- 16GB VRAM\r\n- /dev/sdb, 256GB standard SSD, mounted at /\r\n- /dev/sda, 1T premium SSD, mounted at /mnt\r\n\r\nOn\r\na [GitHub self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners)\r\nwith [prometheus](https://prometheus.io/docs/introduction/first_steps/) installed.\r\n\r\nA [GitHub workflow](https://docs.github.com/en/actions/using-workflows), will:\r\n\r\n1. build the server target using cmake `Release` build type and `LLAMA_CUDA` with `native` CUDA architecture\r\n2. for each bench parameters\r\n3. start the server\r\n4. configure prometheus scrapping on the server instance\r\n5. wait for the server to start\r\n6. build the relevant dataset for the test\r\n7. start performance test scenario using the right dataset\r\n8. export the results to json\r\n9. Download prometheus metrics graph\r\n10. plot results into time series images\r\n11. Add a comment in the PR with the metrics results images\r\n\r\n### Technical consideration\r\n\r\nOne important aspect of this configuration would be to make it easy to add more nodes in the future.\r\nIf we see that it works and is useful, we can find ways to add more hardware in order to do metrics for different cases.\r\nAll the code used must be stored in `examples/server/bench` folder.\r\n\r\n#### GitHub Self-Hosted runner security\r\n\r\n[Self-hosted runner security](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners#self-hosted-runner-security):\r\n\r\n> Warning: We recommend that you only use self-hosted runners with private repositories. This is because forks of your\r\n> public repository can potentially run dangerous code on your self-hosted runner machine by creating a pull request\r\n> that\r\n> executes the code in a workflow.\r\n\r\nBy design, we will be [using just-in-time runners](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-just-in-time-runners):\r\n\r\n1. with [ggml-ci](https://github.com/ggml-org/ci) in a docker container, loop look for new workflow job waiting for the host GPU series type label:\r\n2. [Create configuration for a just-in-time runner with this label](https://docs.github.com/en/rest/actions/self-hosted-runners?apiVersion=2022-11-28#create-configuration-for-a-just-in-time-runner-for-an-organization)\r\n3. Start a rootless docker container with nvidia docker runtime with the JIT configuration token\r\n4. start the GitHub runner within the container\r\n5. wait for the container to exit\r\n6. restart the loop\r\n\r\nAs the GitHub checks can only be run by collaborators, the job is running in a non-root docker container, I think we are safe.\r\n\r\n### Server scenario parameters matrix\r\n\r\n| scenario    | duration | users | hf-repo         | hf-file                            | model-alias    | model-size | model-type    | ngl  | parallel | ctx-size | batch-size | ubatch-size | n-predict | grp-attn-n | grp-attn-w | embeddings | CUDA_VISIBLE_DEVICES | SERVER_BENCH_N_PROMPTS | SERVER_BENCH_MAX_PROMPT_TOKENS | SERVER_BENCH_MAX_CONTEXT |   |\r\n|-------------|----------|-------|-----------------|------------------------------------|----------------|------------|---------------|------|----------|----------|------------|-------------|-----------|------------|------------|------------|----------------------|------------------------|--------------------------------|--------------------------|---|\r\n| completions | 10m      | 8     | TODO            |                                    | phi2           | 3B         | F16           | 33   | 8        | 16384    | 2048       | 256         | 2048      | 1          | 512        | false      | 0                    | 1000                   | 1024                           | 1024                     |   |\r\n| completions | 10m      | 8     | ggml-org/models | phi-2/ggml-model-q4_0.gguf         | phi2           | 3B         | MOSTLY_Q4_K_M | 33   | 8        | 16384    | 2048       | 256         | 2048      | 1          | 512        | false      | 0                    | 1000                   | 1024                           | 1024                     |   |\r\n| embeddings  | 5m       | 8     | ggml-org/models | bert-bge-large/ggml-model-f16.gguf | bert-bge-large | ?          | F16           | TODO | 8        | 16384    | 4096       | 4096        | NA        | NA         | NA         | true       | 0                    | 1000                   | 4096                           | NA                       |   |\r\n\r\nIn addition, following parameters will be used:\r\n\r\n- `--log-disable` no need to have a log file\r\n- `--metrics` to allow prometheus metrics scrapping\r\n- `--cont-batching`, probably need to enable by default #6229\r\n- `--threads 1`, we will test only with all layers offloaded to GPU\r\n- `--threads-batch 1`, we will test only with all layers offloaded to GPU\r\n- `--model ggml-model.gguf` as now we can download anything from HF\r\n- `--defrag-thold 0.1`\r\n\r\nOnly the OAI Chat completions endpoint with streaming enabled will be tested for completions.\r\n\r\n### Dataset consideration\r\n\r\n1. dataset must contain system, assistant and user prompts (in order to test chat template overhead if any)\r\n2. random must not be used to select prompt, running the test twice must output almost the same metrics\r\n5. it must be possible to select prompts in order they fit in KV Cache (or not) using parameters listed\r\n   in [bench/README.md](https://github.com/ggerganov/llama.cpp/blob/master/examples/server/bench/README.md):\r\n    - `SERVER_BENCH_N_PROMPTS` total prompts to select in the benchmark\r\n    - `SERVER_BENCH_MAX_PROMPT_TOKENS` maximum prompt tokens to filter out in the dataset\r\n    - `SERVER_BENCH_MAX_CONTEXT` maximum context size of the completions request to filter out in the dataset: prompt +\r\n      predicted tokens\r\n\r\nSelected dataset:\r\n\r\n| scenario    | dataset                                                                                                                                                     | comment                                                                                                                    |\r\n|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|\r\n| completions | [ShareGPT_Vicuna_unfiltered](https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered/blob/main/ShareGPT_V3_unfiltered_cleaned_split.json) | taken from [VLLM](https://github.com/vllm-project/vllm/blob/main/benchmarks/README.md) to have a baseline                  |\r\n| embeddings  | [IMDB Data](https://github.com/nas5w/imdb-data/blob/master/reviews.json)                                                                                    | [suggested](https://github.com/ggerganov/llama.cpp/pull/5941#discussion_r1518282581) by @ngxson, looks good for embeddings |\r\n\r\n### Tasks\r\n\r\n- [x] Have a dedicated GPU node (T4), thanks to @aigrant [for](https://aigrant.com/) [ggml](https://ggml.ai/)\r\n- [x] [Install drivers on the GPU nodes](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/n-series-driver-setup),\r\n  was not so easy actually\r\n    - as noted there: do not install NVidia third party repo before installing ubuntu signed shipped drivers\r\n    - need to install `alsa-utils` in order to prevent: `could not open aplay -l` during installation\r\n- [x] Select the right datasets\r\n- [x] Add `install-docker.sh` in ggml-ci: https://github.com/ggml-org/ci/pull/1\r\n- [x] Setup github-runners-manager: https://github.com/ggml-org/ci/pull/2\r\n- [x] support curl in docker images: #6291 #6474\r\n- [x] Write a simple GitHub workflow with k6: #6283\r\n- [x] Comment the `--ubatch-size` option in the README: #6254\r\n- [x] #6230\r\n- [ ] #6293\r\n- [x] Rewrite the bench scenario to support streaming/SSE https://github.com/grafana/k6/pull/3639 https://github.com/phymbert/xk6-sse #6495\r\n- [ ] Write the embeddings scenario\r\n- [x] #6292\r\n- [x] Write a python script to wrap the bench step: start the server, run k6, collect metrics\r\n- [ ] Add MOE model after receiving feedback about the current approach\r\n- [ ] After some enough commit history, make a performance history dashboard",
+    "labels": [
+      "enhancement",
+      "performance",
+      "server/webui",
+      "need feedback",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-22T11:36:09+00:00",
+    "closed_at": "2024-07-03T01:06:46+00:00",
+    "comments": 19,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/6233/reactions",
+      "total_count": 6,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 1,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/6233"
+  },
+  {
+    "number": 3384,
+    "title": "[User] Regression with CodeLlama 7B",
+    "body": "# Prerequisites\r\n\r\nPlease answer the following questions for yourself before submitting an issue.\r\n\r\n- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.\r\n- [x] I carefully followed the [README.md](https://github.com/ggerganov/llama.cpp/blob/master/README.md).\r\n- [x] I [searched using keywords relevant to my issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) to make sure that I am creating a new issue that is not already open (or closed).\r\n- [x] I reviewed the [Discussions](https://github.com/ggerganov/llama.cpp/discussions), and have a new bug or useful enhancement to share.\r\n\r\n# Expected Behavior\r\n\r\nUsing [this Codellama 7B Q3_K_M model](https://huggingface.co/TheBloke/CodeLlama-7B-GGUF/blob/74bf05c6562b9431494d994081b671206621c199/codellama-7b.Q3_K_M.gguf) uploaded by @TheBloke on August 24th with llama.cpp versions up until #3228 was merged produced the following output:\r\n```bash\r\n$ ./main -t 4 -m ./models/codellama-7b.Q3_K_M.gguf.old --color -c 512 --temp 0.0 --repeat_penalty 1.0 -n 128 -p \"double fast_inverse_square_root(double x\"\r\n\r\n double fast_inverse_square_root(double x)\r\n{\r\n    double xhalf = 0.5 * x;\r\n    int64_t i = *(int64_t*)&x;\r\n    i = 0x5fe6ec85e7de30da - (i >> 1);\r\n    x = *(double*)&i;\r\n    x = x * (1.5 - xhalf * x * x);\r\n    return x;\r\n}\r\n\r\ndouble fast_inverse_square_root_2(double x)\r\n{\r\n    double xhalf = 0.5 *\r\nllama_print_timings:        load time =   399.81 ms\r\nllama_print_timings:      sample time =     4.18 ms /   128 runs   (    0.03 ms per token, 30600.05 tokens per second)\r\nllama_print_timings: prompt eval time =  1082.34 ms /    13 tokens (   83.26 ms per token,    12.01 tokens per second)\r\nllama_print_timings:        eval time = 16587.27 ms /   127 runs   (  130.61 ms per token,     7.66 tokens per second)\r\nllama_print_timings:       total time = 17758.83 ms\r\nLog end\r\n\r\n```\r\n\r\n# Current Behavior\r\n\r\nRunning any moderately recent version of llama.cpp with the newest [codellama 7b Q3_K_M uploaded by TheBloke here](https://huggingface.co/TheBloke/CodeLlama-7B-GGUF/blob/main/codellama-7b.Q3_K_M.gguf), or running the older version of the model with llama.cpp's current master produces the following output:\r\n```bash\r\n$ ./main -t 4 -m ./models/codellama-7b.Q3_K_M.gguf.old --color -c 512 --temp 0.0 --repeat_penalty 1.0 -n 128 -p \"double fast_inverse_square_root(double x\"\r\n\r\n double fast_inverse_square_root(double x)\r\n{\r\n    long i;\r\n    double x2, y;\r\n    const double threehalfs = 1.5;\r\n\r\n    x2 = x * 0.5;\r\n    y  = x;\r\n    i  = * ( long * ) &y;\r\n    i  = 0x5f3759df - ( i >> 1 );\r\n    y  = * ( double * ) &i;\r\n    y  = y * ( threehalfs - ( x2 * y * y ) );\r\n    y  = y * ( threehalf\r\nllama_print_timings:        load time =  1603.99 ms\r\nllama_print_timings:      sample time =     4.17 ms /   128 runs   (    0.03 ms per token, 30732.29 tokens per second)\r\nllama_print_timings: prompt eval time =  1096.09 ms /    13 tokens (   84.31 ms per token,    11.86 tokens per second)\r\nllama_print_timings:        eval time = 16623.97 ms /   127 runs   (  130.90 ms per token,     7.64 tokens per second)\r\nllama_print_timings:       total time = 17809.38 ms\r\nLog end\r\n\r\n```\r\nBoth models produce the same output on master, whereas the old model produced the correct output up until #3228 \r\n\r\n# Environment and Context\r\n\r\nPlease provide detailed information about your computer setup. This is important in case the issue is not reproducible except for under certain specific conditions.\r\n\r\n* Physical (or virtual) hardware you are using, e.g. for Linux:\r\n\r\n`$ lscpu`\r\n```\r\nArchitecture:            x86_64\r\n  CPU op-mode(s):        32-bit, 64-bit\r\n  Address sizes:         39 bits physical, 48 bits virtual\r\n  Byte Order:            Little Endian\r\nCPU(s):                  8\r\n  On-line CPU(s) list:   0-7\r\nVendor ID:               GenuineIntel\r\n  Model name:            Intel(R) Core(TM) i5-9300H CPU @ 2.40GHz\r\n    CPU family:          6\r\n    Model:               158\r\n    Thread(s) per core:  2\r\n    Core(s) per socket:  4\r\n    Socket(s):           1\r\n    Stepping:            10\r\n    CPU max MHz:         4100.0000\r\n    CPU min MHz:         800.0000\r\n    BogoMIPS:            4800.00\r\n    Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts \r\n                         rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer\r\n                          aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2\r\n                          erms invpcid mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp vnmi md_clear flush_l1d arch_capabilities\r\nVirtualization features: \r\n  Virtualization:        VT-x\r\nCaches (sum of all):     \r\n  L1d:                   128 KiB (4 instances)\r\n  L1i:                   128 KiB (4 instances)\r\n  L2:                    1 MiB (4 instances)\r\n  L3:                    8 MiB (1 instance)\r\nNUMA:                    \r\n  NUMA node(s):          1\r\n  NUMA node0 CPU(s):     0-7\r\nVulnerabilities:         \r\n  Itlb multihit:         KVM: Mitigation: VMX disabled\r\n  L1tf:                  Mitigation; PTE Inversion; VMX conditional cache flushes, SMT vulnerable\r\n  Mds:                   Mitigation; Clear CPU buffers; SMT vulnerable\r\n  Meltdown:              Mitigation; PTI\r\n  Mmio stale data:       Mitigation; Clear CPU buffers; SMT vulnerable\r\n  Retbleed:              Mitigation; IBRS\r\n  Spec store bypass:     Mitigation; Speculative Store Bypass disabled via prctl\r\n  Spectre v1:            Mitigation; usercopy/swapgs barriers and __user pointer sanitization\r\n  Spectre v2:            Mitigation; IBRS, IBPB conditional, STIBP conditional, RSB filling, PBRSB-eIBRS Not affected\r\n  Srbds:                 Mitigation; Microcode\r\n  Tsx async abort:       Not affected\r\n\r\n```\r\n\r\n* Operating System, e.g. for Linux:\r\n\r\n`$ uname -a`\r\n`Linux pop-os 6.4.6-76060406-generic #202307241739~1692717645~22.04~5597803 SMP PREEMPT_DYNAMIC Tue A x86_64 x86_64 x86_64 GNU/Linux`\r\n* SDK version, e.g. for Linux:\r\n\r\n```\r\n$ python3 --version\r\nPython 3.10.12\r\n$ make --version\r\nGNU Make 4.3\r\nBuilt for x86_64-pc-linux-gnu\r\nCopyright (C) 1988-2020 Free Software Foundation, Inc.\r\nLicense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\r\nThis is free software: you are free to change and redistribute it.\r\nThere is NO WARRANTY, to the extent permitted by law.\r\n$ g++ --version\r\ng++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\r\nCopyright (C) 2021 Free Software Foundation, Inc.\r\nThis is free software; see the source for copying conditions.  There is NO\r\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\r\n```\r\n\r\n# Failure Information (for bugs)\r\n\r\nPlease help provide information about the failure if this is a bug. If it is not a bug, please remove the rest of this template.\r\n\r\n# Steps to Reproduce\r\n\r\nPlease provide detailed steps for reproducing the issue. We are not sitting in front of your screen, so the more detail the better.\r\n\r\n1. [Download model from here](https://huggingface.co/TheBloke/CodeLlama-7B-GGUF/blob/74bf05c6562b9431494d994081b671206621c199/codellama-7b.Q3_K_M.gguf)\r\n2. Clone llama.cpp and build with `make`\r\n3. Run `./main -t 4 -m ./models/codellama-7b.Q3_K_M.gguf --color -c 512 --temp 0.0 --repeat_penalty 1.0 -n 128 -p \"double fast_inverse_square_root(double x\"`\r\n\r\n# Failure Logs\r\n\r\nPlease include any relevant log snippets or files. If it works under one configuration but not under another, please provide logs for both configurations and their corresponding outputs so it is easy to see where behavior changes.\r\n\r\nLogs for all 4 tested cases are attached, Github wouldn't let me paste them in here.\r\n\r\n\r\n[old-model-commit-45855b3.log](https://github.com/ggerganov/llama.cpp/files/12753518/old-model-commit-45855b3.log)\r\n[new-model-commit-45855b3.log](https://github.com/ggerganov/llama.cpp/files/12753519/new-model-commit-45855b3.log)\r\n[old-model-master.log](https://github.com/ggerganov/llama.cpp/files/12753523/old-model-master.log)\r\n[new-model-master.log](https://github.com/ggerganov/llama.cpp/files/12753525/new-model-master.log)\r\n\r\n",
+    "labels": [
+      "need feedback",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-09-28T20:01:22+00:00",
+    "closed_at": "2024-04-03T01:15:32+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/3384/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/3384"
+  }
+]

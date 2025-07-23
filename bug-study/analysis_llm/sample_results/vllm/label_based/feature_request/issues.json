@@ -1,0 +1,798 @@
+[
+  {
+    "number": 6877,
+    "title": "[Feature]: Support Python 3.12",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nI believe we eventually need to support 3.12 in the future. Right now I believe Pytorch just added support for Python 3.12, but ray still does not support Python 3.12. Let's use this issue to keep track on this.\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-28T21:26:05+00:00",
+    "closed_at": "2024-08-02T20:51:23+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6877/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6877"
+  },
+  {
+    "number": 13679,
+    "title": "[Feature]: Support for LoRA for Pooling Models",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nCurrently vLLM does not support LoRA for Pooling models (according to #12808)\nI wanted to understand how can we add the support given we can use similar code structure like generation models.\n\nWhat all things need to be taken care if I need to add the support. Any references will be helpful.\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-21T17:05:48+00:00",
+    "closed_at": "2025-03-18T12:07:02+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13679/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13679"
+  },
+  {
+    "number": 14580,
+    "title": "[Feature][Hardware][TPU]: Add Recompilation Check for vLLM on TPU",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nIdeally, post-warmup, no further compilation should occur. However, PyTorch/XLA's implicit compilation can lead to excessive recompilation during LLM serving, impacting performance. We can add an option to detect recompilation after warmup, requiring a PyTorch/XLA method like xm.num_graph_hash() to track the number of captured graphs. This number should remain constant post-warmup if no recompilation occurs.\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "tpu"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-10T22:31:05+00:00",
+    "closed_at": "2025-03-25T16:59:34+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14580/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14580"
+  },
+  {
+    "number": 20256,
+    "title": "[Feature]: Limit total GPU memory",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nEven with appropriate arguments to lower memory usage specified, as suggested in docs:\n\n```\n--enforce-eager\n--max-model-len=8192\n--max-num-batched-tokens=8192\n--max-num-seqs=16\n```\n\nthe rest of the GPU memory still gets eaten up by KV cache, so even when running a tiny 1B model that needs 3 GB of VRAM, VLLM takes 71GB on A100 to run this model. This makes VLLM an impractical solution for mixed-GPU clusters.\n\nSuggestions:\n- add flag to specify max gpu memory in absolute units\n- add ability to explicitly limit/disable KV cache\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request"
+    ],
+    "state": "open",
+    "created_at": "2025-06-30T12:52:05+00:00",
+    "closed_at": null,
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/20256/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/20256"
+  },
+  {
+    "number": 1802,
+    "title": "Feature request: prompt lookup decoding",
+    "body": "Prompt lookup decoding (PLD) is a variant of speculative decoding that replaces the draft model with a prefix lookup in the current sequence, resulting in a 2-4x throughput boost for input-grounded tasks like summarization and code modification.\r\n\r\nBecause PLD doesn't require a secondary model, it might be easier to implement in VLLM?\r\n\r\nSee https://github.com/apoorvumang/prompt-lookup-decoding for details.\r\n",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-27T19:04:37+00:00",
+    "closed_at": "2025-03-10T01:52:03+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1802/reactions",
+      "total_count": 20,
+      "+1": 14,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 6
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1802"
+  },
+  {
+    "number": 174,
+    "title": "GPTQ / Quantization support?",
+    "body": "Will vLLM support 4-bit GPTQ models?",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-21T02:40:47+00:00",
+    "closed_at": "2024-03-06T09:01:49+00:00",
+    "comments": 19,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/174/reactions",
+      "total_count": 22,
+      "+1": 22,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/174"
+  },
+  {
+    "number": 10562,
+    "title": "[Feature]: How to run speculative models with tensor parallelism?",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nI noticed that the current speculative mode does not support tp from this link (https://docs.vllm.ai/en/stable/models/spec_decode.html). \r\n\r\nHowever, not supporting TP will greatly limit the choice of speculative models. I would like to know why there is no TP support for speculative models. I am trying to read and modify this part of the code, but I don't understand why the scorer model can support TP, but the speculative model cannot. What are the considerations in system design?\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-22T03:30:54+00:00",
+    "closed_at": "2025-03-23T02:08:46+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/10562/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/10562"
+  },
+  {
+    "number": 7546,
+    "title": "[Feature]: Inquiry about Multi-modal Support in VLLM for MiniCPM-V2.6",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nI am currently exploring the capabilities of the VLLM library and am interested in understanding its support for multi-modal inputs, particularly for models like MiniCPM-V2.6. I would like to know if VLLM is designed to handle multi-image and video inputs for such models.\n\n### Alternatives\n\n1. **Model of Interest**: MiniCPM-V2.6\r\n2. **Types of Input**: Multi-image and video\r\n3. **Current Understanding**:\r\n   - I have reviewed the documentation and initial examples provided with VLLM.\r\n  - It seems that both `multiple 'image_url' input` and `list value in image_url` is currently not supported.\r\n  - However, I am not sure if it supports the processing of multiple images or videos as input to a model like MiniCPM-V2.6.\r\n## Questions\r\n 1. Does VLLM support the integration of MiniCPM-V2.6 for processing multi-image and video inputs?\r\n 2. If yes, could you provide an example or a guide on how to set up and use this feature?\r\n 3. If not, are there any plans to extend VLLM's capabilities to support such inputs in the future?\n\n### Additional context\n\n![image](https://github.com/user-attachments/assets/627dd626-dee1-41cb-b231-9c13163e9174)\r\n",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-15T06:36:05+00:00",
+    "closed_at": "2024-08-15T06:49:48+00:00",
+    "comments": 19,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/7546/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/7546"
+  },
+  {
+    "number": 4838,
+    "title": "[Feature]: Build and publish Neuron docker image",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nIt seems like the current docker images don't support Neuron (Inferentia).\r\nIt would be very helpful if there was a tested, managed Neuron docker image to use.\r\nWhile at the same subject, it would be even better if some documentation would be added on running vLlm Neuron using containers.\n\n### Alternatives\n\nDJL?\n\n### Additional context\n\n_No response_",
+    "labels": [
+      "feature request",
+      "keep-open"
+    ],
+    "state": "open",
+    "created_at": "2024-05-15T15:27:17+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4838/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4838"
+  },
+  {
+    "number": 20950,
+    "title": "[Feature]: Model execution timeout",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nCurrently when there is a bug in the path of model execution, it could hang indefinitely and user may not get timely and useful feedback. It would be useful to have a timeout mechanism and signal the user.\n\nCurrently RayDistributedExecutor with Compiled Graph supports a timeout, but vLLM could benefit from supporting this in executor in general.\n\nSee [discussion](https://vllm-dev.slack.com/archives/C08CBAP9BUG/p1752532064610089?thread_ts=1752477597.112679&cid=C08CBAP9BUG)\n\ncc @stephanie-wang  @youkaichao \n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request"
+    ],
+    "state": "open",
+    "created_at": "2025-07-14T22:50:17+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/20950/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/20950"
+  },
+  {
+    "number": 17984,
+    "title": "[Feature]: Per-sequence speculative decoding",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\n\n ### **1. Problem**\n\nCurrently, increasing batch size in vLLM's Speculative Decoding inference causes inefficiency.\nWhen using the LLaMA 1B SSM model on the LLaMA 70B Original model, a performance reversal occurs at Batchsize 32.\nIn addition, when the _num_speculative_tokens_\u00a0(SL; speculative length) is large, the inefficiency increases further as the batch size increases (Fig. 2).\n\nvLLM was also aware of the need for optimization for this. (https://docs.google.com/document/d/1T-JaS2T1NRfdP51qzqpyakoCXxSXTtORppiwaj5asxA/edit?tab=t.0#heading=h.kk7dq05lc6q8)\n\n<img src=\"https://github.com/user-attachments/assets/2cf95b49-e528-46eb-bd9b-f053cc057868\" width=\"600\" height=\"auto\">\n\n<img src=\"https://github.com/user-attachments/assets/0698112e-8b61-495a-b46e-a4187a4138ea\" width=\"650\" height=\"auto\">\n\n\n\n ### **2. Previous work in vLLM**\u00a0\n\nTo handle the increasing batch size in SD, vLLM has been performing the following tasks:\u00a0Batch Expansion https://github.com/vllm-project/vllm/pull/3103 and\u00a0\u00a0MQA (Multi-Query Attention) Scorer\n![Image](https://github.com/user-attachments/assets/d1585ce6-67f8-4650-b1e7-8182193aca37)\n\n\"Batch expansion\" expands the batch by the factor of k (num_speculative_tokens). Each original sequence + one proposal token become a separate sequence in the expanded batch for the target model's scoring pass. Because of the \"expansion\" it has drawn backs as it increases memory usage and attention calculation by factor K. \nTo overcome the drawbacks, MQAScorer utilizes specialized MQA kernels (when available) to score all k proposal tokens for each sequence without expanding the batch size explicitly.\n\nBoth Batch Expansion and MQA Scorer face performance degradation on dynamic shape & CUDA Graphs. if K ( _num_speculative_tokens_) changes each iteration or across sequences. CUDA graph can't hadling the dynamic shape/size.\n\nUltimately, the current vLLM batch size processing method can only handle **static SL** that the K ( _num_speculative_tokens_) set before inference.\n\n \n### **3. Dynamic SL**\u00a0\nEven if a piece-wise CUDA graph is applied to MQA, the inefficiency caused by each sequence in a batch having a FixedSL value is not resolved. Also, when using models such as EAGLE2 that use tree-attetion, you need to use SL 32, etc., but as the batch grows, the MQA padding space grows larger.\n\nThe following experiment is the result of checking until rejection occurs after setting max SL to 60. The experimental results show that OracleSL has a large range from 1 to 60, and that it infers 117 times less than when inferred by setting it to the optimal SL value of 4. Since the target model is 8B, there was no significant difference in speed, but if the target model is large, the difference between OracleSL and StaticSL will be large.\n\n![Image](https://github.com/user-attachments/assets/bfd26b78-5c48-4e38-8c42-4bf9c362ed7e)\n\n\nPrevious papers have proven that it is effective to have a different SL for each sequence and a different SL for each iteration.  \n\n> [BASS](https://arxiv.org/abs/2404.15778), \n> [DISCO](https://arxiv.org/pdf/2405.04304),\n> [SPRINTER](https://www.arxiv.org/abs/2502.04557), \n> [AdaEDL](https://arxiv.org/abs/2410.18351) \n> \n\n\n### **4. CONCLUSION**\u00a0\nIn conclusion, **per-sequence decoding** is necessary to apply dynamicSL to each iteration and each sequence in the batch and to resolve inefficiency due to increasing batch size.\n\nMy team are implementing per-sequence decoding in the flash-attention2 kernel. However, we are currently developing with vLLM 0.8.4, so it would be nice if the schedule for SD updates in vLLM V1 could be in sync.\n\n\n\n\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.\n\n\n",
+    "labels": [
+      "feature request"
+    ],
+    "state": "open",
+    "created_at": "2025-05-12T08:31:19+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/17984/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/17984"
+  },
+  {
+    "number": 214,
+    "title": "`8-bit quantization` support",
+    "body": "As far as I know `vllm` and `ray` doesn't support `8-bit quantization` as of now. I think it's the most viable quantization technique out there and should be implemented for faster inference and reduced memory usage. ",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2023-06-22T23:02:03+00:00",
+    "closed_at": "2024-04-18T13:52:08+00:00",
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/214/reactions",
+      "total_count": 68,
+      "+1": 50,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 18,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/214"
+  },
+  {
+    "number": 20711,
+    "title": "[Feature]: Use `QuantFp8` `CustomOp`-abstraction for MoE layers",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\n#19830 added `QuantFp8`, which uses the `CustomOp` abstraction to implement fp8 quantization in both CUDA and torch, allowing Inductor to achieve superior performance over the CUDA ops (which are unoptimized and also do not fuse by default). However, the class has to be instantiated during init, and MoE uses are currently in util free functions many levels deep. Those need to be mildly rearchitected to take advantage of the new abstraction.\n\nThe use to be rearchitected is here: https://github.com/vllm-project/vllm/blob/c7a00e6e6716f45db09e39cb21a8f91f741f10b9/vllm/model_executor/layers/fused_moe/utils.py#L37-L40\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "good first issue",
+      "feature request"
+    ],
+    "state": "open",
+    "created_at": "2025-07-09T21:41:36+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/20711/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/20711"
+  },
+  {
+    "number": 4955,
+    "title": "[Feature]: automatically select distributed inference backend",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nray is kind of an overkill for single gpu case, but is currently the only choice for multi-node inference.\r\n\r\nwe can add an `auto` backend, that checks the world size and the number of gpus available in the node, if this fits within this node, we can use multiprocessing, otherwise we can use ray.\r\n\r\nthis will help performance a lot.\r\n\r\n@njhill do you have any bandwidth for this?\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-21T16:30:36+00:00",
+    "closed_at": "2024-06-11T18:10:43+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4955/reactions",
+      "total_count": 3,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 1,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4955"
+  },
+  {
+    "number": 5426,
+    "title": "[Feature]: ci test with vGPU",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nit seems aws and gcp supports [vGPU](https://docs.nvidia.com/grid/cloud-service-support.html) . we can run some small tests in vGPU, which should be cost-efficient and also test broader software support to avoid https://github.com/vllm-project/vllm/issues/4587 .\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-11T16:39:05+00:00",
+    "closed_at": "2024-11-27T02:07:12+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/5426/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/5426"
+  },
+  {
+    "number": 15839,
+    "title": "[Feature]: A Hacked Classifier Free Guidance Metho",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nHi Guys, \n\nHere I offered a simple but effective hacked classifier free guidance (CFG) in vllm using an additional batch sample as unconditional prompt. \n\nhttps://github.com/MSLDCherryPick/vllm\n\nThis modification is original designed for Music generation project. \n\nBut I think this may work for other users. \n\nAlso looking for better implementation of CFG in vllm. \n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "open",
+    "created_at": "2025-03-31T23:05:33+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15839/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15839"
+  },
+  {
+    "number": 7842,
+    "title": "[Feature]: need no_repeat_n_gram in SamplingParams",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\r\n\r\nIt is very common for large models to encounter infinite loops during inference, and we need some methods to prevent this from happening. If infinite loops during inference are not monitored, it can significantly impact reasoning efficiency. \r\n\r\nTherefore, I need a parameter `no_repeat_n_gram` to prevent the generation of sequences where *n* consecutive tokens repeat, thus mitigating the occurrence of infinite loops. The specific implementation method is as follows: for a generated token x_i, for each possible value of x_i (in the case of sampling, x_i could have multiple possibilities), we monitor whether generating this token violates the `no_repeat_n_gram_size`. If it does, we set its logit to negative infinity, thereby preventing the generation of *n*-gram repetitions.\r\n\r\nIn practice, I will set *n* as large as possible to act as a punishment for infinite loops without overly affecting the model's normal inference output. The reason I do not use `repeat_penalty` is that it penalizes all tokens that have appeared during inference, which I consider to be an overly harsh penalty, while I only need a mechanism that specifically targets infinite loops.\r\n\r\n### Alternatives\r\n\r\n_No response_\r\n\r\n### Additional context\r\n\r\nThe implementation of `no_repeat_n_gram` from the transformers library might be helpful.\r\n```\r\n\r\ndef _get_ngrams(ngram_size: int, prev_input_ids: torch.Tensor, num_hypos: int):\r\n    \"\"\"\r\n    Assume ngram_size=2 and prev_input_ids=tensor([[40, 2883, 2712, 4346]]). The output of generated ngrams look like\r\n    this {(40,): [2883], (2883,): [2712], (2712,): [4346]}.\r\n\r\n    Args:\r\n        ngram_size (`int`):\r\n            The number sequential tokens taken as a group which may only occur once before being banned.\r\n        prev_input_ids (`torch.Tensor`):\r\n           Generated token ids for the current hypothesis.\r\n        num_hypos (`int`):\r\n            The number of hypotheses for which n-grams need to be generated.\r\n\r\n    Returns:\r\n        generated_ngrams (`dict`):\r\n            Dictionary of generated ngrams.\r\n    \"\"\"\r\n    # Initialize an empty list of dictionaries, one for each hypothesis (index) in the range of num_hypos\r\n    generated_ngrams = [{} for _ in range(num_hypos)]\r\n    for idx in range(num_hypos):\r\n        gen_tokens = prev_input_ids[idx].tolist()\r\n        generated_ngram = generated_ngrams[idx]\r\n        # Loop through each n-gram of size ngram_size in the list of tokens (gen_tokens)\r\n        for ngram in zip(*[gen_tokens[i:] for i in range(ngram_size)]):\r\n            prev_ngram_tuple = tuple(ngram[:-1])\r\n            generated_ngram[prev_ngram_tuple] = generated_ngram.get(prev_ngram_tuple, []) + [ngram[-1]]\r\n    return generated_ngrams\r\n\r\n\r\ndef _get_generated_ngrams(banned_ngrams, prev_input_ids, ngram_size, cur_len):\r\n    \"\"\"\r\n    Determines the banned tokens for the current hypothesis based on previously generated n-grams.\r\n\r\n    Args:\r\n        banned_ngrams (`dict`):\r\n            A dictionary containing previously generated n-grams for each hypothesis.\r\n        prev_input_ids (`torch.Tensor`):\r\n            Generated token ids for the current hypothesis.\r\n        ngram_size (`int`):\r\n            The number sequential tokens taken as a group which may only occur once before being banned.\r\n        cur_len (`int`):\r\n            The current length of the token sequences for which the n-grams are being checked.\r\n\r\n    Returns:\r\n        List of tokens that are banned.\r\n    \"\"\"\r\n    # Before decoding the next token, prevent decoding of ngrams that have already appeared\r\n    start_idx = cur_len + 1 - ngram_size\r\n    ngram_idx = tuple(prev_input_ids[start_idx:cur_len].tolist())\r\n    return banned_ngrams.get(ngram_idx, [])\r\n\r\n\r\ndef _calc_banned_ngram_tokens(\r\n    ngram_size: int, prev_input_ids: torch.Tensor, num_hypos: int, cur_len: int\r\n) -> List[Iterable[int]]:\r\n    \"\"\"Copied from fairseq for no_repeat_ngram in beam_search\"\"\"\r\n    if cur_len + 1 < ngram_size:\r\n        # return no banned tokens if we haven't generated no_repeat_ngram_size tokens yet\r\n        return [[] for _ in range(num_hypos)]\r\n    generated_ngrams = _get_ngrams(ngram_size, prev_input_ids, num_hypos)\r\n    banned_tokens = [\r\n        _get_generated_ngrams(generated_ngrams[hypo_idx], prev_input_ids[hypo_idx], ngram_size, cur_len)\r\n        for hypo_idx in range(num_hypos)\r\n    ]\r\n    return banned_tokens\r\n```\r\n\r\n### Before submitting a new issue...\r\n\r\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-25T06:04:33+00:00",
+    "closed_at": "2025-03-06T02:02:51+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/7842/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/7842"
+  },
+  {
+    "number": 6189,
+    "title": "[Feature]: Precise model device placement",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nHi all, I was wondering if it's possible to do precise model device placement. For example, I would like to place the vLLM model on GPU 1 and let GPU 0 do other things. Being able to do precise model device placement will help unblock online RLHF work in our Hugging Face's TRL, because we want to leverage the fast speed of vLLM's generation.\r\n\r\nIn particular, we'd like to run training on 7 GPUs, and leave only 1 GPU for vLLM inference. I have a very crude hack that supports this at https://github.com/vwxyzjn/vllm/pull/1, but I figure more general support in vLLM will be more helpful.\r\n\r\n\r\n\r\nCurrently this is not possible because the following code will error out\r\n\r\n```\r\nfrom vllm import LLM, SamplingParams\r\n# Sample prompts.\r\nprompts = [\r\n    \"Hello, my name is\",\r\n    \"The president of the United States is\",\r\n    \"The capital of France is\",\r\n    \"The future of AI is\",\r\n]\r\n# Create a sampling params object.\r\nsampling_params = SamplingParams(temperature=0.8, top_p=0.95)\r\n\r\n# Create an LLM.\r\nllm = LLM(model=\"gpt2\", tensor_parallel_size=1, device=\"cuda:1\")\r\n# Generate texts from the prompts. The output is a list of RequestOutput objects\r\n# that contain the prompt, generated text, and other information.\r\noutputs = llm.generate(prompts, sampling_params)\r\n# Print the outputs.\r\nfor output in outputs:\r\n    prompt = output.prompt\r\n    generated_text = output.outputs[0].text\r\n    print(f\"Prompt: {prompt!r}, Generated text: {generated_text!r}\")\r\n```\r\n\r\n<img width=\"1737\" alt=\"image\" src=\"https://github.com/vllm-project/vllm/assets/5555347/b96a5e9b-3650-4931-b0c0-ec743b2d8a27\">\r\n\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-07T14:10:43+00:00",
+    "closed_at": "2025-01-04T01:58:36+00:00",
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6189/reactions",
+      "total_count": 2,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 1,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6189"
+  },
+  {
+    "number": 3714,
+    "title": "[Feature]: Integrate with AICI",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\r\n\r\n#2888 added a prototype for AI Controller Interface, which is a WASM based runtime for guided generation. We would like to integrate this into our existing guided decoding stack properly. \r\n\r\nRelated is lm-format-enforcer #3713. \r\n\r\nWe should tell the users strength of each framework and let the user choose.\r\n\r\n### Alternatives\r\n\r\n_No response_\r\n\r\n### Additional context\r\n\r\n_No response_",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-29T03:29:22+00:00",
+    "closed_at": "2024-11-29T02:06:49+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/3714/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/3714"
+  },
+  {
+    "number": 670,
+    "title": "LightLLM benchmark",
+    "body": "Hi vLLM genius @zhuohan123 @WoosukKwon \r\n\r\nI find a new project  https://github.com/ModelTC/lightllm \r\n\r\nAfter reading their [blog](https://mp.weixin.qq.com/s/-wMLMGAHkxeyDYkixqni9Q), the performance advantage on the 7b model is not very obvious, but the gap is larger on the 65b. We will also do some verification and comparison later. The reason for bringing up this issue is to hope that we may see what the LightLLM does well, so that we can refer to and port similar optimizations to vLLM. Cheers.\r\n\r\n",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2023-08-03T15:35:27+00:00",
+    "closed_at": "2023-10-19T12:36:04+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/670/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/670"
+  },
+  {
+    "number": 16511,
+    "title": "[Feature]: Tool call inside reasoning",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nI need tool call parser to work with reasoning.\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-11T20:20:56+00:00",
+    "closed_at": "2025-04-11T20:23:25+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/16511/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/16511"
+  },
+  {
+    "number": 12173,
+    "title": "[Feature]: Serve /metrics while a model is loading",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nIs it possible for the /metrics endpoint to be up, even if returning and empty response with a 200 status code, while a model is loading?\n\n\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\nUpon starting the vLLM container, depending on how heavily HuggingFace is throttling you, it may take hours for a model to be downloaded and loaded. In this case know that the service is up but not yet active is useful for monitoring purposes.\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-17T18:28:57+00:00",
+    "closed_at": "2025-01-28T20:05:31+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/12173/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/12173"
+  },
+  {
+    "number": 13409,
+    "title": "[Feature]: Prompt logprobs + APC compatibility",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\n[#9880](https://github.com/vllm-project/vllm/pull/9880) adds sample and prompt logprobs support, however prompt logprobs currently require the server to be instantiated with `--no-enable-prefix-caching`; otherwise, a request with `prompt_logprobs=true` will cause the request to fail with the message \"Prefix caching with prompt logprobs not yet supported on VLLM V1.\"\n\nThe challenge of using prompt logprobs alongside APC is how to recover the topk prompt logprobs from an APC cache hit. The existing APC implementation does not cache prompt logprobs; upon a cache hit, cached blocks are treated as \"computed\" & no prompt logprobs are available for the computed blocks.\n\n### Alternatives\n\nA few possible solutions:\n* **Use APC cached KVs to recompute prompt logprobs if a request with `prompt_logprobs=true` triggers an APC cache hit.** This requires model code and `model_executor` code to support re-running prefill using cached KVs.\n* **Cache prompt logprobs in the APC.** The problem with this solution is that a request which triggers an APC cache hit may require a greater number of topk prompt logprobs than the request which filled the cache, in which case recomputation would be necessary anyway.\n* **Bypass APC for requests with `prompt_logprobs=true`.** Requests with `prompt_logprobs=true` cannot exploit APC cache. This is the simplest solution but incurs a performance penalty.\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-17T15:33:22+00:00",
+    "closed_at": "2025-02-17T17:27:11+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13409/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13409"
+  },
+  {
+    "number": 15141,
+    "title": "[Feature]: Configurable metrics export format - Prometheus, OpenTelemetry",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nWe would like to export metrics from  vLLM in the OpenTelemetry format with delta temporality (Prometheus uses only cumulative temporality).\n\nFor instance Dynatrace can ingest only delta temporality metrics. \n\n### Alternatives\n\nDeploy an OpenTelemetry collector with prometheus receiver and cumulativetodelta processor as a sidecar to vLLM and then export the metrics from the collector.\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-19T16:08:56+00:00",
+    "closed_at": "2025-07-18T02:28:02+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15141/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15141"
+  },
+  {
+    "number": 12297,
+    "title": "[Feature]: DeepSeek-R1 tool choice && Function Call",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nWould like to support tool choice and chat-template based on deepseek-R1, so that better results can be obtained.\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-22T03:33:55+00:00",
+    "closed_at": "2025-05-23T02:10:26+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/12297/reactions",
+      "total_count": 7,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 7,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/12297"
+  },
+  {
+    "number": 2426,
+    "title": "[Feature Request] Tree speculate",
+    "body": "Is is possible to integrate tree speculate into vllm? This is the tree speculate repo: [PainlessInferenceAcceleration](https://github.com/alipay/PainlessInferenceAcceleration)",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-12T03:43:21+00:00",
+    "closed_at": "2024-11-30T02:02:58+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/2426/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/2426"
+  },
+  {
+    "number": 9904,
+    "title": "[Feature]: Llama 3 and Command-R Chat Templates",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nCould we add Llama 3 and Command-R Chat Templates to https://github.com/chujiezheng/chat_templates/tree/main/chat_templates? Thank you!\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-01T03:56:37+00:00",
+    "closed_at": "2025-03-23T02:09:08+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/9904/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/9904"
+  },
+  {
+    "number": 8497,
+    "title": "[Feature]: new possible lora serving implementation?",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nPaper from Microsoft on serving loras in production\r\n\r\nhttps://arxiv.org/abs/2404.05086v1\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-16T01:11:09+00:00",
+    "closed_at": "2024-09-17T07:52:21+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/8497/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/8497"
+  },
+  {
+    "number": 14381,
+    "title": "[Feature]: Q-Filters for KV Cache Compression",
+    "body": "The new Q-Filters paper introduces a **training-free** KV cache compression method with 32\u00d7 compression and 99% accuracy on long-context tasks. It\u2019s low-overhead and beats FP8 compression with **FlashAttention-compatibility**. Can vLLM integrate this for better long-context support and the ability to use larger models on constrained hardware? See [this discussion](https://github.com/vllm-project/vllm/discussions/14378) for more info.",
+    "labels": [
+      "feature request",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-06T18:58:38+00:00",
+    "closed_at": "2025-07-05T02:11:59+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14381/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14381"
+  },
+  {
+    "number": 14582,
+    "title": "[Feature][Hardware][TPU]:Reduce the compile time",
+    "body": "### \ud83d\ude80 The feature, motivation and pitch\n\nAfter the fix of https://github.com/vllm-project/vllm/pull/14310,\n\nWe have num_token_bucket compilations for the main model and num_token_bucket x num_reqs_bucket for the logits processor.\n\nWe can make some improvement on this, as the num_token_bucket x num_reqs_bucket only happens on hidden_states[logits_indices], where we select part of the hidden states. Therefore, we can partition the graph to 3 parts:\n\nmain model: num_token_bucket\nhidden_states[logits_indices]: num_token_bucket x num_reqs_bucket\nlogits: num_reqs_bucket\n\n### Alternatives\n\n_No response_\n\n### Additional context\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "feature request",
+      "tpu"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-10T22:36:38+00:00",
+    "closed_at": "2025-04-16T05:31:48+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/14582/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/14582"
+  }
+]

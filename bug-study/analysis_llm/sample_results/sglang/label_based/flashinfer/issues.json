@@ -1,0 +1,422 @@
+[
+  {
+    "number": 6906,
+    "title": "[Bug] FMHA using flashinfer cutlass on Blackwell has low accuracy result",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nWhen setting BatchPrefillWithRaggedKVCacheWrapper backend to \"cutlass\" in flashinfer backend, the test result for Llama-3.1-8B-Instruct is low:\n```\nAccuracy: 0.018\nInvalid: 0.110\nLatency: 45.625 s\nOutput throughput: 12136.862 token/s\n```\nTriton backend result with the same test:\n```\nAccuracy: 0.788\nInvalid: 0.001\nLatency: 16.626 s\nOutput throughput: 8002.240 token/s\n```\nAccording to @yzh119 , inserting a synchronization before run will resolve the issue. Since the overhead should be bypassed, further modification is needed.\n\n### Reproduction\n\nFlashinfer built from source on latest main.\nSet BatchPrefillWithRaggedKVCacheWrapper backend to \"cutlass\" in flashinfer_backend.py.\n```\n        self.prefill_wrapper_ragged = BatchPrefillWithRaggedKVCacheWrapper(\n            self.workspace_buffer, \"NHD\", backend=\"cutlass\"\n        )\n```\nRun server with:\n`python3 -m sglang.launch_server --model meta-llama/Llama-3.1-8B-Instruct --trust-remote   --attention-backend flashinfer`\nRun test with:\n`python3 benchmark/gsm8k/bench_sglang.py --num-shots 8 --num-questions 1319 --parallel 1319`\n\n\n### Environment\n\nPython: 3.12.3 (main, Feb  4 2025, 14:48:35) [GCC 13.3.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA B200\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 10.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.9, V12.9.41\nCUDA Driver Version: 570.148.08\nPyTorch: 2.7.0+cu128\nsglang: 0.4.6.post5\nsgl_kernel: 0.1.5\nflashinfer_python: 0.2.5\ntriton: 3.3.0\ntransformers: 4.52.3\ntorchao: 0.9.0\nnumpy: 2.1.2\naiohttp: 3.12.6\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.32.3\ninteregular: 0.3.3\nmodelscope: 1.26.0\norjson: 3.10.18\noutlines: 0.1.11\npackaging: 25.0\npsutil: 7.0.0\npydantic: 2.11.5\npython-multipart: 0.0.20\npyzmq: 26.4.0\nuvicorn: 0.34.3\nuvloop: 0.21.0\nvllm: Module Not Found\nxgrammar: 0.1.19\nopenai: 1.83.0\ntiktoken: 0.9.0\nanthropic: Module Not Found\nlitellm: Module Not Found\ndecord: Module Not Found",
+    "labels": [
+      "bug",
+      "high priority",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2025-06-05T22:15:07+00:00",
+    "closed_at": "2025-06-06T19:57:51+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6906/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6906"
+  },
+  {
+    "number": 5855,
+    "title": "[Feature] integrate FlashInfer Blackwell kernels",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "flashinfer",
+      "performance",
+      "blackwell"
+    ],
+    "state": "open",
+    "created_at": "2025-04-28T19:12:30+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5855/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5855"
+  },
+  {
+    "number": 5064,
+    "title": "[Feature] attention backend default choice",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe standards we choose prioritize **performance first**, ease of use second (such as interface and installation), while also considering compatibility (such as older arch). Therefore, if in the future, the performance of different backends changes, we will still choose **the best performing one**.\n\n1. NVIDIA\n\n```\nsm75 -> Triton\nsm80, sm86, sm89 -> FlashInfer\nsm90 -> FA3 (Llama, Qwen, Gemma), FlashInfer (Others)\nsm100 -> FlashInfer\n\nMLA\nsm90 -> FA3 (DeepSeek)\nsm100 -> FlashInfer (DeepSeek)\n\nOther options\nFlashMLA, cuDNN etc\n```\n\nSGLang will install the JIT version of FlashInfer on PyPI for a better user installation experience. Alternatively, the whl size limit of FlashInfer can be increased on PyPI. cc @yzh119 \n\nFor FlashInfer, SGLang whl will use JIT version by default, in the Docker image using AOT.\n\nCurrently, FA3 is integrated in the [sgl-kernel](https://github.com/sgl-project/sglang/tree/main/sgl-kernel), which is more convenient for users to install and use than installing from [source code](https://github.com/Dao-AILab/flash-attention/tree/main/hopper).\n\n2. AMD\n\n```\nTriton\n```\n\n@HaiShaw is currently working on improving the performance of the attention backend.\n\n\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "flashinfer",
+      "performance",
+      "MLLM",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-04T08:13:51+00:00",
+    "closed_at": "2025-05-21T09:29:52+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5064/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5064"
+  },
+  {
+    "number": 4905,
+    "title": "[Bug] Remove stream sync in fast decode plan of flashinfer mla backend",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nhttps://github.com/flashinfer-ai/flashinfer/pull/969 claims that the flashinfer mla backend can be sped up after removal of \n```python\n  with self.device as device:\n      stream = torch.cuda.current_stream(device).cuda_stream\n```\nin `fast_mla_decode_plan` of `flashinfer_mla_backend.py`\n\nWe need to test its performance after removal.\n\n### Reproduction\n\n```bash\npython3 -m sglang.launch_server --model deepseek-ai/DeepSeek-R1 --tp 8 --trust-remote-code --enable-flashinfer-mla\n```\n\n### Environment\n\nGPU: H200 * 8\nLatest version of sglang and flashinfer\n\n### Related PR\n\n#5208  #5538",
+    "labels": [
+      "bug",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-29T23:34:44+00:00",
+    "closed_at": "2025-04-30T03:06:05+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4905/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4905"
+  },
+  {
+    "number": 4406,
+    "title": "[Bug] Behavior difference in `use_ragged` between versions 0.4.2.post3 and 0.4.4 for Gemma2-9b-it model",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nHi, I recently updated the `sglang` package to version 0.4.4 and noticed that the google/gemma-2-9b-it model is not working as expected. After comparing it with the older version (0.4.2.post3), I found a difference in the `use_ragged` flag in the following code snippet in flashinfer_backend.py:\n\n```python\nif self.is_multimodal:\n    use_ragged = False\n    extend_no_prefix = False\nelse:\n    use_ragged = True  # In version 0.4.4\n    extend_no_prefix = not any(forward_batch.extend_prefix_lens_cpu)\n```\n\nIn version 0.4.2.post3, `use_ragged` was set to `False` in the same logic branch, and the model worked fine. However, in version 0.4.4, `use_ragged` is set to `True`(actual change in 0.4.2.post4), which seems to cause the issue. Manually changing it back to `False` resolves the problem, and the model works as expected.\n\nI\u2019m not entirely sure about the purpose of the `use_ragged` flag, but this change appears to be critical for the Gemma2-9b-it model. Could you please clarify the intent behind this change and whether this is an intentional update or a potential bug? Any insights or fixes would be greatly appreciated.\n\nThanks!\n\n\n\n### Reproduction\n\nusing model google/gemma-2-9b-it\n\n### Environment\n\nPython: 3.11.9 (main, Apr 19 2024, 16:48:06) [GCC 11.2.0]\nCUDA available: True\nGPU 0: NVIDIA GeForce RTX 4090\nGPU 0 Compute Capability: 8.9\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.5, V12.5.82\nCUDA Driver Version: 560.35.05\nPyTorch: 2.5.1+cu124\nsglang: 0.4.4\nsgl_kernel: 0.0.5\nflashinfer: 0.2.3\ntriton: 3.1.0\ntransformers: 4.48.3\ntorchao: 0.7.0\nnumpy: 1.26.4\naiohttp: 3.9.5\nfastapi: 0.111.0\nhf_transfer: 0.1.8\nhuggingface_hub: 0.24.2\ninteregular: 0.3.3\nmodelscope: 1.23.2\norjson: 3.10.3\npackaging: 24.0\npsutil: 5.9.8\npydantic: 2.9.2\nmultipart: 0.0.9\nzmq: 26.0.3\nuvicorn: 0.29.0\nuvloop: 0.19.0\nvllm: 0.6.4.post1\nopenai: 1.55.0\nanthropic: 0.34.1\ndecord: 0.6.0\nNVIDIA Topology: \n\tGPU0\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\nGPU0\t X \t0-15\t0\t\tN/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nulimit soft: 1024\n",
+    "labels": [
+      "inactive",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-14T01:42:11+00:00",
+    "closed_at": "2025-05-14T00:19:06+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4406/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4406"
+  },
+  {
+    "number": 3472,
+    "title": "[Track] DeepSeek V3/R1 nextn progress",
+    "body": "## Triton Backend\n\n@ispobock @pankajroark \n\n- [x] [refactor triton backend 1](https://github.com/sgl-project/sglang/pull/3292), [2](https://github.com/sgl-project/sglang/pull/3309)\n\n- [x] [support custom mask](https://github.com/sgl-project/sglang/pull/3317)\n\n- [x] [support EAGLE 2](https://github.com/sgl-project/sglang/pull/3466)\n\n- [x] [compatible with CUDA Graph](https://github.com/sgl-project/sglang/pull/3500)\n\n- [x] [support nextn I (single MTP head)](https://github.com/sgl-project/sglang/pull/3582)\n\n- [x] support next II (multi MTP heads) (WIP @pankajroark )\n\n## FlashInfer Backend\n\n@zhyncs @yzh119 \n\n- [x] compatible with disable MLA\n\n- [x] support FlashInfer nightly MLA ragged prefill and CUDA Core MLA decoding\n\n- [x] support FlashInfer v0.2.0.post3 MLA ragged, paged prefill and decoding (@zhyncs @yzh119 )\n\n- [x] nextn parts can be shared with Triton Backend\n\n## EAGLE 2\n\n@zhyncs @Ying1123 \n\n- [x] implement sampling kernel in [sgl-kernel](https://github.com/sgl-project/sglang/tree/main/sgl-kernel) (drop cutex) [kernel part](https://github.com/sgl-project/sglang/pull/3373), [python part](https://github.com/sgl-project/sglang/pull/3378)\n\n- [x] bunch of fixes [non greedy fix](https://github.com/sgl-project/sglang/pull/3407), [disable cuda graph fix 1](https://github.com/sgl-project/sglang/pull/3412), [fix 2](https://github.com/sgl-project/sglang/pull/3411), [cleanup 1](https://github.com/sgl-project/sglang/pull/3415), [cleanup 2](https://github.com/sgl-project/sglang/pull/3422), [fix cuda graph capture failure](https://github.com/sgl-project/sglang/pull/3430), [fix 2](https://github.com/sgl-project/sglang/pull/3431), [reduce one draft forward](https://github.com/sgl-project/sglang/pull/3468)\n\n- [x] compatible with radix cache and chunked prefill (WIP @Ying1123 )",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "flashinfer",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-10T14:46:03+00:00",
+    "closed_at": "2025-03-25T04:13:25+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3472/reactions",
+      "total_count": 16,
+      "+1": 13,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 3
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3472"
+  },
+  {
+    "number": 3471,
+    "title": "[Track] long context performance sglang vs vllm",
+    "body": "Currently, the two most popular practical scenarios for LLM are chatbot-like scenario or code completion scenario. SGLang has shown good performance on the ShareGPT dataset in the past. With the increasing popularity of open source models like Qwen2.5-Coder-7B-Instruct with a context of 128k, some potential users, such as hot startups, are interested in customizing SGLang for their own use cases, especially when dealing with long contexts in code scenario. The following is a simple performance benchmark aimed at providing insights into the current capabilities of open source LLM engine rather than comparing them directly. This will help guide future optimization efforts effectively. The following content will be regularly updated.\n\nPerformance: SGLang (chunked prefill 32k) > vLLM default > SGLang default (chunked prefill 8k) > vLLM enable chunked prefill (2k)\nHardware: H200\nVersion: SGLang v0.4.2.post4, vLLM 0.7.2\n\n```bash\npython3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen2.5-Coder-7B-Instruct --disable-log-requests\npython3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen2.5-Coder-7B-Instruct --disable-log-requests --enable-chunked-prefill\npython3 -m sglang.bench_serving --dataset-name random --random-input-len 30000 --random-output-len 500 --random-range-ratio 1 --request-rate 1 --num-prompts 64 --backend vllm\n```\n\n```\nvLLM default\n\n============ Serving Benchmark Result ============\nBackend:                                 vllm\nTraffic request rate:                    1.0\nMax reqeuest concurrency:                not set\nSuccessful requests:                     62\nBenchmark duration (s):                  79.55\nTotal input tokens:                      1860000\nTotal generated tokens:                  31000\nTotal generated tokens (retokenized):    29938\nRequest throughput (req/s):              0.78\nInput token throughput (tok/s):          23381.02\nOutput token throughput (tok/s):         389.68\nTotal token throughput (tok/s):          23770.70\nConcurrency:                             39.82\n----------------End-to-End Latency----------------\nMean E2E Latency (ms):                   51091.85\nMedian E2E Latency (ms):                 51920.22\n---------------Time to First Token----------------\nMean TTFT (ms):                          4081.17\nMedian TTFT (ms):                        4106.11\nP99 TTFT (ms):                           7798.08\n-----Time per Output Token (excl. 1st token)------\nMean TPOT (ms):                          94.21\nMedian TPOT (ms):                        95.48\nP99 TPOT (ms):                           150.92\n---------------Inter-token Latency----------------\nMean ITL (ms):                           96.27\nMedian ITL (ms):                         39.60\nP99 ITL (ms):                            120.09\n==================================================\n```\n\n```\nvLLM enable chunked prefill (2k)\n\n============ Serving Benchmark Result ============\nBackend:                                 vllm\nTraffic request rate:                    1.0\nMax reqeuest concurrency:                not set\nSuccessful requests:                     62\nBenchmark duration (s):                  91.71\nTotal input tokens:                      1860000\nTotal generated tokens:                  31000\nTotal generated tokens (retokenized):    30164\nRequest throughput (req/s):              0.68\nInput token throughput (tok/s):          20282.32\nOutput token throughput (tok/s):         338.04\nTotal token throughput (tok/s):          20620.36\nConcurrency:                             33.20\n----------------End-to-End Latency----------------\nMean E2E Latency (ms):                   49099.86\nMedian E2E Latency (ms):                 50278.12\n---------------Time to First Token----------------\nMean TTFT (ms):                          13002.48\nMedian TTFT (ms):                        12155.46\nP99 TTFT (ms):                           27604.53\n-----Time per Output Token (excl. 1st token)------\nMean TPOT (ms):                          72.34\nMedian TPOT (ms):                        85.10\nP99 TPOT (ms):                           94.39\n---------------Inter-token Latency----------------\nMean ITL (ms):                           73.66\nMedian ITL (ms):                         84.39\nP99 ITL (ms):                            116.96\n==================================================\n```\n\n```bash\npython3 -m sglang.launch_server --model Qwen/Qwen2.5-Coder-7B-Instruct\npython3 -m sglang.launch_server --model Qwen/Qwen2.5-Coder-7B-Instruct --chunked-prefill-size 32000\npython3 -m sglang.bench_serving --dataset-name random --random-input-len 30000 --random-output-len 500 --random-range-ratio 1 --request-rate 1 --num-prompts 64\n```\n\n```\nSGLang default (chunked prefill 8k) \n\n============ Serving Benchmark Result ============\nBackend:                                 sglang\nTraffic request rate:                    1.0\nMax reqeuest concurrency:                not set\nSuccessful requests:                     62\nBenchmark duration (s):                  83.94\nTotal input tokens:                      1860000\nTotal generated tokens:                  31000\nTotal generated tokens (retokenized):    30164\nRequest throughput (req/s):              0.74\nInput token throughput (tok/s):          22157.42\nOutput token throughput (tok/s):         369.29\nTotal token throughput (tok/s):          22526.71\nConcurrency:                             42.20\n----------------End-to-End Latency----------------\nMean E2E Latency (ms):                   57135.08\nMedian E2E Latency (ms):                 58910.28\n---------------Time to First Token----------------\nMean TTFT (ms):                          8395.95\nMedian TTFT (ms):                        9529.31\nP99 TTFT (ms):                           17141.89\n-----Time per Output Token (excl. 1st token)------\nMean TPOT (ms):                          97.67\nMedian TPOT (ms):                        97.71\nP99 TPOT (ms):                           164.48\n---------------Inter-token Latency----------------\nMean ITL (ms):                           97.67\nMedian ITL (ms):                         29.03\nP99 ITL (ms):                            31.88\n==================================================\n```\n\n```\nSGLang (chunked prefill 32k)\n\n============ Serving Benchmark Result ============\nBackend:                                 sglang\nTraffic request rate:                    1.0\nMax reqeuest concurrency:                not set\nSuccessful requests:                     62\nBenchmark duration (s):                  74.37\nTotal input tokens:                      1860000\nTotal generated tokens:                  31000\nTotal generated tokens (retokenized):    30206\nRequest throughput (req/s):              0.83\nInput token throughput (tok/s):          25011.43\nOutput token throughput (tok/s):         416.86\nTotal token throughput (tok/s):          25428.28\nConcurrency:                             38.30\n----------------End-to-End Latency----------------\nMean E2E Latency (ms):                   45938.30\nMedian E2E Latency (ms):                 46798.18\n---------------Time to First Token----------------\nMean TTFT (ms):                          4318.49\nMedian TTFT (ms):                        3220.63\nP99 TTFT (ms):                           9065.59\n-----Time per Output Token (excl. 1st token)------\nMean TPOT (ms):                          83.41\nMedian TPOT (ms):                        84.33\nP99 TPOT (ms):                           140.39\n---------------Inter-token Latency----------------\nMean ITL (ms):                           83.74\nMedian ITL (ms):                         28.91\nP99 ITL (ms):                            953.49\n==================================================\n```",
+    "labels": [
+      "high priority",
+      "flashinfer",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-10T14:11:02+00:00",
+    "closed_at": "2025-05-26T16:54:51+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3471/reactions",
+      "total_count": 6,
+      "+1": 6,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3471"
+  },
+  {
+    "number": 3396,
+    "title": "[Bug] fix nightly test",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nAfter upgrading FlashInfer, there are issues with the nightly tests.\n\n### Reproduction\n\nN/A\n\n### Environment\n\nN/A",
+    "labels": [
+      "bug",
+      "high priority",
+      "inactive",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-08T08:58:41+00:00",
+    "closed_at": "2025-04-10T00:17:59+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3396/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3396"
+  },
+  {
+    "number": 2620,
+    "title": "[Feature] FlashInfer new version integration",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "high priority",
+      "inactive",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-27T18:14:29+00:00",
+    "closed_at": "2025-03-11T00:17:39+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2620/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2620"
+  },
+  {
+    "number": 2577,
+    "title": "[Bug] Loading model meta-llama/Llama-3.3-70B-Instruct with flashinfer-0.2.0(+) raises an error",
+    "body": "### Checklist\r\n\r\n- [X] 1. I have searched related issues but cannot get the expected help.\r\n- [X] 2. The bug has not been fixed in the latest version.\r\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\r\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [X] 5. Please use English, otherwise it will be closed.\r\n\r\n### Describe the bug\r\n\r\nThere is an issue I have checked with @zhaochenyang20 \r\n\r\nflash infer 0.2.0 + torch 2.4.0 + cuda 12.5 -> llama 3.3 70B will cause error:\r\n\r\n  File \"/home/***/miniconda3/envs/sglang/lib/python3.10/site-packages/flashinfer/prefill.py\", line 2330, in forward_return_lse\r\n    return self.run_return_lse(q, k, v)\r\n  File \"/home/***/miniconda3/envs/sglang/lib/python3.10/site-packages/flashinfer/prefill.py\", line 2242, in run\r\n    _check_cached_qkv_data_type(\r\n  File \"/home/***/miniconda3/envs/sglang/lib/python3.10/site-packages/flashinfer/utils.py\", line 199, in _check_cached_qkv_data_type\r\n    raise ValueError(\r\nValueError: The dtype of q torch.bfloat16 does not match the q_data_type torch.float16 specified in plan function.\r\n\r\n\r\n### Reproduction\r\n\r\nmodel = sgl.Engine(\r\n        model_path = model,\r\n        tp_size = 8,\r\n        trust_remote_code = True\r\n        )\r\n    sampling_params = {\"temperature\": 0.0, \"max_new_tokens\": 8192}\r\n\r\n### Environment\r\n\r\n[2024-12-26 04:41:41] INFO _client.py:1038: HTTP Request: GET https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json \"HTTP/1.1 200 OK\"\r\nPython: 3.10.16 (main, Dec 11 2024, 16:24:50) [GCC 11.2.0]\r\nCUDA available: True\r\nGPU 0,1,2,3,4,5,6,7: NVIDIA A100-SXM4-80GB\r\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 8.0\r\nCUDA_HOME: /usr/local/cuda\r\nNVCC: Cuda compilation tools, release 12.5, V12.5.82\r\nCUDA Driver Version: 535.161.07\r\nPyTorch: 2.4.0+cu121\r\nsglang: 0.4.0.post1\r\nflashinfer: 0.1.6+cu124torch2.4\r\ntriton: 3.0.0\r\ntransformers: 4.46.3\r\ntorchao: 0.7.0\r\nnumpy: 1.26.4\r\naiohttp: 3.11.11\r\nfastapi: 0.115.6\r\nhf_transfer: 0.1.8\r\nhuggingface_hub: 0.27.0\r\ninteregular: 0.3.3\r\nmodelscope: 1.21.0\r\norjson: 3.10.12\r\npackaging: 24.2\r\npsutil: 6.1.0\r\npydantic: 2.10.3\r\nmultipart: 0.0.20\r\nzmq: 26.2.0\r\nuvicorn: 0.34.0\r\nuvloop: 0.21.0\r\nvllm: 0.6.3.post1\r\nopenai: 1.58.1\r\nanthropic: 0.42.0\r\ndecord: 0.6.0\r\nNVIDIA Topology: \r\n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    NIC0    NIC1    NIC2    NIC3    NIC4    NIC5    NIC6    NIC7    CPU Affinity    NUMA Affinity   GPU NUMA ID\r\nGPU0     X      NV12    NV12    NV12    NV12    NV12    NV12    NV12    PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS     0-31,64-95      0               N/A\r\nGPU1    NV12     X      NV12    NV12    NV12    NV12    NV12    NV12    PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS     0-31,64-95      0               N/A\r\nGPU2    NV12    NV12     X      NV12    NV12    NV12    NV12    NV12    NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     0-31,64-95      0               N/A\r\nGPU3    NV12    NV12    NV12     X      NV12    NV12    NV12    NV12    NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     0-31,64-95      0               N/A\r\nGPU4    NV12    NV12    NV12    NV12     X      NV12    NV12    NV12    SYS     SYS     SYS     SYS     PXB     PXB     NODE    NODE    32-63,96-127    1               N/A\r\nGPU5    NV12    NV12    NV12    NV12    NV12     X      NV12    NV12    SYS     SYS     SYS     SYS     PXB     PXB     NODE    NODE    32-63,96-127    1               N/A\r\nGPU6    NV12    NV12    NV12    NV12    NV12    NV12     X      NV12    SYS     SYS     SYS     SYS     NODE    NODE    PXB     PXB     32-63,96-127    1               N/A\r\nGPU7    NV12    NV12    NV12    NV12    NV12    NV12    NV12     X      SYS     SYS     SYS     SYS     NODE    NODE    PXB     PXB     32-63,96-127    1               N/A\r\nNIC0    PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS      X      PIX     NODE    NODE    SYS     SYS     SYS     SYS\r\nNIC1    PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS     PIX      X      NODE    NODE    SYS     SYS     SYS     SYS\r\nNIC2    NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     NODE    NODE     X      PIX     SYS     SYS     SYS     SYS\r\nNIC3    NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     NODE    NODE    PIX      X      SYS     SYS     SYS     SYS\r\nNIC4    SYS     SYS     SYS     SYS     PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS      X      PIX     NODE    NODE\r\nNIC5    SYS     SYS     SYS     SYS     PXB     PXB     NODE    NODE    SYS     SYS     SYS     SYS     PIX      X      NODE    NODE\r\nNIC6    SYS     SYS     SYS     SYS     NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     NODE    NODE     X      PIX\r\nNIC7    SYS     SYS     SYS     SYS     NODE    NODE    PXB     PXB     SYS     SYS     SYS     SYS     NODE    NODE    PIX      X \r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n\r\nNIC Legend:\r\n\r\n  NIC0: mlx5_0\r\n  NIC1: mlx5_1\r\n  NIC2: mlx5_2\r\n  NIC3: mlx5_3\r\n  NIC4: mlx5_4\r\n  NIC5: mlx5_5\r\n  NIC6: mlx5_6\r\n  NIC7: mlx5_7\r\n\r\n\r\nulimit soft: 1048576",
+    "labels": [
+      "bug",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-25T20:44:40+00:00",
+    "closed_at": "2024-12-28T06:08:56+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2577/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2577"
+  },
+  {
+    "number": 2402,
+    "title": "[Feature] add kernel level benchmark",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nuse triton benchmark utils https://triton-lang.org/main/python-api/generated/triton.testing.do_bench.html#triton.testing.do_bench to benchmark kernels (flashinfer, triton, vllm, tensorrt llm, cudnn etc)\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "help wanted",
+      "high priority",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-08T11:06:34+00:00",
+    "closed_at": "2025-05-21T09:31:00+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2402/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2402"
+  },
+  {
+    "number": 1058,
+    "title": "[Bug] T4 not work",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n\n### Describe the bug\n\nT4 not work w/o FlashInfer ref https://github.com/flashinfer-ai/flashinfer/issues/421\r\n\r\n```\r\nCUDA Error: no kernel image is available for execution on the device (209) /tmp/build-via-sdist-iemil769/flashinfer-0.1.4+cu121torch2.4/include/flashinfer/attention/handler.cuh: line 169 at function cudaOccupancyMaxActiveBlocksPerMultiprocessor(&num_blocks_per_sm, kernel, num_threads, smem_size)\r\nCUDA Error: no kernel image is available for execution on the device (209) /tmp/build-via-sdist-iemil769/flashinfer-0.1.4+cu121torch2.4/include/flashinfer/attention/handler.cuh: line 324 at function work_estimation_func(split_kv, max_grid_size, max_num_pages_per_batch, new_batch_size, batch_size, indptr_h, num_qo_heads, page_size, IsCUDAGraphEnabled(), stream_)\r\nProcess Process-1:\r\nInitialization failed. controller_init_state: Traceback (most recent call last):\r\n  File \"/content/sglang/python/sglang/srt/model_executor/model_runner.py\", line 344, in init_cuda_graphs\r\n    self.cuda_graph_runner.capture(batch_size_list)\r\n  File \"/content/sglang/python/sglang/srt/model_executor/cuda_graph_runner.py\", line 148, in capture\r\n    ) = self.capture_one_batch_size(bs, forward)\r\n  File \"/content/sglang/python/sglang/srt/model_executor/cuda_graph_runner.py\", line 183, in capture_one_batch_size\r\n    update_flashinfer_indices(\r\n  File \"/content/sglang/python/sglang/srt/model_executor/forward_batch_info.py\", line 284, in update_flashinfer_indices\r\n    flashinfer_decode_wrapper.begin_forward(\r\n  File \"/usr/local/lib/python3.10/dist-packages/flashinfer/decode.py\", line 525, in begin_forward\r\n    self._wrapper.begin_forward(\r\nRuntimeError: BatchDecodeWithPagedKVCache failed with error no kernel image is available for execution on the device\r\n\r\nDuring handling of the above exception, another exception occurred:\r\n\r\nTraceback (most recent call last):\r\n  File \"/content/sglang/python/sglang/srt/managers/controller_single.py\", line 150, in start_controller_process\r\n    controller = ControllerSingle(\r\n  File \"/content/sglang/python/sglang/srt/managers/controller_single.py\", line 84, in __init__\r\n    self.tp_server = ModelTpServer(\r\n  File \"/content/sglang/python/sglang/srt/managers/tp_worker.py\", line 100, in __init__\r\n    self.model_runner = ModelRunner(\r\n  File \"/content/sglang/python/sglang/srt/model_executor/model_runner.py\", line 139, in __init__\r\n    self.init_cuda_graphs()\r\n  File \"/content/sglang/python/sglang/srt/model_executor/model_runner.py\", line 346, in init_cuda_graphs\r\n    raise Exception(\r\nException: Capture cuda graph failed: BatchDecodeWithPagedKVCache failed with error no kernel image is available for execution on the device\r\nPossible solutions:\r\n1. disable torch compile by not using --enable-torch-compile\r\n2. disable cuda graph by --disable-cuda-graph\r\n3. set --mem-fraction-static to a smaller value\r\nOpen an issue on GitHub https://github.com/sgl-project/sglang/issues/new/choose \r\n\r\n\r\nInitialization failed. detoken_init_state: init ok\r\n```\r\n\r\n```\r\nINFO:     127.0.0.1:59800 - \"GET /get_model_info HTTP/1.1\" 200 OK\r\n[gpu=0] Prefill batch. #new-seq: 1, #new-token: 6, #cached-token: 0, cache hit rate: 0.00%, #running-req: 0, #queue-req: 0\r\nException in ModelTpServer:\r\nTraceback (most recent call last):\r\n  File \"/content/sglang/python/sglang/srt/managers/tp_worker.py\", line 222, in exposed_step\r\n    self.forward_step()\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/managers/tp_worker.py\", line 238, in forward_step\r\n    self.forward_prefill_batch(new_batch)\r\n  File \"/content/sglang/python/sglang/srt/managers/tp_worker.py\", line 452, in forward_prefill_batch\r\n    output = self.model_runner.forward(batch, ForwardMode.EXTEND)\r\n  File \"/content/sglang/python/sglang/srt/model_executor/model_runner.py\", line 397, in forward\r\n    return self.forward_extend(batch)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/model_executor/model_runner.py\", line 373, in forward_extend\r\n    return self.model.forward(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/models/qwen2.py\", line 287, in forward\r\n    hidden_states = self.model(input_ids, positions, input_metadata, input_embeds)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1553, in _wrapped_call_impl\r\n    return self._call_impl(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1562, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/models/qwen2.py\", line 255, in forward\r\n    hidden_states, residual = layer(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1553, in _wrapped_call_impl\r\n    return self._call_impl(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1562, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/models/qwen2.py\", line 207, in forward\r\n    hidden_states = self.self_attn(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1553, in _wrapped_call_impl\r\n    return self._call_impl(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1562, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/models/qwen2.py\", line 156, in forward\r\n    attn_output = self.attn(q, k, v, input_metadata)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1553, in _wrapped_call_impl\r\n    return self._call_impl(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1562, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/layers/radix_attention.py\", line 177, in forward\r\n    return self.extend_forward(q, k, v, input_metadata)\r\n  File \"/content/sglang/python/sglang/srt/layers/radix_attention.py\", line 69, in extend_forward_triton\r\n    extend_attention_fwd(\r\n  File \"/content/sglang/python/sglang/srt/layers/extend_attention.py\", line 291, in extend_attention_fwd\r\n    _fwd_kernel[grid](\r\n  File \"/usr/local/lib/python3.10/dist-packages/triton/runtime/jit.py\", line 345, in <lambda>\r\n    return lambda *args, **kwargs: self.run(grid=grid, warmup=False, *args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/triton/runtime/jit.py\", line 662, in run\r\n    kernel = self.compile(\r\n  File \"/usr/local/lib/python3.10/dist-packages/triton/compiler/compiler.py\", line 282, in compile\r\n    next_module = compile_ir(module, metadata)\r\n  File \"/usr/local/lib/python3.10/dist-packages/triton/backends/nvidia/compiler.py\", line 318, in <lambda>\r\n    stages[\"llir\"] = lambda src, metadata: self.make_llir(src, metadata, options, self.capability)\r\n  File \"/usr/local/lib/python3.10/dist-packages/triton/backends/nvidia/compiler.py\", line 216, in make_llir\r\n    pm.run(mod)\r\nIndexError: map::at\r\n\r\nException in ControllerSingle:\r\nTraceback (most recent call last):\r\n  File \"/content/sglang/python/sglang/srt/managers/controller_single.py\", line 166, in start_controller_process\r\n    controller.loop_for_forward()\r\n  File \"/content/sglang/python/sglang/srt/managers/controller_single.py\", line 103, in loop_for_forward\r\n    out_pyobjs = self.tp_server.exposed_step(recv_reqs)\r\n  File \"/content/sglang/python/sglang/srt/managers/tp_worker.py\", line 222, in exposed_step\r\n    self.forward_step()\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/managers/tp_worker.py\", line 238, in forward_step\r\n    self.forward_prefill_batch(new_batch)\r\n  File \"/content/sglang/python/sglang/srt/managers/tp_worker.py\", line 452, in forward_prefill_batch\r\n    output = self.model_runner.forward(batch, ForwardMode.EXTEND)\r\n  File \"/content/sglang/python/sglang/srt/model_executor/model_runner.py\", line 397, in forward\r\n    return self.forward_extend(batch)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/model_executor/model_runner.py\", line 373, in forward_extend\r\n    return self.model.forward(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\", line 116, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/models/qwen2.py\", line 287, in forward\r\n    hidden_states = self.model(input_ids, positions, input_metadata, input_embeds)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1553, in _wrapped_call_impl\r\n    return self._call_impl(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1562, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/models/qwen2.py\", line 255, in forward\r\n    hidden_states, residual = layer(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1553, in _wrapped_call_impl\r\n    return self._call_impl(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1562, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/models/qwen2.py\", line 207, in forward\r\n    hidden_states = self.self_attn(\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1553, in _wrapped_call_impl\r\n    return self._call_impl(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1562, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/models/qwen2.py\", line 156, in forward\r\n    attn_output = self.attn(q, k, v, input_metadata)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1553, in _wrapped_call_impl\r\n    return self._call_impl(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/nn/modules/module.py\", line 1562, in _call_impl\r\n    return forward_call(*args, **kwargs)\r\n  File \"/content/sglang/python/sglang/srt/layers/radix_attention.py\", line 177, in forward\r\n    return self.extend_forward(q, k, v, input_metadata)\r\n  File \"/content/sglang/python/sglang/srt/layers/radix_attention.py\", line 69, in extend_forward_triton\r\n    extend_attention_fwd(\r\n  File \"/content/sglang/python/sglang/srt/layers/extend_attention.py\", line 291, in extend_attention_fwd\r\n    _fwd_kernel[grid](\r\n  File \"/usr/local/lib/python3.10/dist-packages/triton/runtime/jit.py\", line 345, in <lambda>\r\n    return lambda *args, **kwargs: self.run(grid=grid, warmup=False, *args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/triton/runtime/jit.py\", line 662, in run\r\n    kernel = self.compile(\r\n  File \"/usr/local/lib/python3.10/dist-packages/triton/compiler/compiler.py\", line 282, in compile\r\n    next_module = compile_ir(module, metadata)\r\n  File \"/usr/local/lib/python3.10/dist-packages/triton/backends/nvidia/compiler.py\", line 318, in <lambda>\r\n    stages[\"llir\"] = lambda src, metadata: self.make_llir(src, metadata, options, self.capability)\r\n  File \"/usr/local/lib/python3.10/dist-packages/triton/backends/nvidia/compiler.py\", line 216, in make_llir\r\n    pm.run(mod)\r\nIndexError: map::at\r\n\r\n[rank0]:W0812 14:38:42.916000 137655740245568 torch/_inductor/compile_worker/subproc_pool.py:126] SubprocPool unclean exit\r\n```\n\n### Reproduction\n\n```\r\n# Use the last release branch\r\ngit clone -b v0.2.12 https://github.com/sgl-project/sglang.git\r\ncd sglang\r\n\r\npip install --upgrade pip\r\npip install -e \"python[all]\"\r\n\r\n# Install FlashInfer CUDA kernels\r\npip install flashinfer -i https://flashinfer.ai/whl/cu121/torch2.4/\r\n\r\npython3 -m sglang.launch_server --model Qwen/Qwen1.5-4B-Chat\r\n\r\npython3 -m sglang.launch_server --model Qwen/Qwen1.5-4B-Chat --disable-flashinfer --disable-flashinfer-sampling\r\n```\n\n### Environment\n\n```\r\nPython: 3.10.12 (main, Jul 29 2024, 16:56:48) [GCC 11.4.0]\r\nCUDA available: True\r\nGPU 0: Tesla T4\r\nGPU 0 Compute Capability: 7.5\r\nCUDA_HOME: /usr/local/cuda\r\nNVCC: Cuda compilation tools, release 12.2, V12.2.140\r\nCUDA Driver Version: 535.104.05\r\nPyTorch: 2.4.0+cu121\r\nsglang: 0.2.12\r\nflashinfer: 0.1.4+cu121torch2.4\r\ntriton: 3.0.0\r\ntransformers: 4.44.0\r\nrequests: 2.32.3\r\ntqdm: 4.66.5\r\nnumpy: 1.26.4\r\naiohttp: 3.10.1\r\nfastapi: 0.112.0\r\nhf_transfer: 0.1.8\r\nhuggingface_hub: 0.23.5\r\ninteregular: 0.3.3\r\npackaging: 24.1\r\nPIL: 9.4.0\r\npsutil: 5.9.5\r\npydantic: 2.8.2\r\nuvicorn: 0.30.5\r\nuvloop: 0.19.0\r\nzmq: 24.0.1\r\nvllm: 0.5.4\r\nmultipart: 0.0.9\r\nopenai: 1.40.3\r\nanthropic: 0.33.0\r\nNVIDIA Topology: \r\n\tGPU0\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\r\nGPU0\t X \t0-1\t\tN/A\t\tN/A\r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n\r\nulimit soft: 1048576\r\n```",
+    "labels": [
+      "bug",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-12T14:46:18+00:00",
+    "closed_at": "2024-08-28T13:05:35+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1058/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1058"
+  },
+  {
+    "number": 949,
+    "title": "[Bug] requires \"python-multipart\" to be installed with docker image",
+    "body": "### Checklist\r\n\r\n- [X] 1. I have searched related issues but cannot get the expected help.\r\n- [ ] 2. The bug has not been fixed in the latest version.\r\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\r\n\r\n### Describe the bug\r\n\r\nI tested sglang in Kubernetes with the minimum configuration below:\r\n```\r\n  containers:\r\n  - args:\r\n    - --model-path\r\n    - /workspace/models/models--facebook--opt-125m\r\n    - --served-model-name\r\n    - opt-125m\r\n    - --host\r\n    - 0.0.0.0\r\n    - --port\r\n    - \"8080\"\r\n    command:\r\n    - python3\r\n    - -m\r\n    - sglang.launch_server\r\n    image: lmsysorg/sglang:v0.2.9-cu121\r\n```\r\n\r\nHowever, it emits error like:\r\n```\r\nForm data requires \"python-multipart\" to be installed.\r\nYou can install \"python-multipart\" with:\r\n\r\npip install python-multipart\r\n\r\nTraceback (most recent call last):\r\n  File \"/usr/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\r\n    return _run_code(code, main_globals, None,\r\n  File \"/usr/lib/python3.10/runpy.py\", line 86, in _run_code\r\n    exec(code, run_globals)\r\n  File \"/sgl-workspace/sglang/python/sglang/launch_server.py\", line 5, in <module>\r\n    from sglang.srt.server import launch_server\r\n  File \"/sgl-workspace/sglang/python/sglang/srt/server.py\", line 162, in <module>\r\n    async def openai_v1_files(file: UploadFile = File(...), purpose: str = Form(\"batch\")):\r\n  File \"/usr/local/lib/python3.10/dist-packages/fastapi/routing.py\", line 944, in decorator\r\n    self.add_api_route(\r\n  File \"/usr/local/lib/python3.10/dist-packages/fastapi/routing.py\", line 883, in add_api_route\r\n    route = route_class(\r\n  File \"/usr/local/lib/python3.10/dist-packages/fastapi/routing.py\", line 519, in __init__\r\n    self.body_field = get_body_field(dependant=self.dependant, name=self.unique_id)\r\n  File \"/usr/local/lib/python3.10/dist-packages/fastapi/dependencies/utils.py\", line 817, in get_body_field\r\n    check_file_field(final_field)\r\n  File \"/usr/local/lib/python3.10/dist-packages/fastapi/dependencies/utils.py\", line 100, in check_file_field\r\n    raise RuntimeError(multipart_not_installed_error) from None\r\nRuntimeError: Form data requires \"python-multipart\" to be installed.\r\nYou can install \"python-multipart\" with:\r\n\r\npip install python-multipart\r\n```\r\n\r\nBased on my understanding, this should be included in the docker image, anything I missed here?\r\nThanks !\r\n\r\n### Reproduction\r\n\r\nPart of the yaml file as described above.\r\n\r\n### Environment\r\n\r\n```Shell\r\nRunning with docker image `lmsysorg/sglang:v0.2.9-cu121`\r\n```\r\n",
+    "labels": [
+      "await-response",
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-06T08:03:23+00:00",
+    "closed_at": "2024-08-16T08:09:06+00:00",
+    "comments": 18,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/949/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/949"
+  },
+  {
+    "number": 931,
+    "title": "[Bug] FlashInfer support for <=sm_75",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n\n### Describe the bug\n\nCan't use sglang with flashinfer if you have sm_75 or lower. Not even recompiling. Better put up this information so people don't waste time trying to make it work.\n\n### Reproduction\n\nsimply trying to use it without `--disable-flashinfer --disable-flashinfer-sampling` causes a crash\n\n### Environment\n\n```Shell\nPython: 3.11.9 (main, Apr 19 2024, 16:48:06) [GCC 11.2.0]\r\nCUDA available: True\r\nGPU 0: Tesla T4\r\nCUDA_HOME: /usr/local/cuda-12.6\r\nNVCC: Cuda compilation tools, release 12.6, V12.6.20\r\nCUDA Driver Version: 535.54.03\r\nPyTorch: 2.3.1+cu121\r\nsglang: 0.2.10\r\nflashinfer: 0.1.3\r\ntriton: 2.3.1\r\nrequests: 2.32.3\r\ntqdm: 4.66.4\r\nnumpy: 1.26.4\r\naiohttp: 3.9.5\r\nfastapi: 0.112.0\r\nhf_transfer: 0.1.8\r\nhuggingface_hub: 0.24.5\r\ninteregular: 0.3.3\r\npackaging: 24.0\r\nPIL: 10.3.0\r\npsutil: 5.9.8\r\npydantic: 2.7.1\r\nuvicorn: 0.30.5\r\nuvloop: 0.19.0\r\nzmq: 26.0.3\r\nvllm: 0.5.3.post1\r\nmultipart: 0.0.9\r\nopenai: 1.38.0\r\nanthropic: 0.32.0\r\nNVIDIA Topology: \r\n\tGPU0\tNIC0\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\r\nGPU0\t X \tSYS\t0-15\t\tN/A\t\tN/A\r\nNIC0\tSYS\t X \t\t\t\t\r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n\r\nNIC Legend:\r\n\r\n  NIC0: mlx5_0\r\n\r\n\r\nulimit soft: 1024\n```\n",
+    "labels": [
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-05T09:14:49+00:00",
+    "closed_at": "2024-09-22T14:25:24+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/931/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/931"
+  },
+  {
+    "number": 849,
+    "title": "There doesn't seem to be a wheel available for python312.",
+    "body": "(llm_venv_sglang) xlab@xlab:/mnt/SGLang$ uv pip install flashinfer -i https://flashinfer.ai/whl/cu121/torch2.3/\r\n  \u00d7 No solution found when resolving dependencies:\r\n  \u2570\u2500\u25b6 Because only the following versions of flashinfer are available:\r\n          flashinfer==0.0.4+cu121torch2.3\r\n          flashinfer==0.0.5+cu121torch2.3\r\n          flashinfer==0.0.6+cu121torch2.3\r\n          flashinfer==0.0.7+cu121torch2.3\r\n          flashinfer==0.0.8+cu121torch2.3\r\n          flashinfer==0.0.9+cu121torch2.3\r\n          flashinfer==0.1.0+cu121torch2.3\r\n          flashinfer==0.1.1+cu121torch2.3\r\n          flashinfer==0.1.2+cu121torch2.3\r\n      and flashinfer==0.0.4+cu121torch2.3 has no wheels with a matching Python ABI tag, we can conclude that\r\n      flashinfer<0.0.5+cu121torch2.3 cannot be used.\r\n      And because flashinfer==0.0.5+cu121torch2.3 has no wheels with a matching Python ABI tag, we can conclude\r\n      that flashinfer<0.0.6+cu121torch2.3 cannot be used.\r\n      And because flashinfer==0.0.6+cu121torch2.3 has no wheels with a matching Python ABI tag and\r\n      flashinfer==0.0.7+cu121torch2.3 has no wheels with a matching Python ABI tag, we can conclude that\r\n      flashinfer<0.0.8+cu121torch2.3 cannot be used.\r\n      And because flashinfer==0.0.8+cu121torch2.3 has no wheels with a matching Python ABI tag and\r\n      flashinfer==0.0.9+cu121torch2.3 has no wheels with a matching Python ABI tag, we can conclude that\r\n      flashinfer<0.1.0+cu121torch2.3 cannot be used.\r\n      And because flashinfer==0.1.0+cu121torch2.3 has no wheels with a matching Python ABI tag and\r\n      flashinfer==0.1.1+cu121torch2.3 has no wheels with a matching Python ABI tag, we can conclude that\r\n      flashinfer<0.1.2+cu121torch2.3 cannot be used.\r\n      And because flashinfer==0.1.2+cu121torch2.3 has no wheels with a matching Python ABI tag and you require\r\n      flashinfer, we can conclude that the requirements are unsatisfiable.",
+    "labels": [
+      "flashinfer"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-31T09:35:12+00:00",
+    "closed_at": "2024-08-01T23:30:03+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/849/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/849"
+  }
+]

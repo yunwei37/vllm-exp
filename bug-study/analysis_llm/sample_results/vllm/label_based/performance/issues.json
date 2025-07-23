@@ -1,0 +1,799 @@
+[
+  {
+    "number": 9609,
+    "title": "[Performance]: test speculative decode accuracy",
+    "body": "### Proposal to improve performance\n\nI use lm-evaluation-harness to test vllm accuracy\r\n1.when don't enable spec decode,I got some result below\r\nnum_concurrent=1\r\n![image](https://github.com/user-attachments/assets/dfa6ef55-216e-4460-9ef4-d387e0ce460e)\r\n\r\nnum_concurrent=8\r\n![image](https://github.com/user-attachments/assets/505d051f-f119-4275-a5d4-5683b74be398)\r\n\r\nnum_concurrent=16\r\n![image](https://github.com/user-attachments/assets/87e7c9c6-f2de-43de-8a20-96f82c4c9c7c)\r\n\r\nnum_concurrent=32\r\n![image](https://github.com/user-attachments/assets/312e2703-cfc8-42c7-9751-22a0b1aba21d)\r\n\r\n\r\n2.when enable spec decode,I got some result below\r\nnum_concurrent=1\r\n![image](https://github.com/user-attachments/assets/6681a17f-3bc7-4d52-b0e5-5451a40dfcf4)\r\n\r\nnum_concurrent=8\r\n![image](https://github.com/user-attachments/assets/4a1878a8-2da7-475e-9ecd-8400a6fc0620)\r\n\r\nnum_concurrent=16\r\n![image](https://github.com/user-attachments/assets/fc9ca925-a57c-4c6f-9a07-1fa056e67d66)\r\n\r\nnum_concurrent=32\r\n![image](https://github.com/user-attachments/assets/67d284c2-9023-440c-88fa-f61c3f6090de)\r\n\r\nHas anyone done such experiments? Does vLLM's speculative decoding affect output accuracy?\r\n\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\nh100 1gpu\r\n\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-23T07:40:46+00:00",
+    "closed_at": "2024-10-25T09:18:03+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/9609/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/9609"
+  },
+  {
+    "number": 17062,
+    "title": "[Performance]: UVA vs UVM for CPU offloading on v0.8.4+",
+    "body": "### Proposal to improve performance\n\nReferencing the recent implementation on https://github.com/vllm-project/vllm/pull/15354 (v0.8.4+) for CPU offloading\n\n@youkaichao, is there any specific reason to pick UVA (`cudaHostAlloc`) over UVM `cudaMallocManaged()`? \n\n1. UVM goes further than UVA to manage data automatically, often using page-faulting hardware to migrate pages on demand. On systems like the GH200, this has potentially additional benefits such as hardware orchestrated frequency based migration. \n2. A key benefit of Unified Memory is simplifying the heterogeneous computing memory model by eliminating the need for deep copies when accessing structured data in GPU kernels. [Source](https://developer.nvidia.com/blog/unified-memory-in-cuda-6/#unified_memory_or_unified_virtual_addressing)\n3. On several discussion threads, the larger access sizes of CPU offloading makes UVM seems to be the better approach compared to UVA [Source](https://forums.developer.nvidia.com/t/page-fault-profiling/265320/3?u=rajeshshashikumar)\n\nGoing by [this](https://arxiv.org/pdf/2407.07850), if transparent offloading is desired `cudaMallocManaged()` seems to be desirable for platforms such as the GH200\n\n<img width=\"474\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/936174e3-1559-48c8-b02f-440e93e30d61\" />\n\nAlternatively, [Pie](https://arxiv.org/pdf/2411.09317) seems to show that the old implementation where \n> before every forward in every layer, we move tensors from cpu to gpu, and compute in gpu\n\nseems to work best in cases such as the GH200 when carefully prefetching layers of the KV cache to reduce the penalty of oversubscription\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "open",
+    "created_at": "2025-04-23T15:58:29+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/17062/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/17062"
+  },
+  {
+    "number": 12266,
+    "title": "[Performance]:Why do the prefill and decoding need to be executed twice for the same task?",
+    "body": "### Proposal to improve performance\n\n\n\n\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\nHello, when I start the serving service using vllm serve and conduct tests using the benchmark_serving.py script, I captured the kernel pipeline of the CUDA backend through the nsight system. I found out why the prefill and decoding stages of the same task are executed twice?\n\n![Image](https://github.com/user-attachments/assets/19c57ea0-bb61-49a5-ad3e-e2e4a678b845)\n\nAt the same time, my commands are as follows:\n* serving:\n```\nvllm serve data/llama-3-8b-instruct \\\n        --swap-space 16 \\\n        --disable-log-requests \\\n        --tensor-parallel-size 2 \\\n        --gpu-memory-utilization 0.9 \\\n        --dtype bfloat16\n        --enforce-eager\n```\n* client:\n```\npython3 vllm/benchmarks/benchmark_serving.py \\\n        --backend vllm \\\n        --model data/llama-3-8b-instruct \\\n        --profile \\\n        --dataset-name random \\\n        --random-input-len 2048 \\\n        --random-output-len 200 \\\n        --num-prompts  1 \\\n        --trust-remote-code\n```\n\nI wonder, is there any trick for executing the prefill and decoding twice for the same prompt? \n\n\n### Your current environment (if you think it is necessary)\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-21T13:19:51+00:00",
+    "closed_at": "2025-01-22T05:44:54+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/12266/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/12266"
+  },
+  {
+    "number": 4702,
+    "title": "[Performance]: why hf is better than vllm when using benchmark throughput",
+    "body": "When I run benchmark on H800,  the results are confusing. Why hf is better than vllm? Is anything wrong when I run the script?\r\n\r\n```\r\npython benchmark_throughput.py --input-len 128 --model /home/jiekong/.cache/modelscope/hub/AI-ModelScope/opt-125 --output-len 128 --max-num-batched-tokens 2048 --trust-remote-code\r\n```\r\nThroughput: 59.50 requests/s, 15231.62 tokens/s\r\n\r\n![image](https://github.com/vllm-project/vllm/assets/12995855/92d2d824-da47-43f2-aa59-78ff44ad0cd9)\r\n\r\n```\r\npython benchmark_throughput.py --input-len 128 --model /home/jiekong/.cache/modelscope/hub/AI-ModelScope/opt-125 --output-len 128 --backend hf --hf-max-batch-size 256\r\n```\r\nThroughput: 108.34 requests/s, 27736.31 tokens/s\r\n\r\n![image](https://github.com/vllm-project/vllm/assets/12995855/ce316880-4b7d-408d-9189-25a15731691e)\r\n",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-09T06:32:31+00:00",
+    "closed_at": "2024-11-21T03:01:34+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/4702/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/4702"
+  },
+  {
+    "number": 6879,
+    "title": "[Performance]: use Python array to replace Python list for zero-copy tensor creation",
+    "body": "### Proposal to improve performance\n\nFor flexibility, lots of code in vLLM uses Python list.\r\n\r\nThe memory layout for a Python list of `[1, 2, 3, 4, 5]`, is:\r\n\r\n```\r\n----\r\nPyObject pointer --> PyLong(1)\r\n----\r\nPyObject pointer --> PyLong(2)\r\n----\r\nPyObject pointer --> PyLong(3)\r\n----\r\nPyObject pointer --> PyLong(4)\r\n----\r\nPyObject pointer --> PyLong(5)\r\n----\r\n```\r\n\r\nThis is because a Python list can hold arbitrary Python object.\r\n\r\nWhen we use `torch.tensor([1, 2, 3, 4, 5], dtype=torch.int, device=\"cuda\")`, there's two copy operation happening:\r\n\r\n1. PyTorch has to collect all the data from scattered memory into a continuous memory area, i.e. a CPU memory segment holding `1, 2, 3, 4, 5` consecutively (40 bytes)\r\n2. PyTorch launches an operation to copy the CPU memory to GPU memory, wraps it into a GPU tensor\r\n\r\nThere is a better alternative in Python, called `array.array`. It is very similar to `vector` type in `C++`, which can hold variable length data with the same type. Since the memory layout is already compact, we can directly create pytorch tensor from it, without copying, and then copy it to GPU. i.e., we can reduce the copy in step 1.\r\n\r\nHere is some microbenchmark:\r\n\r\n```python\r\nimport array\r\nimport torch\r\n\r\n# print header\r\nprint(\"N\\tlist\\tarray\")\r\n\r\nfor N in [100, 1000, 10000, 100000, 1000000]:\r\n    list_data = list(range(N))\r\n    array_data = array.array('l', list_data)\r\n\r\n    def create_from_list():\r\n        tensor = torch.tensor(list_data, dtype=torch.int, device='cuda')\r\n        torch.cuda.synchronize()\r\n        return tensor\r\n\r\n    def create_from_array():\r\n        tensor = torch.frombuffer(array_data, dtype=torch.int).to('cuda')\r\n        torch.cuda.synchronize()\r\n        return tensor\r\n\r\n    import time\r\n\r\n    for _ in range(10):\r\n        # warmup\r\n        create_from_list()\r\n    start = time.time()\r\n    for _ in range(100):\r\n        create_from_list()\r\n    elapsed_list = (time.time() - start) / 100 * 1000 # ms\r\n\r\n    for _ in range(10):\r\n        create_from_array()\r\n    start = time.time()\r\n    for _ in range(100):\r\n        create_from_array()\r\n    elapsed_array = (time.time() - start) / 100 * 1000 # ms\r\n\r\n    print(f\"{N}\\t{elapsed_list:.3f}\\t{elapsed_array:.3f}\")\r\n```\r\n\r\nThe output is:\r\n\r\n| N       | list to GPU (ms)   | array to GPU (ms)  |\r\n|---------|-----------------|---------------------|\r\n| 100     | 0.020  | 0.016  |\r\n| 1000    | 0.046  | 0.017  |\r\n| 10000   | 0.300  | 0.024  |\r\n| 100000  | 2.793  | 0.071  |\r\n| 1000000 | 27.219 | 0.512  |\r\n\r\nAs we can see, use array to copy to GPU is always faster. When the input is large, the difference is even larger.\r\n\r\nHowever, how can we get an array object? If we do `array_data = array.array('l', list_data)` , it is another copy, and will not give us any benefit.\r\n\r\nThe answer is, we should try to start with `array`, and use `array.append` / `array.extend` to replace `list.append` / `list.extend`. Then, we should replace `torch.tensor(data, dtype=torch.int, device=\"cuda\")` to `torch.frombuffer(data, dtype=torch.int).to(device=\"cuda\")`.\r\n\r\nThis will require rewrite lots of the code in prepare-input and block table preparation, one of the main performance bottleneck.\r\n\r\ncc @comaniac for prepare input\r\ncc @alexm-neuralmagic @cadedaniel  for block manager\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\r\nThe output of `python collect_env.py`\r\n```\r\n",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-28T23:58:48+00:00",
+    "closed_at": "2024-12-01T02:14:38+00:00",
+    "comments": 19,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6879/reactions",
+      "total_count": 5,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 3,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6879"
+  },
+  {
+    "number": 7883,
+    "title": "[Performance]: Prefix-caching aware scheduling",
+    "body": "### Proposal to improve performance\r\n\r\nThe current execution flow with prefix caching is as follows:\r\n1. Scheduler takes the next prefill sequence:\r\n    a. Calculate how many blocks it needs.\r\n    b. Check whether we have sufficient number of blocks in the block manager.\r\n    c. If so, determine the number of tokens to be prefilled in this batch (it is equal to the prompt length without chunked prefill, or at maximum the chunked size otherwise).\r\n    d. Update the batch token budget by subtracting the tokens to be prefilled.\r\n    e. Allocate all (regardless how many tokens to prefill in this batch) blocks.\r\n    f. Match allocated block IDs with prefix cache, and list them in `computed_block_nums`.\r\n2. Prepare input:\r\n    a. Get the number of tokens to prefill for this sequence in this batch.\r\n    b. Setup input token IDs and positions.\r\n    c. If `computed_block_nums` is not none, then remove the cached tokens from input tokens, and adjust input positions, query length and context length accordingly.\r\n3. Execute the model.\r\n\r\nThe inefficiencies are then:\r\n1. In Step 1.b, we now don't consider prefix caching. Taking a sequence with 16 blocks in prompt as an example, it now requires block manager to have 16 free blocks to be scheduled. However, assuming 12 of 16 blocks are already cached, we actually only need free 4 blocks to schedule this sequence.\r\n2. In Step 1.d, we now don't consider prefix caching. Assuming the number of batched tokens is set to 2048, and we scheduled 2 sequences with 1024 tokens each. However, if the first 512 prefix tokens are already cached, then the batch size is actually 1024 instead of 2048.\r\n\r\nThe above inefficiencies come from the fact that we know which blocks are cached starting from Step 1.f. Thus, we propose the following changes:\r\n1. Improve `can_allocate` in block manager at Step 1.b to consider prefix caching. For example, although a sequence needs 16 blocks for its prompt, `can_allocate` could still return True even the block manager only has 4 blocks left when 12 of 16 blocks are already cached.\r\n2. Improve Step 1.c in the scheduler to consider prefix caching. Specifically, this step should guarantee the number of new tokens to prefill are not cached. If an entire prompt of a sequence is cached, we should only compute the last token.\r\n\r\ncc @rkooo567 @sighingnow @Juelianqvq @zhuohan123 \r\n\r\n### Before submitting a new issue...\r\n\r\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-26T21:30:38+00:00",
+    "closed_at": "2024-12-20T02:18:05+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/7883/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/7883"
+  },
+  {
+    "number": 20174,
+    "title": "[Performance]: Inefficient prefill attention compared to HuggingFace",
+    "body": "### Proposal to improve performance\n\n_No response_\n\n### Report of performance regression\n\nWhile benchmarking vLLM for offline inference against HuggingFace Transformers, I observed that the prefill attention in vLLM is significantly slower under certain conditions.\n\nWith input_len=128 and max_num_seqs=1 on GPT2 model, vLLM defaults to using FlashAttention. In this setup, vLLM invokes two separate kernels (`flash::prepare_varlen_num_blocks_kernel` and `cutlass::device_kernel<flash::enable_sm90_or_later<flash::FlashAttnFwdSm90...>>`). This results in a total latency of ~9\u03bcs (without additional kernel launch overhead).\nIn comparison, HuggingFace Transformers uses `pytorch_flash::flash_fwd_kernel` and completes the same computation in ~6\u03bcs.\n\nTo reproduce the result, you can run the `benchmark_throughput.py` script in vLLM repo with the configuration above.\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\nThe output of `python collect_env.py`\n==============================\n        System Info\n==============================\nOS                           : Ubuntu 22.04.5 LTS (x86_64)\nGCC version                  : (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\nClang version                : 16.0.6 (++20231112100510+7cbf1a259152-1~exp1~20231112100554.106)\nCMake version                : version 3.22.1\nLibc version                 : glibc-2.35\n\n==============================\n       PyTorch Info\n==============================\nPyTorch version              : 2.7.0+cu126\nIs debug build               : False\nCUDA used to build PyTorch   : 12.6\nROCM used to build PyTorch   : N/A\n\n==============================\n      Python Environment\n==============================\nPython version               : 3.10.17 (main, Apr  9 2025, 04:03:39) [Clang 20.1.0 ] (64-bit runtime)\nPython platform              : Linux-5.14.0-503.23.2.el9_5.x86_64-x86_64-with-glibc2.35\n\n==============================\n       CUDA / GPU Info\n==============================\nIs CUDA available            : True\nCUDA runtime version         : 12.8.93\nCUDA_MODULE_LOADING set to   : LAZY\nGPU models and configuration : \nGPU 0: NVIDIA H200\nGPU 1: NVIDIA H200\nGPU 2: NVIDIA H200\nGPU 3: NVIDIA H200\nGPU 4: NVIDIA H200\nGPU 5: NVIDIA H200\nGPU 6: NVIDIA H200\nGPU 7: NVIDIA H200\n\nNvidia driver version        : 570.86.15\ncuDNN version                : Probably one of the following:\n/usr/lib/x86_64-linux-gnu/libcudnn.so.9.8.0\n/usr/lib/x86_64-linux-gnu/libcudnn_adv.so.9.8.0\n/usr/lib/x86_64-linux-gnu/libcudnn_cnn.so.9.8.0\n/usr/lib/x86_64-linux-gnu/libcudnn_engines_precompiled.so.9.8.0\n/usr/lib/x86_64-linux-gnu/libcudnn_engines_runtime_compiled.so.9.8.0\n/usr/lib/x86_64-linux-gnu/libcudnn_graph.so.9.8.0\n/usr/lib/x86_64-linux-gnu/libcudnn_heuristic.so.9.8.0\n/usr/lib/x86_64-linux-gnu/libcudnn_ops.so.9.8.0\nHIP runtime version          : N/A\nMIOpen runtime version       : N/A\nIs XNNPACK available         : True\n\n==============================\n          CPU Info\n==============================\nArchitecture:                         x86_64\nCPU op-mode(s):                       32-bit, 64-bit\nAddress sizes:                        52 bits physical, 57 bits virtual\nByte Order:                           Little Endian\nCPU(s):                               256\nOn-line CPU(s) list:                  0-255\nVendor ID:                            AuthenticAMD\nBIOS Vendor ID:                       Advanced Micro Devices, Inc.\nModel name:                           AMD EPYC 9534 64-Core Processor\nBIOS Model name:                      AMD EPYC 9534 64-Core Processor                \nCPU family:                           25\nModel:                                17\nThread(s) per core:                   2\nCore(s) per socket:                   64\nSocket(s):                            2\nStepping:                             1\nFrequency boost:                      enabled\nCPU max MHz:                          3718.0659\nCPU min MHz:                          1500.0000\nBogoMIPS:                             4892.67\nFlags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good amd_lbr_v2 nopl nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba perfmon_v2 ibrs ibpb stibp ibrs_enhanced vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local avx512_bf16 clzero irperf xsaveerptr rdpru wbnoinvd amd_ppin cppc arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif x2avic v_spec_ctrl vnmi avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq la57 rdpid overflow_recov succor smca fsrm flush_l1d debug_swap\nVirtualization:                       AMD-V\nL1d cache:                            4 MiB (128 instances)\nL1i cache:                            4 MiB (128 instances)\nL2 cache:                             128 MiB (128 instances)\nL3 cache:                             512 MiB (16 instances)\nNUMA node(s):                         2\nNUMA node0 CPU(s):                    0-63,128-191\nNUMA node1 CPU(s):                    64-127,192-255\nVulnerability Gather data sampling:   Not affected\nVulnerability Itlb multihit:          Not affected\nVulnerability L1tf:                   Not affected\nVulnerability Mds:                    Not affected\nVulnerability Meltdown:               Not affected\nVulnerability Mmio stale data:        Not affected\nVulnerability Reg file data sampling: Not affected\nVulnerability Retbleed:               Not affected\nVulnerability Spec rstack overflow:   Mitigation; Safe RET\nVulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:             Mitigation; Enhanced / Automatic IBRS; IBPB conditional; STIBP always-on; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected\nVulnerability Srbds:                  Not affected\nVulnerability Tsx async abort:        Not affected\n\n==============================\nVersions of relevant libraries\n==============================\n[pip3] numpy==2.2.6\n[pip3] nvidia-cublas-cu12==12.6.4.1\n[pip3] nvidia-cuda-cupti-cu12==12.6.80\n[pip3] nvidia-cuda-nvcc-cu12==12.9.41\n[pip3] nvidia-cuda-nvrtc-cu12==12.6.77\n[pip3] nvidia-cuda-runtime-cu12==12.6.77\n[pip3] nvidia-cudnn-cu12==9.5.1.17\n[pip3] nvidia-cufft-cu12==11.3.0.4\n[pip3] nvidia-cufile-cu12==1.11.1.6\n[pip3] nvidia-curand-cu12==10.3.7.77\n[pip3] nvidia-cusolver-cu12==11.7.1.2\n[pip3] nvidia-cusparse-cu12==12.5.4.2\n[pip3] nvidia-cusparselt-cu12==0.6.3\n[pip3] nvidia-nccl-cu12==2.26.2\n[pip3] nvidia-nvjitlink-cu12==12.6.85\n[pip3] nvidia-nvtx-cu12==12.6.77\n[pip3] pyzmq==26.4.0\n[pip3] torch==2.7.0\n[pip3] torchaudio==2.7.0\n[pip3] torchvision==0.22.0\n[pip3] transformers==4.52.4\n[pip3] triton==3.3.0\n[conda] Could not collect\n\n==============================\n         vLLM Info\n==============================\nROCM Version                 : Could not collect\nNeuron SDK Version           : N/A\nvLLM Version                 : 0.9.1\nvLLM Build Flags:\n  CUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\nGPU Topology:\n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    NIC0    NIC1    NIC2    NIC3    NIC4       NIC5    NIC6    NIC7    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    NODE    NODE    SYS     NODE    PIXSYS     SYS     SYS     0-63,128-191    0               N/A\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    NODE    PIX     SYS     NODE    NODE       SYS     SYS     SYS     0-63,128-191    0               N/A\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    PIX     NODE    SYS     NODE    NODE       SYS     SYS     SYS     0-63,128-191    0               N/A\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    NODE    NODE    SYS     PIX     NODE       SYS     SYS     SYS     0-63,128-191    0               N/A\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    SYS     SYS     NODE    SYS     SYSNODE    PIX     NODE    64-127,192-255  1               N/A\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    SYS     SYS     NODE    SYS     SYSNODE    NODE    PIX     64-127,192-255  1               N/A\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    SYS     SYS     NODE    SYS     SYSPIX     NODE    NODE    64-127,192-255  1               N/A\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      SYS     SYS     PIX     SYS     SYSNODE    NODE    NODE    64-127,192-255  1               N/A\nNIC0    NODE    NODE    PIX     NODE    SYS     SYS     SYS     SYS      X      NODE    SYS     NODE    NODE       SYS     SYS     SYS\nNIC1    NODE    PIX     NODE    NODE    SYS     SYS     SYS     SYS     NODE     X      SYS     NODE    NODE       SYS     SYS     SYS\nNIC2    SYS     SYS     SYS     SYS     NODE    NODE    NODE    PIX     SYS     SYS      X      SYS     SYSNODE    NODE    NODE\nNIC3    NODE    NODE    NODE    PIX     SYS     SYS     SYS     SYS     NODE    NODE    SYS      X      NODE       SYS     SYS     SYS\nNIC4    PIX     NODE    NODE    NODE    SYS     SYS     SYS     SYS     NODE    NODE    SYS     NODE     X SYS     SYS     SYS\nNIC5    SYS     SYS     SYS     SYS     NODE    NODE    PIX     NODE    SYS     SYS     NODE    SYS     SYS X      NODE    NODE\nNIC6    SYS     SYS     SYS     SYS     PIX     NODE    NODE    NODE    SYS     SYS     NODE    SYS     SYSNODE     X      NODE\nNIC7    SYS     SYS     SYS     SYS     NODE    PIX     NODE    NODE    SYS     SYS     NODE    SYS     SYSNODE    NODE     X \n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_0\n  NIC1: mlx5_1\n  NIC2: mlx5_2\n  NIC3: mlx5_3\n  NIC4: mlx5_4\n  NIC5: mlx5_5\n  NIC6: mlx5_6\n  NIC7: mlx5_7\n\n==============================\n     Environment Variables\n==============================\nCUDA_VISIBLE_DEVICES=0\nCUDA_VISIBLE_DEVICES=0\nNVIDIA_VISIBLE_DEVICES=all\nNVIDIA_REQUIRE_CUDA=cuda>=12.8 brand=unknown,driver>=470,driver<471 brand=grid,driver>=470,driver<471 brand=tesla,driver>=470,driver<471 brand=nvidia,driver>=470,driver<471 brand=quadro,driver>=470,driver<471 brand=quadrortx,driver>=470,driver<471 brand=nvidiartx,driver>=470,driver<471 brand=vapps,driver>=470,driver<471 brand=vpc,driver>=470,driver<471 brand=vcs,driver>=470,driver<471 brand=vws,driver>=470,driver<471 brand=cloudgaming,driver>=470,driver<471 brand=unknown,driver>=535,driver<536 brand=grid,driver>=535,driver<536 brand=tesla,driver>=535,driver<536 brand=nvidia,driver>=535,driver<536 brand=quadro,driver>=535,driver<536 brand=quadrortx,driver>=535,driver<536 brand=nvidiartx,driver>=535,driver<536 brand=vapps,driver>=535,driver<536 brand=vpc,driver>=535,driver<536 brand=vcs,driver>=535,driver<536 brand=vws,driver>=535,driver<536 brand=cloudgaming,driver>=535,driver<536 brand=unknown,driver>=550,driver<551 brand=grid,driver>=550,driver<551 brand=tesla,driver>=550,driver<551 brand=nvidia,driver>=550,driver<551 brand=quadro,driver>=550,driver<551 brand=quadrortx,driver>=550,driver<551 brand=nvidiartx,driver>=550,driver<551 brand=vapps,driver>=550,driver<551 brand=vpc,driver>=550,driver<551 brand=vcs,driver>=550,driver<551 brand=vws,driver>=550,driver<551 brand=cloudgaming,driver>=550,driver<551 brand=unknown,driver>=560,driver<561 brand=grid,driver>=560,driver<561 brand=tesla,driver>=560,driver<561 brand=nvidia,driver>=560,driver<561 brand=quadro,driver>=560,driver<561 brand=quadrortx,driver>=560,driver<561 brand=nvidiartx,driver>=560,driver<561 brand=vapps,driver>=560,driver<561 brand=vpc,driver>=560,driver<561 brand=vcs,driver>=560,driver<561 brand=vws,driver>=560,driver<561 brand=cloudgaming,driver>=560,driver<561 brand=unknown,driver>=565,driver<566 brand=grid,driver>=565,driver<566 brand=tesla,driver>=565,driver<566 brand=nvidia,driver>=565,driver<566 brand=quadro,driver>=565,driver<566 brand=quadrortx,driver>=565,driver<566 brand=nvidiartx,driver>=565,driver<566 brand=vapps,driver>=565,driver<566 brand=vpc,driver>=565,driver<566 brand=vcs,driver>=565,driver<566 brand=vws,driver>=565,driver<566 brand=cloudgaming,driver>=565,driver<566\nNCCL_VERSION=2.25.1-1\nNVIDIA_DRIVER_CAPABILITIES=compute,utility\nNVIDIA_PRODUCT_NAME=CUDA\nCUDA_VERSION=12.8.1\nLD_LIBRARY_PATH=/usr/local/cuda/lib64\nNCCL_CUMEM_ENABLE=0\nPYTORCH_NVML_BASED_CUDA_CHECK=1\nTORCHINDUCTOR_COMPILE_THREADS=1\nCUDA_MODULE_LOADING=LAZY\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "open",
+    "created_at": "2025-06-27T08:41:58+00:00",
+    "closed_at": null,
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/20174/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/20174"
+  },
+  {
+    "number": 8086,
+    "title": "[Performance]: TTFT increases linearly with the number of batched tokens",
+    "body": "### Proposal to improve performance\r\n\r\nI have observed that TTFT increases linearly with a total number of batched tokens.\r\nFor example, given 100k batch \r\n- TTFT is around 2min when an average prompt+completion length is 200\r\n- TTFT is around 10min (increase 5X) when an average prompt+completion length is 2000 (increase 10x)\r\n\r\nThis has been observed for several LLama3 model and the following parameters \r\n```\r\nenable_prefix_caching=True, block_size=3\r\nmax_num_batched_tokens=16000\r\nmax_model_len=16000\r\nuse_v2_block_manager=True\r\n```\r\n\r\nI would of course expect Requests Per Second (or similar metrics) to increase with increase in prompt+completion length, but why this happens so dramatically with TTFT (5X with 10X increase in prompt length)?\r\nWould be helpful for clarification and suggestions on resolution (e.g. adjusting continuous batching).\r\nThanks in advance!\r\n\r\n### Report of performance regression\r\n\r\n_No response_\r\n\r\n### Misc discussion on performance\r\n\r\n_No response_\r\n\r\n### Your current environment (if you think it is necessary)\r\n\r\n```text\r\nPyTorch version: 2.3.1+cu121\r\nIs debug build: False\r\nCUDA used to build PyTorch: 12.1\r\nROCM used to build PyTorch: N/A\r\n\r\nOS: Ubuntu 22.04.4 LTS (x86_64)\r\nGCC version: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\r\nClang version: Could not collect\r\nCMake version: version 3.22.1\r\nLibc version: glibc-2.35\r\n\r\nPython version: 3.11.0rc1 (main, Aug 12 2022, 10:02:14) [GCC 11.2.0] (64-bit runtime)\r\nPython platform: Linux-5.15.0-1067-aws-x86_64-with-glibc2.35\r\nIs CUDA available: True\r\nCUDA runtime version: Could not collect\r\nCUDA_MODULE_LOADING set to: LAZY\r\nGPU models and configuration: GPU 0: NVIDIA A10G\r\nNvidia driver version: 535.161.07\r\ncuDNN version: Probably one of the following:\r\n/usr/lib/x86_64-linux-gnu/libcudnn.so.8.9.7\r\n/usr/lib/x86_64-linux-gnu/libcudnn_adv_infer.so.8.9.7\r\n/usr/lib/x86_64-linux-gnu/libcudnn_adv_train.so.8.9.7\r\n/usr/lib/x86_64-linux-gnu/libcudnn_cnn_infer.so.8.9.7\r\n/usr/lib/x86_64-linux-gnu/libcudnn_cnn_train.so.8.9.7\r\n/usr/lib/x86_64-linux-gnu/libcudnn_ops_infer.so.8.9.7\r\n/usr/lib/x86_64-linux-gnu/libcudnn_ops_train.so.8.9.7\r\nHIP runtime version: N/A\r\nMIOpen runtime version: N/A\r\nIs XNNPACK available: True\r\n\r\nCPU:\r\nArchitecture:                         x86_64\r\nCPU op-mode(s):                       32-bit, 64-bit\r\nAddress sizes:                        48 bits physical, 48 bits virtual\r\nByte Order:                           Little Endian\r\nCPU(s):                               16\r\nOn-line CPU(s) list:                  0-15\r\nVendor ID:                            AuthenticAMD\r\nModel name:                           AMD EPYC 7R32\r\nCPU family:                           23\r\nModel:                                49\r\nThread(s) per core:                   2\r\nCore(s) per socket:                   8\r\nSocket(s):                            1\r\nStepping:                             0\r\nBogoMIPS:                             5600.00\r\nFlags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf tsc_known_freq pni pclmulqdq ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch topoext ssbd ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 clzero xsaveerptr rdpru wbnoinvd arat npt nrip_save rdpid\r\nHypervisor vendor:                    KVM\r\nVirtualization type:                  full\r\nL1d cache:                            256 KiB (8 instances)\r\nL1i cache:                            256 KiB (8 instances)\r\nL2 cache:                             4 MiB (8 instances)\r\nL3 cache:                             32 MiB (2 instances)\r\nNUMA node(s):                         1\r\nNUMA node0 CPU(s):                    0-15\r\nVulnerability Gather data sampling:   Not affected\r\nVulnerability Itlb multihit:          Not affected\r\nVulnerability L1tf:                   Not affected\r\nVulnerability Mds:                    Not affected\r\nVulnerability Meltdown:               Not affected\r\nVulnerability Mmio stale data:        Not affected\r\nVulnerability Reg file data sampling: Not affected\r\nVulnerability Retbleed:               Mitigation; untrained return thunk; SMT enabled with STIBP protection\r\nVulnerability Spec rstack overflow:   Mitigation; safe RET\r\nVulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl and seccomp\r\nVulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization\r\nVulnerability Spectre v2:             Mitigation; Retpolines; IBPB conditional; STIBP always-on; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected\r\nVulnerability Srbds:                  Not affected\r\nVulnerability Tsx async abort:        Not affected\r\n\r\nVersions of relevant libraries:\r\n[pip3] mypy-extensions==0.4.3\r\n[pip3] numpy==1.23.5\r\n[pip3] nvidia-nccl-cu12==2.20.5\r\n[pip3] optree==0.12.1\r\n[pip3] sentence-transformers==2.7.0\r\n[pip3] torch==2.3.1+cu121\r\n[pip3] torcheval==0.0.7\r\n[pip3] torchvision==0.18.1+cu121\r\n[pip3] transformers==4.41.2\r\n[pip3] triton==2.3.1\r\n[conda] Could not collect\r\nROCM Version: Could not collect\r\nNeuron SDK Version: N/A\r\nvLLM Version: N/A\r\nvLLM Build Flags:\r\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\r\nGPU Topology:\r\nGPU0\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\r\nGPU0\t X \t0-15\t0\t\tN/A\r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n```\r\n\r\n\r\n### Before submitting a new issue...\r\n\r\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-02T13:19:25+00:00",
+    "closed_at": "2025-01-14T01:57:12+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/8086/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/8086"
+  },
+  {
+    "number": 17568,
+    "title": "[Performance]: \u5355\u6b21\u8bf7\u6c42\u901f\u5ea630t/s \uff0c\u5e76\u53d1\u8bf7\u6c42\u53ea\u67091.5t/s",
+    "body": "### Proposal to improve performance\n\n\u4f7f\u75288\u53614090\u90e8\u7f72deepseek 32B\u6a21\u578b\uff0c\u5355\u6b21\u8bf7\u6c42\u63a8\u7406\u901f\u5ea6\u572830t/s\uff0c\u4f46\u662f\u5f53\u5e76\u53d1\u8bf7\u6c42waiting reqs\u961f\u5217\u6709\u6392\u961f\u6570\u636e\u7684\u65f6\u5019\uff0c\u63a8\u7406\u901f\u5ea6\u53ea\u6709\u4e2a\u4f4d\n\u4f7f\u7528\u7684\u542f\u52a8\u547d\u4ee4:vllm serve llm_model/ds_32B/ --served-model-name deepseek --api-key 12345  --disable-log-requests --trust-remote-code --tensor-parallel-size 8 --max-model-len 36000 --gpu_memory_utilization 0.7 --max-num-seqs 128 --max-num-batched-tokens 4096  --enforce-eager\n\n### Report of performance regression\n\n\u6211\u7684\u60c5\u51b5\u548c\u8fd9\u4e2a\u95ee\u9898\u60c5\u51b5\u76f8\u4f3c\uff0c\u6211\u662f\u7528\u7684vllm0.8.5\uff0cv1 #16444 \n\n<!-- Failed to upload \"info.PNG\" -->\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\n```text\nPyTorch version: 2.6.0+cu124\nIs debug build: False\nCUDA used to build PyTorch: 12.4\nROCM used to build PyTorch: N/A\n\nOS: Ubuntu 22.04.3 LTS (x86_64)\nGCC version: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\nClang version: Could not collect\nCMake version: Could not collect\nLibc version: glibc-2.35\n\nPython version: 3.10.16 (main, Dec 11 2024, 16:24:50) [GCC 11.2.0] (64-bit runtime)\nPython platform: Linux-5.15.0-78-generic-x86_64-with-glibc2.35\nIs CUDA available: True\nCUDA runtime version: 11.5.119\nCUDA_MODULE_LOADING set to: LAZY\nGPU models and configuration:\nGPU 0: NVIDIA GeForce RTX 4090\nGPU 1: NVIDIA GeForce RTX 4090\nGPU 2: NVIDIA GeForce RTX 4090\nGPU 3: NVIDIA GeForce RTX 4090\nGPU 4: NVIDIA GeForce RTX 4090\nGPU 5: NVIDIA GeForce RTX 4090\nGPU 6: NVIDIA GeForce RTX 4090\nGPU 7: NVIDIA GeForce RTX 4090\n\nNvidia driver version: 555.58.02\ncuDNN version: Could not collect\nHIP runtime version: N/A\nMIOpen runtime version: N/A\nIs XNNPACK available: True\n\nCPU:\nArchitecture:                    x86_64\nCPU op-mode(s):                  32-bit, 64-bit\nAddress sizes:                   43 bits physical, 48 bits virtual\nByte Order:                      Little Endian\nCPU(s):                          128\nOn-line CPU(s) list:             0-127\nVendor ID:                       AuthenticAMD\nModel name:                      AMD EPYC 7542 32-Core Processor\nCPU family:                      23\nModel:                           49\nThread(s) per core:              2\nCore(s) per socket:              32\nSocket(s):                       2\nStepping:                        0\nFrequency boost:                 enabled\nCPU max MHz:                     2900.0000\nCPU min MHz:                     1500.0000\nBogoMIPS:                        5800.13\nFlags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local clzero irperf xsaveerptr rdpru wbnoinvd amd_ppin arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip rdpid overflow_recov succor smca sme sev sev_es\nVirtualization:                  AMD-V\nL1d cache:                       2 MiB (64 instances)\nL1i cache:                       2 MiB (64 instances)\nL2 cache:                        32 MiB (64 instances)\nL3 cache:                        256 MiB (16 instances)\nNUMA node(s):                    2\nNUMA node0 CPU(s):               0-31,64-95\nNUMA node1 CPU(s):               32-63,96-127\nVulnerability Itlb multihit:     Not affected\nVulnerability L1tf:              Not affected\nVulnerability Mds:               Not affected\nVulnerability Meltdown:          Not affected\nVulnerability Mmio stale data:   Not affected\nVulnerability Retbleed:          Mitigation; untrained return thunk; SMT enabled with STIBP protection\nVulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp\nVulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:        Mitigation; Retpolines, IBPB conditional, STIBP always-on, RSB filling, PBRSB-eIBRS Not affected\nVulnerability Srbds:             Not affected\nVulnerability Tsx async abort:   Not affected\n\nVersions of relevant libraries:\n[pip3] numpy==2.2.5\n[pip3] nvidia-cublas-cu12==12.4.5.8\n[pip3] nvidia-cuda-cupti-cu12==12.4.127\n[pip3] nvidia-cuda-nvrtc-cu12==12.4.127\n[pip3] nvidia-cuda-runtime-cu12==12.4.127\n[pip3] nvidia-cudnn-cu12==9.1.0.70\n[pip3] nvidia-cufft-cu12==11.2.1.3\n[pip3] nvidia-curand-cu12==10.3.5.147\n[pip3] nvidia-cusolver-cu12==11.6.1.9\n[pip3] nvidia-cusparse-cu12==12.3.1.170\n[pip3] nvidia-cusparselt-cu12==0.6.2\n[pip3] nvidia-nccl-cu12==2.21.5\n[pip3] nvidia-nvjitlink-cu12==12.4.127\n[pip3] nvidia-nvtx-cu12==12.4.127\n[pip3] pyzmq==26.4.0\n[pip3] torch==2.6.0\n[pip3] torchaudio==2.6.0\n[pip3] torchvision==0.21.0\n[pip3] transformers==4.51.3\n[pip3] triton==3.2.0\n[conda] numpy                     2.2.5                    pypi_0    pypi\n[conda] nvidia-cublas-cu12        12.4.5.8                 pypi_0    pypi\n[conda] nvidia-cuda-cupti-cu12    12.4.127                 pypi_0    pypi\n[conda] nvidia-cuda-nvrtc-cu12    12.4.127                 pypi_0    pypi\n[conda] nvidia-cuda-runtime-cu12  12.4.127                 pypi_0    pypi\n[conda] nvidia-cudnn-cu12         9.1.0.70                 pypi_0    pypi\n[conda] nvidia-cufft-cu12         11.2.1.3                 pypi_0    pypi\n[conda] nvidia-curand-cu12        10.3.5.147               pypi_0    pypi\n[conda] nvidia-cusolver-cu12      11.6.1.9                 pypi_0    pypi\n[conda] nvidia-cusparse-cu12      12.3.1.170               pypi_0    pypi\n[conda] nvidia-cusparselt-cu12    0.6.2                    pypi_0    pypi\n[conda] nvidia-nccl-cu12          2.21.5                   pypi_0    pypi\n[conda] nvidia-nvjitlink-cu12     12.4.127                 pypi_0    pypi\n[conda] nvidia-nvtx-cu12          12.4.127                 pypi_0    pypi\n[conda] pyzmq                     26.4.0                   pypi_0    pypi\n[conda] torch                     2.6.0                    pypi_0    pypi\n[conda] torchaudio                2.6.0                    pypi_0    pypi\n[conda] torchvision               0.21.0                   pypi_0    pypi\n[conda] transformers              4.51.3                   pypi_0    pypi\n[conda] triton                    3.2.0                    pypi_0    pypi\nROCM Version: Could not collect\nNeuron SDK Version: N/A\nvLLM Version: 0.8.5\nvLLM Build Flags:\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\nGPU Topology:\n\tGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tGPU5\tGPU6\tGPU7\tNIC0\tNIC1\tNIC2\tNIC3\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\nGPU0\t X \tNODE\tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t0-31,64-95\t0\t\tN/A\nGPU1\tNODE\t X \tNODE\tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t0-31,64-95\t0\t\tN/A\nGPU2\tNODE\tNODE\t X \tNODE\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t0-31,64-95\t0\t\tN/A\nGPU3\tNODE\tNODE\tNODE\t X \tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\tSYS\t0-31,64-95\t0\t\tN/A\nGPU4\tSYS\tSYS\tSYS\tSYS\t X \tNODE\tNODE\tNODE\tNODE\tNODE\tNODE\tNODE\t32-63,96-127\t1\t\tN/A\nGPU5\tSYS\tSYS\tSYS\tSYS\tNODE\t X \tNODE\tNODE\tNODE\tNODE\tNODE\tNODE\t32-63,96-127\t1\t\tN/A\nGPU6\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\t X \tNODE\tPHB\tPHB\tPHB\tPHB\t32-63,96-127\t1\t\tN/A\nGPU7\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tNODE\t X \tNODE\tNODE\tNODE\tNODE\t32-63,96-127\t1\t\tN/A\nNIC0\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tPHB\tNODE\t X \tPIX\tPHB\tPHB\nNIC1\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tPHB\tNODE\tPIX\t X \tPHB\tPHB\nNIC2\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tPHB\tNODE\tPHB\tPHB\t X \tPIX\nNIC3\tSYS\tSYS\tSYS\tSYS\tNODE\tNODE\tPHB\tNODE\tPHB\tPHB\tPIX\t X\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_0\n  NIC1: mlx5_1\n  NIC2: mlx5_2\n  NIC3: mlx5_3\n\nNCCL_CUMEM_ENABLE=0\nPYTORCH_NVML_BASED_CUDA_CHECK=1\nTORCHINDUCTOR_COMPILE_THREADS=1\nCUDA_MODULE_LOADING=LAZY\n\n\n```\n\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-02T00:12:30+00:00",
+    "closed_at": "2025-05-03T03:41:18+00:00",
+    "comments": 24,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/17568/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/17568"
+  },
+  {
+    "number": 9474,
+    "title": "[Performance]: VLLM \u8bf7\u6c42\u6570\u91cf\u8fc7\u591a\u65f6\u592a\u6162",
+    "body": "### Your current environment\n\n```text\r\nThe output of `python collect_env.py`\r\n```\r\n\n\n### How would you like to use vllm\n\n\u6211\u6b63\u5728\u4f7f\u7528\u4e00\u5f20A100 \u90e8\u7f72\u768472B\u91cf\u5316\u6a21\u578b \u8fd9\u662f\u542f\u52a8\u811a\u672c \r\npython -m vllm.entrypoints.openai.api_server --host 0.0.0.0  --max-model-len 9000 --served-model-name chat-yzq --model /workspace/chat-v1-Int4 --enforce-eager  --tensor-parallel-size 1 --gpu-memory-utilization 0.85\r\n\r\n\u5f531\u5929\u67091\u4e07\u6b21\u8bf7\u6c42\u65f6 \u56de\u590d\u4f1a\u53d8\u5f97\u975e\u5e38\u7f13\u6162 \u6709\u4ec0\u4e48\u529e\u6cd5\u5417\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-10-17T20:29:57+00:00",
+    "closed_at": "2025-02-16T02:03:35+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/9474/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/9474"
+  },
+  {
+    "number": 6623,
+    "title": "[Performance]: Llava runs with small batch size and # of GPU blocks",
+    "body": "### Misc discussion on performance\r\n\r\nI was running `llava-hf/llava-1.5-7b-hf` vs. `meta-llama/Meta-Llama-3-8B-Instruct` on vLLM 0.5.2 and noticed that Llava 7B runs with a significantly smaller batch size overall -- Llama 3 8B would hit the maximum batch size 256, whereas Llava 7B would remain in the 70~80 range. I do notice that Llava 7B begins with much less GPU blocks allocated (# GPU blocks: 3631, # CPU blocks: 512) compared to LLama 3 8B (# GPU blocks: 13078, # CPU blocks: 2048), which probably explains the batch size.\r\n\r\nI wanted to understand whether this difference (existence and magnitude) is expected and the causes. I can think of some reasons that contribute to this:\r\n- Parameters of the vision tower and multimodal projector\r\n  - Less than half a billion parameters\r\n- Activations of the vision tower and multimodal projector\r\n  - They can't be *that* big, can they? I believe they can also be deallocated after generating the image embeddings.\r\n- Image tokens inserted into the prompt\r\n  - I attempted to read the source code and it seems like it's 576 image tokens? If so I suppose that's a fair amount. But does this get reflected in the number of GPU blocks?\r\n\r\nThanks.\r\n\r\n\r\n\r\n### Your current environment (if you think it is necessary)\r\n\r\nPyTorch version: 2.3.1+cu121\r\nCUDA used to build PyTorch: 12.1\r\n\r\nSingle NVIDIA A40 GPU with 46068 MiB VRAM.",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-21T16:14:21+00:00",
+    "closed_at": "2024-07-23T02:07:37+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6623/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6623"
+  },
+  {
+    "number": 15253,
+    "title": "[Performance]: V0 and V1 give the same throughput number",
+    "body": "### Proposal to improve performance\n\n_No response_\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\nI constructed an experiment to assess the impact of preemption on inference throughput in V0 and V1. In this experiment, I intentionally designed the workload to exceed GPU memory capacity by setting the number of prompts to 100 and the output length to 4096. This scenario is intended to induce memory overflow and trigger preemption.\nI executed the benchmark_throughput.py script on a single GPU node with both V0 and V1, but the resulting throughput numbers were surprisingly similar. \n\n\n```bash\n    MODEL_NAME=\"NousResearch/Hermes-3-Llama-3.1-8B\"\n    NUM_PROMPTS=100\n    DATASET_NAME=\"sonnet\"\n    DATASET_PATH=\"benchmarks/sonnet.txt\"\n\n    numactl --cpunodebind=1 --membind=1 python3 benchmarks/benchmark_throughput.py \\\n      --model \"${MODEL_NAME}\" \\\n      --dataset-name \"${DATASET_NAME}\" \\\n      --dataset-path \"${DATASET_PATH}\" \\\n      --output-len 4096 \\\n      --num-prompts \"${NUM_PROMPTS}\" \\\n      --gpu_memory_utilization 0.8 \\\n```\n\nV0 results are:\n```\nThroughput: 0.16 requests/s, 735.49 total tokens/s, 654.65 output tokens/s\n```\n\nV1 results are:\n```\nThroughput: 0.16 requests/s, 726.89 total tokens/s, 647.00 output tokens/s\n```\nCould someone please review the arguments passed to the benchmark application and verify their validity? I would greatly appreciate it if someone could provide insight into why V0 and V1 yield similar throughput numbers, despite expectations of differing performance. \n\nPS: I conducted an experiment using the swap mode in V0 and obtained a similar throughput number. Notably, I observed that the GPU utilization remained consistently close to 100%, which contradicts my initial expectation. Does prefetching effectively mask the data-swapping overhead, thereby maintaining high GPU utilization despite the presence of swapping\n\n### Your current environment (if you think it is necessary)\n\n```text\nThe output of `python collect_env.py`\n\nINFO 03-20 14:54:23 [__init__.py:256] Automatically detected platform cuda.\nCollecting environment information...\nPyTorch version: 2.6.0+cu124\nIs debug build: False\nCUDA used to build PyTorch: 12.4\nROCM used to build PyTorch: N/A\n\nOS: Ubuntu 24.04.1 LTS (x86_64)\nGCC version: (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\nClang version: Could not collect\nCMake version: version 3.28.3\nLibc version: glibc-2.39\n\nPython version: 3.12.8 (main, Jan 14 2025, 22:49:14) [Clang 19.1.6 ] (64-bit runtime)\nPython platform: Linux-6.8.0-55-generic-x86_64-with-glibc2.39\nIs CUDA available: True\nCUDA runtime version: 12.0.140\nCUDA_MODULE_LOADING set to: LAZY\nGPU models and configuration: GPU 0: NVIDIA A100 80GB PCIe\nNvidia driver version: 570.124.06\ncuDNN version: Could not collect\nHIP runtime version: N/A\nMIOpen runtime version: N/A\nIs XNNPACK available: True\n\nCPU:\nArchitecture:                         x86_64\nCPU op-mode(s):                       32-bit, 64-bit\nAddress sizes:                        52 bits physical, 48 bits virtual\nByte Order:                           Little Endian\nCPU(s):                               128\nOn-line CPU(s) list:                  0-127\nVendor ID:                            GenuineIntel\nModel name:                           Intel(R) Xeon(R) 6710E\nCPU family:                           6\nModel:                                175\nThread(s) per core:                   1\nCore(s) per socket:                   64\nSocket(s):                            2\nStepping:                             3\nCPU(s) scaling MHz:                   25%\nCPU max MHz:                          3200.0000\nCPU min MHz:                          800.0000\nBogoMIPS:                             4800.00\nFlags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cat_l2 cdp_l3 intel_ppin cdp_l2 ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect user_shstk avx_vnni lam wbnoinvd dtherm ida arat pln pts hwp hwp_act_window hwp_epp hwp_pkg_req vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq tme rdpid bus_lock_detect cldemote movdiri movdir64b enqcmd fsrm md_clear serialize pconfig arch_lbr ibt flush_l1d arch_capabilities\nVirtualization:                       VT-x\nL1d cache:                            4 MiB (128 instances)\nL1i cache:                            8 MiB (128 instances)\nL2 cache:                             128 MiB (32 instances)\nL3 cache:                             192 MiB (2 instances)\nNUMA node(s):                         3\nNUMA node0 CPU(s):                    0-63\nNUMA node1 CPU(s):                    64-127\nNUMA node2 CPU(s):                    \nVulnerability Gather data sampling:   Not affected\nVulnerability Itlb multihit:          Not affected\nVulnerability L1tf:                   Not affected\nVulnerability Mds:                    Not affected\nVulnerability Meltdown:               Not affected\nVulnerability Mmio stale data:        Not affected\nVulnerability Reg file data sampling: Not affected\nVulnerability Retbleed:               Not affected\nVulnerability Spec rstack overflow:   Not affected\nVulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:             Mitigation; Enhanced / Automatic IBRS; IBPB conditional; RSB filling; PBRSB-eIBRS Not affected; BHI BHI_DIS_S\nVulnerability Srbds:                  Not affected\nVulnerability Tsx async abort:        Not affected\n\nVersions of relevant libraries:\n[pip3] numpy==1.26.4\n[pip3] nvidia-cublas-cu12==12.4.5.8\n[pip3] nvidia-cuda-cupti-cu12==12.4.127\n[pip3] nvidia-cuda-nvrtc-cu12==12.4.127\n[pip3] nvidia-cuda-runtime-cu12==12.4.127\n[pip3] nvidia-cudnn-cu12==9.1.0.70\n[pip3] nvidia-cufft-cu12==11.2.1.3\n[pip3] nvidia-curand-cu12==10.3.5.147\n[pip3] nvidia-cusolver-cu12==11.6.1.9\n[pip3] nvidia-cusparse-cu12==12.3.1.170\n[pip3] nvidia-cusparselt-cu12==0.6.2\n[pip3] nvidia-nccl-cu12==2.21.5\n[pip3] nvidia-nvjitlink-cu12==12.4.127\n[pip3] nvidia-nvtx-cu12==12.4.127\n[pip3] pyzmq==26.3.0\n[pip3] torch==2.6.0\n[pip3] torchaudio==2.6.0\n[pip3] torchvision==0.21.0\n[pip3] transformers==4.49.0\n[pip3] triton==3.2.0\n[conda] Could not collect\nROCM Version: Could not collect\nNeuron SDK Version: N/A\nvLLM Version: 0.8.0rc3.dev4+g18551e82\nvLLM Build Flags:\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\nGPU Topology:\nGPU0    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      64-127  1               N/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nLD_LIBRARY_PATH=/home/dan.jia/Python/vllm/lib/python3.12/site-packages/cv2/../../lib64:\nNCCL_CUMEM_ENABLE=0\nTORCHINDUCTOR_COMPILE_THREADS=1\nCUDA_MODULE_LOADING=LAZY\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "open",
+    "created_at": "2025-03-20T22:15:28+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15253/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15253"
+  },
+  {
+    "number": 13141,
+    "title": "Does Tensor Parallelism Ignore GPU Memory When Applied?",
+    "body": "Hi~\n\nI understand that Tensor Parallelism can be applied at the head level or by splitting the heads.\nCurrently, in vLLM, it seems that the decision to use either v1 or v2 is made when calling the paged_attention kernel.\nI am curious whether this decision is made without considering the GPU memory(especially, shared memory) information.\n\n```python\n# NOTE(woosuk): We use a simple heuristic to decide whether to use\n# PagedAttention V1 or V2. If the number of partitions is 1, we use\n# V1 to avoid the overhead of reduction. Also, if the number of\n# sequences or heads is large, we use V1 since there is enough work\n# to parallelize.\n# TODO(woosuk): Tune this heuristic.\n# For context len > 8192, use V2 kernel to avoid shared memory shortage.\nuse_v1 = (max_seq_len <= 8192\n          and (max_num_partitions == 1 or num_seqs * num_heads > 512))\n```\nCan most cases be covered with only the above condition?",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-12T08:58:29+00:00",
+    "closed_at": "2025-06-13T02:13:14+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13141/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13141"
+  },
+  {
+    "number": 13259,
+    "title": "[Performance]: Added request take too much time, and the model will not run untill all the request are added into the cache",
+    "body": "### Proposal to improve performance\n\n```\nINFO 02-14 11:57:32 engine.py:275] Added request chatcmpl-1af15bd86d5f413683cd727e1028852c.                                                                                                                                                                              \nINFO 02-14 11:57:32 engine.py:275] Added request chatcmpl-b4e5eba8d8d144a0813ffb6e378ee784.                                                                                                                                                                              \nINFO 02-14 11:57:32 engine.py:275] Added request chatcmpl-1ca0f490ea104efc9884777815e51618.                                                                                                                                                                              \nINFO 02-14 11:57:33 engine.py:275] Added request chatcmpl-984040d9c3cf424984a719970de484f5.                                                                                                                                                                              \nINFO 02-14 11:57:33 engine.py:275] Added request chatcmpl-532cbdba66794d859a61423270e06baf.                                                                                                                                                                              \nINFO 02-14 11:57:33 engine.py:275] Added request chatcmpl-083f1271382f4bd189c35a604b137bc8.                                                                                                                                                                              \nINFO 02-14 11:57:33 engine.py:275] Added request chatcmpl-d5c44ff025cc44149c4b64dcd30fa494.                                                                                                                                                                              \nINFO 02-14 11:57:34 engine.py:275] Added request chatcmpl-087039221d0a463a9779b4f072b853ee.                                                                                                                                                                              \nINFO 02-14 11:57:34 engine.py:275] Added request chatcmpl-22734de905b74010910ea9511d27462c.                                                                                                                                                                              \nINFO 02-14 11:57:34 engine.py:275] Added request chatcmpl-3ad72c9c11f84b49ac6ae2437e1064cc.                                                                                                                                                                              \nINFO 02-14 11:57:35 engine.py:275] Added request chatcmpl-180206440e054294b53baf79ffbedce7.                                                                                                                                                                              \nINFO 02-14 11:57:35 engine.py:275] Added request chatcmpl-68d902705e3743a0b72add7e2711f9a0.                                                                                                                                                                              \nINFO 02-14 11:57:35 engine.py:275] Added request chatcmpl-c807fdcd39584de7a80b5c7e278a55c2.                                                                                                                                                                              \nINFO 02-14 11:57:35 engine.py:275] Added request chatcmpl-43bc35cb2cd94141bd9e24fffa06dacc. \n```\nI use 4xA800 to run qwen2-vl, vllm service;\nI found that when I request 100 requests, the first request will wait until the 100th request is cached.\nHow can I reduce the the latency and maximum the GPU usage?\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\nThe output of `python collect_env.py`\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "open",
+    "created_at": "2025-02-14T04:06:28+00:00",
+    "closed_at": null,
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13259/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13259"
+  },
+  {
+    "number": 20898,
+    "title": "[Performance]: does vllm support tensor data for requests\uff1f",
+    "body": "### Proposal to improve performance\n\nFor my current project, I need to accelerate image-text inference. I want to cache images locally first, and then directly send the tensor values when calling the API. However, it seems that image data can only be sent in Base64 format. Is there any way to send tensor-type data instead?\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\nThe output of `python collect_env.py`\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "open",
+    "created_at": "2025-07-14T03:10:39+00:00",
+    "closed_at": null,
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/20898/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/20898"
+  },
+  {
+    "number": 10062,
+    "title": "[Performance]: Throughput and Latency degradation with a  single LoRA adapter on A100 40 GB",
+    "body": "### Proposal to improve performance\n\n_No response_\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n\r\n\r\n---\r\n\r\n**Setup Summary for vLLM Benchmarking with Llama-2 Model:**\r\n\r\n- **Hardware**: A100 40 GB (a2-highgpu-2g) on Google Kubernetes Engine (GKE)\r\n- **Model**: `meta-llama/Llama-2-7b-hf`\r\n- **GPU Count**: 1\r\n- **Experiments**:\r\n  - **Experiment 1**: Requests using the base model `meta-llama/Llama-2-7b-hf`.\r\n  - **Experiment 2**: vLLM deployed with LoRA adapter `vineetsharma/qlora-adapter-Llama-2-7b-hf-TweetSumm` (size 160 MB).\r\n  - **Experiment 3**: vLLM deployed with LoRA adapter `xtuner/Llama-2-7b-qlora-moss-003-sft` (size 640 MB).\r\n  \r\n  For all three experiments, we used the same input prompt (ShareGPT) and observed a similar output length.\r\n\r\n**Settings**:\r\n- **Eager Mode**: Not enabled.\r\n- **Max GPU Utilization**: Default at 90%.\r\n\r\n**Benchmark Metrics**:\r\nWe measured:\r\n  - **Latency per output token**\r\n  - **Throughput** (output tokens per second)\r\n\r\nYou can view detailed results in the benchmark document: [Benchmark 1 server - Sheet7.pdf](https://github.com/user-attachments/files/17640153/Benchmark.1.server.-.Sheet7.pdf).\r\n\r\n---\r\n\r\n**Observations and Questions**:\r\n\r\n- Using LoRA adapters led to a notable degradation in throughput and latency compared to the base model. Specifically, we observed up to a 50% drop in maximum throughput with LoRA compared to the base model.  \r\n- **Is this performance degradation expected with LoRA adapters?** \r\n- **Are there parameters or tuning options that could improve LoRA performance?**\r\n\r\n**Deployment Command**:\r\n\r\n```yaml\r\ncommand: [\"python3\", \"-m\", \"vllm.entrypoints.openai.api_server\"]\r\nargs:\r\n  - \"--model\"\r\n  - \"meta-llama/Llama-2-7b-hf\"\r\n  - \"--tensor-parallel-size\"\r\n  - \"1\"\r\n  - \"--port\"\r\n  - \"8000\"\r\n  - \"--disable-log-requests\"\r\n  - \"--enable-lora\"\r\n  - \"--max-loras\"\r\n  - \"3\"\r\n  - \"--max-cpu-loras\"\r\n  - \"15\"\r\n  - \"--max-lora-rank\"\r\n  - \"64\"\r\n  - \"--gpu-memory-utilization\"\r\n  - \"0.9\"\r\n  - \"--lora-modules\"\r\n  - xtuner/Llama-2-7b-qlora-moss-003-sft\r\n```\r\n\r\n--- \r\n\n\n### Your current environment (if you think it is necessary)\n\n---\r\n\r\n**Sample Query**:\r\n\r\n```bash\r\ncurl -i ${IP}:${PORT}/v1/completions -H 'Content-Type: application/json' -d '{\r\n  \"model\": \"tweet-summary\",\r\n  \"prompt\": \"Write as if you were a critic: San Francisco\",\r\n  \"max_tokens\": 100,\r\n  \"temperature\": 0\r\n}'\r\n```\r\n\r\n**Deployment YAML Configuration**:\r\n\r\n```yaml\r\n---\r\napiVersion: v1\r\nkind: Service\r\nmetadata:\r\n  name: vllm-llama2-7b-pool\r\nspec:\r\n  selector:\r\n    app: vllm-llama2-7b-pool\r\n  ports:\r\n    - protocol: TCP\r\n      port: 8000\r\n      targetPort: 8000\r\n  type: LoadBalancer\r\n\r\n---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: vllm-llama2-7b-pool\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      app: vllm-llama2-7b-pool\r\n  template:\r\n    metadata:\r\n      labels:\r\n        app: vllm-llama2-7b-pool\r\n    spec:\r\n      containers:\r\n        - name: lora\r\n          image: \"vllm/vllm-openai:latest\"\r\n          imagePullPolicy: Always\r\n          command: [\"python3\", \"-m\", \"vllm.entrypoints.openai.api_server\"]\r\n          args:\r\n            - \"--model\"\r\n            - \"meta-llama/Llama-2-7b-hf\"\r\n            - \"--tensor-parallel-size\"\r\n            - \"1\"\r\n            - \"--port\"\r\n            - \"8000\"\r\n            - \"--disable-log-requests\"\r\n            - \"--enable-lora\"\r\n            - \"--max-loras\"\r\n            - \"3\"\r\n            - \"--max-cpu-loras\"\r\n            - \"15\"\r\n            - \"--max-lora-rank\"\r\n            - \"64\"\r\n            - \"--gpu-memory-utilization\"\r\n            - \"0.9\"\r\n            - \"--lora-modules\"\r\n            - \"tweet-summary-0=/adapters/vineetsharma/qlora-adapter-Llama-2-7b-hf-TweetSumm_0\"\r\n          env:\r\n            - name: PORT\r\n              value: \"8000\"\r\n            - name: HUGGING_FACE_HUB_TOKEN\r\n              valueFrom:\r\n                secretKeyRef:\r\n                  name: hf-token\r\n                  key: token\r\n          ports:\r\n            - containerPort: 8000\r\n              name: http\r\n              protocol: TCP\r\n          livenessProbe:\r\n            failureThreshold: 240\r\n            httpGet:\r\n              path: /health\r\n              port: http\r\n              scheme: HTTP\r\n            initialDelaySeconds: 5\r\n            periodSeconds: 5\r\n            successThreshold: 1\r\n            timeoutSeconds: 1\r\n          readinessProbe:\r\n            failureThreshold: 600\r\n            httpGet:\r\n              path: /health\r\n              port: http\r\n              scheme: HTTP\r\n            initialDelaySeconds: 5\r\n            periodSeconds: 5\r\n            successThreshold: 1\r\n            timeoutSeconds: 1\r\n          resources:\r\n            limits:\r\n              nvidia.com/gpu: 1\r\n            requests:\r\n              nvidia.com/gpu: 1\r\n          volumeMounts:\r\n            - mountPath: /data\r\n              name: data\r\n            - mountPath: /dev/shm\r\n              name: shm\r\n            - name: adapters\r\n              mountPath: \"/adapters\"\r\n      initContainers:\r\n        - name: adapter-loader\r\n          image: ghcr.io/tomatillo-and-multiverse/adapter-puller:demo\r\n          command: [\"python\"]\r\n          args:\r\n            - ./pull_adapters.py\r\n            - --adapter\r\n            - xtuner/Llama-2-7b-qlora-moss-003-sft\r\n            - --adapter\r\n            - yard1/llama-2-7b-sql-lora-test\r\n            - --adapter\r\n            - vineetsharma/qlora-adapter-Llama-2-7b-hf-TweetSumm\r\n            - --duplicate-count\r\n            - \"5\"\r\n          env:\r\n            - name: HF_TOKEN\r\n              valueFrom:\r\n                secretKeyRef:\r\n                  name: hf-token\r\n                  key: token\r\n            - name: HF_HOME\r\n              value: /adapters\r\n          volumeMounts:\r\n            - name: adapters\r\n              mountPath: \"/adapters\"\r\n      restartPolicy: Always\r\n      schedulerName: default-scheduler\r\n      terminationGracePeriodSeconds: 30\r\n      volumes:\r\n        - name: data\r\n          emptyDir: {}\r\n        - name: shm\r\n          emptyDir:\r\n            medium: Memory\r\n        - name: adapters\r\n          emptyDir: {}\r\n```\r\n\r\nThis deployment configuration sets up the vLLM server with LoRA adapters on GKE, with health probes, GPU limits, and a volume configuration for adapter management.\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-06T00:42:03+00:00",
+    "closed_at": "2025-05-28T02:13:20+00:00",
+    "comments": 16,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/10062/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/10062"
+  },
+  {
+    "number": 12153,
+    "title": "[Performance]: Very low generation throughput on CPU",
+    "body": "### Proposal to improve performance\n\n_No response_\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\nI am deploying vLLM API server with `ibm-granite/granite-3.1-8b-instruct` model on an Ubuntu server with only CPUs available.\n\nI noticed that the average generation throughput is as low as 0.1 token/s as shown below in the logs, plus it took 10 mins from \"Added request\" to actually generation (which was spent for prompt processing I believe?) \n```\nINFO 01-17 07:46:18 engine.py:270] Added request chatcmpl-522a81bb1b6d4e6196db0786acf51046.\nWARNING 01-17 07:57:05 _logger.py:72] Pin memory is not supported on CPU.\nINFO 01-17 07:57:05 metrics.py:467] Avg prompt throughput: 0.1 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 1 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\nINFO 01-17 07:57:22 metrics.py:467] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.1 tokens/s, Running: 1 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\nINFO 01-17 07:57:37 metrics.py:467] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.1 tokens/s, Running: 1 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\nINFO 01-17 07:57:54 metrics.py:467] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.1 tokens/s, Running: 1 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\n```\n\nI built the image to deploy using https://github.com/vllm-project/vllm/blob/main/Dockerfile.cpu, just updated the model. \n`docker build -f Dockerfile.cpu -t vllm-cpu-env-granite --shm-size=60g .`\n\nAnd run the image with below config, allocating 32GB for KVCACHE, with only 4k context length:\n```\ndocker run -it \\\n             --rm \\\n             --env \"VLLM_CPU_KVCACHE_SPACE=32\" \\\n             --network=host \\\n             vllm-cpu-env-granite-offline \\\n             --max_model_len=4000\n```\n\nIs 0.1 token/s the expected performance to run a 8b model on a CPU machine with 16 cores? \n\nBut I do see it took only ~ 118 seconds (so roughly 0.85 token/s), if I tried to run this exact same model directly using `transformer` lib on this machine, for the exact generation request like below (with max_tokens set to only 100)\n```\n{\n  \"messages\": [\n    {\n      \"content\": \"Write a code to find the maximum value in a list of numbers.\",\n      \"role\": \"user\"\n    }],\n  \"max_tokens\": 100\n}\n``` \n\nIs there any setting or config I could change that would help improve the generation performance in this case? Attaching the full logs FYI.\n\n[vllm_logs.txt](https://github.com/user-attachments/files/18450928/vllm_logs.txt)\n\n### Your current environment (if you think it is necessary)\n\n- vLLM API server version 0.6.6.post2.dev245+gd06e8240\n- System: Ubuntu 24.04.1 LTS, 16 core CPU, 64 GB Memory\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-17T08:10:25+00:00",
+    "closed_at": "2025-05-19T02:13:22+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/12153/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/12153"
+  },
+  {
+    "number": 18728,
+    "title": "[Performance]: yarn degrades the performance of qwen3",
+    "body": "### Proposal to improve performance\n\n`vllm version == 0.8.5.post1`\n\nwithout yarn\n```bash\nvllm serve Qwen/Qwen3-32B   \\\n --trust-remote-code --gpu_memory_utilization 0.95 --tensor-parallel-size 2 \\\n--quantization bitsandbytes --load_format bitsandbytes --enforce_eager \\\n--max-model-len 32768\n```\n\nwith yarn\n```bash\nvllm serve Qwen/Qwen3-32B   \\\n--trust-remote-code --gpu_memory_utilization 0.95 --tensor-parallel-size 2 \\\n--quantization bitsandbytes --load_format bitsandbytes --enforce_eager \\\n--rope-scaling '{\"rope_type\":\"yarn\",\"factor\":4.0,\"original_max_position_embeddings\":32768}' \\\n--max-model-len 131072\n```\n\nI have some tests on my end for its agentic capabilities based on qwen3 and I have some solid findings that enabling yarn to extend window context does degrade the performace, with around 15-20% performance drop. \n\ndo u also encounter the same findings ? any suggestion about this drop ?\n\n\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\nThe output of `python collect_env.py`\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-26T18:32:46+00:00",
+    "closed_at": "2025-06-05T14:58:13+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/18728/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/18728"
+  },
+  {
+    "number": 20009,
+    "title": "[Performance]: Performance Bottleneck in Mooncake PD Disaggregation: tensorhash() and safetensor_save() Overhead",
+    "body": "### Proposal to improve performance\n\nHi team,\n\nI've been conducting performance tests on vllm PD Disaggregation using mooncake_store_connector, and found that the most time-consuming parts are not the actual put() operations, but rather:\n- [tensorhash()](https://github.com/vllm-project/vllm/blob/b6553be1bc75f046b00046a4ad7576364d03c835/vllm/distributed/kv_transfer/kv_connector/mooncake_store_connector.py#L198)\n- [safetensor_save()](https://github.com/vllm-project/vllm/blob/b6553be1bc75f046b00046a4ad7576364d03c835/vllm/distributed/kv_transfer/kv_lookup_buffer/mooncake_store.py#L131)\n\nBased on profiling traces, these two steps dominate the runtime during PD disaggregation, more than the actual storage or network transmission:\n![Image](https://github.com/user-attachments/assets/320e80c2-976e-4ff5-9fd4-ff65ecf3ba83)\n\n**Observations:**\n\ntensorhash() seems to repeatedly compute SHA256 hashes over possibly large tensors.\nsafetensor_save() is used per tensor and appears to serialize, which is expensive when invoked frequently.\n\n**Questions:**\n\nMaybe we could parallelize the hash computation using multithreading?\nIs there any alternatives for safetensor_save()?\n\nThanks!\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\nThe output of `python collect_env.py`\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "open",
+    "created_at": "2025-06-24T08:14:19+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/20009/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/20009"
+  },
+  {
+    "number": 18884,
+    "title": "[Performance]: The Unstable Performance Difference between CUDA and PyTorch",
+    "body": "### Proposal to improve performance\n\n_No response_\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\nI have encountered such a problem\uff1aI implemented a custom CUDA operator for matrix multiplication and compared its time performance with PyTorch\u2019s einsum method. In a standalone Python test script, the execution time of the CUDA operator was significantly less than that of the einsum method. The code and results for the test time are as follows:\nimport pytest\nimport torch\nimport time\nfrom vllm._custom_ops import decode_matrix as decode_matrix_cuda\nfrom vllm.platforms import current_platform\n\ndef decode_matrix_torch(\n        a_sm: torch.Tensor,  # [NUM_TOKENS, NUM_HEADS, HEAD_SIZE]\n        q: torch.Tensor,  # [NUM_HEADS,NUM_TOKENS, HEAD_SIZE]\n        k_cache: torch.Tensor,  # [NUM_HEADS,NUM_TOKENS, HEAD_SIZE]\n        window_factors: torch.Tensor,  # [NUM_HEADS,1, 1]  \n):\n    a_sm = torch.einsum('hmd,hnd->hmn', q, k_cache) * (k_cache.shape[-1] ** -0.5)\n    return a_sm\n\n\nNUM_BATCH_TOKENS = [3, 256, 512, 613, 1024, 1536, 4096]\nNUM_QUERY_HEADS = [4, 8, 12, 32, 48, 64]\nHEAD_SIZES = [32, 48, 64, 96, 128, 256]\nDTYPES = [torch.float32, torch.half, torch.bfloat16]\n\n@pytest.mark.parametrize(\"num_tokens\", NUM_BATCH_TOKENS)\n@pytest.mark.parametrize(\"num_query_heads\", NUM_QUERY_HEADS)\n@pytest.mark.parametrize(\"head_size\", HEAD_SIZES)\n@pytest.mark.parametrize(\"output_dtype\", DTYPES)\n@torch.inference_mode()\ndef test_merge_attn_states(num_tokens: int, num_query_heads: int,\n                           head_size: int, output_dtype: torch.dtype):\n    if not current_platform.is_cuda():\n        pytest.skip('Currently only support compare triton merge_attn_states '\n                    'with custom cuda merge_attn_states kernel')\n\n    NUM_TOKENS = num_tokens\n    NUM_HEADS = num_query_heads\n    HEAD_SIZE = head_size\n\n    print(f\"\\nNUM_TOKENS:{NUM_TOKENS}, NUM_HEADS:{NUM_HEADS}, \"\n          f\"HEAD_SIZE:{HEAD_SIZE}, DTYPE: {output_dtype}, \"\n          f\"Device: {current_platform.get_device_name()}\")\n\n    # prefix_lse and suffix_lse contain inf and normal values\n    q = torch.randn(NUM_HEADS,1,HEAD_SIZE,\n                             dtype=torch.float32,\n                             device=\"cuda\")\n    \n    k_cache = torch.randn(NUM_HEADS,\n                             NUM_TOKENS,HEAD_SIZE,\n                             dtype=torch.float32,\n                             device=\"cuda\")\n    \n    window_factors = torch.randn(NUM_HEADS,\n                             1,1,\n                             dtype=torch.float32,\n                             device=\"cuda\")\n\n    output = torch.randn(NUM_HEADS,\n                             1,NUM_TOKENS,\n                             dtype=torch.float32,\n                             device=\"cuda\")\n\n\n    warmup_times = 2\n    repeat_times = 20\n\n    output_torch = output.clone()\n    total_time_torch_kernel = 0\n    total_time_torch = 0\n    start = torch.cuda.Event(enable_timing=True)\n    end = torch.cuda.Event(enable_timing=True)\n\n    # 0. Run the Torch kernel\n    q_torch = q.clone()\n    k_cache_torch = k_cache.clone()\n    window_factors_torch = window_factors.clone()\n    for _ in range(warmup_times):\n        output_torch = decode_matrix_torch(\n            output_torch, q_torch, k_cache_torch, window_factors_torch)\n    torch.cuda.synchronize()\n\n    for _ in range(repeat_times):\n        start.record()\n        start_time = time.time()\n        output_torch = decode_matrix_torch(\n            output_torch, q_torch, k_cache_torch, window_factors_torch)\n        \n\n        end_time = time.time()\n        end.record()\n        torch.cuda.synchronize()\n        total_time_torch_kernel += start.elapsed_time(end)\n        total_time_torch += (end_time-start_time)\n\n    avg_time_torch_kernel = total_time_torch_kernel / repeat_times\n    avg_time_torch = total_time_torch / repeat_times\n\n\n    # 2. Run the CUDA kernel\n    total_time_cuda_kernel = 0\n    total_time_cuda = 0\n    output_cuda = output.clone()\n    \n    for _ in range(warmup_times):\n        decode_matrix_cuda(q, k_cache,\n                               window_factors, output_cuda)\n    torch.cuda.synchronize()\n\n    for _ in range(repeat_times):\n        start.record()\n        start_time = time.time()\n        decode_matrix_cuda(q, k_cache,\n                               window_factors, output_cuda)\n        end_time = time.time()\n        end.record()\n        torch.cuda.synchronize()\n        total_time_cuda_kernel += start.elapsed_time(end)\n        total_time_cuda += (end_time-start_time)\n\n    avg_time_cuda_kernel = total_time_cuda_kernel / repeat_times\n    avg_time_cuda = total_time_cuda / repeat_times\n\n    # 3. Performance compare\n    performance_improved = avg_time_torch_kernel / avg_time_cuda_kernel\n    print(f\" Torch_kernel time: {avg_time_torch_kernel:.6f}ms, \"\n          f\"Torch time: {avg_time_torch:.6f}ms \")\n\n    print(f\"  CUDA_kernel time: {avg_time_cuda_kernel:.6f}ms, \"\n          f\"CUDA time: {avg_time_cuda:.6f}ms, \"\n          f\"Performance: {performance_improved:.5f}x\")\n    print(\"-\" * 100)\n\ntest_merge_attn_states(256,12,128,torch.float32)\n\n![Image](https://github.com/user-attachments/assets/50bf468c-f922-4187-a63b-43de1b0fc77a)\n\nHowever, when integrating this CUDA operator into the forward function of the model file in VLLM, its performance became unstable: sometimes the execution time of the CUDA operator was longer than that of the einsum method, and sometimes it was shorter. The results for the test time are as follows:\n\n![Image](https://github.com/user-attachments/assets/169f41cc-76a5-425c-bed3-418973f8a1ab)\n\nWhat factors could be causing this phenomenon?\n\n### Your current environment (if you think it is necessary)\n\n```text\nThe output of `python collect_env.py`\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "open",
+    "created_at": "2025-05-29T06:52:56+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/18884/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/18884"
+  },
+  {
+    "number": 7935,
+    "title": "[Performance]: 5x slower throught with openAI client/server than native one",
+    "body": "### Proposal to improve performance\r\n\r\nI've been trying to write a reliable benchmark to be used with vllm, and I discovered that when I use the openAI client it can't scale. If I try to use 50 concurrent clients the gpu load goes down to 5% and the throughput is extremely slow. The more clients I add the worst things get. With a single client there is no problem.\r\n\r\nI then used the same benchmark switching to the [vllm native client/server](https://docs.vllm.ai/en/latest/getting_started/examples/api_client.html) and I'm getting a 60-70% gpu util and 5x higher throughput.\r\n\r\nI checked that I had the same `SamplingParams` reported by the server in both cases.\r\n\r\nIn parallel with those I was using https://github.com/grafana/k6 against both uses cases - with openAI entrypoints and with the native entrypoint - I can confirm that the server isn't the problem - in both cases I get high gpu util with k6 client and high throughput.\r\n\r\nI thought that perhaps streaming was the cause but disabling it made a very small difference.\r\n\r\nSo everything points to the openAI client - I know that it's not your product but you recommend using it with [the openAI entrypoint](https://docs.vllm.ai/en/latest/getting_started/examples/api_client.html):\r\n\r\n> \"\"\"Example Python client for `vllm.entrypoints.api_server`\r\n> NOTE: The API server is used only for demonstration and simple performance\r\n> benchmarks. It is not intended for production use.\r\n> For production use, we recommend `vllm serve` and the OpenAI client API.\r\n\r\nSo perhaps you have some insights to what I'm missing? I'm just using your examples as is.\r\n\r\nvllm==0.5.5 here\r\n\r\nThank you!\r\n\r\n### Your current environment (if you think it is necessary)\r\n\r\n\r\n```text\r\nPyTorch version: 2.4.0+cu121\r\nIs debug build: False\r\nCUDA used to build PyTorch: 12.1\r\nROCM used to build PyTorch: N/A\r\n\r\nOS: Ubuntu 20.04.6 LTS (x86_64)\r\nGCC version: (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0\r\nClang version: 10.0.0-4ubuntu1 \r\nCMake version: version 3.30.2\r\nLibc version: glibc-2.31\r\n\r\nPython version: 3.10.14 | packaged by conda-forge | (main, Mar 20 2024, 12:45:18) [GCC 12.3.0] (64-bit runtime)\r\nPython platform: Linux-5.15.0-1017-gcp-tcpx-x86_64-with-glibc2.31\r\nIs CUDA available: True\r\nCUDA runtime version: 12.1.105\r\nCUDA_MODULE_LOADING set to: LAZY\r\nGPU models and configuration: \r\nGPU 0: NVIDIA H100 80GB HBM3\r\nGPU 1: NVIDIA H100 80GB HBM3\r\n\r\nNvidia driver version: 550.90.07\r\ncuDNN version: Probably one of the following:\r\n/usr/local/cuda-12.0/targets/x86_64-linux/lib/libcudnn.so.8.9.4\r\n/usr/local/cuda-12.0/targets/x86_64-linux/lib/libcudnn_adv_infer.so.8.9.4\r\n/usr/local/cuda-12.0/targets/x86_64-linux/lib/libcudnn_adv_train.so.8.9.4\r\n/usr/local/cuda-12.0/targets/x86_64-linux/lib/libcudnn_cnn_infer.so.8.9.4\r\n/usr/local/cuda-12.0/targets/x86_64-linux/lib/libcudnn_cnn_train.so.8.9.4\r\n/usr/local/cuda-12.0/targets/x86_64-linux/lib/libcudnn_ops_infer.so.8.9.4\r\n/usr/local/cuda-12.0/targets/x86_64-linux/lib/libcudnn_ops_train.so.8.9.4\r\nHIP runtime version: N/A\r\nMIOpen runtime version: N/A\r\nIs XNNPACK available: True\r\n\r\nCPU:\r\nArchitecture:                         x86_64\r\nCPU op-mode(s):                       32-bit, 64-bit\r\nByte Order:                           Little Endian\r\nAddress sizes:                        52 bits physical, 57 bits virtual\r\nCPU(s):                               208\r\nOn-line CPU(s) list:                  0-207\r\nThread(s) per core:                   2\r\nCore(s) per socket:                   52\r\nSocket(s):                            2\r\nNUMA node(s):                         2\r\nVendor ID:                            GenuineIntel\r\nCPU family:                           6\r\nModel:                                143\r\nModel name:                           Intel(R) Xeon(R) Platinum 8481C CPU @ 2.70GHz\r\nStepping:                             8\r\nCPU MHz:                              2699.998\r\nBogoMIPS:                             5399.99\r\nHypervisor vendor:                    KVM\r\nVirtualization type:                  full\r\nL1d cache:                            4.9 MiB\r\nL1i cache:                            3.3 MiB\r\nL2 cache:                             208 MiB\r\nL3 cache:                             210 MiB\r\nNUMA node0 CPU(s):                    0-51,104-155\r\nNUMA node1 CPU(s):                    52-103,156-207\r\nVulnerability Gather data sampling:   Not affected\r\nVulnerability Itlb multihit:          Not affected\r\nVulnerability L1tf:                   Not affected\r\nVulnerability Mds:                    Not affected\r\nVulnerability Meltdown:               Not affected\r\nVulnerability Mmio stale data:        Not affected\r\nVulnerability Reg file data sampling: Not affected\r\nVulnerability Retbleed:               Not affected\r\nVulnerability Spec rstack overflow:   Not affected\r\nVulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl and seccomp\r\nVulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization\r\nVulnerability Spectre v2:             Mitigation; Enhanced / Automatic IBRS; IBPB conditional; RSB filling; PBRSB-eIBRS SW sequence; BHI SW loop, KVM SW loop\r\nVulnerability Srbds:                  Not affected\r\nVulnerability Tsx async abort:        Not affected\r\nFlags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single ssbd ibrs ibpb stibp ibrs_enhanced fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rtm avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx_vnni avx512_bf16 arat avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq la57 rdpid cldemote movdiri movdir64b fsrm md_clear serialize amx_bf16 avx512_fp16 amx_tile amx_int8 arch_capabilities\r\n\r\nVersions of relevant libraries:\r\n[pip3] flake8==7.1.0\r\n[pip3] mypy-extensions==1.0.0\r\n[pip3] numpy==1.26.3\r\n[pip3] nvidia-nccl-cu12==2.20.5\r\n[pip3] onnxruntime==1.18.1\r\n[pip3] qtorch==0.3.0\r\n[pip3] sentence-transformers==3.0.1\r\n[pip3] torch==2.4.0\r\n[pip3] torchvision==0.19.0\r\n[pip3] transformers==4.44.0\r\n[pip3] triton==3.0.0\r\n[conda] numpy                     1.26.3                   pypi_0    pypi\r\n[conda] nvidia-nccl-cu12          2.20.5                   pypi_0    pypi\r\n[conda] qtorch                    0.3.0                    pypi_0    pypi\r\n[conda] sentence-transformers     3.0.1                    pypi_0    pypi\r\n[conda] torch                     2.4.0                    pypi_0    pypi\r\n[conda] torchvision               0.19.0                   pypi_0    pypi\r\n[conda] transformers              4.44.0                   pypi_0    pypi\r\n[conda] triton                    3.0.0                    pypi_0    pypi\r\nROCM Version: Could not collect\r\nNeuron SDK Version: N/A\r\nvLLM Version: 0.5.5\r\nvLLM Build Flags:\r\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\r\nGPU Topology:\r\nGPU0    GPU1    CPU Affinity    NUMA Affinity   GPU NUMA ID\r\nGPU0     X      NV18    57-63,161-166   1               N/A\r\nGPU1    NV18     X      57-63,161-166   1               N/A\r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n```\r\n\r\n\r\n### Before submitting a new issue...\r\n\r\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-28T02:44:31+00:00",
+    "closed_at": "2024-10-28T19:10:50+00:00",
+    "comments": 21,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/7935/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/7935"
+  },
+  {
+    "number": 19398,
+    "title": "[Performance]: Where is the cache stored when vLLM reads the model's checkpoint for the first time? I hope it can be saved so that the model loads quickly every time.",
+    "body": "### Proposal to improve performance\n\n_No response_\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\nThe output of `python collect_env.py`\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "open",
+    "created_at": "2025-06-10T04:52:04+00:00",
+    "closed_at": null,
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/19398/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/19398"
+  },
+  {
+    "number": 15018,
+    "title": "[Performance]: only 0.4 tokens/s when running 2 or more request",
+    "body": "### Proposal to improve performance\n\n_No response_\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\nI was tring to run DeepSeek-R1-Distill-Qwen-32B-Q4_K_M.gguf with 7900 XTX\uff0824G) and it works,I have got 19.3 tokens/s when it run with one request.However\uff0cthe throughput was only 0.4 tokens/s   when it running two or more requsets.The GPU KV cache usage  is enought,is there any parameters i have to set?\nINFO 03-18 08:46:00 [__init__.py:256] Automatically detected platform rocm.\nINFO 03-18 08:46:01 [api_server.py:912] vLLM API server version 0.7.4.dev442+gfd8e055f\nINFO 03-18 08:46:01 [api_server.py:913] args: Namespace(subparser='serve', model_tag='/app/model/DeepSeek-R1-Distill-Qwen-32B-GGUF/DeepSeek-R1-Distill-Qwen-32B-Q4_K_M.gguf', config='', host='0.0.0.0', port=8199, uvicorn_log_level='info', allow_credentials=False, allowed_origins=['*'], allowed_methods=['*'], allowed_headers=['*'], api_key=None, lora_modules=None, prompt_adapters=None, chat_template=None, chat_template_content_format='auto', response_role='assistant', ssl_keyfile=None, ssl_certfile=None, ssl_ca_certs=None, enable_ssl_refresh=False, ssl_cert_reqs=0, root_path=None, middleware=[], return_tokens_as_token_ids=False, disable_frontend_multiprocessing=False, enable_request_id_headers=False, enable_auto_tool_choice=False, tool_call_parser=None, tool_parser_plugin='', model='/app/model/DeepSeek-R1-Distill-Qwen-32B-GGUF/DeepSeek-R1-Distill-Qwen-32B-Q4_K_M.gguf', task='auto', tokenizer=None, hf_config_path=None, skip_tokenizer_init=False, revision=None, code_revision=None, tokenizer_revision=None, tokenizer_mode='auto', trust_remote_code=False, allowed_local_media_path=None, download_dir=None, load_format='auto', config_format=<ConfigFormat.AUTO: 'auto'>, dtype='auto', kv_cache_dtype='auto', max_model_len=4096, guided_decoding_backend='xgrammar', logits_processor_pattern=None, model_impl='auto', distributed_executor_backend=None, pipeline_parallel_size=1, tensor_parallel_size=1, enable_expert_parallel=False, max_parallel_loading_workers=None, ray_workers_use_nsight=False, block_size=None, enable_prefix_caching=None, disable_sliding_window=False, use_v2_block_manager=True, num_lookahead_slots=0, seed=None, swap_space=4, cpu_offload_gb=0, gpu_memory_utilization=0.96, num_gpu_blocks_override=None, max_num_batched_tokens=None, max_num_partial_prefills=1, max_long_partial_prefills=1, long_prefill_token_threshold=0, max_num_seqs=None, max_logprobs=20, disable_log_stats=False, quantization=None, rope_scaling=None, rope_theta=None, hf_overrides=None, enforce_eager=False, max_seq_len_to_capture=8192, disable_custom_all_reduce=False, tokenizer_pool_size=0, tokenizer_pool_type='ray', tokenizer_pool_extra_config=None, limit_mm_per_prompt=None, mm_processor_kwargs=None, disable_mm_preprocessor_cache=False, enable_lora=False, enable_lora_bias=False, max_loras=1, max_lora_rank=16, lora_extra_vocab_size=256, lora_dtype='auto', long_lora_scaling_factors=None, max_cpu_loras=None, fully_sharded_loras=False, enable_prompt_adapter=False, max_prompt_adapters=1, max_prompt_adapter_token=0, device='auto', num_scheduler_steps=1, use_tqdm_on_load=True, multi_step_stream_outputs=True, scheduler_delay_factor=0.0, enable_chunked_prefill=None, speculative_model=None, speculative_model_quantization=None, num_speculative_tokens=None, speculative_disable_mqa_scorer=False, speculative_draft_tensor_parallel_size=None, speculative_max_model_len=None, speculative_disable_by_batch_size=None, ngram_prompt_lookup_max=None, ngram_prompt_lookup_min=None, spec_decoding_acceptance_method='rejection_sampler', typical_acceptance_sampler_posterior_threshold=None, typical_acceptance_sampler_posterior_alpha=None, disable_logprobs_during_spec_decoding=None, model_loader_extra_config=None, ignore_patterns=[], preemption_mode=None, served_model_name=['Deepseek-R1:32B'], qlora_adapter_name_or_path=None, show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, disable_async_output_proc=False, scheduling_policy='fcfs', scheduler_cls='vllm.core.scheduler.Scheduler', override_neuron_config=None, override_pooler_config=None, compilation_config=None, kv_transfer_config=None, worker_cls='auto', worker_extension_cls='', generation_config='auto', override_generation_config=None, enable_sleep_mode=False, calculate_kv_scales=False, additional_config=None, enable_reasoning=False, reasoning_parser=None, disable_log_requests=False, max_log_len=None, disable_fastapi_docs=False, enable_prompt_tokens_details=False, dispatch_function=<function ServeSubcommand.cmd at 0x7a3251b5b600>)\nINFO 03-18 08:46:01 [api_server.py:209] Started engine process with PID 660\nINFO 03-18 08:46:02 [__init__.py:256] Automatically detected platform rocm.\nINFO 03-18 08:46:10 [config.py:2573] Downcasting torch.float32 to torch.float16.\nINFO 03-18 08:46:12 [config.py:2573] Downcasting torch.float32 to torch.float16.\nINFO 03-18 08:46:16 [config.py:581] This model supports multiple tasks: {'embed', 'generate', 'reward', 'classify', 'score'}. Defaulting to 'generate'.\nWARNING 03-18 08:46:16 [config.py:660] gguf quantization is not fully optimized yet. The speed can be slower than non-quantized models.\nINFO 03-18 08:46:16 [config.py:1526] Disabled the custom all-reduce kernel because it is not supported on AMD GPUs.\nINFO 03-18 08:46:17 [config.py:581] This model supports multiple tasks: {'reward', 'generate', 'embed', 'score', 'classify'}. Defaulting to 'generate'.\nWARNING 03-18 08:46:17 [config.py:660] gguf quantization is not fully optimized yet. The speed can be slower than non-quantized models.\nINFO 03-18 08:46:17 [config.py:1526] Disabled the custom all-reduce kernel because it is not supported on AMD GPUs.\nINFO 03-18 08:46:19 [llm_engine.py:235] Initializing a V0 LLM engine (v0.7.4.dev442+gfd8e055f) with config: model='/app/model/DeepSeek-R1-Distill-Qwen-32B-GGUF/DeepSeek-R1-Distill-Qwen-32B-Q4_K_M.gguf', speculative_config=None, tokenizer='/app/model/DeepSeek-R1-Distill-Qwen-32B-GGUF/DeepSeek-R1-Distill-Qwen-32B-Q4_K_M.gguf', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, override_neuron_config=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=4096, download_dir=None, load_format=LoadFormat.GGUF, tensor_parallel_size=1, pipeline_parallel_size=1, disable_custom_all_reduce=True, quantization=gguf, enforce_eager=False, kv_cache_dtype=auto,  device_config=cuda, decoding_config=DecodingConfig(guided_decoding_backend='xgrammar', reasoning_backend=None), observability_config=ObservabilityConfig(show_hidden_metrics=False, otlp_traces_endpoint=None, collect_model_forward_time=False, collect_model_execute_time=False), seed=None, served_model_name=Deepseek-R1:32B, num_scheduler_steps=1, multi_step_stream_outputs=True, enable_prefix_caching=False, chunked_prefill_enabled=False, use_async_output_proc=True, disable_mm_preprocessor_cache=False, mm_processor_kwargs=None, pooler_config=None, compilation_config={\"splitting_ops\":[],\"compile_sizes\":[],\"cudagraph_capture_sizes\":[256,248,240,232,224,216,208,200,192,184,176,168,160,152,144,136,128,120,112,104,96,88,80,72,64,56,48,40,32,24,16,8,4,2,1],\"max_capture_size\":256}, use_cached_outputs=True, \nINFO 03-18 08:46:36 [rocm.py:130] None is not supported in AMD GPUs.\nINFO 03-18 08:46:36 [rocm.py:131] Using ROCmFlashAttention backend.\nINFO 03-18 08:46:36 [parallel_state.py:948] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, TP rank 0\nINFO 03-18 08:46:36 [model_runner.py:1110] Starting to load model /app/model/DeepSeek-R1-Distill-Qwen-32B-GGUF/DeepSeek-R1-Distill-Qwen-32B-Q4_K_M.gguf...\nSliding Window Attention is enabled but not implemented for `sdpa`; unexpected results may be encountered.\nWARNING 03-18 08:46:40 [rocm.py:206] Model architecture 'Qwen2ForCausalLM' is partially supported by ROCm: Sliding window attention (SWA) is not yet supported in Triton flash attention. For half-precision SWA support, please use CK flash attention by setting `VLLM_USE_TRITON_FLASH_ATTN=0`\n/usr/local/lib/python3.12/dist-packages/torch/nested/__init__.py:228: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. We recommend specifying layout=torch.jagged when constructing a nested tensor, as this layout receives active development, has better operator coverage, and works with torch.compile. (Triggered internally at /app/pytorch/aten/src/ATen/NestedTensorImpl.cpp:178.)\n  return _nested.nested_tensor(\nINFO 03-18 08:46:53 [model_runner.py:1146] Model loading took 18.9082 GB and 16.624474 seconds\nINFO 03-18 08:50:01 [worker.py:267] Memory profiling takes 187.38 seconds\nINFO 03-18 08:50:01 [worker.py:267] the current vLLM instance can use total_gpu_memory (23.98GiB) x gpu_memory_utilization (0.96) = 23.02GiB\nINFO 03-18 08:50:01 [worker.py:267] model weights take 18.91GiB; non_torch_memory takes 0.25GiB; PyTorch activation peak memory takes 1.42GiB; the rest of the memory reserved for KV Cache is 2.44GiB.\nINFO 03-18 08:50:01 [executor_base.py:111] # rocm blocks: 625, # CPU blocks: 1024\nINFO 03-18 08:50:01 [executor_base.py:116] Maximum concurrency for 4096 tokens per request: 2.44x\nINFO 03-18 08:50:01 [model_runner.py:1442] Capturing cudagraphs for decoding. This may lead to unexpected consequences if the model is not static. To run the model in eager mode, set 'enforce_eager=True' or use '--enforce-eager' in the CLI. If out-of-memory error occurs during cudagraph capture, consider decreasing `gpu_memory_utilization` or switching to eager mode. You can also reduce the `max_num_seqs` as needed to decrease memory usage.\nCapturing CUDA graph shapes: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 35/35 [09:52<00:00, 16.93s/it]\nINFO 03-18 08:59:54 [model_runner.py:1570] Graph capturing finished in 593 secs, took 0.15 GiB\nINFO 03-18 08:59:54 [llm_engine.py:441] init engine (profile, create kv cache, warmup model) took 780.78 seconds\nINFO 03-18 09:00:11 [api_server.py:958] Starting vLLM API server on http://0.0.0.0:8199\nINFO 03-18 09:00:11 [launcher.py:26] Available routes are:\nINFO 03-18 09:00:11 [launcher.py:34] Route: /openapi.json, Methods: HEAD, GET\nINFO 03-18 09:00:11 [launcher.py:34] Route: /docs, Methods: HEAD, GET\nINFO 03-18 09:00:11 [launcher.py:34] Route: /docs/oauth2-redirect, Methods: HEAD, GET\nINFO 03-18 09:00:11 [launcher.py:34] Route: /redoc, Methods: HEAD, GET\nINFO 03-18 09:00:11 [launcher.py:34] Route: /health, Methods: GET\nINFO 03-18 09:00:11 [launcher.py:34] Route: /ping, Methods: POST, GET\nINFO 03-18 09:00:11 [launcher.py:34] Route: /tokenize, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /detokenize, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /v1/models, Methods: GET\nINFO 03-18 09:00:11 [launcher.py:34] Route: /version, Methods: GET\nINFO 03-18 09:00:11 [launcher.py:34] Route: /v1/chat/completions, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /v1/completions, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /v1/embeddings, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /pooling, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /score, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /v1/score, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /v1/audio/transcriptions, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /rerank, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /v1/rerank, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /v2/rerank, Methods: POST\nINFO 03-18 09:00:11 [launcher.py:34] Route: /invocations, Methods: POST\nINFO:     Started server process [621]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nERROR 03-18 09:02:03 [serving_chat.py:133] Error with model object='error' message='The model `QwQ-32B-Q4_K_M` does not exist.' type='NotFoundError' param=None code=404\nINFO:     192.168.1.168:12475 - \"POST /v1/chat/completions HTTP/1.1\" 404 Not Found\nERROR 03-18 09:02:34 [serving_chat.py:133] Error with model object='error' message='The model `DeepSeek-R1-Distill-Qwen-32B-Q4_K_M` does not exist.' type='NotFoundError' param=None code=404\nINFO:     192.168.1.168:12509 - \"POST /v1/chat/completions HTTP/1.1\" 404 Not Found\nINFO 03-18 09:03:16 [chat_utils.py:346] Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.\nINFO 03-18 09:03:16 [logger.py:39] Received request chatcmpl-6e1744b21b174b9489bd4cea3b8b4b13: prompt: '<\uff5cUser\uff5c>\u4ec0\u4e48\u662f\u6279\u91cf\u5f52\u4e00\u5316\uff08Batch Normalization\uff09\uff1f<\uff5cAssistant\uff5c>', params: SamplingParams(n=1, presence_penalty=0.0, frequency_penalty=0.0, repetition_penalty=1.0, temperature=0.7, top_p=0.9, top_k=-1, min_p=0.0, seed=None, stop=[], stop_token_ids=[], bad_words=[], include_stop_str_in_output=False, ignore_eos=False, max_tokens=2048, min_tokens=0, logprobs=None, prompt_logprobs=None, skip_special_tokens=True, spaces_between_special_tokens=True, truncate_prompt_tokens=None, guided_decoding=None, extra_args=None), prompt_token_ids: None, lora_request: None, prompt_adapter_request: None.\nINFO:     192.168.1.168:12564 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\nINFO 03-18 09:03:16 [engine.py:289] Added request chatcmpl-6e1744b21b174b9489bd4cea3b8b4b13.\nINFO 03-18 09:03:21 [metrics.py:481] Avg prompt throughput: 3.1 tokens/s, Avg generation throughput: 0.1 tokens/s, Running: 1 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.3%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:03:26 [metrics.py:481] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 19.3 tokens/s, Running: 1 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 1.3%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:03:31 [metrics.py:481] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 19.2 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:03:41 [metrics.py:481] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:03:43 [logger.py:39] Received request chatcmpl-ccb9a0c7cb1448489054051f6f39c4cf: prompt: '<\uff5cUser\uff5c>\u4ec0\u4e48\u662f\u63a8\u8350\u7cfb\u7edf\uff1f<\uff5cAssistant\uff5c>', params: SamplingParams(n=1, presence_penalty=0.0, frequency_penalty=0.0, repetition_penalty=1.0, temperature=0.7, top_p=0.9, top_k=-1, min_p=0.0, seed=None, stop=[], stop_token_ids=[], bad_words=[], include_stop_str_in_output=False, ignore_eos=False, max_tokens=2048, min_tokens=0, logprobs=None, prompt_logprobs=None, skip_special_tokens=True, spaces_between_special_tokens=True, truncate_prompt_tokens=None, guided_decoding=None, extra_args=None), prompt_token_ids: None, lora_request: None, prompt_adapter_request: None.\nINFO:     192.168.1.168:12595 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\nINFO 03-18 09:03:43 [engine.py:289] Added request chatcmpl-ccb9a0c7cb1448489054051f6f39c4cf.\nINFO 03-18 09:03:43 [logger.py:39] Received request chatcmpl-e7b6a1e58d994b3caef5e397b8728e28: prompt: '<\uff5cUser\uff5c>\u4ec0\u4e48\u662fAutoML\uff1f<\uff5cAssistant\uff5c>', params: SamplingParams(n=1, presence_penalty=0.0, frequency_penalty=0.0, repetition_penalty=1.0, temperature=0.7, top_p=0.9, top_k=-1, min_p=0.0, seed=None, stop=[], stop_token_ids=[], bad_words=[], include_stop_str_in_output=False, ignore_eos=False, max_tokens=2048, min_tokens=0, logprobs=None, prompt_logprobs=None, skip_special_tokens=True, spaces_between_special_tokens=True, truncate_prompt_tokens=None, guided_decoding=None, extra_args=None), prompt_token_ids: None, lora_request: None, prompt_adapter_request: None.\nINFO:     192.168.1.168:12596 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\nINFO 03-18 09:03:49 [engine.py:289] Added request chatcmpl-e7b6a1e58d994b3caef5e397b8728e28.\nINFO 03-18 09:03:49 [metrics.py:481] Avg prompt throughput: 1.9 tokens/s, Avg generation throughput: 0.1 tokens/s, Running: 2 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.3%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:03:58 [metrics.py:481] Avg prompt throughput: 1.5 tokens/s, Avg generation throughput: 0.3 tokens/s, Running: 2 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.3%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:04:08 [metrics.py:481] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.4 tokens/s, Running: 2 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.6%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:04:17 [metrics.py:481] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.4 tokens/s, Running: 2 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.6%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:04:27 [metrics.py:481] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.4 tokens/s, Running: 2 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.6%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:04:37 [metrics.py:481] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.4 tokens/s, Running: 2 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.6%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:04:46 [metrics.py:481] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.4 tokens/s, Running: 2 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.6%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:04:56 [metrics.py:481] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.4 tokens/s, Running: 2 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.6%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:05:05 [metrics.py:481] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.4 tokens/s, Running: 2 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.6%, CPU KV cache usage: 0.0%.\nINFO 03-18 09:05:15 [metrics.py:481] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.4 tokens/s, Running: 2 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.6%, CPU KV cache usage: 0.0%.\n\n\n### Your current environment (if you think it is necessary)\n\n```text\nPyTorch version: 2.6.0a0+git8d4926e\nIs debug build: False\nCUDA used to build PyTorch: N/A\nROCM used to build PyTorch: 6.3.42133-1b9c17779\n\nOS: Ubuntu 22.04.5 LTS (x86_64)\nGCC version: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\nClang version: 18.0.0git (https://github.com/RadeonOpenCompute/llvm-project roc-6.3.1 24491 1e0fda770a2079fbd71e4b70974d74f62fd3af10)\nCMake version: version 3.31.6\nLibc version: glibc-2.35\n\nPython version: 3.12.9 (main, Feb  5 2025, 08:49:00) [GCC 11.4.0] (64-bit runtime)\nPython platform: Linux-6.11.0-19-generic-x86_64-with-glibc2.35\nIs CUDA available: True\nCUDA runtime version: Could not collect\nCUDA_MODULE_LOADING set to: LAZY\nGPU models and configuration: Radeon RX 7900 XTX (gfx1100)\nNvidia driver version: Could not collect\ncuDNN version: Could not collect\nHIP runtime version: 6.3.42133\nMIOpen runtime version: 3.3.0\nIs XNNPACK available: True\n\nCPU:\nArchitecture:                         x86_64\nCPU op-mode(s):                       32-bit, 64-bit\nAddress sizes:                        48 bits physical, 48 bits virtual\nByte Order:                           Little Endian\nCPU(s):                               32\nOn-line CPU(s) list:                  0-31\nVendor ID:                            AuthenticAMD\nModel name:                           AMD Ryzen 9 9950X 16-Core Processor\nCPU family:                           26\nModel:                                68\nThread(s) per core:                   2\nCore(s) per socket:                   16\nSocket(s):                            1\nStepping:                             0\nFrequency boost:                      enabled\nCPU max MHz:                          5752.0000\nCPU min MHz:                          600.0000\nBogoMIPS:                             8583.31\nFlags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good amd_lbr_v2 nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba perfmon_v2 ibrs ibpb stibp ibrs_enhanced vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk avx_vnni avx512_bf16 clzero irperf xsaveerptr rdpru wbnoinvd cppc arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif x2avic v_spec_ctrl vnmi avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid bus_lock_detect movdiri movdir64b overflow_recov succor smca fsrm avx512_vp2intersect flush_l1d amd_lbr_pmc_freeze\nVirtualization:                       AMD-V\nL1d cache:                            768 KiB (16 instances)\nL1i cache:                            512 KiB (16 instances)\nL2 cache:                             16 MiB (16 instances)\nL3 cache:                             64 MiB (2 instances)\nNUMA node(s):                         1\nNUMA node0 CPU(s):                    0-31\nVulnerability Gather data sampling:   Not affected\nVulnerability Itlb multihit:          Not affected\nVulnerability L1tf:                   Not affected\nVulnerability Mds:                    Not affected\nVulnerability Meltdown:               Not affected\nVulnerability Mmio stale data:        Not affected\nVulnerability Reg file data sampling: Not affected\nVulnerability Retbleed:               Not affected\nVulnerability Spec rstack overflow:   Not affected\nVulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:             Mitigation; Enhanced / Automatic IBRS; IBPB conditional; STIBP always-on; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected\nVulnerability Srbds:                  Not affected\nVulnerability Tsx async abort:        Not affected\n\nVersions of relevant libraries:\n[pip3] numpy==1.26.4\n[pip3] pyzmq==26.3.0\n[pip3] torch==2.6.0a0+git8d4926e\n[pip3] torchvision==0.19.1a0+6194369\n[pip3] transformers==4.49.0\n[pip3] triton==3.2.0+gite5be006a\n[conda] Could not collect\nROCM Version: 6.3.42133-1b9c17779\nNeuron SDK Version: N/A\nvLLM Version: 0.7.4.dev442+gfd8e055f\nvLLM Build Flags:\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\nGPU Topology:\n============================ ROCm System Management Interface ============================\n================================ Weight between two GPUs =================================\n       GPU0         GPU1         \nGPU0   0            40           \nGPU1   40           0            \n\n================================= Hops between two GPUs ==================================\n       GPU0         GPU1         \nGPU0   0            2            \nGPU1   2            0            \n\n=============================== Link Type between two GPUs ===============================\n       GPU0         GPU1         \nGPU0   0            PCIE         \nGPU1   PCIE         0            \n\n======================================= Numa Nodes =======================================\nGPU[0]\t\t: (Topology) Numa Node: 0\nGPU[0]\t\t: (Topology) Numa Affinity: -1\nGPU[1]\t\t: (Topology) Numa Node: 0\nGPU[1]\t\t: (Topology) Numa Affinity: -1\n================================== End of ROCm SMI Log ===================================\n\nPYTORCH_ROCM_ARCH=gfx1100;gfx1101;gfx1200;gfx1201\nLD_LIBRARY_PATH=/usr/local/lib/python3.12/dist-packages/cv2/../../lib64:/opt/rocm/lib:/usr/local/lib:\nNCCL_CUMEM_ENABLE=0\nTORCHINDUCTOR_COMPILE_THREADS=1\nCUDA_MODULE_LOADING=LAZY\n\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "open",
+    "created_at": "2025-03-18T09:17:19+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15018/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15018"
+  },
+  {
+    "number": 8866,
+    "title": "[Performance]: Slowdown compared to Gradio",
+    "body": "### Proposal to improve performance\r\n\r\nvLLM is amazingly fast\r\nHowever, when running below prompt, with meta-llama/Meta-Llama-3-8B-Instruct, Gradio takes ~4sec per prompt (one by one) while vLLM takes ~12sec by def. When setting --quantization fp8 times reduced to ~8s\r\nOverall vLLM is much faster since it allows to process in parallel while Gradio doesn't\r\nTested with AWS L4, Gradio 4.43.0\r\nWhat am I missing?\r\n\r\n`prompt = \"\"\"You are a knowledgeable, efficient, and direct Al assistant. Provide concise answers up to 100 words`\r\n`without explainations or extra notes, focusing on the key information needed. Answer in question: answer JSON format`\r\n`**User:**I like the color red. Our website is www.nba.com. My age is 18.`\r\n`**Assistant:**Great. Write 3 things for me to answer.`\r\n`**User:**What is our website? What is my age? What kind of drink do I like to drink?`\r\n`**Assistant**:`\r\n`\"\"\"`\r\n\r\n### Report of performance regression\r\n\r\n_No response_\r\n\r\n### Misc discussion on performance\r\n\r\n_No response_\r\n\r\n### Your current environment (if you think it is necessary)\r\n\r\n```text\r\nThe output of `python collect_env.py`\r\n```\r\n\r\n\r\n### Before submitting a new issue...\r\n\r\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-26T20:35:42+00:00",
+    "closed_at": "2025-01-26T01:59:49+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/8866/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/8866"
+  },
+  {
+    "number": 10592,
+    "title": "[Performance]: Cannot use FlashAttention-2 backend for Volta and Turing GPUs.",
+    "body": "### Proposal to improve performance\n\n![image](https://github.com/user-attachments/assets/c70acb43-596a-490c-8409-8e90d180d0fc)\r\nI would like to ask if I cannot use FlashAttention because my gpu is v100.\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\r\nThe output of `python collect_env.py`\r\n```\r\n\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-11-23T11:49:39+00:00",
+    "closed_at": "2025-03-24T02:06:43+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/10592/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/10592"
+  },
+  {
+    "number": 15809,
+    "title": "[Performance]: Why AWQ model\u2018s performance issue on A100&H100",
+    "body": "\n\n### Misc discussion on performance\n\nI am using 0.8.3 version of vllm,driver 570.124.06, \nthis command to serve to depoly AWQ model casperhansen/llama-3.3-70b-instruct-awq \uff08GEMM\uff09 on single H100PCIE & single A100 PCIE\n\npython -m vllm.entrypoints.openai.api_server --model casperhansen/llama-3.3-70b-instruct-awq --max-num-seqs=256 --max-model-len=4096 --max-num-batched-tokens=4096 --tensor-parallel-size=1 --block-size=128 --host=0.0.0.0 --port=8000 --gpu-memory-utilization=0.9  --trust-remote-code\n \nWe run the test with 2048 input and output, on batch size 1,2,4,8,32,64, and we find H100 just little better than A00 about 10-30% on TTFT and TPOT almost all batch size.\n\nHowever on GPTQ model (w4a16). the perofromance is very different. H100 is 2 times better than A100. \n\nSo my question is what is going on with AWQ quantized model? Why AWQ model on H100 is not 2time better than A100 as GPTQ model, they both Q4A16, should have similar performance?\n\n\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "open",
+    "created_at": "2025-03-31T10:13:02+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15809/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15809"
+  },
+  {
+    "number": 15330,
+    "title": "[Performance]: poor performance in pipeline parallesm when batch-size is large",
+    "body": "### Proposal to improve performance\n\nIn the case where the lengths of the sent requests are the same, pipeline parallelism should have fewer bubbles, which also means that pipeline parallelism should have a higher throughput than tensor parallelism. However, when I issue requests with a batch size of 400 and a sequence length of 2048, the throughput of the Decode stage in tensor parallelism is nearly three times higher than that in pipeline parallelism.\n\n![Image](https://github.com/user-attachments/assets/c40d96ec-3c99-41c6-85ad-4f7bca36fdae)\n\n### Report of performance regression\n\nYou can use the following script to reproduce the phenomenon that the performance of the Decode stage in pipeline parallelism is very poor as I mentioned. I sent 400 requests from the client to the started server, and the request configuration is that the input length is 2048 and the maximum output length is 1000.\n\n`nsys profile -o report.nsys-rep-pp-4-batch-micro-batch-100-python --trace-fork-before-exec=true --cuda-graph-trace=node --delay 120 --duration 120 --force-overwrite true --python-sampling=true vllm serve Qwen/Qwen2.5-14B-Instruct-1M --load-format dummy --pipeline-parallel-size 4 --no-enable-prefix-caching --port 30000 --max-model-len 3150 --disable-log-requests --max-num-seqs 100 --num-scheduler-steps 50`\n\nI analyzed the performance of the server side using nsys. I noticed that there are huge bubbles between the Decode processes. As can be seen from the analysis graph generated by nsys, there is a substantial CPU operation overhead, which even exceeds three times the execution time on the GPU. This leads to the performance of pipeline parallelism in the Decode stage being significantly inferior to that of tensor parallelism.\n\nI don't think the overhead here is caused by the issue of setting a relatively large --num-scheduler-steps parameter as mentioned in the previous issue, because I have already set this parameter to 50 to reduce the overhead. I believe that it is necessary to optimize the CPU overhead of pipeline parallelism. Especially in scenarios where the communication bandwidth between the GPUs is large, it is essential to use pipeline parallelism.\n\n\n### Misc discussion on performance\n\nIn the case where the lengths of the sent requests are the same, pipeline parallelism should have fewer bubbles, which also means that pipeline parallelism should have a higher throughput than tensor parallelism. However, when I issue requests with a batch size of 400 and a sequence length of 2048, the throughput of the Decode stage in tensor parallelism is nearly three times higher than that in pipeline parallelism.\n\n### Your current environment (if you think it is necessary)\n\nCollecting environment information...\nPyTorch version: 2.6.0+cu124\nIs debug build: False\nCUDA used to build PyTorch: 12.4\nROCM used to build PyTorch: N/A\n\nOS: Alibaba Cloud Linux release 3 (Soaring Falcon)  (x86_64)\nGCC version: (GCC) 10.2.1 20200825 (Alibaba 10.2.1-3.8 2.32)\nClang version: Could not collect\nCMake version: version 3.26.5\nLibc version: glibc-2.32\n\nPython version: 3.12.9 | packaged by Anaconda, Inc. | (main, Feb  6 2025, 18:56:27) [GCC 11.2.0] (64-bit runtime)\nPython platform: Linux-5.10.134-16.101.al8.x86_64-x86_64-with-glibc2.32\nIs CUDA available: True\nCUDA runtime version: 12.4.99\nCUDA_MODULE_LOADING set to: LAZY\nGPU models and configuration: \nGPU 0: NVIDIA L20Y\nGPU 1: NVIDIA L20Y\nGPU 2: NVIDIA L20Y\nGPU 3: NVIDIA L20Y\nGPU 4: NVIDIA L20Y\nGPU 5: NVIDIA L20Y\nGPU 6: NVIDIA L20Y\nGPU 7: NVIDIA L20Y\n\nNvidia driver version: 550.127.08\ncuDNN version: Could not collect\nHIP runtime version: N/A\nMIOpen runtime version: N/A\nIs XNNPACK available: True\n\nCPU:\nArchitecture:        x86_64\nCPU op-mode(s):      32-bit, 64-bit\nByte Order:          Little Endian\nCPU(s):              192\nOn-line CPU(s) list: 0-191\nThread(s) per core:  2\nCore(s) per socket:  48\nSocket(s):           2\nNUMA node(s):        2\nVendor ID:           GenuineIntel\nCPU family:          6\nModel:               143\nModel name:          Intel(R) Xeon(R) Platinum 8468V\nStepping:            8\nCPU MHz:             2871.487\nCPU max MHz:         3800.0000\nCPU min MHz:         800.0000\nBogoMIPS:            4800.00\nVirtualization:      VT-x\nL1d cache:           48K\nL1i cache:           32K\nL2 cache:            2048K\nL3 cache:            99840K\nNUMA node0 CPU(s):   0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110,112,114,116,118,120,122,124,126,128,130,132,134,136,138,140,142,144,146,148,150,152,154,156,158,160,162,164,166,168,170,172,174,176,178,180,182,184,186,188,190\nNUMA node1 CPU(s):   1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,61,63,65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95,97,99,101,103,105,107,109,111,113,115,117,119,121,123,125,127,129,131,133,135,137,139,141,143,145,147,149,151,153,155,157,159,161,163,165,167,169,171,173,175,177,179,181,183,185,187,189,191\nFlags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cat_l2 cdp_l3 invpcid_single cdp_l2 ssbd mba ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local split_lock_detect avx_vnni avx512_bf16 wbnoinvd dtherm ida arat pln pts hwp hwp_act_window hwp_epp hwp_pkg_req hfi avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg tme avx512_vpopcntdq rdpid bus_lock_detect cldemote movdiri movdir64b enqcmd fsrm uintr md_clear serialize tsxldtrk pconfig arch_lbr amx_bf16 avx512_fp16 amx_tile amx_int8 flush_l1d arch_capabilities\n\nVersions of relevant libraries:\n[pip3] numpy==1.26.4\n[pip3] nvidia-cublas-cu12==12.4.5.8\n[pip3] nvidia-cuda-cupti-cu12==12.4.127\n[pip3] nvidia-cuda-nvrtc-cu12==12.4.127\n[pip3] nvidia-cuda-runtime-cu12==12.4.127\n[pip3] nvidia-cudnn-cu12==9.1.0.70\n[pip3] nvidia-cufft-cu12==11.2.1.3\n[pip3] nvidia-curand-cu12==10.3.5.147\n[pip3] nvidia-cusolver-cu12==11.6.1.9\n[pip3] nvidia-cusparse-cu12==12.3.1.170\n[pip3] nvidia-cusparselt-cu12==0.6.2\n[pip3] nvidia-nccl-cu12==2.21.5\n[pip3] nvidia-nvjitlink-cu12==12.4.127\n[pip3] nvidia-nvtx-cu12==12.4.127\n[pip3] pyzmq==26.3.0\n[pip3] torch==2.6.0\n[pip3] torchaudio==2.6.0\n[pip3] torchvision==0.21.0\n[pip3] transformers==4.49.0\n[pip3] triton==3.2.0\n[conda] numpy                     1.26.4                   pypi_0    pypi\n[conda] nvidia-cublas-cu12        12.4.5.8                 pypi_0    pypi\n[conda] nvidia-cuda-cupti-cu12    12.4.127                 pypi_0    pypi\n[conda] nvidia-cuda-nvrtc-cu12    12.4.127                 pypi_0    pypi\n[conda] nvidia-cuda-runtime-cu12  12.4.127                 pypi_0    pypi\n[conda] nvidia-cudnn-cu12         9.1.0.70                 pypi_0    pypi\n[conda] nvidia-cufft-cu12         11.2.1.3                 pypi_0    pypi\n[conda] nvidia-curand-cu12        10.3.5.147               pypi_0    pypi\n[conda] nvidia-cusolver-cu12      11.6.1.9                 pypi_0    pypi\n[conda] nvidia-cusparse-cu12      12.3.1.170               pypi_0    pypi\n[conda] nvidia-cusparselt-cu12    0.6.2                    pypi_0    pypi\n[conda] nvidia-nccl-cu12          2.21.5                   pypi_0    pypi\n[conda] nvidia-nvjitlink-cu12     12.4.127                 pypi_0    pypi\n[conda] nvidia-nvtx-cu12          12.4.127                 pypi_0    pypi\n[conda] pyzmq                     26.3.0                   pypi_0    pypi\n[conda] torch                     2.6.0                    pypi_0    pypi\n[conda] torchaudio                2.6.0                    pypi_0    pypi\n[conda] torchvision               0.21.0                   pypi_0    pypi\n[conda] transformers              4.49.0                   pypi_0    pypi\n[conda] triton                    3.2.0                    pypi_0    pypi\nROCM Version: Could not collect\nNeuron SDK Version: N/A\nvLLM Version: 0.7.4.dev473+g9ed6ee92\nvLLM Build Flags:\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\nGPU Topology:\nGPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    NIC0    NIC1    NIC2    NIC3    NIC4    NIC5    NIC6 NIC7     CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV8     NV8     NV8     NV8     NV8     NV8     NV8     PIX     NODE    NODE    NODE    SYS     SYS  SYS      SYS     0,2,4,6,8,10    0               N/A\nGPU1    NV8      X      NV8     NV8     NV8     NV8     NV8     NV8     NODE    PIX     NODE    NODE    SYS     SYS  SYS      SYS     0,2,4,6,8,10    0               N/A\nGPU2    NV8     NV8      X      NV8     NV8     NV8     NV8     NV8     NODE    NODE    PIX     NODE    SYS     SYS  SYS      SYS     0,2,4,6,8,10    0               N/A\nGPU3    NV8     NV8     NV8      X      NV8     NV8     NV8     NV8     NODE    NODE    NODE    PIX     SYS     SYS  SYS      SYS     0,2,4,6,8,10    0               N/A\nGPU4    NV8     NV8     NV8     NV8      X      NV8     NV8     NV8     SYS     SYS     SYS     SYS     PIX     NODE NODE     NODE    1,3,5,7,9,11    1               N/A\nGPU5    NV8     NV8     NV8     NV8     NV8      X      NV8     NV8     SYS     SYS     SYS     SYS     NODE    PIX  NODE     NODE    1,3,5,7,9,11    1               N/A\nGPU6    NV8     NV8     NV8     NV8     NV8     NV8      X      NV8     SYS     SYS     SYS     SYS     NODE    NODE PIX      NODE    1,3,5,7,9,11    1               N/A\nGPU7    NV8     NV8     NV8     NV8     NV8     NV8     NV8      X      SYS     SYS     SYS     SYS     NODE    NODE NODE     PIX     1,3,5,7,9,11    1               N/A\nNIC0    PIX     NODE    NODE    NODE    SYS     SYS     SYS     SYS      X      NODE    NODE    NODE    SYS     SYS  SYS      SYS\nNIC1    NODE    PIX     NODE    NODE    SYS     SYS     SYS     SYS     NODE     X      NODE    NODE    SYS     SYS  SYS      SYS\nNIC2    NODE    NODE    PIX     NODE    SYS     SYS     SYS     SYS     NODE    NODE     X      NODE    SYS     SYS  SYS      SYS\nNIC3    NODE    NODE    NODE    PIX     SYS     SYS     SYS     SYS     NODE    NODE    NODE     X      SYS     SYS  SYS      SYS\nNIC4    SYS     SYS     SYS     SYS     PIX     NODE    NODE    NODE    SYS     SYS     SYS     SYS      X      NODE NODE     NODE\nNIC5    SYS     SYS     SYS     SYS     NODE    PIX     NODE    NODE    SYS     SYS     SYS     SYS     NODE     X   NODE     NODE\nNIC6    SYS     SYS     SYS     SYS     NODE    NODE    PIX     NODE    SYS     SYS     SYS     SYS     NODE    NODE  X       NODE\nNIC7    SYS     SYS     SYS     SYS     NODE    NODE    NODE    PIX     SYS     SYS     SYS     SYS     NODE    NODE NODE      X \n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_bond_0\n  NIC1: mlx5_bond_1\n  NIC2: mlx5_bond_2\n  NIC3: mlx5_bond_3\n  NIC4: mlx5_bond_4\n  NIC5: mlx5_bond_5\n  NIC6: mlx5_bond_6\n  NIC7: mlx5_bond_7\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "open",
+    "created_at": "2025-03-22T12:46:07+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15330/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15330"
+  },
+  {
+    "number": 8370,
+    "title": "[Performance]: INFO 09-11 12:41:50 spec_decode_worker.py:790] SpecDecodeWorker scoring_time_ms is slow",
+    "body": "### Proposal to improve performance\r\n\r\n_No response_\r\n\r\n### Report of performance regression\r\n\r\nINFO 09-11 12:41:50 spec_decode_worker.py:790] SpecDecodeWorker stage times: average_time_per_proposal_tok_ms=4.96 scoring_time_ms=54.92 verification_time_ms=1.20\r\n\r\nThe proportion of scoretime in decde is too large. The draft model only requires 5ms for each decode, but it takes 50ms for each score calculation.\r\n\r\n\r\n\r\n### Before submitting a new issue...\r\n\r\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-09-11T12:45:29+00:00",
+    "closed_at": "2025-01-13T02:03:15+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/8370/reactions",
+      "total_count": 2,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/8370"
+  },
+  {
+    "number": 11317,
+    "title": "[Performance]: vllm0.6.5\u52a0\u8f7dGLM4-9B-Chat\uff0c\u52a8\u6001\u52a0\u8f7dlora\uff0c\u8f93\u5165\u957f\u6587\u672c\u65f6\u63a8\u7406\u6027\u80fd\u4e0b\u964d\u8f83\u591a",
+    "body": "### Proposal to improve performance\n\n_No response_\n\n### Report of performance regression\n\n### A800\uff0c\u5355\u5361\u5904\u7406\u5355\u6761\u8bf7\u6c42\r\n1. **vllm0.6.5\u4e0d\u52a0\u8f7dlora**\r\n\uff081\uff09\u542f\u52a8\uff1a\r\nCUDA_VISIBLE_DEVICES=7 python -m vllm.entrypoints.openai.api_server --model /Work/....../glm-4-9b-chat/ --trust-remote-code\r\n\uff082\uff09\u8bf7\u6c42\uff1a\r\nresponse = client.chat.completions.create(\r\n        model='/Work/....../glm-4-9b-chat/',\r\n        messages=messages,\r\n        n=1,\r\n        temperature=0,\r\n        extra_body={\"stop_token_ids\": [151329, 151336, 151338]},\r\n        max_tokens=2048,\r\n        stream=True)\r\n\r\n2. **vllm0.6.5\u52a8\u6001\u52a0\u8f7dlora**\r\n\u3010lora\u6a21\u578b\u4f7f\u7528llama_factory\u6846\u67b6\u8bad\u7ec3\u3011\r\n\uff081\uff09\u542f\u52a8\uff1a\r\nCUDA_VISIBLE_DEVICES=7 python -m vllm.entrypoints.openai.api_server --model /Work/....../glm-4-9b-chat/ --enable-lora --max-loras 10 --lora-modules summary=/Work/....../sft_1218/ --trust-remote-code --max-lora-rank 64\r\n\uff082\uff09\u8bf7\u6c42\uff1a\r\nresponse = client.chat.completions.create(\r\n        model='summary',\r\n        messages=messages,\r\n        n=1,\r\n        temperature=0,\r\n        extra_body={\"stop_token_ids\": [151329, 151336, 151338]},\r\n        max_tokens=2048,\r\n        stream=True)\r\n\r\n**\u6d4b\u8bd5messages\u4e2d\u8f93\u5165\u4e0d\u540c\u957f\u5ea6\u6587\u672c\u65f6\uff0c\u4e0d\u540c\u60c5\u51b5\u4e0b\u7684\u63a8\u7406\u901f\u5ea6\uff1a**\r\n![d2dccaa39734cc6f41449b48aad6a65](https://github.com/user-attachments/assets/c28cbcfb-447b-49b4-972c-00569e52730f)\r\n\u53d1\u73b0\u52a0\u8f7dlora\u540e\uff0c\u8f93\u5165\u6587\u672c\u8f83\u957f\u65f6\uff0c\u63a8\u7406\u901f\u5ea6\u76f8\u6bd4\u4e8e\u4e0d\u52a0\u8f7dlora\u4e0b\u964d\u8f83\u591a\uff0c\u8f93\u5165\u6587\u672c\u8f83\u77ed\u65f6\u4e0b\u964d\u4e0d\u591a\r\n\u8bf7\u95ee\u662f\u4ec0\u4e48\u539f\u56e0\u9020\u6210\u7684\uff0c\u6211\u5e94\u8be5\u5982\u4f55\u89e3\u51b3\uff1f\u8c22\u8c22~\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\r\nThe output of `python collect_env.py`\r\n```\r\n\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-19T03:37:08+00:00",
+    "closed_at": "2025-03-21T08:44:54+00:00",
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/11317/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/11317"
+  },
+  {
+    "number": 1562,
+    "title": "[FEATURE]\u00a0Implement Dynamic SplitFuse",
+    "body": "Dear vLLM maintainers @WoosukKwon and @zhuohan123 (@Yard1),\r\n\r\nDeepSpeed has released its serving framework which claims to be faster than vLLM. The main speedup comes from [Dynamic SplitFuse](https://github.com/microsoft/DeepSpeed/tree/master/blogs/deepspeed-fastgen#b-dynamic-splitfuse-) which is a technique that does the following:\r\n\r\n- Long prompts are decomposed into much smaller chunks and scheduled across multiple forward passes (iterations) with only the final pass performing any generation.\r\n\r\n- Short prompts will be composed to exactly fill a target token budget. Even short prompts may be decomposed to ensure the budget is precisely met and the forward sizes are well-aligned.\r\n\r\nCode: https://github.com/microsoft/DeepSpeed-MII\r\nBackground: https://github.com/microsoft/DeepSpeed/tree/master/blogs/deepspeed-fastgen\r\n\r\nLlama 13B (1x A100-80GB):\r\n![image](https://github.com/vllm-project/vllm/assets/27340033/cc7842b8-e234-482d-8550-d38d39d94473)\r\n\r\nLlama 70B (4x A100x80GB with TP):\r\n![image](https://github.com/vllm-project/vllm/assets/27340033/e035e094-0f10-463c-abf0-aafd67a61fed)\r\n",
+    "labels": [
+      "performance",
+      "feature request"
+    ],
+    "state": "closed",
+    "created_at": "2023-11-04T14:06:52+00:00",
+    "closed_at": "2024-07-26T10:25:27+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/1562/reactions",
+      "total_count": 19,
+      "+1": 19,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/1562"
+  }
+]

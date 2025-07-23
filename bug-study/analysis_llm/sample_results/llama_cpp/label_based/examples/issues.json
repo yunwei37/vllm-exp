@@ -1,0 +1,87 @@
+[
+  {
+    "number": 10932,
+    "title": "examples : add configuration presets",
+    "body": "## Description\n\nI was recently looking for ways to demonstrate some of the functionality of the `llama.cpp` examples and some of the commands can become very cumbersome. For example, here is what I use for the `llama.vim` FIM server:\n\n```bash\nllama-server \\\n    -m ./models/qwen2.5-7b-coder/ggml-model-q8_0.gguf \\\n    --log-file ./service-vim.log \\\n    --host 0.0.0.0 --port 8012 \\\n    --ctx-size 0 \\\n    --cache-reuse 256 \\\n    -ub 1024 -b 1024 -ngl 99 -fa -dt 0.1\n```\n\nIt would be much cleaner if I could just run, for example:\n\n```bash\nllama-server --cfg-fim-7b\n```\n\nOr if I could turn this embedding server command into something simpler:\n\n```bash\n# llama-server \\\n#     --hf-repo ggml-org/bert-base-uncased \\\n#     --hf-file          bert-base-uncased-Q8_0.gguf \\\n#     --port 8033 -c 512 --embeddings --pooling mean\n\nllama-server --cfg-embd-bert --port 8033\n```\n\n## Implementation\n\nThere is already an initial example of how we can create such configuration presets:\n\n```bash\nllama-tts --tts-oute-default -p \"This is a TTS preset\"\n\n# equivalent to\n# \n# llama-tts \\\n#    --hf-repo   OuteAI/OuteTTS-0.2-500M-GGUF \\\n#    --hf-file          OuteTTS-0.2-500M-Q8_0.gguf \\\n#    --hf-repo-v ggml-org/WavTokenizer \\\n#    --hf-file-v          WavTokenizer-Large-75-F16.gguf -p \"This is a TTS preset\"\n```\n\n<details>\n\nhttps://github.com/ggerganov/llama.cpp/blob/5cd85b5e008de2ec398d6596e240187d627561e3/common/arg.cpp#L2208-L2220\n\n</details>\n\nThis preset configures the model urls so that they would be automatically downloaded from HF when the example runs and thus simplifies the command significantly. It can additionally set various default values, such as context size, batch size, pooling type, etc.\n\n## Goal\n\nThe goal of this issue is to create such presets for various common tasks:\n\n- [x] Run a basic TTS generation (see above)\n- [ ] Start a chat server with a commonly used model\n- [ ] Start a speculative-decoding-enabled chat server with a commonly used model\n- [ ] Start a FIM server for plugins such as `llama.vim`\n- [x] Start an embedding server with a commonly used embedding model\n- [ ] Start a reranking server with a commonly used reranking model\n- And many more ..\n\nThe list of configuration presets would require curation and proper documentation.\n\nI think this is a great task for new contributors to help and to get involved in the project.",
+    "labels": [
+      "documentation",
+      "enhancement",
+      "help wanted",
+      "good first issue",
+      "examples"
+    ],
+    "state": "open",
+    "created_at": "2024-12-21T09:10:47+00:00",
+    "closed_at": null,
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/10932/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/10932"
+  },
+  {
+    "number": 7252,
+    "title": "llama : save downloaded models to local cache",
+    "body": "We've recently introduced the `--hf-repo` and `--hf-file` helper args to `common` in https://github.com/ggerganov/llama.cpp/pull/6234:\r\n\r\n```\r\nref #4735 #5501 #6085 #6098\r\n\r\nSample usage:\r\n\r\n./bin/main \\\r\n  --hf-repo TinyLlama/TinyLlama-1.1B-Chat-v0.2-GGUF \\\r\n  --hf-file ggml-model-q4_0.gguf \\\r\n  -m tinyllama-1.1-v0.2-q4_0.gguf \\\r\n  -p \"I believe the meaning of life is\" -n 32\r\n\r\n./bin/main \\\r\n  --hf-repo TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF \\\r\n  -m tinyllama-1.1b-chat-v1.0.Q4_0.gguf \\\r\n  -p \"I believe the meaning of life is\" -n 32\r\n\r\nDownloads `https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v0.2-GGUF/resolve/main/ggml-model-q4_0.gguf` and saves it to `tinyllama-1.1-v0.2-q4_0.gguf`\r\n\r\nRequires build with `LLAMA_CURL`\r\n```\r\n\r\nCurrently, the downloaded files via `curl` are stored in a destination based on the `--model` CLI arg.\r\n\r\nIf `--model` is not provided, we would like to auto-store the downloaded model files in a local cache, similar to what other frameworks like HF/transformers do.\r\n\r\nHere is the documentation of this functionality in HF for convenience and reference:\r\n\r\nURL: https://huggingface.co/docs/transformers/installation?highlight=transformers_cache#cache-setup\r\n\r\n```\r\n### Cache setup\r\n\r\nPretrained models are downloaded and locally cached at: ~/.cache/huggingface/hub. This is the default directory given by the shell environment variable TRANSFORMERS_CACHE. On Windows, the default directory is given by C:\\Users\\username\\.cache\\huggingface\\hub. You can change the shell environment variables shown below - in order of priority - to specify a different cache directory:\r\n\r\n1. Shell environment variable (default): HUGGINGFACE_HUB_CACHE or TRANSFORMERS_CACHE.\r\n2. Shell environment variable: HF_HOME.\r\n3. Shell environment variable: XDG_CACHE_HOME + /huggingface.\r\n\r\n\ud83e\udd17 Transformers will use the shell environment variables PYTORCH_TRANSFORMERS_CACHE or PYTORCH_PRETRAINED_BERT_CACHE if you are coming from an earlier iteration of this library and have set those environment variables, unless you specify the shell environment variable TRANSFORMERS_CACHE.\r\n```\r\n\r\nThe goal of this issue is to implement similar functionality in `llama.cpp`. The environment variables should be named accordingly to the `llama.cpp` patterns and the local cache should be utilized only when the `--model` CLI argument is not explicitly provided in commands like `main` and `server`\r\n\r\nP.S. I'm interested in exercising \"Copilot Workspace\" to see if it would be capable to implement this task by itself\r\n\r\nP.S.2 So CW is quite useless at this point for `llama.cpp` - it cannot handle files a few thousand lines of code:\r\n\r\nCW snapshot: https://copilot-workspace.githubnext.com/ggerganov/llama.cpp/issues/7252?shareId=379fdaa0-3580-46ba-be68-cb061518a38c",
+    "labels": [
+      "enhancement",
+      "good first issue",
+      "examples"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-13T09:20:51+00:00",
+    "closed_at": "2024-12-13T16:23:30+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/7252/reactions",
+      "total_count": 7,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 6,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/7252"
+  },
+  {
+    "number": 5692,
+    "title": "llama : add `retrieval` example",
+    "body": "Since we now support embedding models in `llama.cpp` we should add a simple example to demonstrate retrieval functionality. Here is how it should work:\r\n\r\n- load a set of text files (provided from the command line)\r\n- split the text into chunks of user-configurable size, each chunk ending on a configurable stop string\r\n- embed all chunks using an embedding model (BERT / SBERT)\r\n- receive input from the command line, embed it and display the top N most relevant chunks based on cosine similarity between the input and chunk emebeddings",
+    "labels": [
+      "good first issue",
+      "examples"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-23T18:46:29+00:00",
+    "closed_at": "2024-03-25T07:38:23+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/issues/5692/reactions",
+      "total_count": 11,
+      "+1": 8,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 3,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/ggml-org/llama.cpp/issues/5692"
+  }
+]

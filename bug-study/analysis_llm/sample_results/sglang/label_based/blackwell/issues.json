@@ -1,0 +1,243 @@
+[
+  {
+    "number": 7227,
+    "title": "[Roadmap] Blackwell Support and Optimizations",
+    "body": "### Roadmap\n\n- [x] ~~Initial support and optimizations for GB200, PD disaggregation, and large-scale EP~~ -- Done in https://lmsys.org/blog/2025-06-16-gb200-part-1/\n- [x] Initial optimizations for prefill for large scale EP\n- [ ] Optimize kernels for the Blackwell architecture\n    - [ ] Communication kernels\n    - [ ] Various smaller kernels\n- [ ] Optimize for latency-oriented scenarios\n- [ ] Computation-communication overlap\n\nTODO: more\n\n### Updates after Blog\n\n* Prefill is slightly optimized, 13149 token/s/gpu for ISL 4096 (as usual all code are open sourced)\n\n### Blog Reproduction\n\n<details>\n\nTo reproduce [the blog post](https://lmsys.org/blog/2025-06-16-gb200-part-1/), here are the instructions:\n\n#### 2025.07.12\n\nTo use the latest main, the following commands can be used.\n\nVersions that I personally use to test (other versions may work as well)\n* SGLang: https://github.com/sgl-project/sglang/commit/2a2d3478afe8cdb336888f2e6faa3775ac40254e\n* sgl-kernel: the one inside SGLang\n* DeepGEMM: https://github.com/sgl-project/DeepGEMM/commit/98707282f30aad49bb2fc924332a7b40a7e7a6dd (this is currently the version that is tagged in the `blackwell` branch)\n* DeepEP: https://github.com/fzyzcjy/DeepEP/commit/1b14ad661c7640137fcfe93cccb2694ede1220b0 (but I think https://github.com/deepseek-ai/DeepEP/commit/dd133d39bce06469292311a4accf0ae79dcb45fa or latest main should work)\n* Mooncake: mooncake-transfer-engine==0.3.4.post2\n* torch: 2.8.0.dev20250613+cu128\n\n```\n# P nodes\nSGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=2048 MC_TE_METRIC=true SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000 SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT=100000 SGLANG_DISAGGREGATION_WAITING_TIMEOUT=100000 SGLANG_MOONCAKE_CUSTOM_MEM_POOL=True SGLANG_LOCAL_IP_NIC=eth0 GLOO_SOCKET_IFNAME=eth0 NCCL_SOCKET_IFNAME=eth0 NCCL_MNNVL_ENABLE=1 NCCL_CUMEM_ENABLE=1 SGLANG_USE_MESSAGE_QUEUE_BROADCASTER=0 SGL_DISABLE_TP_MEMORY_INBALANCE_CHECK=1 PYTHONUNBUFFERED=1 python3 -m sglang.launch_server --model-path deepseek-v3-0324 --trust-remote-code --disaggregation-mode prefill --dist-init-addr 192.168.3.47:5757 --nnodes 2 --node-rank 0 --tp-size 8 --dp-size 8 --enable-dp-attention --host 0.0.0.0 --decode-log-interval 1 --max-running-requests 6144 --context-length 2176 --disable-radix-cache --moe-dense-tp-size 1 --enable-dp-lm-head --disable-shared-experts-fusion --ep-num-redundant-experts 32 --eplb-algorithm deepseek --attention-backend cutlass_mla --watchdog-timeout 1000000  --init-expert-location YOUR_FILE --disable-cuda-graph --chunked-prefill-size 16384 --max-total-tokens 32768 --enable-deepep-moe --deepep-mode low_latency --deepep-config YOUR_FILE --ep-dispatch-algorithm dynamic\n\n# D nodes\nSGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=768 MC_TE_METRIC=true SGLANG_DISAGGREGATION_HEARTBEAT_MAX_FAILURE=100000 SGLANG_DISAGGREGATION_BOOTSTRAP_TIMEOUT=100000 SGLANG_DISAGGREGATION_WAITING_TIMEOUT=100000 SGLANG_HACK_SEQ_BOOTSTRAP_ROOM=1 SGLANG_MOONCAKE_CUSTOM_MEM_POOL=True SGLANG_LOCAL_IP_NIC=eth0 GLOO_SOCKET_IFNAME=eth0 NCCL_SOCKET_IFNAME=eth0 NCCL_MNNVL_ENABLE=1 NCCL_CUMEM_ENABLE=1 SGLANG_USE_MESSAGE_QUEUE_BROADCASTER=0 SGL_DISABLE_TP_MEMORY_INBALANCE_CHECK=1 PYTHONUNBUFFERED=1 python3 -m sglang.launch_server --model-path deepseek-v3-0324 --trust-remote-code --disaggregation-mode decode --dist-init-addr 192.168.3.44:5757 --nnodes 12 --node-rank 0 --tp-size 48 --dp-size 48 --enable-dp-attention --host 0.0.0.0 --decode-log-interval 1 --max-running-requests 36864 --context-length 2176 --disable-radix-cache --moe-dense-tp-size 1 --enable-dp-lm-head --disable-shared-experts-fusion --ep-num-redundant-experts 32 --eplb-algorithm deepseek --attention-backend cutlass_mla --watchdog-timeout 1000000  --init-expert-location YOUR_PATH --chunked-prefill-size 36864 --mem-fraction-static 0.82 --enable-deepep-moe --deepep-mode low_latency --ep-dispatch-algorithm static --cuda-graph-bs 768 --num-reserved-decode-tokens YOUR_VALUE\n\n# LB\npython3 -m sglang.srt.disaggregation.launch_lb --prefill \"http://your-ip:30000\" --decode \"http://your-ip:30000\" --host 0.0.0.0 --port 8000 --timeout 3600\n\n# slow down\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": 180}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n\n# start benchmark; do not wait for this to finish before running the next line\npython3 -m sglang.bench_one_batch_server --model-path /path/to/DeepSeek-V3-0324 --base-url http://your-lb-ip:7000 --batch-size 73728 --input-len YOUR_INPUT --output-len YOUR_OUTPUT --skip-warmup\n\n# after some time (e.g. 10 minute), the D nodes are saturated, then this command should be executed\n# finish slowing down D nodes\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": null}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n```\n\n#### 2025.06.16\n\n<details>\n\n```\n# P nodes\nSGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=2048 SGLANG_MOONCAKE_ALLOCATOR_SO_PATH=/data/numa0/tom/temp/Mooncake/build/mooncake-transfer-engine/nvlink-hook/hook.so SGLANG_MOONCAKE_CUSTOM_POOL=True python3 -m sglang.launch_server --model-path /path/to/deepseek-v3-0324 --trust-remote-code --disaggregation-mode prefill --dist-init-addr your-ip:5757 --nnodes 2 --node-rank 0 --tp-size 8 --dp-size 8 --enable-dp-attention --host 0.0.0.0 --decode-log-interval 1 --max-running-requests 6144 --context-length 2176 --disable-radix-cache --enable-deepep-moe --deepep-mode low_latency --moe-dense-tp-size 1 --enable-dp-lm-head --disable-shared-experts-fusion --ep-num-redundant-experts 32 --ep-dispatch-algorithm static --eplb-algorithm deepseek --attention-backend cutlass_mla --watchdog-timeout 1000000  --init-expert-location YOUR_PATH --disable-cuda-graph --chunked-prefill-size 16384 --max-total-tokens 32768\n\n# D nodes\nSGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=768 SGLANG_NUM_RESERVED_DECODE_TOKENS=176 SGLANG_MOONCAKE_ALLOCATOR_SO_PATH=/data/numa0/tom/temp/Mooncake/build/mooncake-transfer-engine/nvlink-hook/hook.so SGLANG_MOONCAKE_CUSTOM_POOL=True python3 -m sglang.launch_server --model-path /path/to/deepseek-v3-0324 --trust-remote-code --disaggregation-mode decode --dist-init-addr your-ip:5757 --nnodes 12 --node-rank 0 --tp-size 48 --dp-size 48 --enable-dp-attention --host 0.0.0.0 --decode-log-interval 1 --max-running-requests 36864 --context-length 2176 --disable-radix-cache --enable-deepep-moe --deepep-mode low_latency --moe-dense-tp-size 1 --enable-dp-lm-head --cuda-graph-bs 768 --disable-shared-experts-fusion --ep-num-redundant-experts 32 --ep-dispatch-algorithm static --eplb-algorithm deepseek --attention-backend cutlass_mla --watchdog-timeout 1000000  --init-expert-location your_path --chunked-prefill-size 36864 --mem-fraction-static 0.82\n\n# LB\npython3 -m sglang.srt.disaggregation.launch_lb --prefill \"http://your-ip:30000\" --decode \"http://your-ip:30000\" --host 0.0.0.0 --port 8000 --timeout 3600\n\n# slow down\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": 180}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n\n# start benchmark; do not wait for this to finish before running the next line\npython3 -m sglang.bench_one_batch_server --model-path /path/to/DeepSeek-V3-0324 --base-url http://your-lb-ip:7000 --batch-size 73728 --input-len 2000 --output-len 100 --skip-warmup\n\n# after some time (e.g. 10 minute), the D nodes are saturated, then this command should be executed\n# finish slowing down D nodes\ncurl -H \"Content-Type: application/json\" -d '{\"forward_sleep_time\": null}' -X POST \"http://YOUR_FIRST_DECODE_NODE_IP:30000/slow_down\"\n```\n\nRemarks\n\n* Mooncake \"allocator so path\" will soon no longer be needed when it is on master\n* The slow-down is similar to #6017\n\n</details>\n\n</details>",
+    "labels": [
+      "high priority",
+      "collaboration",
+      "blackwell"
+    ],
+    "state": "open",
+    "created_at": "2025-06-16T06:07:50+00:00",
+    "closed_at": null,
+    "comments": 45,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7227/reactions",
+      "total_count": 31,
+      "+1": 11,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 10,
+      "confused": 0,
+      "heart": 10,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7227"
+  },
+  {
+    "number": 7166,
+    "title": "[Bug] Deepseek R1 FP4 model quality drop",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI believe this issue applies to both R1 FP4 and R1-0528 FP4. \n\nFor R1 FP4, GSM8k score is only 0.886. Not trying to reproduce official result, but it should be something around 0.95. Also Nvidia reports much higher gsm8k score with trtllm [here](https://huggingface.co/nvidia/DeepSeek-R1-FP4#evaluation). \n\nAny help is really appreciated! \n\n\n\n\n### Reproduction\n\nTo reproduce:\n\n```\npython3 -m sglang.launch_server --port=7080 --model-path=nvidia/DeepSeek-R1-FP4  --trust-remote-code --tp=8  --host=0.0.0.0 --quantization=modelopt_fp4 --kv-cache-dtype=auto\n\npython3 benchmark/gsm8k/bench_sglang.py --num-shots 8 --num-questions 1319 --parallel 1319 --port=7080\n100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 1319/1319 [00:42<00:00, 31.20it/s]\nAccuracy: 0.886\nInvalid: 0.001\nLatency: 42.603 s\nOutput throughput: 3734.827 token/s\n```\n\n### Environment\n\n```\npython3 -m sglang.check_env\nPython: 3.12.3 (main, Feb  4 2025, 14:48:35) [GCC 13.3.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA B200\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 10.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.9, V12.9.41\nCUDA Driver Version: 570.124.06\nPyTorch: 2.7.1+cu128\nsglang: 0.4.7\nsgl_kernel: 0.1.8\nflashinfer_python: 0.2.6.post1\ntriton: 3.3.1\ntransformers: 4.52.3\ntorchao: 0.9.0\nnumpy: 2.1.2\naiohttp: 3.12.12\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.33.0\ninteregular: 0.3.3\nmodelscope: 1.27.0\norjson: 3.10.18\noutlines: 0.1.11\npackaging: 25.0\npsutil: 7.0.0\npydantic: 2.11.5\npython-multipart: 0.0.20\npyzmq: 26.4.0\nuvicorn: 0.34.3\nuvloop: 0.21.0\nvllm: Module Not Found\nxgrammar: 0.1.19\nopenai: 1.86.0\ntiktoken: 0.9.0\nanthropic: Module Not Found\nlitellm: Module Not Found\ndecord: Module Not Found\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NV18    NV18    NV18    NV18    NV18    NV18    NV18    0-55,112-167    0               N/A\nGPU1    NV18     X      NV18    NV18    NV18    NV18    NV18    NV18    0-55,112-167    0               N/A\nGPU2    NV18    NV18     X      NV18    NV18    NV18    NV18    NV18    0-55,112-167    0               N/A\nGPU3    NV18    NV18    NV18     X      NV18    NV18    NV18    NV18    0-55,112-167    0               N/A\nGPU4    NV18    NV18    NV18    NV18     X      NV18    NV18    NV18    56-111,168-223  1               N/A\nGPU5    NV18    NV18    NV18    NV18    NV18     X      NV18    NV18    56-111,168-223  1               N/A\nGPU6    NV18    NV18    NV18    NV18    NV18    NV18     X      NV18    56-111,168-223  1               N/A\nGPU7    NV18    NV18    NV18    NV18    NV18    NV18    NV18     X      56-111,168-223  1               N/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nHypervisor vendor: KVM\nulimit soft: 1048576\n```",
+    "labels": [
+      "blackwell"
+    ],
+    "state": "open",
+    "created_at": "2025-06-13T23:05:50+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7166/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7166"
+  },
+  {
+    "number": 6561,
+    "title": "[Feature] Upgrade the glibc for `lmsysorg/sglang:blackwell`",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nWhile `lmsysorg/sglang:latest` uses Ubuntu22.04 (glibc 2.35), `lmsysorg/sglang:blackwell` uses glibc 2.28 which is too old.\n\n```\n\u276f sudo docker run -it lmsysorg/sglang:blackwell ldd --version\nldd (GNU libc) 2.28\n\n\u276f sudo docker run -it --ipc=host --device=nvidia.com/gpu=all lmsysorg/sglang:blackwell /bin/bash\n/bin/bash: /lib64/ld-linux-x86-64.so.2: version `GLIBC_2.35' not found (required by /...glibc-2.40-66/lib/libc.so.6)\n```\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "blackwell"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-24T00:57:44+00:00",
+    "closed_at": "2025-06-05T07:49:41+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6561/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6561"
+  },
+  {
+    "number": 6448,
+    "title": "[Bug] Blackwell freezes on cloning into MoE",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nFrom a Runpod 8xB200 environment, I ran a simple vanilla Deepseek setup with tp 8 and no optimizations. Latest Blackwell image hangs on cloning into MoE.\n\nUnsure if the image is meant to be used?\n\n### Reproduction\n\npython3 -m sglang.launch_server --trust-remote-code --tp 8 --host 0.0.0.0\n\nUsing Deepseek V3 0324, on official sglang docker blackwell tag\n\n### Environment\n\nRunpod, 8xB200 test node",
+    "labels": [
+      "blackwell"
+    ],
+    "state": "open",
+    "created_at": "2025-05-20T05:29:53+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6448/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6448"
+  },
+  {
+    "number": 6160,
+    "title": "[Bug] flashinfer_python with minimum required version 0.2.5 is not installed",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nI am trying to serve gemma3 27b-it on RTX 5090 using sglang blackwell image. However, I'm getting this error:\n```bash\nTraceback (most recent call last):\n  File \"/opt/conda/lib/python3.11/importlib/metadata/__init__.py\", line 563, in from_name\n    return next(cls.discover(name=name))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nStopIteration\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/sgl-workspace/sglang/python/sglang/srt/utils.py\", line 684, in assert_pkg_version\n    installed_version = version(pkg)\n                        ^^^^^^^^^^^^\n  File \"/opt/conda/lib/python3.11/importlib/metadata/__init__.py\", line 1008, in version\n    return distribution(distribution_name).version\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/conda/lib/python3.11/importlib/metadata/__init__.py\", line 981, in distribution\n    return Distribution.from_name(distribution_name)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/conda/lib/python3.11/importlib/metadata/__init__.py\", line 565, in from_name\n    raise PackageNotFoundError(name)\nimportlib.metadata.PackageNotFoundError: No package metadata was found for flashinfer_python\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/sgl-workspace/sglang/python/sglang/launch_server.py\", line 14, in <module>\n    launch_server(server_args)\n  File \"/sgl-workspace/sglang/python/sglang/srt/entrypoints/http_server.py\", line 726, in launch_server\n    tokenizer_manager, scheduler_info = _launch_subprocesses(server_args=server_args)\n                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/sgl-workspace/sglang/python/sglang/srt/entrypoints/engine.py\", line 513, in _launch_subprocesses\n    _set_envs_and_config(server_args)\n  File \"/sgl-workspace/sglang/python/sglang/srt/entrypoints/engine.py\", line 464, in _set_envs_and_config\n    assert_pkg_version(\n  File \"/sgl-workspace/sglang/python/sglang/srt/utils.py\", line 691, in assert_pkg_version\n    raise Exception(\nException: flashinfer_python with minimum required version 0.2.5 is not installed. Please uninstall the old version and reinstall the latest version by following the instructions at https://docs.flashinfer.ai/installation.html.\n```\n\n### Reproduction\n\nThe model is retrieved from [huggingface](https://huggingface.co/google/gemma-3-27b-it?inference_provider=hf-inference)\nHere is the docker compose to run it:\n\n```yaml  \ngeneration_gemma_3_27b_sglang:\n    image: lmsysorg/sglang:blackwell\n    container_name: generation-gemma-3-27b-sglang\n    volumes:\n      - ./models/google--gemma-3-27b-it:/models/google--gemma-3-27b-it\n      - ./models/torchinductor_cache:/models/torchinductor_cache\n    # restart: always\n    network_mode: host # required by RDMA\n    privileged: true # required by RDMA\n    # Or you can only publish port 30000\n    # ports:\n    #   - 30000:30000\n    environment:\n      - TORCHINDUCTOR_CACHE_DIR=/models/torchinductor_cache\n    entrypoint: python3 -m sglang.launch_server\n    command: --model-path /models/google--gemma-3-27b-it\n      --host 0.0.0.0\n      --context-length 8192\n      --port 30000\n      --random-seed 0\n      --log-requests-level 2\n      --enable-metrics\n      --max-running-requests 4\n      --show-time-cost\n      --dtype float16\n      --stream-interval 2\n      --served-model-name \"gemma-3-27b\"\n      --tp 4\n      --attention-backend flashinfer\n      # --enable-torch-compile\n      # --tokenizer-mode auto\n      # --enable-mixed-chunk\n      # --chat-template /models/CohereForAI--aya-expanse-8b/chat_template.json\n    ulimits:\n      memlock: -1\n      stack: 67108864\n    ipc: host\n    # healthcheck:\n    #   test: [\"CMD-SHELL\", \"curl -f http://localhost:30000/health || exit 1\"]\n    #   retries: 3\n    #   interval: 1h\n    #   timeout: 1m\n    #   start_period: 2m\n    deploy:\n      resources:\n        reservations:\n          devices:\n            - driver: nvidia\n              count: all\n              capabilities: [GPU]\n```\n\n### Environment\n\n python3 -m sglang.check_env\n/home/ubuntu-user/miniconda3/envs/default/lib/python3.12/site-packages/torch/cuda/__init__.py:287: UserWarning: \nNVIDIA GeForce RTX 5090 with CUDA capability sm_120 is not compatible with the current PyTorch installation.\nThe current PyTorch install supports CUDA capabilities sm_50 sm_60 sm_70 sm_75 sm_80 sm_86 sm_90.\nIf you want to use the NVIDIA GeForce RTX 5090 GPU with PyTorch, please check the instructions at https://pytorch.org/get-started/locally/\n\n  warnings.warn(\nPython: 3.12.9 | packaged by Anaconda, Inc. | (main, Feb  6 2025, 18:56:27) [GCC 11.2.0]\nCUDA available: True\nGPU 0,1,2,3: NVIDIA GeForce RTX 5090\nGPU 0,1,2,3 Compute Capability: 12.0\nCUDA_HOME: /usr\nNVCC: Cuda compilation tools, release 12.2, V12.2.140\nCUDA Driver Version: 570.144\nPyTorch: 2.7.0+cu126\nsglang: 0.4.6.post2\nsgl_kernel: Module Not Found\nflashinfer_python: Module Not Found\ntriton: 3.3.0\ntransformers: Module Not Found\ntorchao: Module Not Found\nnumpy: 2.2.5\naiohttp: 3.11.18\nfastapi: 0.115.12\nhf_transfer: Module Not Found\nhuggingface_hub: 0.31.1\ninteregular: Module Not Found\nmodelscope: Module Not Found\norjson: Module Not Found\noutlines: Module Not Found\npackaging: 25.0\npsutil: 7.0.0\npydantic: 2.11.4\npython-multipart: Module Not Found\npyzmq: 26.4.0\nuvicorn: Module Not Found\nuvloop: Module Not Found\nvllm: Module Not Found\nxgrammar: Module Not Found\nopenai: Module Not Found\ntiktoken: Module Not Found\nanthropic: Module Not Found\nlitellm: Module Not Found\ndecord: Module Not Found\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      NODE    SYS     SYS     0-7,16-23       0               N/A\nGPU1    NODE     X      SYS     SYS     0-7,16-23       0               N/A\nGPU2    SYS     SYS      X      NODE    8-15,24-31      1               N/A\nGPU3    SYS     SYS     NODE     X      8-15,24-31      1               N/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nulimit soft: 1073741816\n\n(Please note that I ran this in a conda environment on my machine because I'm using a docker container where I'm getting the error, and the docker container is exiting so I can't run inside it)",
+    "labels": [
+      "blackwell"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-09T17:19:44+00:00",
+    "closed_at": "2025-06-11T15:25:36+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6160/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6160"
+  },
+  {
+    "number": 6096,
+    "title": "[Bug] Cutlass_MLA backend can't run with tp8",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nCutlass MLA backend can only run when `dp_size` is equal to `tp_size`.\nIf launching deepseek-v3 with `--tp 8`, not enabling dp attention, the following bug occurs:\n```bash\n  File \"/sgl-workspace/sglang/python/sglang/srt/layers/attention/base_attn_backend.py\", line 69, in forward\n    return self.forward_decode(\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"/sgl-workspace/sglang/python/sglang/srt/layers/attention/cutlass_mla_backend.py\", line 270, in forward_decode\n    o = cutlass_mla_decode(\n        ^^^^^^^^^^^^^^^^^^^\n  File \"/opt/conda/lib/python3.11/site-packages/sgl_kernel/attention.py\", line 76, in cutlass_mla_decode\n    assert H == 128, f\"H must be 128, but got {H}\"\n           ^^^^^^^^\nAssertionError: H must be 128, but got 16\n```\n\n### Reproduction\n\nWhen only use tp, there will be a bug:\n```bash\npython3 -m sglang.bench_one_batch --model-path /dev/shm/DeepSeek-V3 --tp 8  --batch 16  --attention-backend cutlass_mla --page-size 128 --input-len 1024 --output-len 128\n```\n\nWhen use tp and dp together, the bug disappears:\n```bash\npython3 -m sglang.bench_one_batch --model-path /dev/shm/DeepSeek-V3 --enable-dp-attention --tp 8 --dp 8 --batch 16  --attention-backend cutlass_mla --page-size 128 --input-len 1024 --output-len 128\n```\n\n### Environment\n\nNvidia 8*B200, Cuda 12.8\n\naiohappyeyeballs          2.6.1\naiohttp                   3.11.18\naiosignal                 1.3.2\nairportsdata              20250224\nanaconda-anon-usage       0.7.0\nanaconda-cli-base         0.5.2\nanaconda-client           1.13.0\nannotated-types           0.6.0\nanyio                     4.9.0\nasttokens                 3.0.0\nattrs                     24.3.0\nbeautifulsoup4            4.12.3\nblack                     25.1.0\nblobfile                  3.0.0\nboltons                   23.0.0\nbrotlipy                  0.7.0\ncertifi                   2025.4.26\ncffi                      1.15.1\ncfgv                      3.4.0\nchardet                   4.0.0\ncharset-normalizer        2.0.4\nclick                     8.1.8\ncloudpickle               3.1.1\ncmake                     3.18.4\ncolorama                  0.4.6\ncompressed-tensors        0.9.4\nconda                     23.5.2\nconda-build               24.3.0\nconda-content-trust       0.1.3\nconda_index               0.6.0\nconda-libmamba-solver     23.5.0\nconda-package-handling    2.1.0\nconda_package_streaming   0.8.0\ncryptography              39.0.1\ncuda-bindings             12.8.0\ncuda-python               12.8.0\ndatasets                  3.5.1\ndecorator                 5.2.1\ndecord                    0.6.0\ndefusedxml                0.7.1\ndill                      0.3.8\ndiskcache                 5.6.3\ndistlib                   0.3.9\neinops                    0.8.1\nexecuting                 2.2.0\nfastapi                   0.115.12\nfastjsonschema            2.20.0\nfilelock                  3.17.0\nflashinfer-python         0.2.5\nfrozenlist                1.6.0\nfsspec                    2024.10.0\nh11                       0.16.0\nhf_transfer               0.1.9\nhuggingface-hub           0.30.2\nicdiff                    2.0.7\nidentify                  2.6.10\nidna                      3.4\niniconfig                 2.1.0\ninteregular               0.3.3\nipython                   9.2.0\nipython_pygments_lexers   1.1.1\nisort                     6.0.1\njedi                      0.19.2\nJinja2                    3.1.6\njsonpatch                 1.32\njsonpointer               2.1\njsonschema                4.23.0\njsonschema-specifications 2023.7.1\njupyter_core              5.7.2\nlark                      1.2.2\nlibarchive-c              5.1\nlibmambapy                1.4.1\nllguidance                0.7.19\nlxml                      5.4.0\nmarkdown-it-py            2.2.0\nMarkupSafe                3.0.2\nmatplotlib-inline         0.1.7\nmdurl                     0.1.0\nmenuinst                  2.2.0\nmodelscope                1.25.0\nmpmath                    1.3.0\nmsgpack                   1.0.3\nmultidict                 6.4.3\nmultiprocess              0.70.16\nmypy_extensions           1.1.0\nnanobind                  2.7.0\nnbformat                  5.10.4\nnest-asyncio              1.6.0\nnetworkx                  3.4.2\nninja                     1.11.1.4\nnodeenv                   1.9.1\nnumpy                     2.1.2\nnvidia-cublas-cu12        12.8.3.14\nnvidia-cuda-cupti-cu12    12.8.57\nnvidia-cuda-nvrtc-cu12    12.8.61\nnvidia-cuda-runtime-cu12  12.8.57\nnvidia-cudnn-cu12         9.8.0.87\nnvidia-cufft-cu12         11.3.3.41\nnvidia-cufile-cu12        1.13.0.11\nnvidia-curand-cu12        10.3.9.55\nnvidia-cusolver-cu12      11.7.2.55\nnvidia-cusparse-cu12      12.5.7.53\nnvidia-cusparselt-cu12    0.6.3\nnvidia-ml-py              12.570.86\nnvidia-nccl-cu12          2.26.2.post1\nnvidia-nvjitlink-cu12     12.8.61\nnvidia-nvtx-cu12          12.8.55\norjson                    3.10.18\noutlines                  0.1.11\noutlines_core             0.1.26\npackaging                 25.0\npandas                    2.2.3\nparso                     0.8.4\npartial-json-parser       0.2.1.1.post5\npathspec                  0.12.1\npexpect                   4.9.0\npillow                    11.0.0\npip                       23.1.2\npkginfo                   1.12.0\nplatformdirs              4.3.7\npluggy                    1.5.0\npre_commit                4.2.0\nprometheus_client         0.21.1\nprompt_toolkit            3.0.51\npropcache                 0.3.1\npsutil                    5.9.0\nptyprocess                0.7.0\npure_eval                 0.2.3\npyarrow                   20.0.0\npycosat                   0.6.4\npycountry                 24.6.1\npycparser                 2.21\npycryptodomex             3.22.0\npydantic                  2.10.3\npydantic_core             2.27.1\npydantic-settings         2.6.1\nPygments                  2.19.1\npynvml                    12.0.0\npyOpenSSL                 23.0.0\nPySocks                   1.7.1\npytest                    8.3.5\npython-dateutil           2.9.0.post0\npython-dotenv             1.1.0\npython-multipart          0.0.20\npytorch-triton            3.3.0+git96316ce5\npytz                      2024.1\nPyYAML                    6.0.2\npyzmq                     26.4.0\nreadchar                  4.0.5\nreferencing               0.30.2\nregex                     2024.11.6\nrequests                  2.32.3\nrequests-toolbelt         1.0.0\nrich                      13.9.4\nrpds-py                   0.22.3\nruamel.yaml               0.17.21\nsafetensors               0.5.3\nscikit_build_core         0.11.2\nsentencepiece             0.2.0\nsetproctitle              1.3.6\nsetuptools                75.0.0\nsgl-kernel                0.1.1\nsglang                    0.4.6.post2              /sgl-workspace/sglang/python\nshellingham               1.5.0\nsix                       1.16.0\nsniffio                   1.3.1\nsoundfile                 0.13.1\nsoupsieve                 2.5\nstack-data                0.6.3\nstarlette                 0.46.2\nsympy                     1.13.3\ntiktoken                  0.9.0\ntokenizers                0.21.1\ntomli                     2.0.1\ntoolz                     0.12.0\ntorch                     2.8.0.dev20250501+cu128\ntorchao                   0.10.0\ntorchaudio                2.6.0.dev20250501+cu128\ntorchvision               0.22.0.dev20250501+cu128\ntqdm                      4.67.1\ntraitlets                 5.14.3\ntransformers              4.51.1\ntyper                     0.9.0\ntyping_extensions         4.12.2\ntzdata                    2025.2\nurllib3                   1.26.16\nuv                        0.7.2\nuvicorn                   0.34.2\nuvloop                    0.21.0\nvirtualenv                20.30.0\nwcwidth                   0.2.13\nwheel                     0.41.0\nxgrammar                  0.1.17\nxxhash                    3.5.0\nyarl                      1.20.0\nzstandard                 0.19.0",
+    "labels": [
+      "bug",
+      "blackwell"
+    ],
+    "state": "open",
+    "created_at": "2025-05-07T20:14:18+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6096/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6096"
+  },
+  {
+    "number": 6095,
+    "title": "[Feature] Tune fp8 Gemm and fused moe kernel on B200",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe performance of w8a8 gemm kernel and fused moe kernel is not good enough on B200. There is some space for tuning.\n\n### Related resources\n\nReproduction on 8*B200:\n```bash\npython3 -m sglang.bench_one_batch --model-path /dev/shm/DeepSeek-V3 --tp 8 --batch 16 --input-len 1024 --output-len 128 --attention-backend triton --profile\n```\n\n_No response_",
+    "labels": [
+      "blackwell"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-07T20:06:14+00:00",
+    "closed_at": "2025-05-08T06:39:11+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6095/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6095"
+  },
+  {
+    "number": 5855,
+    "title": "[Feature] integrate FlashInfer Blackwell kernels",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nas titled\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "high priority",
+      "flashinfer",
+      "performance",
+      "blackwell"
+    ],
+    "state": "open",
+    "created_at": "2025-04-28T19:12:30+00:00",
+    "closed_at": null,
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5855/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5855"
+  },
+  {
+    "number": 5338,
+    "title": "[Tracker] Blackwell support",
+    "body": "## Usage\n\n```bash\ndocker pull lmsysorg/sglang:blackwell\n\n# use latest main\ncd /sgl-workspace/sglang && git pull\n```\n\n## Models\n\n### DeepSeek V3 \u2705\n```bash\npython3 -m sglang.launch_server --model deepseek-ai/DeepSeek-V3 --tp 8 --trust-remote-code\n```\n\n### Llama 4 \u2705\n```bash\npython3 -m sglang.launch_server --model meta-llama/Llama-4-Scout-17B-16E-Instruct --tp 8 --context-length 131072\n```",
+    "labels": [
+      "enhancement",
+      "blackwell"
+    ],
+    "state": "open",
+    "created_at": "2025-04-13T04:35:37+00:00",
+    "closed_at": null,
+    "comments": 29,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5338/reactions",
+      "total_count": 3,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 1,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5338"
+  }
+]

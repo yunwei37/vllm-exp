@@ -1,0 +1,753 @@
+[
+  {
+    "number": 401,
+    "title": "Is it possible to define the prompts for KV caching up-front?",
+    "body": "For a lot of use cases, there is already a pre-defined system + base prompt that is used.\r\n\r\nCan we define the KV cache for these prompts up front manually? For example, if we are extracting information out of a provided context, the provided context prompt changes but the system + base prompt stays the same. Caching the context will make no sense as it is guaranteed to change on the next inference. ",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-29T08:40:04+00:00",
+    "closed_at": "2024-07-25T06:33:23+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/401/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/401"
+  },
+  {
+    "number": 73,
+    "title": "Accelerating Generation with Rollback using sglang?",
+    "body": "Hi team! My generation scenario involves rolling back and I was wondering how I could speed this up using sglang. \r\n\r\nIn the first stage, I have an initial prompt, and I can obtain an output with sentences delimited by '\\n'. \r\nInput: \r\nquestion.\r\n\r\nOutput:\r\nsentence1 \\n sentence2 \\n sentence3 \\n\r\n\r\nIn the second stage, I would like to rollback and generate on these prompts:\r\n- question. sentence1 \\n\r\n- question. sentence1 \\n sentence2 \\n\r\n\r\nIs it possible to reuse the KV caches in the first stage using sglang? Thanks for your help!",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-01-22T04:40:25+00:00",
+    "closed_at": "2024-01-22T04:56:40+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/73/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/73"
+  },
+  {
+    "number": 497,
+    "title": "llava http request hang when do set_default_backend(RuntimeEndpoint(\"http://ip:port\"))",
+    "body": "I'm trying to start the server for llava-video-34b using 2 GPUs and I'm following code in [srt_example_llava_v.py](https://github.com/sgl-project/sglang/blob/main/examples/usage/llava_video/srt_example_llava_v.py). \r\nEverything is OK when I start the backend, and it can also do generation. But when I start a frontend python file using set_default_backend(RuntimeEndpoint(\"http://localhost:30000\")), the program will always hang without any output information on backend and frontend terminal.\r\nAnd I find the program stuck in this part\r\n`res = http_request(\r\n            self.base_url + \"/get_model_info\",\r\n            auth_token=self.auth_token,\r\n            api_key=self.api_key,\r\n            verify=self.verify,\r\n        )`\r\n\r\nDose anyone know what should I do to solve this issue? Thanks~\r\nMy backend runtime code is\r\n`runtime = sgl.Runtime(\r\n        model_path=args.model_path,\r\n        tokenizer_path=tokenizer_path,\r\n        port=cur_port,\r\n        model_overide_args=model_overide_args,\r\n        tp_size=2\r\n    )`",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-06-03T09:53:37+00:00",
+    "closed_at": "2024-06-03T11:53:39+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/497/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/497"
+  },
+  {
+    "number": 237,
+    "title": "Running LLaVA 1.5 4bit AWQ with SGLang",
+    "body": "\ud83d\udc4b hi and thanks again for all the updates and improvements on this framework.\r\n\r\nI've tried running SGLang with AWQ version of LLaVA and ran into the following error:\r\n\r\n```console\r\n$ python3 -m sglang.launch_server --model-path Shopify/llava-awq-test --tokenizer-path llava-hf/llava-1.5-7b-hf --host 0.0.0.0 --port 30000 --tp-size 1\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nRank 0: load weight begin.\r\nquant_config: AWQConfig(weight_bits=4, group_size=128, zero_point=True)\r\n/opt/conda/envs/sglang_awq/lib/python3.10/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()\r\n  return self.fget.__get__(instance, owner)()\r\nINFO 02-26 21:33:41 weight_utils.py:163] Using model weights format ['*.bin']\r\nINFO 02-26 21:33:44 weight_utils.py:163] Using model weights format ['*.bin']\r\ntorch.Size([4096, 1536]) torch.Size([1024, 4096])\r\nProcess Process-1:\r\nrouter init state: Traceback (most recent call last):\r\n  File \"/home/gcpuser/sglang/python/sglang/srt/managers/router/manager.py\", line 68, in start_router_process\r\n    model_client = ModelRpcClient(server_args, port_args)\r\n  File \"/home/gcpuser/sglang/python/sglang/srt/managers/router/model_rpc.py\", line 612, in __init__\r\n    self.model_server.exposed_init_model(0, server_args, port_args)\r\n  File \"/home/gcpuser/sglang/python/sglang/srt/managers/router/model_rpc.py\", line 62, in exposed_init_model\r\n    self.model_runner = ModelRunner(\r\n  File \"/home/gcpuser/sglang/python/sglang/srt/managers/router/model_runner.py\", line 275, in __init__\r\n    self.load_model()\r\n  File \"/home/gcpuser/sglang/python/sglang/srt/managers/router/model_runner.py\", line 308, in load_model\r\n    model.load_weights(\r\n  File \"/home/gcpuser/sglang/python/sglang/srt/models/llava.py\", line 292, in load_weights\r\n    self.language_model.load_weights(\r\n  File \"/home/gcpuser/sglang/python/sglang/srt/models/llama2.py\", line 311, in load_weights\r\n    weight_loader(param, loaded_weight, shard_id)\r\n  File \"/opt/conda/envs/sglang_awq/lib/python3.10/site-packages/vllm/model_executor/layers/linear.py\", line 436, in weight_loader\r\n    assert param_data.shape == loaded_weight.shape\r\nAssertionError\r\n\r\ndetoken init state: init ok\r\n```\r\n\r\nI know that the error is originating from `vllm` but was wondering if SGLang should be able to support AWQ version of LLaVA?\r\nCould it be something with how I quantized the LLaVA or is it incompatibility with SGLang / vLLM?\r\n\r\n## Details on creating the AWQ version\r\n\r\nIn order to create the AWQ 4-bit version I use the method described in the [llm-awq](https://github.com/mit-han-lab/llm-awq) for quantizing the model as in the [VILA example](https://github.com/mit-han-lab/llm-awq/blob/main/scripts/vila_example.sh). Converted the result to HF configuration model and tried to run it with SGLang.\r\n\r\n```console\r\n$ python -m awq.entry     --model_path /home/gcpuser/sky_workdir/llava-v1.5-7b     --w_bit 4     --q_group_size 128     --run_awq     --dump_awq /home/gcpuser/sky_workdir/awq_cache/llava-v1.5-7b-w4-g128.pt\r\nQuantization config: {'zero_point': True, 'q_group_size': 128}\r\n* Building model /home/gcpuser/sky_workdir/llava-v1.5-7b\r\nYou are using a model of type llava to instantiate a model of type llava_llama. This is not supported for all configurations of models and can yield errors.\r\nLoading checkpoint shards:   0%|                                                                                                                                                                                                                          | 0/2 [00:00<?, ?it/s]/opt/conda/envs/quantize_llava/lib/python3.10/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()\r\n  return self.fget.__get__(instance, owner)()\r\nLoading checkpoint shards: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 2/2 [00:00<00:00,  5.61it/s]\r\n/opt/conda/envs/quantize_llava/lib/python3.10/site-packages/huggingface_hub/repocard.py:105: UserWarning: Repo card metadata block was not found. Setting CardData to empty.\r\n  warnings.warn(\"Repo card metadata block was not found. Setting CardData to empty.\")\r\nToken indices sequence length is longer than the specified maximum sequence length for this model (8322 > 2048). Running this sequence through the model will result in indexing errors\r\n * Split into 65 blocks\r\nRunning AWQ...: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 32/32 [08:33<00:00, 16.04s/it]\r\nAWQ results saved at /home/gcpuser/sky_workdir/awq_cache/llava-v1.5-7b-w4-g128.pt\r\n```\r\n\r\n```console\r\n$ python -m awq.entry \\\r\n    --model_path /home/gcpuser/sky_workdir/llava-v1.5-7b \\\r\n    --w_bit 4 \\\r\n    --q_group_size 128 \\\r\n    --load_awq /home/gcpuser/sky_workdir/awq_cache/llava-v1.5-7b-w4-g128.pt \\\r\n    --q_backend real \\\r\n    --dump_quant /home/gcpuser/sky_workdir/quant_cache/llava-v1.5-7b-w4-g128-awq.pt\r\nQuantization config: {'zero_point': True, 'q_group_size': 128}\r\n* Building model /home/gcpuser/sky_workdir/llava-v1.5-7b\r\nYou are using a model of type llava to instantiate a model of type llava_llama. This is not supported for all configurations of models and can yield errors.\r\nLoading checkpoint shards:   0%|                                                                                 | 0/2 [00:00<?, ?it/s]/opt/conda/envs/quantize_llava/lib/python3.10/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()\r\n  return self.fget.__get__(instance, owner)()\r\nLoading checkpoint shards: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 2/2 [00:00<00:00,  5.35it/s]\r\nLoading pre-computed AWQ results from /home/gcpuser/sky_workdir/awq_cache/llava-v1.5-7b-w4-g128.pt\r\nreal weight quantization...: 100%|\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588| 32/32 [03:58<00:00,  7.46s/it]\r\n[Info] Auto-change the dump_quant file name to *v2.pt\r\nSaving the quantized model at /home/gcpuser/sky_workdir/quant_cache/llava-v1.5-7b-w4-g128-awq-v2.pt...\r\n```\r\n\r\n## Model config\r\n\r\n```json\r\n{\r\n  \"_name_or_path\": \"/home/gcpuser/sky_workdir/llava-v1.5-7b\",\r\n  \"architectures\": [\r\n    \"LlavaLlamaForCausalLM\"\r\n  ],\r\n  \"bos_token_id\": 1,\r\n  \"eos_token_id\": 2,\r\n  \"freeze_mm_mlp_adapter\": false,\r\n  \"freeze_mm_vision_resampler\": false,\r\n  \"hidden_act\": \"silu\",\r\n  \"hidden_size\": 4096,\r\n  \"ignore_index\": -100,\r\n  \"image_aspect_ratio\": \"pad\",\r\n  \"image_token_index\": 32000,\r\n  \"initializer_range\": 0.02,\r\n  \"intermediate_size\": 11008,\r\n  \"max_length\": 4096,\r\n  \"max_position_embeddings\": 4096,\r\n  \"mm_hidden_size\": 1024,\r\n  \"mm_projector_type\": \"mlp2x_gelu\",\r\n  \"mm_resampler_type\": null,\r\n  \"mm_use_im_patch_token\": false,\r\n  \"mm_use_im_start_end\": false,\r\n  \"mm_vision_select_feature\": \"patch\",\r\n  \"mm_vision_select_layer\": -2,\r\n  \"mm_vision_tower\": \"openai/clip-vit-large-patch14-336\",\r\n  \"model_type\": \"llava\",\r\n  \"num_attention_heads\": 32,\r\n  \"num_hidden_layers\": 32,\r\n  \"num_key_value_heads\": 32,\r\n  \"pad_token_id\": 0,\r\n  \"pretraining_tp\": 1,\r\n  \"projector_hidden_act\": \"gelu\",\r\n  \"quantization_config\": {\r\n    \"backend\": \"llm-awq\",\r\n    \"bits\": 4,\r\n    \"do_fuse\": false,\r\n    \"fuse_max_seq_len\": null,\r\n    \"group_size\": 128,\r\n    \"modules_to_fuse\": null,\r\n    \"modules_to_not_convert\": null,\r\n    \"quant_method\": \"awq\",\r\n    \"version\": \"gemv\",\r\n    \"zero_point\": true\r\n  },\r\n  \"rms_norm_eps\": 1e-05,\r\n  \"rope_scaling\": null,\r\n  \"text_config\": {\r\n    \"model_type\": \"llama\"\r\n  },\r\n  \"tie_word_embeddings\": false,\r\n  \"torch_dtype\": \"float16\",\r\n  \"transformers_version\": \"4.37.2\",\r\n  \"tune_mm_mlp_adapter\": false,\r\n  \"tune_mm_vision_resampler\": false,\r\n  \"unfreeze_mm_vision_tower\": false,\r\n  \"use_cache\": true,\r\n  \"use_mm_proj\": true,\r\n  \"vision_config\": {\r\n    \"hidden_size\": 1024,\r\n    \"image_size\": 336,\r\n    \"intermediate_size\": 4096,\r\n    \"model_type\": \"clip_vision_model\",\r\n    \"num_attention_heads\": 16,\r\n    \"num_hidden_layers\": 24,\r\n    \"patch_size\": 14,\r\n    \"projection_dim\": 768,\r\n    \"vocab_size\": 32000\r\n  },\r\n  \"vision_feature_layer\": -2,\r\n  \"vision_feature_select_strategy\": \"default\",\r\n  \"vocab_size\": 32000\r\n}\r\n```\r\n\r\n## Environment details\r\n\r\n* Server A100-80GB with 1 GPU\r\n* CUDA cuda_12.1.r12.1/compiler.32688072_0\r\n* SGLang built from source today  (`git clone` + `pip install -e \"python[all]\"`)\r\n* torch 2.1.2\r\n* vllm 0.3.2\r\n* transformers 4.38.1",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-02-26T21:57:27+00:00",
+    "closed_at": "2024-03-04T16:42:35+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/237/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/237"
+  },
+  {
+    "number": 295,
+    "title": "Parallelism with `run_batch` vs `fork`",
+    "body": "First of all, great work!\r\n\r\nThe frontend seems to support two kinds of parallel processing: batching and forking.\r\n\r\nFrom the docs and paper, it is not entirely clear to me how they differ and how they are handled under the hood. Do they both launch separate threads that make requests to the server, which then does continuous batching? Or is there more to it?\r\n\r\nFrom a practical standpoint, what are the considerations when both `run_batch` and `fork` are possible for the use case? Are there advantages/disadvantages besides fork being more flexible?\r\n\r\nIs it safe to combine the two? Would the total number of threads be `num_threads * num_forks`?",
+    "labels": [
+      "documentation"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-13T20:35:36+00:00",
+    "closed_at": "2024-04-07T10:09:39+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/295/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/295"
+  },
+  {
+    "number": 325,
+    "title": "Setting Data Type from the CLI interface",
+    "body": "Is it possible to set the data type from the cli interface?\r\n\r\n```\r\npython -m sglang.launch_server --model-path llava-v1.6-34b.Q8_0.gguf --tokenizer-path liuhaotian/llava-v1.6-34b-tokenizer --port 8888 --host 0.0.0.0 --enable-flashinfer --dtype bfloat16\r\n```\r\n\r\nIf not, it seems like a useful feature to add.",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-22T23:22:13+00:00",
+    "closed_at": "2024-07-25T06:32:54+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/325/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/325"
+  },
+  {
+    "number": 143,
+    "title": "Error under high concurrency. `sqlite3.DatabaseError: database disk image is malformed`",
+    "body": "The error stack is as follows:\r\n```bash\r\nFile \"/User/jay/sglang/python/sglang/api.py\", line 37, in Runtime\r\n  from sglang.srt.server import Runtime\r\nFile \"/User/jay/sglang/python/sglang/srt/server.py\", line 47, in <module>\r\n  from sglang.srt.managers.router.manager import start_router_process\r\nFile \"/User/jay/sglang/python/sglang/srt/managers/router/manager.py\", line 8, in <module>\r\n  from sglang.srt.managers.router.model_rpc import ModelRpcClient\r\nFile \"/User/jay/sglang/python/sglang/srt/managers/router/model_rpc.py\", line 15, in <module>\r\n  from sglang.srt.constrained.fast_forward import FastForwardCache\r\nFile \"/User/jay/sglang/python/sglang/srt/constrained/fast_forward.py\", line 2, in <module>\r\n  from sglang.srt.constrained.disk_cache import disk_cache\r\nFile \"/User/jay/sglang/python/sglang/srt/constrained/disk_cache.py\", line 13, in <module>\r\n  memory = Cache(cache_dir, eviction_policy=\"none\", cull_limit=0)\r\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nFile \"/User/jay/miniconda3/envs/sglang/lib/python3.11/site-packages/diskcache/core.py\", line 500, in __init__\r\n  self.reset(key, value)\r\nFile \"/User/jay/miniconda3/envs/sglang/lib/python3.11/site-packages/diskcache/core.py\", line 2409, in reset\r\n  sql_retry(statement, (value, key))\r\nFile \"/User/jay/miniconda3/envs/sglang/lib/python3.11/site-packages/diskcache/core.py\", line 666, in _execute_with_retry\r\n  return sql(statement, *args, **kwargs)\r\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nsqlite3.DatabaseError: database disk image is malformed\r\n```\r\nShould be related to https://github.com/sgl-project/sglang/blob/82fa69b3cc0c8b9b3b31148f1d53070649f0d433/python/sglang/srt/constrained/disk_cache.py#L13\r\n\r\n\r\nWould it be fine to change this line\r\nhttps://github.com/sgl-project/sglang/blob/82fa69b3cc0c8b9b3b31148f1d53070649f0d433/python/sglang/srt/constrained/disk_cache.py#L12\r\nto\r\n```python\r\ncache_dir = os.environ.get(\"SGLANG_CACHE_DIR\", f\"{home_dir}/.cache/sglang/{os.getpid()}\")\r\n```\r\n\r\nProbably @hnyls2002",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-02-05T03:52:57+00:00",
+    "closed_at": "2024-02-07T17:39:06+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/143/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/143"
+  },
+  {
+    "number": 341,
+    "title": "Potential Bug? Confusion about \"need_vision\" in llava implementation",
+    "body": "Thank you for the amazing work! I am trying to understand the specific implementation of llava. Specifically, what is the purpose of `need_vision`? \r\nMy understanding is that currently, this value decides whether images are processed by the vision encoder, and added to the sequence of input_embeddings. \r\n\r\n```python\r\n# Embed vision input\r\nneed_vision = (\r\n(positions[input_metadata.extend_start_loc] < self.image_feature_len).cpu().numpy()\r\n            )\r\n# FIXME: We need to substract the length of the system prompt\r\n```\r\nHowever, I am struggling to understand why / when this condition should be set to False, and what's the rationale for using `self.image_feature_len`? In particular in Llava 1.6, the sequence length of an image would be dynamic based on the aspect ratio and size of the image whereas `self.image_feature_len` is only initialized and set once: \r\n`self.image_feature_len = int((self.image_size / self.patch_size) ** 2)` which seems to be just the number of tokens in a single \"crop\" instead of the multiple crops used in anyres processing. \r\nAlso how should I interpret the FIXME comment about system prompt? \r\nAny insight would be much appreciated! Thanks! \r\n\r\nhttps://github.com/sgl-project/sglang/blob/cb389c91bcff6ffac4a95a0551a05d67e21ba306/python/sglang/srt/models/llava.py#L106",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-01T00:27:04+00:00",
+    "closed_at": "2024-07-25T06:33:00+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/341/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/341"
+  },
+  {
+    "number": 582,
+    "title": "OpenAI ChatCompletionRequest max_tokens defaults to None causing error",
+    "body": "I encountered a bug while using the sglang OpenAI API library. I have to specify max_tokens if using the `/v1/chat/completions` endpoint but not with the `/v1/completions` endpoint. I believe this is because of the default `max_tokens` value being set in `python/sglang/srt/openai_protocol.py`.\r\n\r\n\r\nDefault is 16 tokens https://github.com/sgl-project/sglang/blob/9380f50ff9cbc36afc1888c7a5b69f53c9a488f5/python/sglang/srt/openai_protocol.py#L31-L41\r\n\r\n\r\nChatCompletionRequest max_tokens defaults to None https://github.com/sgl-project/sglang/blob/9380f50ff9cbc36afc1888c7a5b69f53c9a488f5/python/sglang/srt/openai_protocol.py#L128-L137\r\n\r\nHere's the end of the error:\r\n```bash\r\n  File \"/usr/local/lib/python3.11/site-packages/sglang/srt/sampling_params.py\", line 66, in verify\r\n    if self.max_new_tokens < 0:\r\n       ^^^^^^^^^^^^^^^^^^^^^^^\r\nTypeError: '<' not supported between instances of 'NoneType' and 'int'\r\n```\r\nThis can be fixed by setting a default or checking if max_tokens is None and handling it, I just wasn't sure where the developers would want to do this. ",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-07-02T20:11:18+00:00",
+    "closed_at": "2024-07-09T08:52:56+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/582/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/582"
+  },
+  {
+    "number": 391,
+    "title": "vLLM import error",
+    "body": "I'm getting the following import error:\r\n\r\n```\r\nsgl \u279c export CUDA_VISIBLE_DEVICES=4; python -m sglang.launch_server --model-path meta-llama/Llama-2-7b-chat-hf --port 30000\r\nTraceback (most recent call last):\r\n  File \"/home/jessy/.miniconda3/envs/sgl/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\r\n    return _run_code(code, main_globals, None,\r\n  File \"/home/jessy/.miniconda3/envs/sgl/lib/python3.10/runpy.py\", line 86, in _run_code\r\n    exec(code, run_globals)\r\n  File \"/home/jessy/projects/sglang/python/sglang/launch_server.py\", line 3, in <module>\r\n    from sglang.srt.server import ServerArgs, launch_server\r\n  File \"/home/jessy/projects/sglang/python/sglang/srt/server.py\", line 56, in <module>\r\n    from sglang.srt.managers.router.manager import start_router_process\r\n  File \"/home/jessy/projects/sglang/python/sglang/srt/managers/router/manager.py\", line 9, in <module>\r\n    from sglang.srt.managers.router.model_rpc import ModelRpcClient\r\n  File \"/home/jessy/projects/sglang/python/sglang/srt/managers/router/model_rpc.py\", line 24, in <module>\r\n    from sglang.srt.managers.router.model_runner import ModelRunner\r\n  File \"/home/jessy/projects/sglang/python/sglang/srt/managers/router/model_runner.py\", line 15, in <module>\r\n    from vllm.model_executor.model_loader import _set_default_torch_dtype\r\nImportError: cannot import name '_set_default_torch_dtype' from 'vllm.model_executor.model_loader' (/home/jessy/.miniconda3/envs/sgl/lib/python3.10/site-packages/vllm/model_executor/model_loader/__init__.py)\r\n```\r\n\r\nIt looks like `_set_default_torch_dtype` no longer exists in vllm: `https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/model_loader/__init__.py`\r\n\r\nI've tried both `pip install sglang[all]` and installing from source. My versions are `sglang==0.1.14` and `vllm==0.4.1`.\r\n",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-04-24T23:15:31+00:00",
+    "closed_at": "2024-07-18T16:28:54+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/391/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/391"
+  },
+  {
+    "number": 285,
+    "title": "[Bug] Llava-v1.6-34B template is not updated.",
+    "body": "Reference to https://github.com/haotian-liu/LLaVA/blob/7440ec9ee37b0374c6b5548818e89878e38f3353/llava/serve/gradio_web_server.py#L176, the chat template used by llava-v1.6-34b is 'chatml_direct' which is not implement in current SGLANG.\r\nThe template 'chatml' is implemented, but totally different from 'chatml_direct'.\r\n\r\nThe bug leads to the different outputs between the gradio demo and sgl.function with sgl runtime.\r\n\r\nBesides, the template structure and notation are totally different. I am not sure that I can transfer the chat template from llava to ChatTemplate correctly.",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-03-12T02:44:23+00:00",
+    "closed_at": "2024-07-25T06:32:39+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/285/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/285"
+  },
+  {
+    "number": 41,
+    "title": "LlaVa Usage with server option ValueError: ... not in list",
+    "body": "Hello, I tried to utilize `sglang` backend with LlaVa model utilizing the command that's provided in the README\r\n\r\nI created a new environment and installed `sglang` with `pip install \"sglang[all]\"`.\r\n\r\n```bash\r\npython3 -m sglang.launch_server --model-path liuhaotian/llava-v1.5-7b --tokenizer-path llava-hf/llava-1.5-7b-hf --port 30000\r\n```\r\n\r\n```python\r\nimport requests\r\nimport json\r\n# includes an image of a cat\r\npath = \"images/cat_2.jpeg\"\r\ntext = \"what is this?\"\r\n# checked https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/managers/io_struct.py#L9 for input\r\ndata = {\"text\": text,\r\n        \"image_data\": path}\r\n\r\nheaders = {'Content-Type': 'application/json'}\r\n\r\nresponse = requests.post('http://localhost:30000/generate', json=data, headers=headers)\r\n\r\nprint(response.json())\r\n```\r\n\r\nit gets stuck in runtime(jupyter, does not raise the error) but in server I see the error\r\n\r\n`ValueError: 32000 is not in list`\r\n\r\nMay I ask if there is something I'm doing wrong?\r\n",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-01-18T16:38:30+00:00",
+    "closed_at": "2024-01-18T23:43:01+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/41/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/41"
+  },
+  {
+    "number": 522,
+    "title": "Qwen 2 7B not working",
+    "body": "This appears on a fresh installation of sglang. Currently using docker container with the following packages\r\n\r\nsglang==0.1.17\r\ntriton==2.3.0\r\ntransformers==4.41.2\r\ntorch==2.3.0\r\nvllm==0.4.3\r\nvllm-flash-attn==2.5.8.post2\r\n\r\nnvcc --version\r\n\r\n```\r\nnvcc: NVIDIA (R) Cuda compiler driver\r\nCopyright (c) 2005-2023 NVIDIA Corporation\r\nBuilt on Wed_Nov_22_10:17:15_PST_2023\r\nCuda compilation tools, release 12.3, V12.3.107\r\nBuild cuda_12.3.r12.3/compiler.33567101_0\r\n```\r\n\r\n```\r\nCUDA_VISIBLE_DEVICES=2 python -m sglang.launch_server --model-path Qwen/Qwen2-7B-Instruct-GPTQ-Int8 --port 30000\r\n/usr/local/lib/python3.10/dist-packages/huggingface_hub/file_download.py:1132: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.\r\n  warnings.warn(\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\n[gpu_id=0] Set cuda device.\r\n[gpu_id=0] Init nccl begin.\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\n[gpu_id=0] Load weight begin. avail mem=78.27 GB\r\nINFO 06-10 11:32:21 gptq_marlin.py:133] The model is convertible to gptq_marlin during runtime. Using gptq_marlin kernel.\r\nINFO 06-10 11:32:23 weight_utils.py:207] Using model weights format ['*.safetensors']\r\n[gpu_id=0] Load weight end. type=Qwen2ForCausalLM, avail mem=69.90 GB\r\n[gpu_id=0] Memory pool end. avail mem=6.64 GB\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\n[gpu_id=0] max_total_num_tokens=1162244, max_prefill_tokens=65536, context_len=32768, \r\n[gpu_id=0] server_args: enable_flashinfer=False, attention_reduce_in_fp32=False, disable_radix_cache=False, disable_regex_jump_forward=False, disable_disk_cache=False, \r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nINFO:     Started server process [34862]\r\nINFO:     Waiting for application startup.\r\nINFO:     Application startup complete.\r\nINFO:     Uvicorn running on http://127.0.0.1:30000 (Press CTRL+C to quit)\r\nINFO:     127.0.0.1:33602 - \"GET /get_model_info HTTP/1.1\" 200 OK\r\n[gpu_id=0] Prefil batch. #new-seq: 1, #new-token: 6, #cached-token: 0, cache hit rate: 0.00%, #running-req: 0, #queue-req: 0\r\nException in ModelTpServer:\r\nTraceback (most recent call last):\r\n  File \"/usr/local/lib/python3.10/dist-packages/sglang/srt/managers/controller/tp_worker.py\", line 188, in exposed_step\r\n    self.forward_step()\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/sglang/srt/managers/controller/tp_worker.py\", line 218, in forward_step\r\n    self.forward_decode_batch(self.running_batch)\r\n  File \"/usr/local/lib/python3.10/dist-packages/sglang/srt/managers/controller/tp_worker.py\", line 572, in forward_decode_batch\r\n    next_token_ids, _ = batch.sample(logits)\r\n  File \"/usr/local/lib/python3.10/dist-packages/sglang/srt/managers/controller/infer_batch.py\", line 592, in sample\r\n    sampled_index = torch.multinomial(probs_sort, num_samples=1)\r\nRuntimeError: probability tensor contains either `inf`, `nan` or element < 0\r\n\r\nException in ControllerSingle:\r\nTraceback (most recent call last):\r\n  File \"/usr/local/lib/python3.10/dist-packages/sglang/srt/managers/controller/manager_single.py\", line 93, in start_controller_process\r\n    loop.run_until_complete(controller.loop_for_forward())\r\n  File \"uvloop/loop.pyx\", line 1517, in uvloop.loop.Loop.run_until_complete\r\n  File \"/usr/local/lib/python3.10/dist-packages/sglang/srt/managers/controller/manager_single.py\", line 44, in loop_for_forward\r\n    out_pyobjs = await self.model_client.step(next_step_input)\r\n  File \"/usr/local/lib/python3.10/dist-packages/sglang/srt/managers/controller/tp_worker.py\", line 753, in _func\r\n    return f(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/sglang/srt/managers/controller/tp_worker.py\", line 188, in exposed_step\r\n    self.forward_step()\r\n  File \"/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File \"/usr/local/lib/python3.10/dist-packages/sglang/srt/managers/controller/tp_worker.py\", line 218, in forward_step\r\n    self.forward_decode_batch(self.running_batch)\r\n  File \"/usr/local/lib/python3.10/dist-packages/sglang/srt/managers/controller/tp_worker.py\", line 572, in forward_decode_batch\r\n    next_token_ids, _ = batch.sample(logits)\r\n  File \"/usr/local/lib/python3.10/dist-packages/sglang/srt/managers/controller/infer_batch.py\", line 592, in sample\r\n    sampled_index = torch.multinomial(probs_sort, num_samples=1)\r\nRuntimeError: probability tensor contains either `inf`, `nan` or element < 0\r\n\r\nKilled\r\n```",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-06-10T11:39:41+00:00",
+    "closed_at": "2024-06-10T18:29:21+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/522/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/522"
+  },
+  {
+    "number": 29,
+    "title": "Async support",
+    "body": null,
+    "labels": [
+      "good first issue"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-17T23:44:02+00:00",
+    "closed_at": "2024-01-21T23:17:31+00:00",
+    "comments": 0,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/29/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/29"
+  },
+  {
+    "number": 139,
+    "title": "/generate stuck and no response when serving the Mixtral AWQ",
+    "body": "Hi, I have been trying to launch Mixtral AWQ with 2 A10 GPUs. Here is my command:\r\n\r\n```bash\r\npython -m sglang.launch_server --model-path TheBloke/Mixtral-8x7B-Instruct-v0.1-AWQ --tp 2\r\n```\r\n\r\nThe output appears to be correct with the following standard output:\r\n\r\n```bash\r\nServer started on [0.0.0.0]:10006\r\nServer started on [0.0.0.0]:10007\r\nAccepted ('127.0.0.1', 36290) with file descriptor 5\r\nAccepted ('127.0.0.1', 37546) with file descriptor 5\r\nWelcome ('127.0.0.1', 37546)\r\nWelcome ('127.0.0.1', 36290)\r\nRank 0: Load weight begins.\r\nQuant_config: AWQConfig(weight_bits=4, group_size=128, zero_point=True)\r\nRank 1: Load weight begins.\r\nQuant_config: AWQConfig(weight_bits=4, group_size=128, zero_point=True)\r\nINFO 02-04 07:17:50 weight_utils.py:164] Using model weights format ['*.safetensors']\r\nINFO 02-04 07:17:50 weight_utils.py:164] Using model weights format ['*.safetensors']\r\nRank 0: Load weight ends.\r\nRank 1: Load weight ends.\r\nRank 1: Max_total_num_token=115621, max_prefill_num_token=32768, context_len=32768, model_mode=[]\r\nRank 0: Max_total_num_token=115621, max_prefill_num_token=32768, context_len=32768, model_mode=[]\r\n```\r\n\r\nWhen I try to execute the following command:\r\n\r\n```bash\r\ncurl 127.0.0.1:30000/get_model_info\r\n```\r\n\r\nIt receives the correct response: `{\"model_path\":\"TheBloke/Mixtral-8x7B-Instruct-v0.1-AWQ\"}`. However, when attempting the following command:\r\n\r\n```bash\r\ncurl http://localhost:30000/generate   -H \"Content-Type: application/json\"   -d '{\r\n    \"text\": \"Once upon a time,\",\r\n    \"sampling_params\": {\r\n      \"max_new_tokens\": 16,\r\n      \"temperature\": 0\r\n    }\r\n  }'\r\n```\r\n\r\nIt gets stuck indefinitely.",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-02-04T07:28:25+00:00",
+    "closed_at": "2024-07-25T06:32:05+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/139/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/139"
+  },
+  {
+    "number": 409,
+    "title": "LLaVA-v1.6 RuntimeError in llava image encoding",
+    "body": "There still seems to be a bug in the newer LLaVA-v1.6 version where, for some images, the model only generates one or two tokens. The problem seems to be related to some kind of attributes of the images themselves, as changing the textual input has no influence. Furthermore, all 3 v1.6 models (7b, 13b, and 34b) have problems with the same images. Moreover, the 1.5 version works perfectly fine with the same inputs. This bug appears for around 5% of my images.\r\nI'm on the sglang 0.1.14 and vllm 0.3.3. The issue seems to be related to #273, however i do not use regex for generation. The server casts the following runtime error when llava is not able to process the image:\r\n`\r\nRuntimeError in llava image encoding: The expanded size of the tensor (0) must match the existing size (2438) at non-singleton dimension 0.  Target sizes: [0, 4096].  Tensor sizes: [2438, 4096]\r\ntorch.Size([10194, 4096])\r\n0 -1`",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-04T16:02:03+00:00",
+    "closed_at": "2024-07-25T06:33:29+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/409/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/409"
+  },
+  {
+    "number": 495,
+    "title": "Any plan  to support cascading  feature of flashinfer?",
+    "body": null,
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-06-03T03:21:25+00:00",
+    "closed_at": "2024-08-08T01:03:58+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/495/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/495"
+  },
+  {
+    "number": 591,
+    "title": "`model_override_args` with server",
+    "body": "When using a server, one currently cannot use the `model_overide_args` which could be very useful, e.g. for rope scaling. \r\n\r\nThis is currently the `sglang.launch_server.py`:\r\n\r\n```py\r\nimport argparse\r\n\r\nfrom sglang.srt.server import launch_server\r\nfrom sglang.srt.server_args import ServerArgs\r\n\r\nif __name__ == \"__main__\":\r\n    parser = argparse.ArgumentParser()\r\n    ServerArgs.add_cli_args(parser)\r\n    args = parser.parse_args()\r\n    server_args = ServerArgs.from_cli_args(args)\r\n\r\n    launch_server(server_args, None)\r\n```\r\n\r\nThe `model_overide_args` would be the third argument to `launch_server` defaulting to `None`. Adding a small cli parser that allows arbitrary model args would be great, e.g.\r\n\r\n```bash\r\npython -m sglang.launch_server --model_overide_args.rope_scaling.factor 2 --model_overide_args.rope_scaling.type linear\r\n```",
+    "labels": [
+      "good first issue",
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-05T09:57:03+00:00",
+    "closed_at": "2024-09-08T01:12:57+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/591/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/591"
+  },
+  {
+    "number": 131,
+    "title": "llava-v1.6-vicuna-7b NoneType Object Error when handle_generate_request, maybe misspelled",
+    "body": "sglang version: `sglang==0.1.10`\r\ntorch version: `2.1.0+cu118`\r\n\r\nWhen running the server via: \r\n\r\n`python3 -m sglang.launch_server --model-path ./llava-v1.6-vicuna-7b --tokenizer-path SurfaceData/llava-v1.6-vicuna-7b-processor --chat-template vicuna_v1.1 --port 30000`\r\n\r\nRunning the following test script :\r\n\r\n```\r\n@sgl.function\r\ndef pipeline(s, prompt, max_tokens):\r\n    for p in prompt:\r\n        if type(p) is str:\r\n            s += p\r\n        else:\r\n            s += sgl.image(p) # p would be PIL.Image\r\n    s += sgl.gen(\"response\", max_tokens=max_tokens)\r\n\r\nbackend = RuntimeEndpoint(sgl_endpoint)\r\nsgl.set_default_backend(backend)\r\npipeline.run(prompt, max_new_tokens, temperature=temperature, top_p=top_p, top_k=top_k, stream=True)\r\n```\r\n\r\nthe request triggered `handle_generate_request` in `srt.managers.router.model_rpc` and assert\r\n```\r\nException in ModelRpcClient:\r\nTraceback (most recent call last):\r\n  File \"/root/miniconda3/envs/sgl/lib/python3.10/site-packages/sglang/srt/managers/router/model_rpc.py\", line 159, in exposed_step\r\n    self.handle_generate_request(recv_req)\r\n  File \"/root/miniconda3/envs/sgl/lib/python3.10/site-packages/sglang/srt/managers/router/model_rpc.py\", line 240, in handle_generate_request\r\n    req.input_ids, req.image_offset = self.model_runner.model.pad_input_ids(\r\n  File \"/root/miniconda3/envs/sgl/lib/python3.10/site-packages/sglang/srt/models/llava.py\", line 49, in pad_input_ids\r\n    num_patch_width, num_patch_height = get_anyres_image_grid_shape(\r\n  File \"/root/miniconda3/envs/sgl/lib/python3.10/site-packages/sglang/srt/mm_utils.py\", line 121, in get_anyres_image_grid_shape\r\n    width, height = select_best_resolution(image_size, possible_resolutions)\r\n  File \"/root/miniconda3/envs/sgl/lib/python3.10/site-packages/sglang/srt/mm_utils.py\", line 22, in select_best_resolution\r\n    original_width, original_height = original_size\r\nTypeError: cannot unpack non-iterable NoneType object\r\n```\r\nbut the recv_req from the debugger shows pxel_values and image_size correctly\r\n\r\ni went through the sglang lib and i found line 242 of model_rpc.py is suspicious\r\n\r\nthe following is a snippet from `model_rpc.py`\r\n\r\n```\r\n    def handle_generate_request(\r\n        self,\r\n        recv_req: TokenizedGenerateReqInput,\r\n    ):\r\n        req = Req(recv_req.rid, recv_req.input_text, recv_req.input_ids)\r\n        req.pixel_values = recv_req.pixel_values\r\n        if req.pixel_values is not None:\r\n            print('pixel value is not none')\r\n            pad_value = [\r\n                (recv_req.image_hash) % self.model_config.vocab_size,\r\n                (recv_req.image_hash >> 16) % self.model_config.vocab_size,\r\n                (recv_req.image_hash >> 32) % self.model_config.vocab_size,\r\n                (recv_req.image_hash >> 64) % self.model_config.vocab_size,\r\n            ]\r\n            req.input_ids, req.image_offset = self.model_runner.model.pad_input_ids(\r\n                req.input_ids, pad_value, req.pixel_values.shape, req.image_size\r\n            )\r\n            req.image_size = recv_req.image_size\r\n        req.sampling_params = recv_req.sampling_params\r\n        req.return_logprob = recv_req.return_logprob\r\n        req.logprob_start_len = recv_req.logprob_start_len\r\n        req.stream = recv_req.stream\r\n        req.tokenizer = self.tokenizer\r\n```\r\nreq.image_size is None when self.model_runner.model.pad_input_ids is called\uff0c maybe it should be recv_req.image_size?\r\n",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-02-02T17:27:23+00:00",
+    "closed_at": "2024-02-02T19:57:05+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/131/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/131"
+  },
+  {
+    "number": 66,
+    "title": "Lora test",
+    "body": "Hi,\r\n\r\nI saw that there is a lora dev branch. is it possible to test this already? Or is it still WIP. Asking as ive been asking for s-lora in vllm for like months now and s-lora being on your roadmap is very exciting.\r\n\r\nThanks!",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-01-21T08:50:22+00:00",
+    "closed_at": "2024-01-21T10:43:42+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/66/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/66"
+  },
+  {
+    "number": 328,
+    "title": "Supports the InternVL multimodal large model",
+    "body": "Can it support the InternVL multimodal large model, which currently ranks first in the MMMU open source ranking.\r\n[https://github.com/OpenGVLab/InternVL/](https://github.com/OpenGVLab/InternVL/)\r\n![WX20240324-102942@2x](https://github.com/sgl-project/sglang/assets/4583537/2416f85d-5231-4d8c-9255-b598385e6eaa)\r\n[MMMU](https://mmmu-benchmark.github.io)\r\n",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-03-24T02:33:14+00:00",
+    "closed_at": "2024-09-22T14:22:31+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/328/reactions",
+      "total_count": 5,
+      "+1": 5,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/328"
+  },
+  {
+    "number": 115,
+    "title": "Crash in `tokenize_fast_forward`",
+    "body": "I was trying constraint decoding with Qwen but got crash at this line: https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/managers/router/infer_batch.py#L60\r\n\r\nThis is because the output type of Qwen `tokenizer.convert_ids_to_tokens(...)` is not `str` but `bytes`, so the following modification works:\r\n\r\n```\r\nif self.tokenizer.convert_ids_to_tokens(self.output_ids[0]).decode().startswith(\"\u2581\"):\r\n```\r\n\r\nHowever, this is not a general solution, as not every tokenizer uses `\u2581` to represent the space. For example, the Falcon tokenizer uses `\u0120` to represent the space. A more general solution should be re-decoding so far output tokens with `tokenizer.decode(...)`. An alternative way is leveraging `tokenizer.decode(..., clean_up_tokenization_spaces=False)`. While this solution works with most tokenizers such as Falcon and Qwen, it doesn't work for Llama2:\r\n\r\n```\r\nllama2 = AutoTokenizer.from_pretrained(\"meta-llama/Llama-2-7b-chat-hf\")\r\nfalcon = AutoTokenizer.from_pretrained(\"tiiuae/falcon-7b\")\r\nqwen = AutoTokenizer.from_pretrained(\"Qwen/Qwen-1_8B-Chat\")\r\n\r\nllama2.decode([llama2(\"Apple is\")[-1]], clean_up_tokenization_spaces=False) # -> \"is\"\r\nfalcon.decode([falcon(\"Apple is\")[-1]], clean_up_tokenization_spaces=False) # -> \" is\"\r\nqwen.decode([qwen(\"Apple is\")[-1]], clean_up_tokenization_spaces=False) # -> \" is\"\r\n```\r\n\r\ncc @hnyls2002 \r\n\r\n",
+    "labels": [
+      "bug"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-29T22:59:05+00:00",
+    "closed_at": "2024-02-08T03:51:14+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/115/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/115"
+  },
+  {
+    "number": 38,
+    "title": "How to use inside notebook?",
+    "body": "Im trying to use this on databricks inside the notebook that's running on top of a 8xA10 single node cluster, I'm initialising like:\r\n\r\n```\r\nfrom sglang import function, system, user, assistant, gen, set_default_backend, Runtime\r\nruntime = Runtime(\"/local_disk0/mistralai/Mixtral-8x7B-Instruct-v0.1\")\r\nset_default_backend(runtime)\r\n```\r\n\r\nHowever I get this issue\r\n```\r\nrouter init state: Traceback (most recent call last):\r\n  File \"/local_disk0/.ephemeral_nfs/envs/pythonEnv-51dd0ee1-a396-4939-81a6-75e3afe59af5/lib/python3.10/site-packages/sglang/srt/managers/router/manager.py\", line 68, in start_router_process\r\n    model_client = ModelRpcClient(server_args, port_args)\r\n  File \"/local_disk0/.ephemeral_nfs/envs/pythonEnv-51dd0ee1-a396-4939-81a6-75e3afe59af5/lib/python3.10/site-packages/sglang/srt/managers/router/model_rpc.py\", line 448, in __init__\r\n    self.model_server.exposed_init_model(0, server_args, port_args)\r\n  File \"/local_disk0/.ephemeral_nfs/envs/pythonEnv-51dd0ee1-a396-4939-81a6-75e3afe59af5/lib/python3.10/site-packages/sglang/srt/managers/router/model_rpc.py\", line 54, in exposed_init_model\r\n    self.model_runner = ModelRunner(\r\n  File \"/local_disk0/.ephemeral_nfs/envs/pythonEnv-51dd0ee1-a396-4939-81a6-75e3afe59af5/lib/python3.10/site-packages/sglang/srt/managers/router/model_runner.py\", line 213, in __init__\r\n    torch.cuda.set_device(self.tp_rank)\r\n  File \"/local_disk0/.ephemeral_nfs/envs/pythonEnv-51dd0ee1-a396-4939-81a6-75e3afe59af5/lib/python3.10/site-packages/torch/cuda/__init__.py\", line 404, in set_device\r\n    torch._C._cuda_setDevice(device)\r\n  File \"/local_disk0/.ephemeral_nfs/envs/pythonEnv-51dd0ee1-a396-4939-81a6-75e3afe59af5/lib/python3.10/site-packages/torch/cuda/__init__.py\", line 284, in _lazy_init\r\n    raise RuntimeError(\r\nRuntimeError: Cannot re-initialize CUDA in forked subprocess. To use CUDA with multiprocessing, you must use the 'spawn' start method\r\n```",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-01-18T14:11:32+00:00",
+    "closed_at": "2024-01-19T18:38:29+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/38/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/38"
+  },
+  {
+    "number": 373,
+    "title": "VLLM version",
+    "body": "`python -m sglang.launch_server --model-path Mistral-7B-Instruct-v0.2/` fails with \r\n\r\n```\r\nrouter init state: Traceback (most recent call last):\r\n  File \".venv/lib/python3.9/site-packages/sglang/srt/managers/router/manager.py\", line 68, in start_router_process\r\n    model_client = ModelRpcClient(server_args, port_args)\r\n  File \".venv/lib/python3.9/site-packages/sglang/srt/managers/router/model_rpc.py\", line 619, in __init__\r\n    self.model_server.exposed_init_model(0, server_args, port_args)\r\n  File \".venv/lib/python3.9/site-packages/sglang/srt/managers/router/model_rpc.py\", line 70, in exposed_init_model\r\n    self.model_runner = ModelRunner(\r\n  File \".venv/lib/python3.9/site-packages/sglang/srt/managers/router/model_runner.py\", line 287, in __init__\r\n    self.load_model()\r\n  File \".venv/lib/python3.9/site-packages/sglang/srt/managers/router/model_runner.py\", line 296, in load_model\r\n    model_class = get_model_cls_by_arch_name(architectures)\r\n  File \".venv/lib/python3.9/site-packages/sglang/srt/managers/router/model_runner.py\", line 49, in get_model_cls_by_arch_name\r\n    model_arch_name_to_cls = import_model_classes()\r\n  File \".venv/lib/python3.9/site-packages/sglang/srt/managers/router/model_runner.py\", line 42, in import_model_classes\r\n    module = importlib.import_module(name)\r\n  File \".../lib/python3.9/importlib/__init__.py\", line 127, in import_module\r\n    return _bootstrap._gcd_import(name[level:], package, level)\r\n  File \"<frozen importlib._bootstrap>\", line 1030, in _gcd_import\r\n  File \"<frozen importlib._bootstrap>\", line 1007, in _find_and_load\r\n  File \"<frozen importlib._bootstrap>\", line 986, in _find_and_load_unlocked\r\n  File \"<frozen importlib._bootstrap>\", line 680, in _load_unlocked\r\n  File \"<frozen importlib._bootstrap_external>\", line 850, in exec_module\r\n  File \"<frozen importlib._bootstrap>\", line 228, in _call_with_frames_removed\r\n  File \".venv/lib/python3.9/site-packages/sglang/srt/models/gemma.py\", line 12, in <module>\r\n    from vllm.model_executor.input_metadata import InputMetadata\r\nModuleNotFoundError: No module named 'vllm.model_executor.input_metadata'\r\n```\r\n\r\non a new install. This seems to be cause by the default install of VLLM 0.4.0.post1. InputMetadata was removed in https://github.com/vllm-project/vllm/commit/925f3332cac488e5ad2dbc8f5c6d5f42d2556816",
+    "labels": [
+      "high priority"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-19T18:23:37+00:00",
+    "closed_at": "2024-07-18T16:27:27+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/373/reactions",
+      "total_count": 4,
+      "+1": 4,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/373"
+  },
+  {
+    "number": 413,
+    "title": "run python3 test_httpserver_llava.py get ValueError: 64002 is not in list",
+    "body": "run python3 test_httpserver_llava.py\r\noffset = input_ids.index(self.config.image_token_index)\r\nValueError: 64002 is not in list\r\n\r\ndef test_streaming(args):\r\n    url = f\"{args.host}:{args.port}\"\r\n    response = requests.post(\r\n        url + \"/generate\",\r\n        json={\r\n            'text' : 'A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human\\'s questions. USER: <im_start><image><im_end> description the video indetail \\n Assistant:', \r\n            # \"text\": \"A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions. USER: Describe this picture <|im_start|> <|im_end|>\\n ASSISTANT:\",\r\n            \"image_data\": \"examples/image1.webp\",\r\n            \"sampling_params\": {\r\n                \"temperature\": 0,\r\n                \"max_new_tokens\": 128,\r\n            },\r\n            \"stream\": True,\r\n        },\r\n        stream=True,\r\n    )\r\n    print(response)\r\n    prev = 0\r\n    for chunk in response.iter_lines(decode_unicode=False):\r\n        chunk = chunk.decode(\"utf-8\")\r\n        if chunk and chunk.startswith(\"data:\"):\r\n            if chunk == \"data: [DONE]\":\r\n                break\r\n            data = json.loads(chunk[5:].strip(\"\\n\"))\r\n            output = data[\"text\"].strip()\r\n            print(output[prev:], end=\"\", flush=True)\r\n            prev = len(output)\r\n    print(\"--------\")",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-08T11:35:48+00:00",
+    "closed_at": "2024-07-30T01:03:13+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/413/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/413"
+  },
+  {
+    "number": 13,
+    "title": "enable an installation without CUDA_HOME?",
+    "body": "Easier to install for users who just want to call LLM APIs.",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-01-16T14:57:28+00:00",
+    "closed_at": "2024-01-17T00:15:30+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/13/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/13"
+  },
+  {
+    "number": 43,
+    "title": "Outlines integration",
+    "body": "This package looks awesome!  I was wondering why you decided to copy Outlines' code instead of importing the FSMs directly from outlines? There are several improvements on the performance of guided generation in the pipeline and you will be missing out on those. By importing you get better as we get better :)",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-01-18T17:40:02+00:00",
+    "closed_at": "2024-02-09T06:07:59+00:00",
+    "comments": 9,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/43/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/43"
+  },
+  {
+    "number": 357,
+    "title": "Don't get API response when sending images",
+    "body": "I loaded Llava v1.6 34B on my server \r\n```\r\nexport DISABLE_NEST_ASYNCIO=True\r\nmodel=liuhaotian/llava-v1.6-34b \r\ntokenizer=liuhaotian/llava-v1.6-34b-tokenizer \r\n\r\nCUDA_VISIBLE_DEVICES=0,1 python3 -m sglang.launch_server --model-path $model --tokenizer-path $tokenizer --port 30813 --tp 2\r\n```\r\nIt works when I work with just with text, but when I send images I just don't get a response, this is what the server log shows:\r\n```\r\n$ ./start_sglang_server.sh \r\n/home/tom/.local/lib/python3.10/site-packages/transformers/models/llava/configuration_llava.py:104: FutureWarning: The `vocab_size` argument is deprecated and will be removed in v4.42, since it can be inferred from the `text_config`. Passing this argument has no effect\r\n  warnings.warn(\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nserver started on [0.0.0.0]:10007\r\nserver started on [0.0.0.0]:10008\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\naccepted ('127.0.0.1', 35124) with fd 35\r\nwelcome ('127.0.0.1', 35124)\r\naccepted ('127.0.0.1', 58368) with fd 31\r\nwelcome ('127.0.0.1', 58368)\r\n/home/tom/.local/lib/python3.10/site-packages/transformers/models/llava/configuration_llava.py:144: FutureWarning: The `vocab_size` attribute is deprecated and will be removed in v4.42, Please use `text_config.vocab_size` instead.\r\n  warnings.warn(\r\n/home/tom/.local/lib/python3.10/site-packages/transformers/models/llava/configuration_llava.py:144: FutureWarning: The `vocab_size` attribute is deprecated and will be removed in v4.42, Please use `text_config.vocab_size` instead.\r\n  warnings.warn(\r\nRank 1: load weight begin.\r\n/home/tom/.local/lib/python3.10/site-packages/transformers/models/llava/configuration_llava.py:144: FutureWarning: The `vocab_size` attribute is deprecated and will be removed in v4.42, Please use `text_config.vocab_size` instead.\r\n  warnings.warn(\r\nRank 0: load weight begin.\r\n/home/tom/.local/lib/python3.10/site-packages/transformers/models/llava/configuration_llava.py:144: FutureWarning: The `vocab_size` attribute is deprecated and will be removed in v4.42, Please use `text_config.vocab_size` instead.\r\n  warnings.warn(\r\n/home/tom/.local/lib/python3.10/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()\r\n  return self.fget.__get__(instance, owner)()\r\n/home/tom/.local/lib/python3.10/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()\r\n  return self.fget.__get__(instance, owner)()\r\nINFO 04-09 11:54:13 weight_utils.py:163] Using model weights format ['*.safetensors']\r\nINFO 04-09 11:54:13 weight_utils.py:163] Using model weights format ['*.safetensors']\r\nINFO 04-09 11:54:14 weight_utils.py:163] Using model weights format ['*.safetensors']\r\nINFO 04-09 11:54:14 weight_utils.py:163] Using model weights format ['*.safetensors']\r\nRank 0: load weight end.\r\nRank 1: load weight end.\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nRank 1: max_total_num_token=1378, max_prefill_num_token=4096, context_len=4096, \r\ndisable_radix_cache=False, enable_flashinfer=False, disable_regex_jump_forward=False, disable_disk_cache=False, attention_reduce_in_fp32=False\r\nRank 0: max_total_num_token=1378, max_prefill_num_token=4096, context_len=4096, \r\ndisable_radix_cache=False, enable_flashinfer=False, disable_regex_jump_forward=False, disable_disk_cache=False, attention_reduce_in_fp32=False\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nINFO:     Started server process [100699]\r\nINFO:     Waiting for application startup.\r\nINFO:     Application startup complete.\r\nINFO:     Uvicorn running on http://127.0.0.1:30813 (Press CTRL+C to quit)\r\nINFO:     127.0.0.1:48684 - \"GET /get_model_info HTTP/1.1\" 200 OK\r\nnew fill batch. #seq: 1. #cached_token: 0. #new_token: 8. #remaining_req: 0. #running_req: 0. tree_cache_hit_rate: 0.00%.\r\nINFO:     127.0.0.1:48700 - \"POST /generate HTTP/1.1\" 200 OK\r\nINFO:     127.0.0.1:44048 - \"GET /get_model_info HTTP/1.1\" 200 OK\r\nINFO:     127.0.0.1:43484 - \"GET /get_model_info HTTP/1.1\" 200 OK\r\nnew fill batch. #seq: 1. #cached_token: 0. #new_token: 1157. #remaining_req: 0. #running_req: 0. tree_cache_hit_rate: 0.00%.\r\nINFO:     127.0.0.1:43490 - \"POST /generate HTTP/1.1\" 200 OK\r\n```\r\n\r\nThe same script and server config used to work on my old system, but I can't access it anymore. I suspect a it's just an incompatible package. Here are my package versions:\r\n```\r\naiohttp==3.9.3\r\naiosignal==1.3.1\r\naltair==5.3.0\r\nannotated-types==0.6.0\r\nanthropic==0.23.1\r\nanyio==4.3.0\r\nasync-timeout==4.0.3\r\nattrs==23.2.0\r\nAutomat==20.2.0\r\nBabel==2.8.0\r\nbcrypt==3.2.0\r\nblinker==1.4\r\ncachetools==5.3.3\r\ncertifi==2020.6.20\r\nchardet==4.0.0\r\ncharset-normalizer==3.3.2\r\nclick==8.0.3\r\ncloud-init==23.4.4\r\ncloudpickle==3.0.0\r\ncmake==3.29.0.1\r\ncolorama==0.4.4\r\ncommand-not-found==0.3\r\nconfigobj==5.0.6\r\nconstantly==15.1.0\r\ncryptography==3.4.8\r\ncupy-cuda12x==12.1.0\r\ndbus-python==1.2.18\r\ndiskcache==5.6.3\r\ndistro==1.7.0\r\ndistro-info==1.1+ubuntu0.2\r\nexceptiongroup==1.2.0\r\nfastapi==0.110.1\r\nfastrlock==0.8.2\r\nfilelock==3.13.3\r\nfrozenlist==1.4.1\r\nfsspec==2024.3.1\r\ngitdb==4.0.11\r\nGitPython==3.1.43\r\nh11==0.14.0\r\nhttpcore==1.0.5\r\nhttplib2==0.20.2\r\nhttptools==0.6.1\r\nhttpx==0.27.0\r\nhuggingface-hub==0.22.2\r\nhyperlink==21.0.0\r\nidna==3.3\r\nimportlib-metadata==4.6.4\r\nincremental==21.3.0\r\ninteregular==0.3.3\r\njeepney==0.7.1\r\nJinja2==3.0.3\r\njoblib==1.4.0\r\njsonpatch==1.32\r\njsonpointer==2.0\r\njsonschema==4.21.1\r\njsonschema-specifications==2023.12.1\r\nkeyring==23.5.0\r\nlark==1.1.9\r\nlaunchpadlib==1.10.16\r\nlazr.restfulclient==0.14.4\r\nlazr.uri==1.0.6\r\nllvmlite==0.42.0\r\nmarkdown-it-py==3.0.0\r\nMarkupSafe==2.0.1\r\nmdurl==0.1.2\r\nmore-itertools==8.10.0\r\nmpmath==1.3.0\r\nmsgpack==1.0.8\r\nmultidict==6.0.5\r\nnest-asyncio==1.6.0\r\nnetifaces==0.11.0\r\nnetworkx==3.3\r\nninja==1.11.1.1\r\nnumba==0.59.1\r\nnumpy==1.26.4\r\nnvidia-cublas-cu12==12.1.3.1\r\nnvidia-cuda-cupti-cu12==12.1.105\r\nnvidia-cuda-nvrtc-cu12==12.1.105\r\nnvidia-cuda-runtime-cu12==12.1.105\r\nnvidia-cudnn-cu12==8.9.2.26\r\nnvidia-cufft-cu12==11.0.2.54\r\nnvidia-curand-cu12==10.3.2.106\r\nnvidia-cusolver-cu12==11.4.5.107\r\nnvidia-cusparse-cu12==12.1.0.106\r\nnvidia-ml-py==12.535.133\r\nnvidia-nccl-cu12==2.18.1\r\nnvidia-nvjitlink-cu12==12.4.127\r\nnvidia-nvtx-cu12==12.1.105\r\nnvitop==1.3.2\r\noauthlib==3.2.0\r\nopenai==1.16.2\r\noutlines==0.0.34\r\npackaging==24.0\r\npandas==2.2.1\r\npexpect==4.8.0\r\npillow==10.3.0\r\nplumbum==1.8.2\r\nprometheus_client==0.20.0\r\nprotobuf==4.25.3\r\npsutil==5.9.8\r\nptyprocess==0.7.0\r\npy-cpuinfo==9.0.0\r\npyarrow==15.0.2\r\npyasn1==0.4.8\r\npyasn1-modules==0.2.1\r\npydantic==2.6.4\r\npydantic_core==2.16.3\r\npydeck==0.8.1b0\r\nPygments==2.17.2\r\nPyGObject==3.42.1\r\nPyHamcrest==2.0.2\r\nPyJWT==2.3.0\r\npynvml==11.5.0\r\npyOpenSSL==21.0.0\r\npyparsing==2.4.7\r\npyrsistent==0.18.1\r\npyserial==3.5\r\npython-apt==2.4.0+ubuntu3\r\npython-dateutil==2.9.0.post0\r\npython-debian==0.1.43+ubuntu1.1\r\npython-dotenv==1.0.1\r\npython-magic==0.4.24\r\npytz==2022.1\r\nPyYAML==5.4.1\r\npyzmq==25.1.2\r\nray==2.10.0\r\nreferencing==0.34.0\r\nregex==2023.12.25\r\nrequests==2.31.0\r\nrich==13.7.1\r\nrpds-py==0.18.0\r\nrpyc==6.0.0\r\nsafetensors==0.4.2\r\nscipy==1.13.0\r\nscreen-resolution-extra==0.0.0\r\nSecretStorage==3.3.1\r\nsentencepiece==0.2.0\r\nservice-identity==18.1.0\r\n-e git+https://github.com/sgl-project/sglang.git@550a4f78f382b5a7f4008d7d21e876e71ab2d2b6#egg=sglang&subdirectory=python\r\nsix==1.16.0\r\nsmmap==5.0.1\r\nsniffio==1.3.1\r\nsos==4.5.6\r\nssh-import-id==5.11\r\nstarlette==0.37.2\r\nstreamlit==1.33.0\r\nsympy==1.12\r\nsystemd-python==234\r\ntenacity==8.2.3\r\ntermcolor==2.4.0\r\ntiktoken==0.6.0\r\ntokenizers==0.15.2\r\ntoml==0.10.2\r\ntoolz==0.12.1\r\ntorch==2.1.2\r\ntornado==6.4\r\ntqdm==4.66.2\r\ntransformers==4.39.3\r\ntriton==2.1.0\r\nTwisted==22.1.0\r\ntyping_extensions==4.11.0\r\ntzdata==2024.1\r\nubuntu-drivers-common==0.0.0\r\nubuntu-pro-client==8001\r\nufw==0.36.1\r\nunattended-upgrades==0.1\r\nurllib3==1.26.5\r\nuvicorn==0.29.0\r\nuvloop==0.19.0\r\nvllm==0.3.3\r\nwadllib==1.3.6\r\nwatchdog==4.0.0\r\nwatchfiles==0.21.0\r\nwebsockets==12.0\r\nxformers==0.0.23.post1\r\nxkit==0.0.0\r\nyarl==1.9.4\r\nzipp==1.0.0\r\nzmq==0.0.0\r\nzope.interface==5.4.0\r\n```\r\n",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-09T13:38:39+00:00",
+    "closed_at": "2024-07-25T06:33:21+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/357/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/357"
+  },
+  {
+    "number": 464,
+    "title": "Dependency conflict with LLaVA",
+    "body": "# Issue\r\nCannot run a finetuned LLaVA model with sglang==0.1.16, running `CUDA_VISIBLE_DEVICES=0,1,2,3 python3 -m sglang.launch_server --model-path llava-lora-34b-faceshape-ft/ --tokenizer-path liuhaotian/llava-v1.6-34b-tokenizer --port 30000 --tp 4`\r\nthrows: \r\nFileNotFoundError: [Errno 2] No such file or directory: '/home/iverkh/.triton/cache/a95dd9872513f57ade076cce4b51d3f0/_fwd_kernel_stage2.json.tmp.pid_33358_98246'\r\n\r\n# Reproduction\r\nAfter cloning LLaVA from https://github.com/haotian-liu/LLaVA, run `pip install -e . ` as instructed in the README\r\nRun pip install sglang[all]\r\nRun `CUDA_VISIBLE_DEVICES=0,1,2,3 python3 -m sglang.launch_server --model-path <fine tuned llava> --tokenizer-path liuhaotian/llava-v1.6-34b-tokenizer --port 30000 --tp 4`\r\n\r\n# Possible cause\r\nsglang has a dependency of vllm>0.4.2 which requires torch==2.3.0. LLaVA's official repository has a dependency of torch==2.1.2,\r\nsee here: https://github.com/haotian-liu/LLaVA/blob/main/pyproject.toml\r\n\r\nAfter downgrading sglang to 0.14.1 and subsequently vllm to 0.3.3 I managed to run everything smoothly.",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-23T07:43:08+00:00",
+    "closed_at": "2024-07-26T01:02:23+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/464/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/464"
+  },
+  {
+    "number": 192,
+    "title": "ValueError: Can't patch loop of type <class 'uvloop.Loop'>",
+    "body": "Starting the server and doing inference used to work, but letting sglang select from choices caused it to hang. I updated from 0.1.11 to 0.1.12 and now the server doesn't start anymore:\r\n\r\n```\r\nmodel=liuhaotian/llava-v1.6-vicuna-7b\r\ntokenizer=llava-hf/llava-1.5-7b-hf\r\nCUDA_VISIBLE_DEVICES=0,1 python3 -m sglang.launch_server --model-path $model --tokenizer-path $tokenizer --chat-template vicuna_v1.1 --port 30813 --tp 2\r\n```\r\n\r\n\r\n```\r\n % ./start_sglang_server.sh                                                                                                                                                                                                                                               [0/1436]\r\n2024-02-15 17:38:56.694239: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.\r\n2024-02-15 17:38:56.727839: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.                                                                                        \r\nTo enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.\r\n2024-02-15 17:38:57.400404: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT\r\nUse chat template: vicuna_v1.1                                                                                                           \r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nserver started on [0.0.0.0]:10010                                                                                                        \r\nserver started on [0.0.0.0]:10011                                   \r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\naccepted ('127.0.0.1', 56824) with fd 39                                                                                                 \r\nwelcome ('127.0.0.1', 56824)                                                                                                             \r\naccepted ('127.0.0.1', 34178) with fd 35                                                                                                 \r\nwelcome ('127.0.0.1', 34178)                                                                                                             \r\nRank 1: load weight begin.                                                                                                               \r\nRank 0: load weight begin.                                                                                                               \r\n/home/conic/.local/lib/python3.10/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()                                                          \r\n  return self.fget.__get__(instance, owner)()                                                                                            \r\n/home/conic/.local/lib/python3.10/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()                                                          \r\n  return self.fget.__get__(instance, owner)()                                                                                            \r\nRank 1: load weight end.                                                                                                                 \r\nRank 0: load weight end.                                                                                                                 \r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.                    \r\nRank 1: max_total_num_token=106691, max_prefill_num_token=17781, context_len=4096, model_mode=[]\r\nRank 0: max_total_num_token=106691, max_prefill_num_token=17781, context_len=4096, model_mode=[]                                         \r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.\r\nSpecial tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.                    \r\nException in thread Thread-1 (_launch_server):                                                                                           \r\nTraceback (most recent call last):                                  \r\n  File \"/home/conic/.local/lib/python3.10/site-packages/nest_asyncio.py\", line 27, in run         \r\n    loop = asyncio.get_event_loop()                                                                                                      \r\n  File \"/home/conic/.local/lib/python3.10/site-packages/nest_asyncio.py\", line 45, in _get_event_loop                                    \r\n    loop = events.get_event_loop_policy().get_event_loop()                                                                               \r\n  File \"/usr/lib/python3.10/asyncio/events.py\", line 656, in get_event_loop                                                              \r\n    raise RuntimeError('There is no current event loop in thread %r.'                                                                    \r\nRuntimeError: There is no current event loop in thread 'Thread-1 (_launch_server)'.                                                      \r\n\r\nDuring handling of the above exception, another exception occurred:                                                                      \r\n\r\nTraceback (most recent call last):                                  \r\n  File \"/usr/lib/python3.10/threading.py\", line 1016, in _bootstrap_inner                                                                \r\n    self.run()                                                                                                                           \r\n  File \"/usr/lib/python3.10/threading.py\", line 953, in run                                                                              \r\n    self._target(*self._args, **self._kwargs)                                                                                            \r\n  File \"/home/conic/.local/lib/python3.10/site-packages/sglang/srt/server.py\", line 468, in _launch_server                               \r\n    uvicorn.run(                                                                                                                         \r\n  File \"/home/conic/.local/lib/python3.10/site-packages/uvicorn/main.py\", line 587, in run                                               \r\n    server.run()                                                                                                                         \r\n  File \"/home/conic/.local/lib/python3.10/site-packages/uvicorn/server.py\", line 61, in run                                              \r\n    return asyncio.run(self.serve(sockets=sockets))                                                                                      \r\n  File \"/home/conic/.local/lib/python3.10/site-packages/nest_asyncio.py\", line 31, in run                                                \r\n    _patch_loop(loop)                                               \r\n  File \"/home/conic/.local/lib/python3.10/site-packages/nest_asyncio.py\", line 175, in _patch_loop                                       \r\n    raise ValueError('Can\\'t patch loop of type %s' % type(loop))                                                                        \r\nValueError: Can't patch loop of type <class 'uvloop.Loop'>                                                                               \r\n/usr/lib/python3.10/threading.py:1018: RuntimeWarning: coroutine 'Server.serve' was never awaited                                        \r\n  self._invoke_excepthook(self)                                     \r\nRuntimeWarning: Enable tracemalloc to get the object allocation traceback                                                                \r\n\r\n\r\nTraceback (most recent call last):                                  \r\n  File \"/usr/lib/python3.10/runpy.py\", line 196, in _run_module_as_main                                                                  \r\n    return _run_code(code, main_globals, None,                                                                                           \r\n  File \"/usr/lib/python3.10/runpy.py\", line 86, in _run_code                                                                             \r\n    exec(code, run_globals)                                         \r\n  File \"/home/conic/.local/lib/python3.10/site-packages/sglang/launch_server.py\", line 11, in <module>                                   \r\n    launch_server(server_args, None)                                                                                                     \r\n  File \"/home/conic/.local/lib/python3.10/site-packages/sglang/srt/server.py\", line 492, in launch_server                                                                                                                                                                         \r\n    print(e, flush=True)                                            \r\nUnboundLocalError: local variable 'e' referenced before assignment  \r\n```",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-02-15T17:43:43+00:00",
+    "closed_at": "2024-03-28T00:28:49+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/192/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/192"
+  }
+]

@@ -1,0 +1,757 @@
+[
+  {
+    "number": 4642,
+    "title": "[Bug] perf drop when flashinfer update from 0.1.6 to 0.2.x",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nhttps://github.com/flashinfer-ai/flashinfer/issues/960\n\n### Reproduction\n\nhttps://github.com/flashinfer-ai/flashinfer/issues/960\n\n### Environment\n\nCollecting environment information...\nPyTorch version: 2.5.1+cu124\nIs debug build: False\nCUDA used to build PyTorch: 12.4\nROCM used to build PyTorch: N/A\n\nOS: Ubuntu 22.04.4 LTS (x86_64)\nGCC version: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\nClang version: Could not collect\nCMake version: version 3.22.1\nLibc version: glibc-2.35\n\nPython version: 3.10.12 (main, Jan 17 2025, 14:35:34) [GCC 11.4.0] (64-bit runtime)\nPython platform: Linux-6.1.92-4-x86_64-with-glibc2.35\nIs CUDA available: True\nCUDA runtime version: 12.4.131\nCUDA_MODULE_LOADING set to: LAZY\nGPU models and configuration: GPU 0: NVIDIA A100 80GB PCIe\nNvidia driver version: 470.161.03\ncuDNN version: Could not collect\nHIP runtime version: N/A\nMIOpen runtime version: N/A\nIs XNNPACK available: True\n\nCPU:\nArchitecture:                         x86_64\nCPU op-mode(s):                       32-bit, 64-bit\nAddress sizes:                        48 bits physical, 48 bits virtual\nByte Order:                           Little Endian\nCPU(s):                               96\nOn-line CPU(s) list:                  0-95\nVendor ID:                            AuthenticAMD\nModel name:                           AMD EPYC 7V13 64-Core Processor\nCPU family:                           25\nModel:                                1\nThread(s) per core:                   1\nCore(s) per socket:                   48\nSocket(s):                            2\nStepping:                             1\nBogoMIPS:                             4890.87\nFlags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl tsc_reliable nonstop_tsc cpuid extd_apicid aperfmperf pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext perfctr_core invpcid_single vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves clzero xsaveerptr rdpru arat umip vaes vpclmulqdq rdpid fsrm\nHypervisor vendor:                    Microsoft\nVirtualization type:                  full\nL1d cache:                            3 MiB (96 instances)\nL1i cache:                            3 MiB (96 instances)\nL2 cache:                             48 MiB (96 instances)\nL3 cache:                             384 MiB (12 instances)\nNUMA node(s):                         4\nNUMA node0 CPU(s):                    0-23\nNUMA node1 CPU(s):                    24-47\nNUMA node2 CPU(s):                    48-71\nNUMA node3 CPU(s):                    72-95\nVulnerability Gather data sampling:   Not affected\nVulnerability Itlb multihit:          Not affected\nVulnerability L1tf:                   Not affected\nVulnerability Mds:                    Not affected\nVulnerability Meltdown:               Not affected\nVulnerability Mmio stale data:        Not affected\nVulnerability Reg file data sampling: Not affected\nVulnerability Retbleed:               Not affected\nVulnerability Spec rstack overflow:   Vulnerable, no microcode\nVulnerability Spec store bypass:      Vulnerable\nVulnerability Spectre v1:             Vulnerable: __user pointer sanitization and usercopy barriers only; no swapgs barriers\nVulnerability Spectre v2:             Vulnerable; STIBP: disabled; PBRSB-eIBRS: Not affected; BHI: Not affected\nVulnerability Srbds:                  Not affected\nVulnerability Tsx async abort:        Not affected\n\nVersions of relevant libraries:\n[pip3] flashinfer-python==0.2.3+cu124torch2.5\n[pip3] numpy==1.26.4\n[pip3] nvidia-cublas-cu12==12.4.5.8\n[pip3] nvidia-cuda-cupti-cu12==12.4.127\n[pip3] nvidia-cuda-nvrtc-cu12==12.4.127\n[pip3] nvidia-cuda-runtime-cu12==12.4.127\n[pip3] nvidia-cudnn-cu12==9.1.0.70\n[pip3] nvidia-cufft-cu12==11.2.1.3\n[pip3] nvidia-curand-cu12==10.3.5.147\n[pip3] nvidia-cusolver-cu12==11.6.1.9\n[pip3] nvidia-cusparse-cu12==12.3.1.170\n[pip3] nvidia-cusparselt-cu12==0.6.2\n[pip3] nvidia-ml-py==12.570.86\n[pip3] nvidia-nccl-cu12==2.21.5\n[pip3] nvidia-nvjitlink-cu12==12.4.127\n[pip3] nvidia-nvtx-cu12==12.4.127\n[pip3] onnxruntime==1.19.2\n[pip3] pyzmq==26.2.1\n[pip3] torch==2.5.1\n[pip3] torchao==0.8.0\n[pip3] torchaudio==2.5.1\n[pip3] torchvision==0.20.1\n[pip3] transformers==4.48.3\n[pip3] triton==3.1.0\n[conda] Could not collect\nROCM Version: Could not collect\nNeuron SDK Version: N/A\nvLLM Version: 0.7.2\nvLLM Build Flags:\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\nGPU Topology:\nGPU0    mlx5_0  CPU Affinity    NUMA Affinity\nGPU0     X      SYS     72-95   3\nmlx5_0  SYS      X \n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNVIDIA_VISIBLE_DEVICES=3\nNVIDIA_REQUIRE_CUDA=cuda>=12.4 brand=tesla,driver>=470,driver<471 brand=unknown,driver>=470,driver<471 brand=nvidia,driver>=470,driver<471 brand=nvidiartx,driver>=470,driver<471 brand=geforce,driver>=470,driver<471 brand=geforcertx,driver>=470,driver<471 brand=quadro,driver>=470,driver<471 brand=quadrortx,driver>=470,driver<471 brand=titan,driver>=470,driver<471 brand=titanrtx,driver>=470,driver<471 brand=tesla,driver>=525,driver<526 brand=unknown,driver>=525,driver<526 brand=nvidia,driver>=525,driver<526 brand=nvidiartx,driver>=525,driver<526 brand=geforce,driver>=525,driver<526 brand=geforcertx,driver>=525,driver<526 brand=quadro,driver>=525,driver<526 brand=quadrortx,driver>=525,driver<526 brand=titan,driver>=525,driver<526 brand=titanrtx,driver>=525,driver<526 brand=tesla,driver>=535,driver<536 brand=unknown,driver>=535,driver<536 brand=nvidia,driver>=535,driver<536 brand=nvidiartx,driver>=535,driver<536 brand=geforce,driver>=535,driver<536 brand=geforcertx,driver>=535,driver<536 brand=quadro,driver>=535,driver<536 brand=quadrortx,driver>=535,driver<536 brand=titan,driver>=535,driver<536 brand=titanrtx,driver>=535,driver<536\nNCCL_VERSION=2.21.5-1\nNVIDIA_DRIVER_CAPABILITIES=compute,utility\nNVIDIA_PRODUCT_NAME=CUDA\nCUDA_VERSION=12.4.1\nMAX_JOBS=32\nLD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64\nCUDA_HOME=/usr/local/cuda-12.4\nCUDA_HOME=/usr/local/cuda-12.4\nNCCL_CUMEM_ENABLE=0\nTORCHINDUCTOR_COMPILE_THREADS=1\nCUDA_MODULE_LOADING=LAZY\n",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-21T02:38:40+00:00",
+    "closed_at": "2025-05-22T00:19:06+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4642/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4642"
+  },
+  {
+    "number": 6269,
+    "title": "physical_expert_id error",
+    "body": "branch: **deepseel_ep**\n\nenv: 2 node H20 (device each)\n\ncmd :\npython -m sglang.launch_server \\\n    --model-path /data2/deepseek-ai/DeepSeek-R1 \\\n    --port 2233 \\\n    --trust-remote-code \\\n    --dist-init-addr 10.93.75.30:12345 --nnodes 2 --node-rank $1 \\\n    --tp-size 16 \\\n    --enable-ep-moe \\\n    --mem-fraction-static 0.7 \\\n    --disable-radix-cache\n\nerror info : \n![Image](https://github.com/user-attachments/assets/90ca809d-fde5-4b90-8cf0-de24f47d8f0d)\n\nquestion :\nI want to use EP without MLA DP. Are there any potential configuration mistakes?  and i add  \"--enable-dp-attention\" the error info is same.",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2025-05-13T13:03:05+00:00",
+    "closed_at": "2025-05-14T02:30:48+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6269/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6269"
+  },
+  {
+    "number": 3289,
+    "title": "[Bug] Fix #3161 break on ROCm",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n#3161 breaks AMD build, to fix.\n\n### Reproduction\n\nAMD CI!\n\n### Environment\n\nAMD ROCm",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2025-02-04T13:22:32+00:00",
+    "closed_at": "2025-02-05T18:41:31+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3289/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3289"
+  },
+  {
+    "number": 1008,
+    "title": "Torch.compile Performance Tracking",
+    "body": "torch.compile can accelerate small batch sizes for llama-3 8B. However,  it is sometimes slower for large batch size or tensor parallelism. We use this issue to track the performance and potential fixes.\r\n\r\n## Instructions and results\r\n```bash\r\n# Benchmark llama-3-8B (TP=1, bs=1) with cuda graph\r\n# Decode.  median latency: 0.00737 s, median throughput:    135.64 token/s\r\npython3 -m sglang.bench_latency --model meta-llama/Meta-Llama-3-8B --batch-size 1 --input 128 --output 8\r\n\r\n# Benchmark llama-3-8B (TP=1, bs=1) with torch.compile\r\n# Decode.  median latency: 0.00642 s, median throughput:    155.67 token/s\r\npython3 -m sglang.bench_latency --model meta-llama/Meta-Llama-3-8B --batch-size 1 --input 128 --output 8 --enable-torch-compile\r\n\r\n\r\n# Benchmark llama-3-8B (TP=1, bs=128) with cuda graph\r\n# Decode.  median latency: 0.01184 s, median throughput:  10815.07 token/s\r\npython3 -m sglang.bench_latency --model meta-llama/Meta-Llama-3-8B --batch-size 128 --input 128 --output 8\r\n\r\n# Benchmark llama-3-8B (TP=1, bs=128) with torch.compile\r\n# Decode.  median latency: 0.01231 s, median throughput:  10401.75 token/s\r\npython3 -m sglang.bench_latency --model meta-llama/Meta-Llama-3-8B --batch-size 128 --input 128 --output 8 --enable-torch-compile\r\n\r\n\r\n# Benchmark llama-3-8B (TP=8, bs=1) with cuda graph\r\n# Decode.  median latency: 0.00335 s, median throughput:    298.53 token/s\r\npython3 -m sglang.bench_latency --model meta-llama/Meta-Llama-3-8B --batch-size 1 --input 128 --output 8 --tp 8\r\n\r\n# Benchmark llama-3-8B (TP=8, bs=1) with torch.compile\r\n# Decode.  median latency: 0.00351 s, median throughput:    284.51 token/s\r\npython3 -m sglang.bench_latency --model meta-llama/Meta-Llama-3-8B --batch-size 1 --input 128 --output 8 --tp 8 --enable-torch-compile\r\n\r\n\r\n# Benchmark llama-3-70B (TP=8, bs=1) with cuda graph\r\n# Decode.  median latency: 0.01220 s, median throughput:     82.00 token/s\r\npython3 -m sglang.bench_latency --model meta-llama/Meta-Llama-3-70B --batch-size 1 --input 128 --output 8 --tp 8\r\n\r\n# Benchmark llama-3-70B (TP=8, bs=1) with torch.compile\r\n# Decode.  median latency: 0.01211 s, median throughput:     82.57 token/s\r\npython3 -m sglang.bench_latency --model meta-llama/Meta-Llama-3-70B --batch-size 1 --input 128 --output 8 --tp 8 --enable-torch-compile\r\n```\r\n\r\n## Environment\r\n```\r\npython3 -m sglang.check_env\r\n\r\nGPU 0,1,2,3,4,5,6,7: NVIDIA H100 80GB HBM3\r\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\r\n\r\nNVCC: Cuda compilation tools, release 12.3, V12.3.107\r\nCUDA Driver Version: 545.23.08\r\n\r\nPyTorch: 2.4.0+cu121\r\nflashinfer: 0.1.6+cu121torch2.4\r\ntriton: 3.0.0\r\nvllm: 0.5.5\r\nNVIDIA Topology: mostly NV18\r\n\r\ncommit: 79ece2c51f47ee6b792c6282a6f76987892c5f8d (Fri Aug 30)\r\n```",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-09T20:10:44+00:00",
+    "closed_at": "2024-11-26T00:24:28+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1008/reactions",
+      "total_count": 3,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 3
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1008"
+  },
+  {
+    "number": 2395,
+    "title": "[Bug] After deploying for a period of time (2 days), the speed slows down and the memory usage increases",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nAfter deploying for a period of time (2 days), the speed slows down and the memory usage increases\r\nmodel is llava-onevision\n\n### Reproduction\n\njust like sglang official example, deploy server\n\n### Environment\n\npython: 3.9\r\nsglang:0.3.0\r\ncuda:12.1\r\ntorch:2.4.0\r\nflashinfer:0.1.6+cu121torch2.4",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-08T09:23:26+00:00",
+    "closed_at": "2025-02-08T00:16:01+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2395/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2395"
+  },
+  {
+    "number": 2420,
+    "title": "[Bug] The first request with \"regex\" is too slow",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nWhen I deployed a Qwen2-7B model on the L40, using a regex request, the response time after the first request exceeded 1 hour. Is this response time related to the length of the \"regex\"? Is there any way to speed up the process?\n\n### Reproduction\n\nCommand\r\n`CUDA_VISIBLE_DEVICES=4,5 python3 -m sglang.launch_server --model-path /data/ljl/datasets/Qwen2-7B--served-model-name qwen2-7b --trust-remote-code --tp-size 2  --grammar-backend outlines  --host 0.0.0.0 `\r\n\r\n\n\n### Environment\n\n`Python: 3.10.15 (main, Sep  7 2024, 18:35:33) [GCC 9.4.0]\r\nCUDA available: True\r\nGPU 0,1,2,3,4,5,6,7: NVIDIA L40\r\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 8.9\r\nCUDA_HOME: /usr/local/cuda\r\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\r\nCUDA Driver Version: 535.104.12\r\nPyTorch: 2.4.0+cu121\r\nsglang: 0.3.5\r\nflashinfer: 0.1.6+cu124torch2.4\r\ntriton: 3.0.0\r\ntransformers: 4.46.1\r\nrequests: 2.32.3\r\ntqdm: 4.66.6\r\nnumpy: 1.26.4\r\naiohttp: 3.10.10\r\nfastapi: 0.115.4\r\nhf_transfer: 0.1.8\r\nhuggingface_hub: 0.26.2\r\ninteregular: 0.3.3\r\npackaging: 24.1\r\nPIL: 10.4.0\r\npsutil: 6.1.0\r\npydantic: 2.9.2\r\nuvicorn: 0.32.0\r\nuvloop: 0.21.0\r\nzmq: 26.2.0\r\nvllm: 0.6.3.post1\r\nmultipart: 0.0.17\r\nopenai: 1.53.0\r\nanthropic: 0.38.0\r\nNVIDIA Topology: \r\n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    NIC0    CPU Affinity    NUMA Affinity   GPU NUMA ID\r\nGPU0     X      PIX     PXB     PXB     SYS     SYS     SYS     SYS     PXB     0-31,64-95      0               N/A\r\nGPU1    PIX      X      PXB     PXB     SYS     SYS     SYS     SYS     PXB     0-31,64-95      0               N/A\r\nGPU2    PXB     PXB      X      PXB     SYS     SYS     SYS     SYS     PXB     0-31,64-95      0               N/A\r\nGPU3    PXB     PXB     PXB      X      SYS     SYS     SYS     SYS     PIX     0-31,64-95      0               N/A\r\nGPU4    SYS     SYS     SYS     SYS      X      PIX     PXB     PXB     SYS     32-63,96-127    1               N/A\r\nGPU5    SYS     SYS     SYS     SYS     PIX      X      PXB     PXB     SYS     32-63,96-127    1               N/A\r\nGPU6    SYS     SYS     SYS     SYS     PXB     PXB      X      PXB     SYS     32-63,96-127    1               N/A\r\nGPU7    SYS     SYS     SYS     SYS     PXB     PXB     PXB      X      SYS     32-63,96-127    1               N/A\r\nNIC0    PXB     PXB     PXB     PIX     SYS     SYS     SYS     SYS      X \r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n\r\nNIC Legend:\r\n\r\n  NIC0: mlx5_bond_0\r\n\r\n\r\nulimit soft: 1048576`",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-09T10:17:04+00:00",
+    "closed_at": "2025-02-16T00:18:18+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2420/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2420"
+  },
+  {
+    "number": 4305,
+    "title": "[Bug] qwq-32b does not support concurrent requests.",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nWhen I use the vllm benchmark to evaluate the performance of the QWQ-32B model deployed with sglang, I found that the model fails to process requests properly under high-concurrency conditions and keeps generating tokens continuously.\n\nSpecifically, when I set the max_concurrency of the vllm benchmark to 16, the following occurs at the very beginning:\n\n``` text\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58] INFO:     140.205.11.30:0 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n[2025-03-11 16:16:58] [2025-03-11 01:16:58 TP0] Prefill batch. #new-seq: 9, #new-token: 8192, #cached-token: 1055, cache hit rate: 23.35%, token usage: 0.00, #running-req: 1, #queue-req: 6\n[2025-03-11 16:17:00] [2025-03-11 01:17:00 TP0] Prefill batch. #new-seq: 7, #new-token: 7261, #cached-token: 18, cache hit rate: 15.20%, token usage: 0.02, #running-req: 9, #queue-req: 1\n[2025-03-11 16:17:03] [2025-03-11 01:17:03 TP0] Decode batch. #running-req: 16, #token: 17992, token usage: 0.04, gen throughput (token/s): 91.81, #queue-req: 0\n[2025-03-11 16:17:03] [2025-03-11 01:17:03] INFO:     10.224.73.28:51118 - \"GET /metrics HTTP/1.1\" 200 OK\n[2025-03-11 16:17:04] [2025-03-11 01:17:04 TP0] Decode batch. #running-req: 15, #token: 17515, token usage: 0.04, gen throughput (token/s): 582.55, #queue-req: 0\n[2025-03-11 16:17:05] [2025-03-11 01:17:05 TP0] Decode batch. #running-req: 14, #token: 16968, token usage: 0.04, gen throughput (token/s): 553.31, #queue-req: 0\n[2025-03-11 16:17:06] [2025-03-11 01:17:06 TP0] Decode batch. #running-req: 14, #token: 17528, token usage: 0.04, gen throughput (token/s): 523.39, #queue-req: 0\n[2025-03-11 16:17:07] [2025-03-11 01:17:07 TP0] Decode batch. #running-req: 14, #token: 18088, token usage: 0.04, gen throughput (token/s): 523.55, #queue-req: 0\n[2025-03-11 16:17:08] [2025-03-11 01:17:08 TP0] Decode batch. #running-req: 14, #token: 18648, token usage: 0.04, gen throughput (token/s): 522.78, #queue-req: 0\n[2025-03-11 16:17:09] [2025-03-11 01:17:09 TP0] Decode batch. #running-req: 13, #token: 17897, token usage: 0.04, gen throughput (token/s): 486.11, #queue-req: 0\n[2025-03-11 16:17:10] [2025-03-11 01:17:10 TP0] Decode batch. #running-req: 13, #token: 18417, token usage: 0.04, gen throughput (token/s): 483.47, #queue-req: 0\n[2025-03-11 16:17:11] [2025-03-11 01:17:11 TP0] Decode batch. #running-req: 12, #token: 17557, token usage: 0.04, gen throughput (token/s): 474.35, #queue-req: 0\n[2025-03-11 16:17:12] [2025-03-11 01:17:12 TP0] Decode batch. #running-req: 12, #token: 18037, token usage: 0.04, gen throughput (token/s): 446.82, #queue-req: 0\n[2025-03-11 16:17:14] [2025-03-11 01:17:14 TP0] Decode batch. #running-req: 12, #token: 18517, token usage: 0.04, gen throughput (token/s): 446.62, #queue-req: 0\n[2025-03-11 16:17:15] [2025-03-11 01:17:15 TP0] Decode batch. #running-req: 12, #token: 18997, token usage: 0.04, gen throughput (token/s): 446.61, #queue-req: 0\n[2025-03-11 16:17:15] [2025-03-11 01:17:15] INFO:     10.224.73.28:58600 - \"GET /metrics HTTP/1.1\" 200 OK\n[2025-03-11 16:17:16] [2025-03-11 01:17:16 TP0] Decode batch. #running-req: 12, #token: 19477, token usage: 0.04, gen throughput (token/s): 446.36, #queue-req: 0\n[2025-03-11 16:17:17] [2025-03-11 01:17:17 TP0] Decode batch. #running-req: 12, #token: 19957, token usage: 0.05, gen throughput (token/s): 444.51, #queue-req: 0\n[2025-03-11 16:17:18] [2025-03-11 01:17:18 TP0] Decode batch. #running-req: 12, #token: 20437, token usage: 0.05, gen throughput (token/s): 443.67, #queue-req: 0\n[2025-03-11 16:17:19] [2025-03-11 01:17:19 TP0] Decode batch. #running-req: 10, #token: 17424, token usage: 0.04, gen throughput (token/s): 395.17, #queue-req: 0\n[2025-03-11 16:17:19] [2025-03-11 01:17:19] INFO:     10.224.73.28:58600 - \"GET /metrics HTTP/1.1\" 200 OK\n[2025-03-11 16:17:20] [2025-03-11 01:17:20 TP0] Decode batch. #running-req: 10, #token: 17824, token usage: 0.04, gen throughput (token/s): 373.86, #queue-req: 0\n[2025-03-11 16:17:21] [2025-03-11 01:17:21 TP0] Decode batch. #running-req: 10, #token: 18224, token usage: 0.04, gen throughput (token/s): 373.94, #queue-req: 0\n[2025-03-11 16:17:22] [2025-03-11 01:17:22 TP0] Decode batch. #running-req: 10, #token: 18624, token usage: 0.04, gen throughput (token/s): 373.80, #queue-req: 0\n[2025-03-11 16:17:23] [2025-03-11 01:17:23 TP0] Decode batch. #running-req: 10, #token: 19024, token usage: 0.04, gen throughput (token/s): 373.76, #queue-req: 0\n[2025-03-11 16:17:24] [2025-03-11 01:17:24 TP0] Decode batch. #running-req: 10, #token: 19424, token usage: 0.04, gen throughput (token/s): 373.73, #queue-req: 0\n[2025-03-11 16:17:25] [2025-03-11 01:17:25 TP0] Decode batch. #running-req: 10, #token: 19824, token usage: 0.05, gen throughput (token/s): 371.69, #queue-req: 0\n[2025-03-11 16:17:26] [2025-03-11 01:17:26 TP0] Decode batch. #running-req: 10, #token: 20224, token usage: 0.05, gen throughput (token/s): 371.62, #queue-req: 0\n[2025-03-11 16:17:27] [2025-03-11 01:17:27 TP0] Decode batch. #running-req: 10, #token: 20624, token usage: 0.05, gen throughput (token/s): 371.62, #queue-req: 0\n[2025-03-11 16:17:29] [2025-03-11 01:17:29 TP0] Decode batch. #running-req: 10, #token: 21024, token usage: 0.05, gen throughput (token/s): 371.66, #queue-req: 0\n[2025-03-11 16:17:29] [2025-03-11 01:17:29] INFO:     10.224.73.28:49910 - \"GET /metrics HTTP/1.1\" 200 OK\n[2025-03-11 16:17:30] [2025-03-11 01:17:30 TP0] Decode batch. #running-req: 10, #token: 21424, token usage: 0.05, gen throughput (token/s): 371.59, #queue-req: 0\n[2025-03-11 16:17:31] [2025-03-11 01:17:31 TP0] Decode batch. #running-req: 9, #token: 19676, token usage: 0.05, gen throughput (token/s): 371.48, #queue-req: 0\n```\n\nAt the beginning, everything seemed normal. However, when processing the last 5 requests, the model kept generating tokens continuously for as long as ten minutes without stopping. Moreover, the number of tokens in the log keeps increasing, reaching over 270k, which is far greater than the number of tokens requested.\n\n```text\n[2025-03-11 16:44:27] [2025-03-11 01:44:27 TP0] Decode batch. #running-req: 5, #token: 266623, token usage: 0.61, gen throughput (token/s): 136.00, #queue-req: 0\n[2025-03-11 16:44:28] [2025-03-11 01:44:28 TP0] Decode batch. #running-req: 5, #token: 266823, token usage: 0.61, gen throughput (token/s): 136.01, #queue-req: 0\n[2025-03-11 16:44:29] [2025-03-11 01:44:29] INFO:     10.224.73.28:56594 - \"GET /metrics HTTP/1.1\" 200 OK\n[2025-03-11 16:44:30] [2025-03-11 01:44:30 TP0] Decode batch. #running-req: 5, #token: 267023, token usage: 0.61, gen throughput (token/s): 135.96, #queue-req: 0\n[2025-03-11 16:44:31] [2025-03-11 01:44:31 TP0] Decode batch. #running-req: 5, #token: 267223, token usage: 0.61, gen throughput (token/s): 136.00, #queue-req: 0\n[2025-03-11 16:44:33] [2025-03-11 01:44:33 TP0] Decode batch. #running-req: 5, #token: 267423, token usage: 0.61, gen throughput (token/s): 135.96, #queue-req: 0\n[2025-03-11 16:44:34] [2025-03-11 01:44:34 TP0] Decode batch. #running-req: 5, #token: 267623, token usage: 0.61, gen throughput (token/s): 135.95, #queue-req: 0\n[2025-03-11 16:44:36] [2025-03-11 01:44:36 TP0] Decode batch. #running-req: 5, #token: 267823, token usage: 0.61, gen throughput (token/s): 135.92, #queue-req: 0\n[2025-03-11 16:44:37] [2025-03-11 01:44:37 TP0] Decode batch. #running-req: 5, #token: 268023, token usage: 0.61, gen throughput (token/s): 135.93, #queue-req: 0\n[2025-03-11 16:44:39] [2025-03-11 01:44:39 TP0] Decode batch. #running-req: 5, #token: 268223, token usage: 0.62, gen throughput (token/s): 135.97, #queue-req: 0\n[2025-03-11 16:44:39] [2025-03-11 01:44:39] INFO:     10.224.73.28:39230 - \"GET /metrics HTTP/1.1\" 200 OK\n[2025-03-11 16:44:40] [2025-03-11 01:44:40 TP0] Decode batch. #running-req: 5, #token: 268423, token usage: 0.62, gen throughput (token/s): 135.93, #queue-req: 0\n[2025-03-11 16:44:42] [2025-03-11 01:44:42 TP0] Decode batch. #running-req: 5, #token: 268623, token usage: 0.62, gen throughput (token/s): 135.97, #queue-req: 0\n[2025-03-11 16:44:43] [2025-03-11 01:44:43 TP0] Decode batch. #running-req: 5, #token: 268823, token usage: 0.62, gen throughput (token/s): 135.90, #queue-req: 0\n[2025-03-11 16:44:45] [2025-03-11 01:44:45 TP0] Decode batch. #running-req: 5, #token: 269023, token usage: 0.62, gen throughput (token/s): 135.56, #queue-req: 0\n[2025-03-11 16:44:46] [2025-03-11 01:44:46 TP0] Decode batch. #running-req: 5, #token: 269223, token usage: 0.62, gen throughput (token/s): 135.44, #queue-req: 0\n[2025-03-11 16:44:48] [2025-03-11 01:44:48 TP0] Decode batch. #running-req: 5, #token: 269423, token usage: 0.62, gen throughput (token/s): 135.42, #queue-req: 0\n[2025-03-11 16:44:49] [2025-03-11 01:44:49 TP0] Decode batch. #running-req: 5, #token: 269623, token usage: 0.62, gen throughput (token/s): 135.44, #queue-req: 0\n[2025-03-11 16:44:49] [2025-03-11 01:44:49] INFO:     10.224.73.28:39242 - \"GET /metrics HTTP/1.1\" 200 OK\n[2025-03-11 16:44:51] [2025-03-11 01:44:51 TP0] Decode batch. #running-req: 5, #token: 269823, token usage: 0.62, gen throughput (token/s): 135.34, #queue-req: 0\n[2025-03-11 16:44:52] [2025-03-11 01:44:52 TP0] Decode batch. #running-req: 5, #token: 270023, token usage: 0.62, gen throughput (token/s): 135.37, #queue-req: 0\n[2025-03-11 16:44:53] [2025-03-11 01:44:53 TP0] Decode batch. #running-req: 5, #token: 270223, token usage: 0.62, gen throughput (token/s): 135.30, #queue-req: 0\n[2025-03-11 16:44:55] [2025-03-11 01:44:55 TP0] Decode batch. #running-req: 5, #token: 270423, token usage: 0.62, gen throughput (token/s): 135.35, #queue-req: 0\n[2025-03-11 16:44:56] [2025-03-11 01:44:56 TP0] Decode batch. #running-req: 5, #token: 270623, token usage: 0.62, gen throughput (token/s): 135.27, #queue-req: 0\n[2025-03-11 16:44:58] [2025-03-11 01:44:58 TP0] Decode batch. #running-req: 5, #token: 270823, token usage: 0.62, gen throughput (token/s): 135.35, #queue-req: 0\n[2025-03-11 16:44:59] [2025-03-11 01:44:59] INFO:     10.224.73.28:47622 - \"GET /metrics HTTP/1.1\" 200 OK\n[2025-03-11 16:44:59] [2025-03-11 01:44:59 TP0] Decode batch. #running-req: 5, #token: 271023, token usage: 0.62, gen throughput (token/s): 135.36, #queue-req: 0\n[2025-03-11 16:45:01] [2025-03-11 01:45:01 TP0] Decode batch. #running-req: 5, #token: 271223, token usage: 0.62, gen throughput (token/s): 135.34, #queue-req: 0\n[2025-03-11 16:45:02] [2025-03-11 01:45:02 TP0] Decode batch. #running-req: 5, #token: 271423, token usage: 0.62, gen throughput (token/s): 135.18, #queue-req: 0\n[2025-03-11 16:45:04] [2025-03-11 01:45:04 TP0] Decode batch. #running-req: 5, #token: 271623, token usage: 0.62, gen throughput (token/s): 135.34, #queue-req: 0\n[2025-03-11 16:45:05] [2025-03-11 01:45:05 TP0] Decode batch. #running-req: 5, #token: 271823, token usage: 0.62, gen throughput (token/s): 135.33, #queue-req: 0\n[2025-03-11 16:45:07] [2025-03-11 01:45:07 TP0] Decode batch. #running-req: 5, #token: 272023, token usage: 0.62, gen throughput (token/s): 135.29, #queue-req: 0\n[2025-03-11 16:45:08] [2025-03-11 01:45:08 TP0] Decode batch. #running-req: 5, #token: 272223, token usage: 0.62, gen throughput (token/s): 135.34, #queue-req: 0\n[2025-03-11 16:45:09] [2025-03-11 01:45:09] INFO:     10.224.73.28:53578 - \"GET /metrics HTTP/1.1\" 200 OK\n[2025-03-11 16:45:10] [2025-03-11 01:45:10 TP0] Decode batch. #running-req: 5, #token: 272423, token usage: 0.62, gen throughput (token/s): 135.31, #queue-req: 0\n[2025-03-11 16:45:11] [2025-03-11 01:45:11 TP0] Decode batch. #running-req: 5, #token: 272623, token usage: 0.63, gen throughput (token/s): 135.29, #queue-req: 0\n[2025-03-11 16:45:13] [2025-03-11 01:45:13 TP0] Decode batch. #running-req: 5, #token: 272823, token usage: 0.63, gen throughput (token/s): 135.28, #queue-req: 0\n[2025-03-11 16:45:14] [2025-03-11 01:45:14 TP0] Decode batch. #running-req: 5, #token: 273023, token usage: 0.63, gen throughput (token/s): 135.23, #queue-req: 0\n[2025-03-11 16:45:16] [2025-03-11 01:45:16 TP0] Decode batch. #running-req: 5, #token: 273223, token usage: 0.63, gen throughput (token/s): 135.25, #queue-req: 0\n[2025-03-11 16:45:17] [2025-03-11 01:45:17 TP0] Decode batch. #running-req: 5, #token: 273423, token usage: 0.63, gen throughput (token/s): 135.09, #queue-req: 0\n[2025-03-11 16:45:19] [2025-03-11 01:45:19] INFO:     10.224.73.28:53580 - \"GET /metrics HTTP/1.1\" 200 OK\n[2025-03-11 16:45:19] [2025-03-11 01:45:19 TP0] Decode batch. #running-req: 5, #token: 273623, token usage: 0.63, gen throughput (token/s): 134.75, #queue-req: 0\n[2025-03-11 16:45:20] [2025-03-11 01:45:20 TP0] Decode batch. #running-req: 5, #token: 273823, token usage: 0.63, gen throughput (token/s): 134.77, #queue-req: 0\n[2025-03-11 16:45:22] [2025-03-11 01:45:22 TP0] Decode batch. #running-req: 5, #token: 274023, token usage: 0.63, gen throughput (token/s): 134.75, #queue-req: 0\n[2025-03-11 16:45:23] [2025-03-11 01:45:23 TP0] Decode batch. #running-req: 5, #token: 274223, token usage: 0.63, gen throughput (token/s): 134.79, #queue-req: 0\n[2025-03-11 16:45:25] [2025-03-11 01:45:25 TP0] Decode batch. #running-req: 5, #token: 274423, token usage: 0.63, gen throughput (token/s): 134.37, #queue-req: 0\n```\n\nHowever, when I used the same vllm benchmark to test the qwq-32B model deployed with vllm, it took less than a minute to complete\uff1a\n\n```text\nMaximum request concurrency: 16\n============ Serving Benchmark Result ============\nSuccessful requests:                     16        \nBenchmark duration (s):                  56.56     \nTotal input tokens:                      8000      \nTotal generated tokens:                  12854     \nRequest throughput (req/s):              0.28      \nOutput token throughput (tok/s):         227.26    \nTotal Token throughput (tok/s):          368.69    \n---------------Time to First Token----------------\nMean TTFT (ms):                          4350.07   \nMedian TTFT (ms):                        4346.42   \nP99 TTFT (ms):                           4372.80   \n-----Time per Output Token (excl. 1st token)------\nMean TPOT (ms):                          51.87     \nMedian TPOT (ms):                        52.23     \nP99 TPOT (ms):                           52.24     \n---------------Inter-token Latency----------------\nMean ITL (ms):                           52.04     \nMedian ITL (ms):                         52.10     \nP99 ITL (ms):                            64.42     \n==================================================\n```\n\n### Reproduction\n\nI started the sglang serving service using the following command:\n\n```shell\npython3 -m sglang.launch_server --model-path /model_dir --host 0.0.0.0 --port 8000 --tp $gpu_count --disable-custom-all-reduce --context-length 131072 --mem-fraction-static 0.9 --enable-metrics --trust-remote-code --served-model-name QwQ-32B\"\n```\n\nThe vllm benchmark script is sourced from: https://github.com/vllm-project/vllm/blob/main/benchmarks/benchmark_serving.py , and the startup command is as follows:\n\n```shell\npython ./benchmarks/benchmark_serving.py \\\n    --backend $BACKEND \\\n    --base-url $BASE_URL \\\n    --served-model-name $MODEL_NAME \\\n    --tokenizer $TOKENIZER \\\n    --model $MODEL_NAME \\\n    --dataset-name random \\\n    --random-input-len 500 \\\n    --random-output-len 1000 \\\n    --dataset-path ShareGPT_V3_unfiltered_cleaned_split.json \\\n    --save-result \\\n    --result-dir $RESULT_DIR \\\n    --result-filename $RESULT_FILENAME \\\n    --num-prompts $NUM_PROMPTS \\\n    --endpoint $ENDPOINT \\\n    --request-rate $REQUEST_RATE \\\n    --max-concurrency $MAX_CONCURRENCY \\\n    --seed 42\n```\n\n### Environment\n\n```shell\nPython: 3.11.10 (main, Oct  3 2024, 07:29:13) [GCC 11.2.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA H20\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 9.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\nCUDA Driver Version: 560.35.03\nPyTorch: 2.5.1+cu124\nsglang: 0.4.2.post4\nsgl_kernel: 0.0.3.post4\nflashinfer: 0.2.0.post2+cu124torch2.5\ntriton: 3.1.0\ntransformers: 4.48.3\ntorchao: 0.8.0\nnumpy: 1.26.4\naiohttp: 3.9.5\nfastapi: 0.115.11\nhf_transfer: 0.1.9\nhuggingface_hub: 0.27.1\ninteregular: 0.3.3\nmodelscope: 1.22.3\norjson: 3.10.15\npackaging: 23.0\npsutil: 5.9.6\npydantic: 2.10.5\nmultipart: 0.0.20\nzmq: 26.0.3\nuvicorn: 0.22.0\nuvloop: 0.19.0\nopenai: 1.61.1\nanthropic: 0.45.2\ndecord: 0.6.0\nNVIDIA Topology:\n\tGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tGPU5\tGPU6\tGPU7\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\nGPU0\t X \tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\t0-127\t0-1\t\tN/A\nGPU1\tNV18\t X \tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\t0-127\t0-1\t\tN/A\nGPU2\tNV18\tNV18\t X \tNV18\tNV18\tNV18\tNV18\tNV18\t0-127\t0-1\t\tN/A\nGPU3\tNV18\tNV18\tNV18\t X \tNV18\tNV18\tNV18\tNV18\t0-127\t0-1\t\tN/A\nGPU4\tNV18\tNV18\tNV18\tNV18\t X \tNV18\tNV18\tNV18\t0-127\t0-1\t\tN/A\nGPU5\tNV18\tNV18\tNV18\tNV18\tNV18\t X \tNV18\tNV18\t0-127\t0-1\t\tN/A\nGPU6\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\t X \tNV18\t0-127\t0-1\t\tN/A\nGPU7\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\tNV18\t X \t0-127\t0-1\t\tN/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nHypervisor vendor: KVM\nulimit soft: 1048576\n```",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-11T08:42:51+00:00",
+    "closed_at": "2025-05-18T00:20:52+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4305/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 2
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4305"
+  },
+  {
+    "number": 7537,
+    "title": "Task 004: Port Observability Module",
+    "body": "# Task 004: Port Observability Module\n\n## Summary\nPort the centralized observability module from existing implementation to consolidate metrics collection and improve monitoring capabilities across the router.\n\n## Motivation\nCurrently:\n- Metrics are scattered throughout the codebase\n- No consistent metric naming convention\n- Difficult to add new metrics\n- No centralized configuration for observability\n\n## Implementation Plan\n\n### 1. Create Observability Module Structure\n```rust\n// src/infrastructure/observability/mod.rs\npub mod metrics;\npub mod logging;\n\nuse metrics_exporter_prometheus::PrometheusBuilder;\nuse tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};\n\npub struct ObservabilityConfig {\n    pub metrics: MetricsConfig,\n    pub logging: LoggingConfig,\n}\n\npub struct MetricsConfig {\n    pub enabled: bool,\n    pub port: u16,\n    pub host: String,\n    pub buckets: Vec<f64>,\n}\n\npub fn init_observability(config: ObservabilityConfig) -> Result<(), ObservabilityError> {\n    // Initialize logging\n    init_logging(&config.logging)?;\n    \n    // Initialize metrics\n    if config.metrics.enabled {\n        init_metrics(&config.metrics)?;\n    }\n    \n    Ok(())\n}\n```\n\n### 2. Centralize Metrics Definition\n```rust\n// src/infrastructure/observability/metrics.rs\nuse metrics::{counter, gauge, histogram, Unit};\nuse std::time::Duration;\n\npub struct RouterMetrics;\n\nimpl RouterMetrics {\n    // Request metrics\n    pub fn record_request(route: &str, method: &str) {\n        counter!(\"sgl_router_requests_total\", \n            \"route\" => route.to_string(), \n            \"method\" => method.to_string()\n        ).increment(1);\n    }\n    \n    pub fn record_request_duration(route: &str, duration: Duration) {\n        histogram!(\"sgl_router_request_duration_seconds\",\n            \"route\" => route.to_string()\n        ).record(duration.as_secs_f64());\n    }\n    \n    pub fn record_request_error(route: &str, error_type: &str) {\n        counter!(\"sgl_router_errors_total\",\n            \"route\" => route.to_string(),\n            \"error_type\" => error_type.to_string()\n        ).increment(1);\n    }\n    \n    // Worker metrics\n    pub fn set_worker_health(worker_url: &str, healthy: bool) {\n        gauge!(\"sgl_router_worker_healthy\",\n            \"worker\" => worker_url.to_string()\n        ).set(if healthy { 1.0 } else { 0.0 });\n    }\n    \n    pub fn set_worker_load(worker_url: &str, load: usize) {\n        gauge!(\"sgl_router_worker_load\",\n            \"worker\" => worker_url.to_string()\n        ).set(load as f64);\n    }\n    \n    // Policy metrics\n    pub fn record_policy_decision(policy: &str, worker: &str) {\n        counter!(\"sgl_router_policy_decisions_total\",\n            \"policy\" => policy.to_string(),\n            \"worker\" => worker.to_string()\n        ).increment(1);\n    }\n    \n    // Cache metrics\n    pub fn record_cache_hit(worker: &str) {\n        counter!(\"sgl_router_cache_hits_total\",\n            \"worker\" => worker.to_string()\n        ).increment(1);\n    }\n    \n    pub fn record_cache_miss(worker: &str) {\n        counter!(\"sgl_router_cache_misses_total\",\n            \"worker\" => worker.to_string()\n        ).increment(1);\n    }\n    \n    pub fn set_tree_size(worker: &str, size: usize) {\n        gauge!(\"sgl_router_tree_size\",\n            \"worker\" => worker.to_string()\n        ).set(size as f64);\n    }\n    \n    // Service discovery metrics\n    pub fn record_discovery_update(added: usize, removed: usize) {\n        counter!(\"sgl_router_discovery_updates_total\").increment(1);\n        gauge!(\"sgl_router_discovery_workers_added\").set(added as f64);\n        gauge!(\"sgl_router_discovery_workers_removed\").set(removed as f64);\n    }\n}\n```\n\n### 3. Create Metric Middleware\n```rust\n// src/server/middleware.rs\nuse actix_web::{dev::ServiceRequest, Error};\nuse std::time::Instant;\n\npub async fn metrics_middleware(\n    req: ServiceRequest,\n    srv: &mut dyn actix_web::dev::Service<ServiceRequest>,\n) -> Result<actix_web::dev::ServiceResponse, Error> {\n    let start = Instant::now();\n    let route = req.path().to_string();\n    let method = req.method().to_string();\n    \n    RouterMetrics::record_request(&route, &method);\n    \n    let res = srv.call(req).await;\n    \n    let duration = start.elapsed();\n    RouterMetrics::record_request_duration(&route, duration);\n    \n    if let Err(ref e) = res {\n        RouterMetrics::record_request_error(&route, \"internal_error\");\n    }\n    \n    res\n}\n```\n\n### 4. Update Existing Code to Use Centralized Metrics\n```rust\n// In routing policies\nimpl RoutingPolicy for CacheAwarePolicy {\n    async fn select_single(&self, workers: &[Arc<dyn Worker>], request: &serde_json::Value) \n        -> Result<Arc<dyn Worker>, RoutingError> {\n        let result = self.internal_select(workers, request).await?;\n        \n        // Record metrics\n        RouterMetrics::record_policy_decision(self.name(), result.url());\n        if self.was_cache_hit {\n            RouterMetrics::record_cache_hit(result.url());\n        } else {\n            RouterMetrics::record_cache_miss(result.url());\n        }\n        \n        Ok(result)\n    }\n}\n\n// In worker health checking\nimpl Worker for WorkerImpl {\n    async fn check_health(&self) -> Result<(), WorkerError> {\n        let result = self.internal_health_check().await;\n        let healthy = result.is_ok();\n        \n        self.healthy.store(healthy, Ordering::Relaxed);\n        RouterMetrics::set_worker_health(self.url(), healthy);\n        \n        result\n    }\n}\n```\n\n### 5. Add Grafana Dashboard Definition\n```json\n// dashboards/sgl-router.json\n{\n  \"dashboard\": {\n    \"title\": \"SGLang Router Metrics\",\n    \"panels\": [\n      {\n        \"title\": \"Request Rate\",\n        \"targets\": [{\n          \"expr\": \"rate(sgl_router_requests_total[5m])\"\n        }]\n      },\n      {\n        \"title\": \"Request Duration P99\",\n        \"targets\": [{\n          \"expr\": \"histogram_quantile(0.99, rate(sgl_router_request_duration_seconds_bucket[5m]))\"\n        }]\n      },\n      {\n        \"title\": \"Worker Health\",\n        \"targets\": [{\n          \"expr\": \"sgl_router_worker_healthy\"\n        }]\n      },\n      {\n        \"title\": \"Cache Hit Rate\",\n        \"targets\": [{\n          \"expr\": \"rate(sgl_router_cache_hits_total[5m]) / (rate(sgl_router_cache_hits_total[5m]) + rate(sgl_router_cache_misses_total[5m]))\"\n        }]\n      }\n    ]\n  }\n}\n```\n\n## Acceptance Criteria\n\n1. **Module Structure**\n   - [ ] Observability module created\n   - [ ] Metrics and logging submodules\n   - [ ] Configuration types defined\n\n2. **Metrics Centralization**\n   - [ ] All metrics defined in one place\n   - [ ] Consistent naming convention\n   - [ ] Proper labels and units\n\n3. **Integration**\n   - [ ] Existing metrics migrated\n   - [ ] Middleware integrated\n   - [ ] No metrics regression\n\n4. **Documentation**\n   - [ ] Metrics documented\n   - [ ] Grafana dashboard provided\n   - [ ] Usage examples\n\n5. **Testing**\n   - [ ] Metrics endpoint tested\n   - [ ] Correct metric values verified\n   - [ ] Performance impact measured\n\n## Dependencies\n- Task 001: Worker Abstraction (for worker metrics)\n- Task 002: RoutingPolicy Trait (for policy metrics)\n\n## Estimated Effort\n- Implementation: 2 days\n- Migration: 1 day\n- Testing: 1 day\n- Total: 4 days\n\n## Risks\n- **Risk**: Missing metrics during migration\n  - **Mitigation**: Audit all current metrics before migration\n- **Risk**: Performance impact\n  - **Mitigation**: Use atomic operations, benchmark impact",
+    "labels": [],
+    "state": "open",
+    "created_at": "2025-06-25T20:16:15+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7537/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7537"
+  },
+  {
+    "number": 6854,
+    "title": "[Bug] mookcake error",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n**question**\nmooncake library report  some error when using PD without DeepEP for deepseekR1 in main branch \n\n**prefill node launch command**\n  ```\n  SGL_ENABLE_JIT_DEEPGEMM=1  nohup python3 -m sglang.launch_server  --mem-fraction-static 0.85 --model-path ${model_path} \\\n     --disaggregation-mode prefill --host ${node_ip} --trust-remote-code  --port 30000 --tp-size 8 --disable-radix-cache 2>&1 &\n```\n\n**decode node launch command**\n ```\nSGL_ENABLE_JIT_DEEPGEMM=1 nohup  python3 -m sglang.launch_server --mem-fraction-static 0.85 --model-path ${model_path} \\\n     --disaggregation-mode decode  --host ${node_ip} --trust-remote-code  --port 30001 --tp-size 8 --disable-radix-cache --disable-cuda-graph 2>&1 &\n```\n\n**prefill node log** \n```\n[2025-06-03 20:14:30 TP6] FakeKVSender send with kv_indices: [1 2 3 4]\n[2025-06-03 20:14:30 TP2] FakeKVSender poll success\n[2025-06-03 20:14:30 TP6] FakeKVSender poll success\n[2025-06-03 20:14:30 TP5] FakeKVSender send with kv_indices: [1 2 3 4]\n[2025-06-03 20:14:30 TP5] FakeKVSender poll success\n[2025-06-03 20:14:30 TP7] FakeKVSender send with kv_indices: [1 2 3 4]\n[2025-06-03 20:14:30 TP7] FakeKVSender poll success\n[2025-06-03 20:14:30 TP1] FakeKVSender send with kv_indices: [1 2 3 4]\n[2025-06-03 20:14:30 TP1] FakeKVSender poll success\n[2025-06-03 20:14:30 TP0] FakeKVSender send with kv_indices: [1 2 3 4]\n[2025-06-03 20:14:30 TP0] FakeKVSender poll success\n[2025-06-03 20:14:30 TP3] FakeKVSender send with kv_indices: [1 2 3 4]\n[2025-06-03 20:14:30 TP3] FakeKVSender poll success\n[2025-06-03 20:14:30 TP4] FakeKVSender send with kv_indices: [1 2 3 4]\n[2025-06-03 20:14:30 TP4] FakeKVSender poll success\n[2025-06-03 20:14:30] INFO:     10.93.81.22:59502 - \"POST /generate HTTP/1.1\" 200 OK\n[2025-06-03 20:14:30] End of prefill warmup with status 200, resp: [{'text': '<', 'meta_info': {'id': '63cf8872022c4264b56159d25c9b3c54', 'finish_reason': {'type': 'length', 'length': 0}, 'prompt_tokens': 4, 'completion_tokens': 1, 'cached_tokens': 0, 'e2e_latency': 21.42510437965393}}]\n[2025-06-03 20:14:30] The server is fired up and ready to roll!\n[2025-06-03 20:16:52] INFO:     10.93.81.22:62520 - \"POST /v1/completions HTTP/1.1\" 200 OK\n[2025-06-03 20:16:55 TP0] Prefill batch. #new-seq: 1, #new-token: 2025, #cached-token: 0, token usage: 0.00, #running-req: 0, #unbootstrapped-req: 0, #queue-req: 0, #transferring-req: 0, time: 165.77 \nE0603 20:16:56.795789 27466 common.h:151] Socket read failed: Connection reset by peer [104]\nE0603 20:16:56.795801 27322 common.h:151] Socket read failed: Connection reset by peer [104]\nE0603 20:16:56.795821 27334 common.h:151] Socket read failed: Connection reset by peer [104]\nE0603 20:16:56.795835 27466 common.h:190] readString: failed to read length, got: -1\nE0603 20:16:56.795819 27543 common.h:151] Socket read failed: Connection reset by peer [104]\nE0603 20:16:56.795850 27322 common.h:190] readString: failed to read length, got: -1\nE0603 20:16:56.795864 27334 common.h:190] readString: failed to read length, got: -1\nE0603 20:16:56.795871 27466 transfer_metadata_plugin.cpp:745] SocketHandShakePlugin: failed to receive handshake message: malformed json format, check tcp connection\nE0603 20:16:56.795883 27543 common.h:190] readString: failed to read length, got: -1\nE0603 20:16:56.795892 27322 transfer_metadata_plugin.cpp:745] SocketHandShakePlugin: failed to receive handshake message: malformed json format, check tcp connection\nE0603 20:16:56.795893 27334 transfer_metadata_plugin.cpp:745] SocketHandShakePlugin: failed to receive handshake message: malformed json format, check tcp connection\nE0603 20:16:56.795907 27543 transfer_metadata_plugin.cpp:745] SocketHandShakePlugin: failed to receive handshake message: malformed json format, check tcp connection\nE0603 20:16:56.795910 27466 worker_pool.cpp:227] Worker: Cannot make connection for endpoint: 10.93.81.13:16842@mlx5_4, mark it inactive\nE0603 20:16:56.795920 27322 worker_pool.cpp:227] Worker: Cannot make connection for endpoint: 10.93.81.13:15729@mlx5_2, mark it inactive\nE0603 20:16:56.795920 27334 worker_pool.cpp:227] Worker: Cannot make connection for endpoint: 10.93.81.13:15862@mlx5_3, mark it inactive\nE0603 20:16:56.795923 27543 worker_pool.cpp:227] Worker: Cannot make connection for endpoint: 10.93.81.13:15695@mlx5_7, mark it inactive\nE0603 20:16:56.796806 27362 common.h:151] Socket read failed: Connection reset by peer [104]\nE0603 20:16:56.796849 27362 common.h:190] readString: failed to read length, got: -1\nE0603 20:16:56.796862 27362 transfer_metadata_plugin.cpp:745] SocketHandShakePlugin: failed to receive handshake message: malformed json format, check tcp connection\nE0603 20:16:56.796878 27362 worker_pool.cpp:227] Worker: Cannot make connection for endpoint: 10.93.81.13:16842@mlx5_4, mark it inactive\nE0603 20:16:59.101464 27284 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f3790141680, length: 65536, dest_addr: 0x7ef6a4143a80, local_nic: mlx5_6, peer_nic: 10.93.81.13:15348@mlx5_0, dest_rkey: 2116260, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.104586 27322 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f20fe0f1680, length: 65536, dest_addr: 0x7f3d820f3a80, local_nic: mlx5_7, peer_nic: 10.93.81.13:15729@mlx5_0, dest_rkey: 2116517, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.104656 27522 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f9b1c011680, length: 65536, dest_addr: 0x7f5b30013a80, local_nic: mlx5_7, peer_nic: 10.93.81.13:15695@mlx5_0, dest_rkey: 2123199, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.104661 27321 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f37dc031680, length: 65536, dest_addr: 0x7ef6f0033a80, local_nic: mlx5_7, peer_nic: 10.93.81.13:15348@mlx5_0, dest_rkey: 2114975, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.145802 27418 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f7250181680, length: 65536, dest_addr: 0x7f9bb4183a80, local_nic: mlx5_2, peer_nic: 10.93.81.13:16842@mlx5_0, dest_rkey: 2115489, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.145862 27451 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f9ef41c1680, length: 65536, dest_addr: 0x7f364c1c3a80, local_nic: mlx5_2, peer_nic: 10.93.81.13:15862@mlx5_0, dest_rkey: 2121657, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.145884 27543 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f9af6111680, length: 65536, dest_addr: 0x7f5b0a113a80, local_nic: mlx5_2, peer_nic: 10.93.81.13:15695@mlx5_0, dest_rkey: 2124998, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.145887 27512 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7fa6d0201680, length: 65536, dest_addr: 0x7fb8e0203a80, local_nic: mlx5_2, peer_nic: 10.93.81.13:15811@mlx5_0, dest_rkey: 2126026, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.148962 27496 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f8f10011680, length: 65536, dest_addr: 0x7f5160013a80, local_nic: mlx5_5, peer_nic: 10.93.81.13:15707@mlx5_0, dest_rkey: 2118059, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.160207 27546 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f9af61c1680, length: 65536, dest_addr: 0x7f5b0a1c3a80, local_nic: mlx5_3, peer_nic: 10.93.81.13:15695@mlx5_0, dest_rkey: 2124998, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.160243 27469 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f9ea80e1680, length: 65536, dest_addr: 0x7f36000e3a80, local_nic: mlx5_3, peer_nic: 10.93.81.13:15862@mlx5_0, dest_rkey: 2125769, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.170197 27487 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f76760e1680, length: 65536, dest_addr: 0x7fd0ea0e3a80, local_nic: mlx5_4, peer_nic: 10.93.81.13:15984@mlx5_0, dest_rkey: 2124227, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.170269 27448 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f7250081680, length: 65536, dest_addr: 0x7f9bb4083a80, local_nic: mlx5_4, peer_nic: 10.93.81.13:16842@mlx5_0, dest_rkey: 2115489, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.170282 27481 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f8f36031680, length: 65536, dest_addr: 0x7f5186033a80, local_nic: mlx5_4, peer_nic: 10.93.81.13:15707@mlx5_0, dest_rkey: 2117031, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.170287 27460 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f37dc041680, length: 65536, dest_addr: 0x7ef6f0043a80, local_nic: mlx5_4, peer_nic: 10.93.81.13:15348@mlx5_0, dest_rkey: 2114975, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.170378 27484 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f9ea8021680, length: 65536, dest_addr: 0x7f3600023a80, local_nic: mlx5_4, peer_nic: 10.93.81.13:15862@mlx5_0, dest_rkey: 2125769, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.186699 27362 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f7204081680, length: 65536, dest_addr: 0x7f9b68083a80, local_nic: mlx5_8, peer_nic: 10.93.81.13:16842@mlx5_0, dest_rkey: 2117545, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.186744 27368 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f769c141680, length: 65536, dest_addr: 0x7fd110143a80, local_nic: mlx5_8, peer_nic: 10.93.81.13:15984@mlx5_0, dest_rkey: 2122171, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.186758 27478 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7fa6d0021680, length: 65536, dest_addr: 0x7fb8e0023a80, local_nic: mlx5_8, peer_nic: 10.93.81.13:15811@mlx5_0, dest_rkey: 2126026, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.295009 27502 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7fa6d01f1680, length: 65536, dest_addr: 0x7fb8e01f3a80, local_nic: mlx5_0, peer_nic: 10.93.81.13:15811@mlx5_8, dest_rkey: 2125878, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.295828 27384 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f20fe081680, length: 65536, dest_addr: 0x7f3d82083a80, local_nic: mlx5_0, peer_nic: 10.93.81.13:15729@mlx5_9, dest_rkey: 2116369, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.295833 27537 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f9b1c0d1680, length: 65536, dest_addr: 0x7f5b300d3a80, local_nic: mlx5_0, peer_nic: 10.93.81.13:15695@mlx5_5, dest_rkey: 2122770, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.295917 27393 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f37b6211680, length: 65536, dest_addr: 0x7ef6ca213a80, local_nic: mlx5_0, peer_nic: 10.93.81.13:15348@mlx5_3, dest_rkey: 2115318, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.295928 27390 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f722a061680, length: 65536, dest_addr: 0x7f9b8e063a80, local_nic: mlx5_0, peer_nic: 10.93.81.13:16842@mlx5_5, dest_rkey: 2115578, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.296041 27402 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f7676051680, length: 65536, dest_addr: 0x7fd0ea053a80, local_nic: mlx5_0, peer_nic: 10.93.81.13:15984@mlx5_8, dest_rkey: 2124079, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.296280 27409 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f9ef41e1680, length: 65536, dest_addr: 0x7f364c1e3a80, local_nic: mlx5_0, peer_nic: 10.93.81.13:15862@mlx5_9, dest_rkey: 2121509, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.296396 27396 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7f8f101c1680, length: 65536, dest_addr: 0x7f51601c3a80, local_nic: mlx5_0, peer_nic: 10.93.81.13:15707@mlx5_7, dest_rkey: 2117911, retry_cnt: 0): transport retry counter exceeded\nE0603 20:16:59.299151 27502 worker_pool.cpp:271] Worker: Process failed for slice (opcode: 1, source_addr: 0x7fa6d00f1680, length: 65536, dest_addr: 0x7fb8e00f3a80, local_nic: mlx5_0, peer_nic: 10.93.81.13:15811@mlx5_5, dest_rkey: 2125854, retry_cnt: 0): transport retry counter exceeded\n```\n\n**decoce node log** \n```\nml-h203e-ser029:7563:10052 [3] NCCL INFO Connected all trees\nml-h203e-ser029:7563:10052 [3] NCCL INFO threadThresholds 8/8/64 | 64/8/64 | 512 | 512\nml-h2[2025-06-03 20:04:36] INFO:     10.93.81.13:47506 - \"POST /generate HTTP/1.1\" 200 OK\n[2025-06-03 20:04:36] End of prefill warmup with status 200, resp: [{'text': '# 2023\u5e7410\u6708', 'meta_info': {'id': '1459c711aac84e9ab9e3ae6f6e74f790', 'finish_reason': {'type': 'length', 'length': 8}, 'prompt_tokens': 4, 'completion_tokens': 8, 'cached_tokens': 0, 'e2e_latency': 20.91419219970703}}]\n[2025-06-03 20:04:36] The server is fired up and ready to roll!\n[2025-06-03 20:16:52] INFO:     10.93.81.22:27128 - \"POST /v1/completions HTTP/1.1\" 200 OK\n[2025-06-03 20:17:00 TP7] Decode transfer failed for request rank=7 decode_req.req.rid='4d69ee747c9f4ec4a166204e1811acf4' decode_req.req.bootstrap_room=7560137248611185822 with exception KVTransferError(bootstrap_room=7560137248611185822): Failed due to an unknown reason from another rank\n[2025-06-03 20:17:00 TP2] Decode transfer failed for request rank=2 decode_req.req.rid='4d69ee747c9f4ec4a166204e1811acf4' decode_req.req.bootstrap_room=7560137248611185822 with exception KVTransferError(bootstrap_room=7560137248611185822): Failed due to an unknown reason from another rank\n[2025-06-03 20:17:00 TP5] Decode transfer failed for request rank=5 decode_req.req.rid='4d69ee747c9f4ec4a166204e1811acf4' decode_req.req.bootstrap_room=7560137248611185822 with exception KVTransferError(bootstrap_room=7560137248611185822): Failed to get kvcache from prefill instance, it might be dead\n[2025-06-03 20:17:00 TP1] Decode transfer failed for request rank=1 decode_req.req.rid='4d69ee747c9f4ec4a166204e1811acf4' decode_req.req.bootstrap_room=7560137248611185822 with exception KVTransferError(bootstrap_room=7560137248611185822): Failed due to an unknown reason from another rank\n[2025-06-03 20:17:00 TP4] Decode transfer failed for request rank=4 decode_req.req.rid='4d69ee747c9f4ec4a166204e1811acf4' decode_req.req.bootstrap_room=7560137248611185822 with exception KVTransferError(bootstrap_room=7560137248611185822): Failed due to an unknown reason from another rank\n[2025-06-03 20:17:00 TP6] Decode transfer failed for request rank=6 decode_req.req.rid='4d69ee747c9f4ec4a166204e1811acf4' decode_req.req.bootstrap_room=7560137248611185822 with exception KVTransferError(bootstrap_room=7560137248611185822): Failed due to an unknown reason from another rank\n[2025-06-03 20:17:00 TP0] Decode transfer failed for request rank=0 decode_req.req.rid='4d69ee747c9f4ec4a166204e1811acf4' decode_req.req.bootstrap_room=7560137248611185822 with exception KVTransferError(bootstrap_room=7560137248611185822): Failed due to an unknown reason from another rank\n[2025-06-03 20:17:00 TP3] Decode transfer failed for request rank=3 decode_req.req.rid='4d69ee747c9f4ec4a166204e1811acf4' decode_req.req.bootstrap_room=7560137248611185822 with exception KVTransferError(bootstrap_room=7560137248611185822): Failed due to an unknown reason from another rank\n```\n\n### Reproduction\n\nabove\n\n### Environment\n\n2 node H20 ,each node have 8 device",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2025-06-04T02:26:55+00:00",
+    "closed_at": "2025-06-04T06:51:11+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6854/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6854"
+  },
+  {
+    "number": 2696,
+    "title": "[Feature] Add Support for Structured Output Format",
+    "body": "### Checklist\n\n- [X] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nIn many use cases, users need to extract or analyze data from the output generated by this tool/project. \n\n### Related resources\n\nhttps://docs.vllm.ai/en/latest/usage/structured_outputs.html#experimental-automatic-parsing-openai-api",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2025-01-01T16:55:53+00:00",
+    "closed_at": "2025-01-02T18:43:40+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2696/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2696"
+  },
+  {
+    "number": 1382,
+    "title": "[Bug] too many processes ",
+    "body": "### Checklist\r\n\r\n- [ ] 1. I have searched related issues but cannot get the expected help.\r\n- [ ] 2. The bug has not been fixed in the latest version.\r\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\r\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\r\n- [ ] 5. Please use English, otherwise it will be closed.\r\n\r\n### Describe the bug\r\n\r\napp.py \r\n```python\r\ndef set_qwen_runtime():\r\n    runtime = sgl.Runtime(\r\n        model_path=\"/root/luka/llm/cloth-attri-qwen-vl-chat-int4/checkpoint-6038-gptq-int4\",\r\n        tokenizer_path=\"/root/luka/llm/cloth-attri-qwen-vl-chat-int4/checkpoint-6038-gptq-int4\",\r\n        disable_cuda_graph=True,\r\n        mem_fraction_static=0.90,\r\n        enable_torch_compile=True\r\n    )\r\n    # runtime.endpoint.chat_template = get_chat_template(\"chatml\")\r\n    # runtime = sgl.Runtime(\r\n    #     model_path=\"lmms-lab/llava-next-72b\",\r\n    #     tokenizer_path=\"lmms-lab/llavanext-qwen-tokenizer\",\r\n    # )\r\n    runtime.endpoint.chat_template = get_chat_template(\"chatml-qwen\")\r\n    sgl.set_default_backend(runtime)\r\n    return runtime\r\n\r\n```\r\n\r\nI run it with `python3 app.py`,  and it somehow creates 184 processes\r\n```shell\r\nps aux|grep \"python3 app.py\" |wc -l\r\n```\r\n185\r\n\r\n\r\n\r\n### Reproduction\r\n\r\n\r\n### Environment\r\na docker run on a machine with TWO Intel(R) Xeon(R) Platinum 8457C \r\n```shell\r\ncat /proc/cpuinfo| grep \"processor\"| wc -l\r\n180\r\n```\r\nBut the docker used only 16 cores",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-09-11T03:12:46+00:00",
+    "closed_at": "2024-11-14T19:26:58+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1382/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1382"
+  },
+  {
+    "number": 1832,
+    "title": "[Bug] stop_str of qwen2-vl template should be a tuple not a str",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nhttps://github.com/sgl-project/sglang/blob/5e6c32657e384b023faf03d79e06f7727feedb7c/python/sglang/lang/chat_template.py#L147\n\n### Reproduction\n\n-\n\n### Environment\n\n-",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-10-29T07:42:03+00:00",
+    "closed_at": "2024-10-29T20:32:35+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/1832/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/1832"
+  },
+  {
+    "number": 4048,
+    "title": "[Error]Input length (160062 tokens) exceeds the maximum allowed length (59862 tokens).",
+    "body": "Hi, I am trying to use `sglang` to deploy a DeepSeek R1 serving program. The deployment command is as follows:\n\n```shell\npython -m sglang.launch_server \\\n--model-path  /models/deepseek-ai/deepseek-r1 \\\n--host 0.0.0.0 \\\n--port 8100 \\\n--tensor-parallel-size 8 \\\n--mem-fraction-static 0.9 \\\n--trust-remote-code \\\n--context-length 163840 \\\n--chunked-prefill-size 4096 \\\n--served-model-name DeepSeek-R1-Sglang-160k\n```\n\nAlthough I set the `--context-length` parameter to 160k and the serving program starts successfully, an error occurs when I send a request with content of length 160k. The error message is as follows:\n\n```shell\nif self.sampling_params.max_new_tokens > 0:\nTypeError: '>' not supported between instances of 'NoneType' and 'int'\n[2025-03-03 06:49:28 TP5] Input length (160062 tokens) exceeds the maximum allowed length (59862 tokens). Use a shorter input or enable --allow-auto-truncate.\n[2025-03-03 06:49:28 TP1] Input length (160062 tokens) exceeds the maximum allowed length (59862 tokens). Use a shorter input or enable --allow-auto-truncate.\n[2025-03-03 06:49:28 TP5] Scheduler hit an exception: Traceback (most recent call last):\nFile \"/home/ray/anaconda/lib/python3.11/site-packages/sglang/srt/managers/scheduler.py\", line 1796, in run_scheduler_process scheduler. event_loop_overlap\nFile \"/home/ray/anaconda3/lib/python3.11/site-packages/torch/utils/_contextlib.py\", line 116, in decorate_context return func(*args, **kwargs)\n```\n\nIn my command, I only set the `--context-length` to 163840 and did not specify the number 59862. Who determines this 59862 value?\n\n\n",
+    "labels": [
+      "help wanted",
+      "inactive",
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-04T03:59:50+00:00",
+    "closed_at": "2025-05-05T00:20:08+00:00",
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4048/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4048"
+  },
+  {
+    "number": 3196,
+    "title": "[Feature] deepseek v3 60 tokens/sec on deepseek API vs. 13 tokens/sec on sglang",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nThe PR for AMD + sglang and NVIDIA + sglang was that it was \"fully\" supported, but it seems something is off by the speed.  A single sequence runs at only order 13 tokens/sec for long generation with TTFT order 2 seconds.  This is consistent with vLLM as well.  True for either 8*MI300X or 8*H200 or 2*8*H200.\n\nFor only 37B parameters + 14B MOE parameters, this seems way too slow.  Also, deepseek API (before it started to break down) was order 60 tokens/sec early on and they advertise 60 tokens/sec.  This is more aligned with the parameters active.\n\nWhat is missing from truly fully suppporting deepseek V3 and R1?  Can these features be enumerated and added in a roadmap?\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-28T18:40:18+00:00",
+    "closed_at": "2025-02-15T01:21:30+00:00",
+    "comments": 29,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/3196/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/3196"
+  },
+  {
+    "number": 387,
+    "title": "Switch to non gated models",
+    "body": "When running\r\n```\r\npython -m sglang.launch_server --model-path meta-llama/Llama-2-7b-chat-hf --port 30000\r\n```\r\nI get\r\n```\r\nCannot access gated repo for url https://huggingface.co/meta-llama/Llama-2-7b-chat-hf/resolve/main/config.json.\r\nAccess to model meta-llama/Llama-2-7b-chat-hf is restricted. You must be authenticated to access it.\r\n```\r\nI assume it's the same for most people. How about switching it to a non gated model, e.g. Mistral or a quantized 8B Llama 3?",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-04-23T16:05:54+00:00",
+    "closed_at": "2024-07-25T06:33:28+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/387/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/387"
+  },
+  {
+    "number": 5644,
+    "title": "[Bug] Windows installation failure: \u201cFilename too long\u201d error when building wheel via pip",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nWhen installing `sgl-kernel` directly from GitHub via pip, the wheel build fails with numerous `Filename too long` errors originating from submodules (especially FlashInfer). There is also a warning about an undefined extra `[srt]`:\n\nhttps://gist.github.com/celsowm/a66016889d5c57030c4bbedc1978ec6f\n\n\n### Reproduction\n\n**Steps to Reproduce**  \n1. (Optional) Shorten temp path:\n   ```powershell\n   setx TEMP C:\\tmp && setx TMP C:\\tmp\n\n### Environment\n\n\n---\n\n**Environment**  \n- OS: Windows\u00a011\n- Python: 3.13.3 64\u2011bit  \n- pip: 24.x  \n- CMake: 4.0.0  \n- Visual Studio 2022 Community (MSVC 19.41)  \n- CUDA: 12.4  \n\n---\n\n\n",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-22T17:06:38+00:00",
+    "closed_at": "2025-06-22T00:21:55+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5644/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5644"
+  },
+  {
+    "number": 4208,
+    "title": "[Feature] sglang-router should perform extra status check on workers upon startup in addition to port reachability",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nWhen Co-launch Router and Runtimes (with cuda-graph and torch-compile), worker start-up can take longer than 300s, result in health check timeout. \n\nReproduce: start the router and server with `python3 -m sglang_router.launch_server  --enable-torch-compile`, I run with a Mistral 8*7B here. Then get error:\n\n```\nSingleProcess AUTOTUNE benchmarking takes 1.3427 seconds and 8.8429 seconds precompiling\nAUTOTUNE mm(4x4096, 4096x8)\n  mm 0.0134 ms 100.0%\n  triton_mm_99 0.0134 ms 99.8% ACC_TYPE='tl.float32', ALLOW_TF32=False, BLOCK_K=128, BLOCK_M=16, .......\nSingleProcess AUTOTUNE benchmarking takes 1.3672 seconds and 8.3651 seconds precompiling\n[Router (Rust)] 2025-03-08 02:33:09 - INFO - Worker http://0.0.0.0:31000 health check is pending with error: error sending request for url (http://0.0.0.0:31000/health)\n[Router (Rust)] 2025-03-08 02:33:09 - INFO - Worker http://0.0.0.0:31778 health check is pending with error: error sending request for url (http://0.0.0.0:31778/health)\n[Router (Rust)] 2025-03-08 02:33:09 - INFO - Unhealthy workers:\n[Router (Rust)] 2025-03-08 02:33:09 - INFO -   http://0.0.0.0:31000 - Error: error sending request for url (http://0.0.0.0:31000/health)\n[Router (Rust)] 2025-03-08 02:33:09 - INFO -   http://0.0.0.0:31778 - Error: error sending request for url (http://0.0.0.0:31778/health)\n[Router (Rust)] 2025-03-08 02:33:19 - INFO - Worker http://0.0.0.0:31000 health check is pending with error: error sending request for url (http://0.0.0.0:31000/health)\n[Router (Rust)] 2025-03-08 02:33:19 - INFO - Worker http://0.0.0.0:31778 health check is pending with error: error sending request for url (http://0.0.0.0:31778/health)\n[Router (Rust)] 2025-03-08 02:33:19 - INFO - Unhealthy workers:\n[Router (Rust)] 2025-03-08 02:33:19 - INFO -   http://0.0.0.0:31000 - Error: error sending request for url (http://0.0.0.0:31000/health)\n[Router (Rust)] 2025-03-08 02:33:19 - INFO -   http://0.0.0.0:31778 - Error: error sending request for url (http://0.0.0.0:31778/health)\nERROR - Timeout 300s waiting for workers [\"http://0.0.0.0:31000\", \"http://0.0.0.0:31778\"] to become healthy. Please set --router-worker-startup-timeout-secs (sglang_router.launch_server) or --worker-startup-timeout-secs (sglang_worker.router) to a larger value\n```\n\nHowever, as long as I avoid using sglang-router and simply start the server once in the normal manner to allow it to complete the compilation, then switch to router and this error will no longer occur.\n\nMy sglang version is:\n```\nsglang==0.4.3.post4\nsglang-router==0.1.4\n```\n\nAlthough there is a option `--router-worker-startup-timeout` to setup the waiting time, but strictly speaking, the worker is not inactive at this point but rather does not have an open port. I am uncertain about the original design intent of this option. But I noticed setting `--router-worker-startup-timeout` to a very big value may result in the router itself becoming unresponsive (e.g. No response to Ctrl+C) or sometimes worker is already dead, but router doesn't know it (I encountered a situation where a typo in the model path caused the worker to terminate almost immediately. However, since there are a log of output on the screen, I didn't notice it and waited for a long time before discovering the issue).\n\n I recommend that when the router and worker start up, in addition to checking the accessibility of the API port, the worker should also output its current status (whether it is compiling or capturing the CUDA graph) to avoid setting up a timeout threshold (it's also hard to know how long would it take when facing a new model).\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-08T12:09:22+00:00",
+    "closed_at": "2025-05-10T00:18:08+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4208/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4208"
+  },
+  {
+    "number": 7298,
+    "title": "[Feature] Partial Deserialization in rust router implementation.",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\nIn the current SGLang router implementation (written in Rust), we support:\n- Regular routing strategies: cache-aware, random, and round-robin\n- Prefill-decode (PD) disaggregated routing: random and power-of-two (Po2) based\n\nPreviously, incoming requests were deserialized from raw bytes into dictionaries (maps) to extract minimal fields (e.g., stream). However, with the addition of PD routing requirements, fields like bootstrap_port and bootstrap_room need to be injected into the request object. As a result, the router now deserializes the full request into a fully typed struct.\n\nThis shift raises performance concerns regarding deserialization overhead, especially under high QPS.\n\n### Goal\nEvaluate and implement an optimized solution that balances:\n- Performance overhead\n- Code maintainability\n- Flexibility for routing logic extensions\n\n### Task\n- [ ] Benchmark and compare the following approaches:\n  - [ ] Full deserialization of typed request objects\n  - [ ] Partial deserialization (extract only required fields)\n  - [ ] Byte-based routing (minimal/no deserialization)\n- [ ] Profile latency and CPU cost in each scenario (especially under load)\n  - [ ] Propose and implement a best-practice design based on findings: e.g., use partial deserialization for fast path (stream detection, method detection) and fallback to full deserialization only when needed (e.g., bootstrap injection)\n\n### Related resources\n\nsample bootstrap injection\n```rust\nfn inject_bootstrap_fields(\n        &self,\n        json: &mut serde_json::Value,\n        prefill: &EngineInfo,\n        batch_size: Option<usize>,\n    ) -> Result<(), String> {\n        let obj = json\n            .as_object_mut()\n            .ok_or(\"Request body is not a JSON object\")?;\n\n        // Generate bootstrap room\n        let room_id = rand::random::<u64>();\n\n        match batch_size {\n            Some(n) => {\n                // Batch format\n                obj.insert(\n                    \"bootstrap_host\".to_string(),\n                    serde_json::json!(vec![prefill.url.as_str(); n]),\n                );\n                obj.insert(\n                    \"bootstrap_port\".to_string(),\n                    serde_json::json!(vec![prefill.bootstrap_port; n]),\n                );\n                obj.insert(\n                    \"bootstrap_room\".to_string(),\n                    serde_json::json!(vec![room_id; n]),\n                );\n            }\n            None => {\n                // Single format\n                obj.insert(\n                    \"bootstrap_host\".to_string(),\n                    serde_json::json!(prefill.url.as_str()),\n                );\n                obj.insert(\n                    \"bootstrap_port\".to_string(),\n                    serde_json::json!(prefill.bootstrap_port),\n                );\n                obj.insert(\"bootstrap_room\".to_string(), serde_json::json!(room_id));\n            }\n        }\n\n        Ok(())\n    }\n```",
+    "labels": [],
+    "state": "open",
+    "created_at": "2025-06-18T04:32:58+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/7298/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/7298"
+  },
+  {
+    "number": 473,
+    "title": "../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [26,0,0] Assertion `srcIndex < srcSelectDimSize` failed.",
+    "body": "```\r\npython -m sglang.launch_server --model-path liuhaotian/llava-v1.6-34b --tokenizer-path liuhaotian/llava-v1.6-34b-tokenizer --port=30020 --host=\"0.0.0.0\" --tp-size=1 --random-seed=1234 --context-length=4096 &> 34b.log &\r\n```\r\n\r\nclient:\r\n```\r\npload = {'text': '<|im_start|>system\\nAnswer the questions.<|im_end|>user<image>\\nGive detailed information.<|im_end|>', 'sampling_params': {'max_new_tokens': 1024, 'temperature': 0.0, 'top_p': 1.0, 'presence_penalty': 0.14000000000000012, 'frequency_penalty': 2, 'stop': ['<|im_end|>']}, 'stream': False}\r\n```\r\n\r\nThe pload also has the image in bytes form, e.g.:\r\n```\r\ndata:image/png;base64,iVBORw0KGgoAAAANSU...\r\n```\r\n\r\nFor this image:\r\n\r\n![bigben](https://github.com/sgl-project/sglang/assets/2249614/7ecd8dd4-f934-4d87-87bc-60d98c5ea587)\r\n\r\n\r\nclient code:\r\n```\r\n        response = requests.post(\r\n            url,\r\n            json=pload,\r\n            stream=False,\r\n        )\r\n```\r\nstream False or True doesn't help.  url is just `'http://xxx.xxx.xxx.xxx:80/generate'`.\r\n\r\nThe `conv_chatml_direct` was used to construct the above.\r\n\r\nI get the same problem if I remove the sampling parameters.\r\n\r\nThis model works perfectly well on original llava worker-server-gradio setup, but has tons of issues with sglang.  This includes no response or total failure on the server.  This isn't just random issue, it happens repeatedly always and constantly, rare that things work.\r\n\r\nOther models like llama3 work perfectly fine with same code.\r\n\r\nThe error:\r\n\r\n\r\n```\r\nINFO:     172.16.0.20:22926 - \"GET /health HTTP/1.1\" 200 OK\r\nINFO:     172.16.0.20:18448 - \"GET /health HTTP/1.1\" 200 OK\r\nINFO:     172.16.0.20:42702 - \"GET /health HTTP/1.1\" 200 OK\r\nINFO:     172.16.0.20:1276 - \"GET /health HTTP/1.1\" 200 OK\r\nINFO:     172.16.0.20:26522 - \"GET /health HTTP/1.1\" 200 OK\r\nINFO:     172.16.0.20:19358 - \"GET /health HTTP/1.1\" 200 OK\r\nnew fill batch. #seq: 1. #cached_token: 9. #new_token: 8. #remaining_req: 0. #running_req: 0. tree_cache_hit_rate: 49.92%.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [0,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [1,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [2,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [3,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [4,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [5,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [6,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [7,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [8,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [9,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [10,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [11,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [12,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [13,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [14,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [15,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [16,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [17,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [18,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [19,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [20,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [21,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [22,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [23,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [24,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [25,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [26,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [27,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [28,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [29,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [30,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [40,0,0], thread: [31,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [19,0,0], thread: [96,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n../aten/src/ATen/native/cuda/Indexing.cu:1236: indexSelectSmallIndex: block: [19,0,0], thread: [97,0,0] Assertion `srcIndex < srcSelectDimSize` failed.\r\n... etc.\r\nException in ModelRpcClient:\r\nTraceback (most recent call last):\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/router/model_rpc.py\", line 175, in exposed_step\r\n    self.forward_step()\r\n  File \"/home/ubuntu/miniconda3/envs/sglang/lib/python3.10/site-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/router/model_rpc.py\", line 190, in forward_step\r\n    self.forward_fill_batch(new_batch)\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/router/model_rpc.py\", line 418, in forward_fill_batch\r\n    ) = self.model_runner.forward(batch, ForwardMode.EXTEND)\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/router/model_runner.py\", line 404, in forward\r\n    return self.forward_extend_multi_modal(batch)\r\n  File \"/home/ubuntu/miniconda3/envs/sglang/lib/python3.10/site-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/managers/router/model_runner.py\", line 393, in forward_extend_multi_modal\r\n    return self.model.forward(\r\n  File \"/home/ubuntu/sglang/python/sglang/srt/models/llava.py\", line 106, in forward\r\n    .cpu()\r\nRuntimeError: CUDA error: device-side assert triggered\r\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\r\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1.\r\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\r\n\r\netc.  this repeats forever and server is dead.\r\n```\r\n\r\n\r\nRelated? https://github.com/sgl-project/sglang/issues/461",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-05-25T01:53:51+00:00",
+    "closed_at": "2024-08-13T01:05:23+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/473/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/473"
+  },
+  {
+    "number": 5806,
+    "title": "[Bug] --quantization w8a8_int8 report RuntimeError: mat_a must be a 2D tensor",
+    "body": "### Checklist\n\n- [ ] 1. I have searched related issues but cannot get the expected help.\n- [ ] 2. The bug has not been fixed in the latest version.\n- [ ] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [ ] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n1)sglang[all] version 0.4.5.* 0.4.6.* is error\npython3 -m sglang.launch_server --model-path   RedHatAI/Qwen2.5-VL-7B-Instruct-quantized.w8a8   --host 0.0.0.0 --port 9080 --mem-fraction-static 0.8  --chat-template=qwen2-vl   --trust-remote-code --chunked-prefill-size 4096 --enable-torch-compile --quantization w8a8_int8\n\n2)sglang[all] version 0.4.4.*  is ok\npython3 -m sglang.launch_server --model-path   RedHatAI/Qwen2.5-VL-7B-Instruct-quantized.w8a8   --host 0.0.0.0 --port 9080 --mem-fraction-static 0.8  --chat-template=qwen2-vl   --trust-remote-code --chunked-prefill-size 4096 --enable-torch-compile --quantization w8a8_int8\n\n\n\n\n### Reproduction\n\n1)sglang[all] version 0.4.5.* 0.4.6.* is error\npython3 -m sglang.launch_server --model-path   RedHatAI/Qwen2.5-VL-7B-Instruct-quantized.w8a8   --host 0.0.0.0 --port 9080 --mem-fraction-static 0.8  --chat-template=qwen2-vl   --trust-remote-code --chunked-prefill-size 4096 --enable-torch-compile --quantization w8a8_int8\n\n2)sglang[all] version 0.4.4.*  is ok\npython3 -m sglang.launch_server --model-path   RedHatAI/Qwen2.5-VL-7B-Instruct-quantized.w8a8   --host 0.0.0.0 --port 9080 --mem-fraction-static 0.8  --chat-template=qwen2-vl   --trust-remote-code --chunked-prefill-size 4096 --enable-torch-compile --quantization w8a8_int8\n\n\n### Environment\n\npython -m check.env\n/usr/bin/python3: Error while finding module specification for 'check.env' (ModuleNotFoundError: No module named 'check')\n/content# python -m sglang.check_env\nPython: 3.11.12 (main, Apr  9 2025, 08:55:54) [GCC 11.4.0]\nCUDA available: True\nGPU 0: Tesla T4\nGPU 0 Compute Capability: 7.5\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.5, V12.5.82\nCUDA Driver Version: 550.54.15\nPyTorch: 2.6.0+cu124\nsglang: 0.4.6\nsgl_kernel: 0.0.9.post2\nflashinfer: Module Not Found\ntriton: 3.2.0\ntransformers: 4.51.1\ntorchao: 0.10.0\nnumpy: 2.0.2\naiohttp: 3.11.15\nfastapi: 0.115.12\nhf_transfer: 0.1.9\nhuggingface_hub: 0.30.2\ninteregular: 0.3.3\nmodelscope: 1.25.0\norjson: 3.10.16\noutlines: 0.1.11\npackaging: 24.2\npsutil: 5.9.5\npydantic: 2.11.3\nmultipart: Module Not Found\nzmq: Module Not Found\nuvicorn: 0.34.2\nuvloop: 0.21.0\nvllm: Module Not Found\nxgrammar: 0.1.17\nopenai: 1.75.0\ntiktoken: 0.9.0\nanthropic: 0.50.0\nlitellm: 1.67.4.post1\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      0-7     0               N/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nHypervisor vendor: KVM\nulimit soft: 1048576",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-28T04:06:02+00:00",
+    "closed_at": "2025-07-06T00:22:06+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5806/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5806"
+  },
+  {
+    "number": 86,
+    "title": "OOM Error on A40 GPU [Jupyter notebook]",
+    "body": "I was trying the following code sample (adapted from the discussion in https://github.com/sgl-project/sglang/issues/81) - \r\n\r\n```\r\nimport sglang as sgl\r\nfrom sglang import function, gen, set_default_backend, Runtime\r\n\r\n@sgl.function\r\ndef tool_use(s, question):\r\n    s += \"To answer this question: \" + question + \", \"\r\n    s += \"I need to use a \" + sgl.gen(\"tool\", choices=[\"calculator\", \"web browser\"]) + \". \"\r\n    if s[\"tool\"] == \"calculator\":\r\n        s += \"The math expression is\" + sgl.gen(\"expression\")\r\n    elif s[\"tool\"] == \"web browser\":\r\n        s += \"The website url is\" + sgl.gen(\"url\")\r\n\r\nruntime = Runtime(model_path='Model_Saves/teknium--OpenHermes-2.5-Mistral-7B')\r\nset_default_backend(runtime)\r\n\r\ndriver_tool_use()\r\n```\r\n   \r\nI firstly got the same error as described here: https://github.com/sgl-project/sglang/issues/41#issuecomment-1899347676\r\nI then followed Solution 2 from this [comment](https://github.com/sgl-project/sglang/issues/41#issuecomment-1899354400) and the error disappeared but I now get an OOM error even though I have `46068 MiB` of space on the GPU which is more than what a 7B model needs. On checking with `nvidia-smi` I see `41158MiB` in use. I'm running this in a Jupyter notebook.\r\n\r\nThe error - \r\n\r\n```\r\nrouter init state: Traceback (most recent call last):\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/sglang/srt/managers/router/manager.py\", line 68, in start_router_process\r\n    model_client = ModelRpcClient(server_args, port_args)\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/sglang/srt/managers/router/model_rpc.py\", line 480, in __init__\r\n    self.model_server.exposed_init_model(0, server_args, port_args)\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/sglang/srt/managers/router/model_rpc.py\", line 53, in exposed_init_model\r\n    self.model_runner = ModelRunner(\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/sglang/srt/managers/router/model_runner.py\", line 233, in __init__\r\n    self.load_model()\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/sglang/srt/managers/router/model_runner.py\", line 278, in load_model\r\n    model = model_class(\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/sglang/srt/models/llama2.py\", line 258, in __init__\r\n    self.model = LlamaModel(config, linear_method)\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/sglang/srt/models/llama2.py\", line 218, in __init__\r\n    [\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/sglang/srt/models/llama2.py\", line 219, in <listcomp>\r\n    LlamaDecoderLayer(config, i, linear_method)\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/sglang/srt/models/llama2.py\", line 167, in __init__\r\n    self.mlp = LlamaMLP(\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/sglang/srt/models/llama2.py\", line 49, in __init__\r\n    self.down_proj = RowParallelLinear(\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/vllm/model_executor/layers/linear.py\", line 495, in __init__\r\n    self.linear_weights = self.linear_method.create_weights(\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/vllm/model_executor/layers/linear.py\", line 55, in create_weights\r\n    weight = Parameter(torch.empty(output_size_per_partition,\r\n  File \"/NS/llm-1/nobackup/afkhan/anaconda3/envs/peft_mem/lib/python3.10/site-packages/torch/utils/_device.py\", line 77, in __torch_function__\r\n    return func(*args, **kwargs)\r\ntorch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 112.00 MiB. GPU 0 has a total capacty of 44.39 GiB of which 77.62 MiB is free. Process 535546 has 40.19 GiB memory in use. Including non-PyTorch memory, this process has 4.11 GiB memory in use. Of the allocated memory 3.80 GiB is allocated by PyTorch, and 15.38 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF\r\n\r\ndetoken init state: init ok\r\n\r\n```",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-01-23T12:03:01+00:00",
+    "closed_at": "2024-07-25T06:32:01+00:00",
+    "comments": 6,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/86/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/86"
+  },
+  {
+    "number": 6707,
+    "title": "[Feature] How to profile the performance of multi-machine Decode instances without starting Prefill instances?",
+    "body": "### Checklist\n\n- [x] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nI hope to only profile the performance of Decode instances. I noticed that after starting a Decode instance, it will undergo warmup, and this warmup does not require the participation of Prefill instances. Can I start Decode instances in the way described in https://github.com/sgl-project/sglang/issues/6017 for starting multi-machine Decode instances and modify the warmup process of the Decode instances to achieve my goal?\n\n### Related resources\n\n_No response_",
+    "labels": [],
+    "state": "open",
+    "created_at": "2025-05-28T12:11:05+00:00",
+    "closed_at": null,
+    "comments": 12,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6707/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6707"
+  },
+  {
+    "number": 2361,
+    "title": "[Bug] sglang-router failure",
+    "body": "### Checklist\n\n- [X] 1. I have searched related issues but cannot get the expected help.\n- [X] 2. The bug has not been fixed in the latest version.\n- [X] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [X] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [X] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n```bash \r\npython3 -m sglang_router.launch_server --quantization fp8 --enable-overlap-schedule   --model $LOCAL_PATH  --attention-backend $ATTENTION_BACKEND --stream-interval  $STREAM_INTERVAL --max-prefill-tokens $MODEL_LEN  --root-path $ROOT_PATH --trust-remote-code  --mem-frac $MEM_FRAC --tp $TP_SIZE --dp $DP_SIZE --kv-cache-dtype $KV_CACHE_DTYPE --port $PORT0 --mem-fraction-static $MEM_FRACTION_STATIC --schedule-conservativeness $SCHEDULE_CONSERVATIVENESS --context-length $MODEL_LEN  --chunked-prefill-size $CHUNKED_PREFILL_SIZE\r\n```\r\n\r\nerror:\r\n```bash\r\n[2024-12-05 17:27:10 TP1] Capture cuda graph begin. This can take up to several minutes.\r\n[2024-12-05 17:27:10 TP0] Capture cuda graph begin. This can take up to several minutes.\r\nINFO 12-05 17:27:24 custom_all_reduce.py:233] Registering 2967 cuda graph addresses\r\nINFO 12-05 17:27:24 custom_all_reduce.py:233] Registering 2967 cuda graph addresses\r\n[2024-12-05 17:27:24 TP0] max_total_num_tokens=1058405, max_prefill_tokens=32768, max_running_requests=4097, context_len=32768\r\n[2024-12-05 17:27:24 TP1] max_total_num_tokens=1058405, max_prefill_tokens=32768, max_running_requests=4097, context_len=32768\r\n[2024-12-05 17:27:24] host:None\r\n[2024-12-05 17:27:24] INFO:     Started server process [8158]\r\n[2024-12-05 17:27:24] INFO:     Waiting for application startup.\r\n[2024-12-05 17:27:24] INFO:     Application startup complete.\r\n[2024-12-05 17:27:24] ERROR:    [Errno 98] error while attempting to bind on address ('::', 31000, 0, 0): address already in use\r\n[2024-12-05 17:27:24] INFO:     Waiting for application shutdown.\r\n[2024-12-05 17:27:24] INFO:     Application shutdown complete.\r\n[2024-12-05 17:29:25] Initialization failed. warmup error: Traceback (most recent call last):\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/urllib3/connection.py\", line 199, in _new_conn\r\n    sock = connection.create_connection(\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/urllib3/util/connection.py\", line 85, in create_connection\r\n    raise err\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/urllib3/util/connection.py\", line 73, in create_connection\r\n    sock.connect(sa)\r\nConnectionRefusedError: [Errno 111] Connection refused\r\n\r\nThe above exception was the direct cause of the following exception:\r\n\r\nTraceback (most recent call last):\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 789, in urlopen\r\n    response = self._make_request(\r\n               ^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 495, in _make_request\r\n    conn.request(\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/urllib3/connection.py\", line 441, in request\r\n    self.endheaders()\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/http/client.py\", line 1277, in endheaders\r\n    self._send_output(message_body, encode_chunked=encode_chunked)\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/http/client.py\", line 1037, in _send_output\r\n    self.send(msg)\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/http/client.py\", line 975, in send\r\n    self.connect()\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/urllib3/connection.py\", line 279, in connect\r\n    self.sock = self._new_conn()\r\n                ^^^^^^^^^^^^^^^^\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/urllib3/connection.py\", line 214, in _new_conn\r\n    raise NewConnectionError(\r\nurllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x7f998560add0>: Failed to establish a new connection: [Errno 111] Connection refused\r\n\r\nThe above exception was the direct cause of the following exception:\r\n\r\nTraceback (most recent call last):\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/requests/adapters.py\", line 667, in send\r\n    resp = conn.urlopen(\r\n           ^^^^^^^^^^^^^\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 843, in urlopen\r\n    retries = retries.increment(\r\n              ^^^^^^^^^^^^^^^^^^\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/urllib3/util/retry.py\", line 519, in increment\r\n    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]\r\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nurllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='0.0.0.0', port=31000): Max retries exceeded with url: /get_model_info (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f998560add0>: Failed to establish a new connection: [Errno 111] Connection refused'))\r\n\r\nDuring handling of the above exception, another exception occurred:\r\n\r\nTraceback (most recent call last):\r\n  File \"/opt/tiger/custome_sglang/python/sglang/srt/server.py\", line 562, in _wait_and_warmup\r\n    res = requests.get(url + \"/get_model_info\", timeout=5, headers=headers)\r\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/requests/api.py\", line 73, in get\r\n    return request(\"get\", url, params=params, **kwargs)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/requests/api.py\", line 59, in request\r\n    return session.request(method=method, url=url, **kwargs)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/requests/sessions.py\", line 589, in request\r\n    resp = self.send(prep, **send_kwargs)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/requests/sessions.py\", line 703, in send\r\n    r = adapter.send(request, **kwargs)\r\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/site-packages/requests/adapters.py\", line 700, in send\r\n    raise ConnectionError(e, request=request)\r\nrequests.exceptions.ConnectionError: HTTPConnectionPool(host='0.0.0.0', port=31000): Max retries exceeded with url: /get_model_info (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f998560add0>: Failed to establish a new connection: [Errno 111] Connection refused'))\r\n\r\n[Router (Python)] 2024-12-05 17:31:47 - ERROR - Server on port 31000 failed to become healthy\r\n[Router (Python)] 2024-12-05 17:31:47 - ERROR - Not all servers are healthy. Shutting down...\r\n[Router (Python)] 2024-12-05 17:31:47 - INFO - Cleaning up processes...\r\n[Router (Python)] 2024-12-05 17:31:47 - INFO - Cleaning up processes...\r\n[Router (Python)] 2024-12-05 17:31:47 - INFO - Cleaning up processes...\r\n/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/multiprocessing/resource_tracker.py:224: UserWarning: resource_tracker: There appear to be 2 leaked semaphore objects to clean up at shutdown\r\n  warnings.warn('resource_tracker: There appear to be %d '\r\n/home/tiger/.pyenv/versions/3.11.2/lib/python3.11/multiprocessing/resource_tracker.py:224: UserWarning: resource_tracker: There appear to be 1 leaked shared_memory objects to clean up at shutdown\r\n  warnings.warn('resource_tracker: There appear to be %d '\r\n  ```\n\n### Reproduction\n\n```bash\r\npython3 -m sglang_router.launch_server --quantization fp8 --enable-overlap-schedule   --model $LOCAL_PATH  --attention-backend $ATTENTION_BACKEND --stream-interval  $STREAM_INTERVAL --max-prefill-tokens $MODEL_LEN  --root-path $ROOT_PATH --trust-remote-code  --mem-frac $MEM_FRAC --tp $TP_SIZE --dp $DP_SIZE --kv-cache-dtype $KV_CACHE_DTYPE --port $PORT0 --mem-fraction-static $MEM_FRACTION_STATIC --schedule-conservativeness $SCHEDULE_CONSERVATIVENESS --context-length $MODEL_LEN  --chunked-prefill-size $CHUNKED_PREFILL_SIZE\r\n```\n\n### Environment\n\nPython: 3.11.2 (main, Jul 23 2024, 17:09:09) [GCC 10.2.1 20210110]\r\nCUDA available: True\r\nGPU 0,1: NVIDIA H20\r\nGPU 0,1 Compute Capability: 9.0\r\nCUDA_HOME: /usr/local/cuda\r\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\r\nCUDA Driver Version: 535.161.08\r\nPyTorch: 2.4.0+cu124\r\nsglang: 0.3.5\r\nflashinfer: 0.1.6+cu124torch2.4\r\ntriton: 3.0.0\r\ntransformers: 4.46.3\r\nrequests: 2.32.3\r\ntqdm: 4.67.1\r\nnumpy: 1.26.3\r\naiohttp: 3.11.7\r\nfastapi: 0.115.5\r\nhf_transfer: 0.1.8\r\nhuggingface_hub: 0.26.2\r\ninteregular: 0.3.3\r\npackaging: 24.1\r\nPIL: 10.4.0\r\npsutil: 6.1.0\r\npydantic: 2.10.2\r\nuvicorn: 0.32.1\r\nuvloop: 0.21.0\r\nzmq: 26.2.0\r\nvllm: 0.6.3.post1\r\nmultipart: 0.0.19\r\nopenai: 1.56.2\r\nanthropic: 0.40.0\r\nNVIDIA Topology: \r\n        GPU0    GPU1    NIC0    NIC1    NIC2    NIC3    NIC4    NIC5    NIC6    NIC7    CPU Affinity    NUMA Affinity   GPU NUMA ID\r\nGPU0     X      NV18    PIX     NODE    NODE    NODE    SYS     SYS     SYS     SYS     1-47,97-143     0               N/A\r\nGPU1    NV18     X      NODE    PIX     NODE    NODE    SYS     SYS     SYS     SYS     1-47,97-143     0               N/A\r\nNIC0    PIX     NODE     X      NODE    NODE    NODE    SYS     SYS     SYS     SYS\r\nNIC1    NODE    PIX     NODE     X      NODE    NODE    SYS     SYS     SYS     SYS\r\nNIC2    NODE    NODE    NODE    NODE     X      NODE    SYS     SYS     SYS     SYS\r\nNIC3    NODE    NODE    NODE    NODE    NODE     X      SYS     SYS     SYS     SYS\r\nNIC4    SYS     SYS     SYS     SYS     SYS     SYS      X      NODE    NODE    NODE\r\nNIC5    SYS     SYS     SYS     SYS     SYS     SYS     NODE     X      NODE    NODE\r\nNIC6    SYS     SYS     SYS     SYS     SYS     SYS     NODE    NODE     X      NODE\r\nNIC7    SYS     SYS     SYS     SYS     SYS     SYS     NODE    NODE    NODE     X \r\n\r\nLegend:\r\n\r\n  X    = Self\r\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\r\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\r\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\r\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\r\n  PIX  = Connection traversing at most a single PCIe bridge\r\n  NV#  = Connection traversing a bonded set of # NVLinks\r\n\r\nNIC Legend:\r\n\r\n  NIC0: mlx5_1\r\n  NIC1: mlx5_2\r\n  NIC2: mlx5_3\r\n  NIC3: mlx5_4\r\n  NIC4: mlx5_5\r\n  NIC5: mlx5_6\r\n  NIC6: mlx5_7\r\n  NIC7: mlx5_8\r\n\r\n\r\nulimit soft: 1024768",
+    "labels": [
+      "inactive"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-05T09:41:25+00:00",
+    "closed_at": "2025-04-02T00:18:13+00:00",
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2361/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2361"
+  },
+  {
+    "number": 4711,
+    "title": "[Bug] The Reasoning Parser doesn't consider the situation that there's no `</think>` tag in the output.",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\nHi team, \n\nI encountered a situation that the output of `QWQ-32B` model doesn't output any `<think>` and `</think>` tag, especially when working with `--grammar-backend xgrammer` which should treat the response content as `.content` instead of `.reasoning_content`, while SGLang currently do the opposite. \n\n### Reproduction\n\nthe server is launched using docker:\n```\ndocker run --gpus 1,2 \\\n    -d \\\n    --shm-size 32g \\\n    --restart always \\\n    -p 8080:8080 \\\n    -v /root/.cache/huggingface/:/root/.cache/huggingface/ \\\n    --ipc=host \\\n    lmsysorg/sglang:v0.4.4.post1-cu124-srt \\\n    python3 -m sglang.launch_server \\\n    --model-path /root/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0/ \\\n    --host 0.0.0.0 \\\n    --port 8080 \\\n    --dtype auto \\\n    --tp-size 2 \\\n    --log-level debug \\\n    --chunked-prefill-size 4096 \\\n    --reasoning-parser deepseek-r1 \\\n    --grammar-backend xgrammar \\\n    --tool-call-parser qwen25 \\\n    --enable-metrics\n```\n\nthe client is the codes in the https://github.com/sgl-project/sglang/blob/main/docs/backend/structured_outputs.ipynb \n\n```\n\nimport openai\nfrom openai import OpenAI\nimport os\nfrom pydantic import BaseModel, Field\n\nURL = \"http://localhost:8080/v1\"\nMODEL = \"/root/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0/\"\n\n\nclient = OpenAI(\n    base_url=URL,\n    api_key=\"*\"\n)\n\n# Define the schema using Pydantic\nclass CapitalInfo(BaseModel):\n    name: str = Field(..., pattern=r\"^\\w+$\", description=\"Name of the capital city\")\n    population: int = Field(..., description=\"Population of the capital city\")\n\n\nresponse = client.chat.completions.create(\n    model=MODEL,\n    messages=[\n        {\n            \"role\": \"user\",\n            \"content\": \"Please generate the information of the capital of France in the JSON format.\",\n        },\n    ],\n    temperature=0,\n    max_tokens=128,\n    response_format={\n        \"type\": \"json_schema\",\n        \"json_schema\": {\n            \"name\": \"foo\",\n            # convert the pydantic model to json schema\n            \"schema\": CapitalInfo.model_json_schema(),\n        },\n    },\n)\n\nreasoning_content = response.choices[0].message.reasoning_content\nprint(f\"Reasoning Content: {reasoning_content}\")\nresponse_content = response.choices[0].message.content\nprint(f\"Response Content: {response_content}\")\n```\n\nthe output will be like:\n```\nReasoning Content: {\n  \"name\": \"Paris\",\n  \"population\": 2148271\n  \t   \n}\nResponse Content: \n```\n\n### Environment\n\n```\nPython: 3.10.12 (main, Feb  4 2025, 14:57:36) [GCC 11.4.0]\nCUDA available: True\nGPU 0,1,2,3: NVIDIA A100-SXM4-40GB\nGPU 0,1,2,3 Compute Capability: 8.0\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.131\nCUDA Driver Version: 550.144.03\nPyTorch: 2.5.1+cu124\nsgl_kernel: 0.0.5\nflashinfer: 0.2.3+cu124torch2.5\ntriton: 3.1.0\ntransformers: 4.48.3\ntorchao: 0.9.0\nnumpy: 1.26.4\naiohttp: 3.11.13\nfastapi: 0.115.11\nhf_transfer: 0.1.9\nhuggingface_hub: 0.29.3\ninteregular: 0.3.3\nmodelscope: 1.23.2\norjson: 3.10.15\npackaging: 24.2\npsutil: 7.0.0\npydantic: 2.10.6\nmultipart: 0.0.20\nzmq: 26.3.0\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.7.2\nopenai: 1.66.3\ntiktoken: 0.9.0\nanthropic: Module Not Found\nlitellm: Module Not Found\ndecord: 0.6.0\nNVIDIA Topology:\n\tGPU0\tGPU1\tGPU2\tGPU3\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\nGPU0\t X \tNV12\tNV12\tNV12\t0-23,48-71\t0\t\tN/A\nGPU1\tNV12\t X \tNV12\tNV12\t0-23,48-71\t0\t\tN/A\nGPU2\tNV12\tNV12\t X \tNV12\t0-23,48-71\t0\t\tN/A\nGPU3\tNV12\tNV12\tNV12\t X \t0-23,48-71\t0\t\tN/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nHypervisor vendor: KVM\nulimit soft: 32768\n```",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2025-03-24T06:34:22+00:00",
+    "closed_at": "2025-04-08T04:49:11+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4711/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4711"
+  },
+  {
+    "number": 549,
+    "title": "Chinese Regex BUG in req.jump_forward_map.jump_forward_byte",
+    "body": "reproduce code:\r\n```\r\n@sgl.function\r\ndef fabric_gen(s):\r\n    s+=sgl.user(\"\u7528JSON\u6570\u7ec4\u5217\u51fa\u4e00\u79cd\u8863\u670d\u9886\u5f62\")\r\n    r= '\\\\[\"(\u5a03\u5a03\u9886|\u9ad8\u9886|\u6d77\u519b\u9886|\u659c\u9886|\u8fde\u5e3d|\u7ffb\u9886|\u4e00\u5b57\u9886)\"\\\\]'\r\n    s += sgl.assistant(sgl.gen(\"json_output\", max_tokens=256, regex=r))\r\n\r\nif __name__ == \"__main__\":\r\n    set_runtime() \r\n    print(fabric_gen.run().text())\r\n```\r\n\r\nHere is full error information\r\n\r\n```\r\nTraceback (most recent call last):\r\n  File \"/root/luka/sglang/python/sglang/srt/managers/controller/tp_worker.py\", line 199, in exposed_step\r\n    self.forward_step()\r\n  File \"/root/anaconda3/envs/sglang/lib/python3.11/site-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n           ^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/luka/sglang/python/sglang/srt/managers/controller/tp_worker.py\", line 229, in forward_step\r\n    self.forward_decode_batch(self.running_batch)\r\n  File \"/root/luka/sglang/python/sglang/srt/managers/controller/tp_worker.py\", line 562, in forward_decode_batch\r\n    jump_forward_reqs = batch.check_for_jump_forward(self.model_runner)\r\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/luka/sglang/python/sglang/srt/managers/controller/infer_batch.py\", line 468, in check_for_jump_forward\r\n    jump_forward_bytes = req.jump_forward_map.jump_forward_byte(\r\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/luka/sglang/python/sglang/srt/constrained/jump_forward.py\", line 123, in jump_forward_byte\r\n    assert e.byte is not None and e.byte_next_state is not None\r\nAssertionError\r\n\r\nException in ControllerSingle:\r\nTraceback (most recent call last):\r\n  File \"/root/luka/sglang/python/sglang/srt/managers/controller/manager_single.py\", line 96, in start_controller_process\r\n    loop.run_until_complete(controller.loop_for_forward())\r\n  File \"uvloop/loop.pyx\", line 1517, in uvloop.loop.Loop.run_until_complete\r\n  File \"/root/luka/sglang/python/sglang/srt/managers/controller/manager_single.py\", line 45, in loop_for_forward\r\n    out_pyobjs = await self.model_client.step(next_step_input)\r\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/luka/sglang/python/sglang/srt/managers/controller/tp_worker.py\", line 765, in _func\r\n    return f(*args, **kwargs)\r\n           ^^^^^^^^^^^^^^^^^^\r\n  File \"/root/luka/sglang/python/sglang/srt/managers/controller/tp_worker.py\", line 199, in exposed_step\r\n    self.forward_step()\r\n  File \"/root/anaconda3/envs/sglang/lib/python3.11/site-packages/torch/utils/_contextlib.py\", line 115, in decorate_context\r\n    return func(*args, **kwargs)\r\n           ^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/luka/sglang/python/sglang/srt/managers/controller/tp_worker.py\", line 229, in forward_step\r\n    self.forward_decode_batch(self.running_batch)\r\n  File \"/root/luka/sglang/python/sglang/srt/managers/controller/tp_worker.py\", line 562, in forward_decode_batch\r\n    jump_forward_reqs = batch.check_for_jump_forward(self.model_runner)\r\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/luka/sglang/python/sglang/srt/managers/controller/infer_batch.py\", line 468, in check_for_jump_forward\r\n    jump_forward_bytes = req.jump_forward_map.jump_forward_byte(\r\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/luka/sglang/python/sglang/srt/constrained/jump_forward.py\", line 123, in jump_forward_byte\r\n    assert e.byte is not None and e.byte_next_state is not None\r\nAssertionError\r\n\r\n/root/luka/sglang/python/sglang/lang/interpreter.py:328: UserWarning: Error in stream_executor: Traceback (most recent call last):\r\n  File \"/root/luka/sglang/python/sglang/lang/interpreter.py\", line 326, in _thread_worker_func\r\n    self._execute(expr)\r\n  File \"/root/luka/sglang/python/sglang/lang/interpreter.py\", line 369, in _execute\r\n    self._execute(x)\r\n  File \"/root/luka/sglang/python/sglang/lang/interpreter.py\", line 364, in _execute\r\n    self._execute_gen(other)\r\n  File \"/root/luka/sglang/python/sglang/lang/interpreter.py\", line 494, in _execute_gen\r\n    comp, meta_info = self.backend.generate(\r\n                      ^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/luka/sglang/python/sglang/backend/runtime_endpoint.py\", line 130, in generate\r\n    res = http_request(\r\n          ^^^^^^^^^^^^^\r\n  File \"/root/luka/sglang/python/sglang/utils.py\", line 101, in http_request\r\n    resp = urllib.request.urlopen(req, data=data, cafile=verify)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/anaconda3/envs/sglang/lib/python3.11/urllib/request.py\", line 216, in urlopen\r\n    return opener.open(url, data, timeout)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/anaconda3/envs/sglang/lib/python3.11/urllib/request.py\", line 519, in open\r\n    response = self._open(req, data)\r\n               ^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/anaconda3/envs/sglang/lib/python3.11/urllib/request.py\", line 536, in _open\r\n    result = self._call_chain(self.handle_open, protocol, protocol +\r\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/anaconda3/envs/sglang/lib/python3.11/urllib/request.py\", line 496, in _call_chain\r\n    result = func(*args)\r\n             ^^^^^^^^^^^\r\n  File \"/root/anaconda3/envs/sglang/lib/python3.11/urllib/request.py\", line 1377, in http_open\r\n    return self.do_open(http.client.HTTPConnection, req)\r\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/anaconda3/envs/sglang/lib/python3.11/urllib/request.py\", line 1352, in do_open\r\n    r = h.getresponse()\r\n        ^^^^^^^^^^^^^^^\r\n  File \"/root/anaconda3/envs/sglang/lib/python3.11/http/client.py\", line 1374, in getresponse\r\n    response.begin()\r\n  File \"/root/anaconda3/envs/sglang/lib/python3.11/http/client.py\", line 318, in begin\r\n    version, status, reason = self._read_status()\r\n                              ^^^^^^^^^^^^^^^^^^^\r\n  File \"/root/anaconda3/envs/sglang/lib/python3.11/http/client.py\", line 287, in _read_status\r\n    raise RemoteDisconnected(\"Remote end closed connection without\"\r\nhttp.client.RemoteDisconnected: Remote end closed connection without response\r\n\r\n```\r\n\r\nbuild sglang from main branch with lastest commit 40e53d65cbb8b609a6ff8e977d2318044d0f0ee0\r\noutlines  0.0.44\r\n",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-06-15T03:01:26+00:00",
+    "closed_at": "2024-06-16T13:45:05+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/549/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/sgl-project/sglang/issues/549"
+  },
+  {
+    "number": 5499,
+    "title": "[BUG] some problems with HiRadixCache",
+    "body": "@xiezhq-hermann \nThe background of the problem we described: \nWe use HiRadixCache in the scenario of PD separation, write_back strategy. The local radix tree will send update events when nodes are added and deleted in rank 0, and the global radix tree will be adjusted according to the update events. When the request comes, we first match according to the global radix tree, and decide to choose P nodes and D nodes according to the number of prefix matches and load. We found that the number of matches in the global tree is sometimes much larger than the number of matches in the local number under the premise of distinguishing between instances. It looks like the host indices is not matched.\nIn the process of troubleshooting the problem, we encountered the following problems:\n\n## 1\u3001`pending_nodes` is not used\nhttps://github.com/sgl-project/sglang/blob/8f783c1943af25e5bbccff628ba4385579b044e1/python/sglang/srt/mem_cache/hiradix_cache.py#L141-L179\n\n`pending_nodes` is not used, this will cause the parent node not to be placed in the heap. Maybe assigned a value here:\n\n```python\n if self.cache_controller.write_policy == \"write_back\": \n     num_evicted += self.write_backup(x) \n     ----> pending_nodes.append(x) <----\n```\n\n## 2\u3001token_to_kv_pool_allocator not release device_indices if write_policy is write_back\nhttps://github.com/sgl-project/sglang/blob/06d0a3d92b25ee24e33cd8150d738b0f5a870889/python/sglang/srt/mem_cache/hiradix_cache.py#L107-L121\n\n`token_to_kv_pool_allocator` not release device_indices if write_policy is write_back, maybe it should be released in the writing_check function\n```python\n    def writing_check(self):\n        ...\n        for _ in range(queue_size.item()):\n            ack_id = self.cache_controller.ack_write_queue.get()\n            self.dec_lock_ref(self.ongoing_write_through[ack_id])\n            ----> self._evict_write_through(self.ongoing_write_through[ack_id]) <----\n            del self.ongoing_write_through[ack_id]\n```\n\n# 3\u3001inc_lock_ref function in writing_check causes all parent nodes to be locked.\nThis function of `inc_lock_ref` called by `write_check` wiil lock node parents so that parent cannot be added to the heap\n\nhttps://github.com/sgl-project/sglang/blob/06d0a3d92b25ee24e33cd8150d738b0f5a870889/python/sglang/srt/mem_cache/hiradix_cache.py#L90-L93\n\nhttps://github.com/sgl-project/sglang/blob/06d0a3d92b25ee24e33cd8150d738b0f5a870889/python/sglang/srt/mem_cache/hiradix_cache.py#L148-L151\n\n",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2025-04-17T13:45:53+00:00",
+    "closed_at": "2025-04-21T18:46:49+00:00",
+    "comments": 10,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/5499/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/5499"
+  },
+  {
+    "number": 4511,
+    "title": "[Feature] generate till it reaches model's context length",
+    "body": "### Checklist\n\n- [ ] 1. If the issue you raised is not a feature but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [ ] 2. Please use English, otherwise it will be closed.\n\n### Motivation\n\nBy default, sglang uses 128 tokens as the max_new_tokens even if None is given. Is there a way to specify that the model generated till it reaches it max model length? I have a different sequences of generation using sglang frontend language, so I cant keep track of the input lengths etc. I cant use one single max_new_tokens for different generations. If I put the max_new_tokens hardcoded, the input length is being restricted.\n\nLet me know if I can help implemenatation of such a feature, it would be very helpful. I am thinking of an implementation that takes the current input token length and mas token length to calculate max_new_tokens?\nPlease let me know if this is valid concern.\n\n### Related resources\n\n_No response_",
+    "labels": [
+      "good first issue",
+      "help wanted"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-17T11:30:10+00:00",
+    "closed_at": "2025-05-01T17:24:47+00:00",
+    "comments": 15,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4511/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4511"
+  },
+  {
+    "number": 2211,
+    "title": "\u4e3a\u5565\u8fd9\u91cc\u662f\u5f02\u6b65\u62f7\u8d1d\uff0c\u7136\u540e\u540e\u9762\u76f4\u63a5\u4f7f\u7528\u4e86\uff1f\u6ca1\u6709\u663e\u793a\u540c\u6b65\uff1f",
+    "body": "https://github.com/sgl-project/sglang/blob/0b46b951ae088dd22fe980acc7d855947ce2537f/python/sglang/srt/managers/schedule_batch.py#L982\r\n\r\n new_indices = torch.tensor(keep_indices, dtype=torch.int32).to(\r\n          self.device, non_blocking=True\r\n   )\r\n self.req_pool_indices = self.req_pool_indices[new_indices]\r\n\r\n\u76f4\u63a5\u4f7f\u7528new_indices\uff1f",
+    "labels": [],
+    "state": "closed",
+    "created_at": "2024-11-27T06:16:40+00:00",
+    "closed_at": "2024-11-27T08:21:05+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/2211/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/2211"
+  },
+  {
+    "number": 4196,
+    "title": "[Bug] Flashinferv0.2.2.post1 shows Unsupported max_mma_kv: 0 error on L40 , when deploying Deepseek-V2-Lite-chat with --enable-flashinfer-mla",
+    "body": "### Checklist\n\n- [x] 1. I have searched related issues but cannot get the expected help.\n- [x] 2. The bug has not been fixed in the latest version.\n- [x] 3. Please note that if the bug-related issue you submitted lacks corresponding environment info and a minimal reproducible demo, it will be challenging for us to reproduce and resolve the issue, reducing the likelihood of receiving feedback.\n- [x] 4. If the issue you raised is not a bug but a question, please raise a discussion at https://github.com/sgl-project/sglang/discussions/new/choose Otherwise, it will be closed.\n- [x] 5. Please use English, otherwise it will be closed.\n\n### Describe the bug\n\n    return self.forward_extend(\n    o, _ = self.prefill_wrapper_ragged.forward_return_lse(\n    return self.run_return_lse(q, k, v)\n    self._cached_module.ragged_run(*run_args)\n    ragged_run_func(\n    return self._op(*args, **(kwargs or {}))\n    return func(*args, **kwargs)\n    return self._op(*args, **(kwargs or {}))\nRuntimeError: Error in function 'BatchPrefillWithRaggedKVCacheDispatched' at /usr/local/lib/python3.10/dist-packages/flashinfer/data/include/flashinfer/attention/prefill.cuh:2215: Unsupported max_mma_kv: 0\n\n### Reproduction\n\npython -m sglang.launch_server --model-path DeepSeek-V2-Lite-Chat/  --tp 8 --trust-remote-code\n\n### Environment\n\nPython: 3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]\nCUDA available: True\nGPU 0,1,2,3,4,5,6,7: NVIDIA L40\nGPU 0,1,2,3,4,5,6,7 Compute Capability: 8.9\nCUDA_HOME: /usr/local/cuda\nNVCC: Cuda compilation tools, release 12.4, V12.4.99\nCUDA Driver Version: 535.161.08\nPyTorch: 2.5.1+cu124\nsglang: 0.4.3.post2\nsgl_kernel: 0.0.3.post6\nflashinfer: 0.2.2.post1+cu124torch2.5\ntriton: 3.1.0\ntransformers: 4.48.3\ntorchao: 0.8.0\nnumpy: 1.26.4\naiohttp: 3.9.3\nfastapi: 0.115.6\nhf_transfer: Module Not Found\nhuggingface_hub: 0.27.1\ninteregular: 0.3.3\nmodelscope: Module Not Found\norjson: 3.10.15\npackaging: 23.2\npsutil: 5.9.4\npydantic: 2.10.5\nmultipart: 0.0.20\nzmq: 25.1.2\nuvicorn: 0.34.0\nuvloop: 0.21.0\nvllm: 0.7.3\nopenai: 1.60.0\nanthropic: Module Not Found\nlitellm: Module Not Found\ndecord: 0.6.0\nNVIDIA Topology: \n        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7    NIC0    NIC1    NIC2    CPU Affinity    NUMA Affinity   GPU NUMA ID\nGPU0     X      PIX     PXB     PXB     PXB     PXB     PXB     PXB     NODE    SYS     SYS     0-31,64-95      0               N/A\nGPU1    PIX      X      PXB     PXB     PXB     PXB     PXB     PXB     NODE    SYS     SYS     0-31,64-95      0               N/A\nGPU2    PXB     PXB      X      PXB     PXB     PXB     PXB     PXB     NODE    SYS     SYS     0-31,64-95      0               N/A\nGPU3    PXB     PXB     PXB      X      PIX     PXB     PXB     PXB     NODE    SYS     SYS     0-31,64-95      0               N/A\nGPU4    PXB     PXB     PXB     PIX      X      PXB     PXB     PXB     NODE    SYS     SYS     0-31,64-95      0               N/A\nGPU5    PXB     PXB     PXB     PXB     PXB      X      PXB     PXB     NODE    SYS     SYS     0-31,64-95      0               N/A\nGPU6    PXB     PXB     PXB     PXB     PXB     PXB      X      PXB     NODE    SYS     SYS     0-31,64-95      0               N/A\nGPU7    PXB     PXB     PXB     PXB     PXB     PXB     PXB      X      NODE    SYS     SYS     0-31,64-95      0               N/A\nNIC0    NODE    NODE    NODE    NODE    NODE    NODE    NODE    NODE     X      SYS     SYS\nNIC1    SYS     SYS     SYS     SYS     SYS     SYS     SYS     SYS     SYS      X      NODE\nNIC2    SYS     SYS     SYS     SYS     SYS     SYS     SYS     SYS     SYS     NODE     X \n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_0\n  NIC1: mlx5_3\n  NIC2: mlx5_bond_0\n\n\nulimit soft: 1048576",
+    "labels": [
+      "deepseek"
+    ],
+    "state": "closed",
+    "created_at": "2025-03-08T05:53:08+00:00",
+    "closed_at": "2025-03-08T18:02:25+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/4196/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/4196"
+  },
+  {
+    "number": 6996,
+    "title": "[Feature] current `select_generate_worker` holds Mutex lock for large logical code scopes",
+    "body": "I have realized that the method `select_generate_worker` in `router.rs` holds some Mutex's locks for more than desirable code chunks. For this reason, it would be desirable to refactor the code to make sure locks are hold only for the necessary time being. \n\nMoreover, there are a few TODO's regarding that same method that should be addressed.",
+    "labels": [],
+    "state": "open",
+    "created_at": "2025-06-09T09:35:51+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/sgl-project/sglang/issues/6996/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/sgl-project/sglang/issues/6996"
+  }
+]

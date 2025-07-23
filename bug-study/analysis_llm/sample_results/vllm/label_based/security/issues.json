@@ -1,0 +1,82 @@
+[
+  {
+    "number": 17667,
+    "title": "[Bug]: Merge security updates for 0.9.0",
+    "body": "This is a placeholder to ensure any pending security patches have been merged prior to release.",
+    "labels": [
+      "security"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-05T16:08:43+00:00",
+    "closed_at": "2025-05-09T14:07:58+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/17667/reactions",
+      "total_count": 2,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 2,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/17667"
+  },
+  {
+    "number": 17313,
+    "title": "[Bug]: clients can crash the openai server with invalid regex",
+    "body": "### Your current environment\n\n```\nroot@3bea15cf4c9f:/# uv run --with vllm python collect_env.py\nINFO 04-28 15:38:49 [__init__.py:239] Automatically detected platform cuda.\nCollecting environment information...\n/usr/local/lib/python3.11/dist-packages/_distutils_hack/__init__.py:31: UserWarning: Setuptools is replacing distutils. Support for replacing an already imported distutils is deprecated. In the future, this condition will fail. Register concerns at https://github.com/pypa/setuptools/issues/new?template=distutils-deprecation.yml\n  warnings.warn(\nPyTorch version: 2.6.0+cu124\nIs debug build: False\nCUDA used to build PyTorch: 12.4\nROCM used to build PyTorch: N/A\n\nOS: Ubuntu 22.04.5 LTS (x86_64)\nGCC version: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\nClang version: Could not collect\nCMake version: Could not collect\nLibc version: glibc-2.35\n\nPython version: 3.11.10 (main, Sep  7 2024, 18:35:41) [GCC 11.4.0] (64-bit runtime)\nPython platform: Linux-6.8.0-52-generic-x86_64-with-glibc2.35\nIs CUDA available: True\nCUDA runtime version: 12.4.131\nCUDA_MODULE_LOADING set to: LAZY\nGPU models and configuration: \nGPU 0: NVIDIA A100-SXM4-80GB\nGPU 1: NVIDIA A100-SXM4-80GB\n\nNvidia driver version: 550.127.05\ncuDNN version: Could not collect\nHIP runtime version: N/A\nMIOpen runtime version: N/A\nIs XNNPACK available: True\n\nCPU:\nArchitecture:                         x86_64\nCPU op-mode(s):                       32-bit, 64-bit\nAddress sizes:                        48 bits physical, 48 bits virtual\nByte Order:                           Little Endian\nCPU(s):                               256\nOn-line CPU(s) list:                  0-255\nVendor ID:                            AuthenticAMD\nModel name:                           AMD EPYC 7763 64-Core Processor\nCPU family:                           25\nModel:                                1\nThread(s) per core:                   2\nCore(s) per socket:                   64\nSocket(s):                            2\nStepping:                             1\nFrequency boost:                      enabled\nCPU max MHz:                          3529.0520\nCPU min MHz:                          1500.0000\nBogoMIPS:                             4899.64\nFlags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd amd_ppin brs arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap\nVirtualization:                       AMD-V\nL1d cache:                            4 MiB (128 instances)\nL1i cache:                            4 MiB (128 instances)\nL2 cache:                             64 MiB (128 instances)\nL3 cache:                             512 MiB (16 instances)\nNUMA node(s):                         2\nNUMA node0 CPU(s):                    0-63,128-191\nNUMA node1 CPU(s):                    64-127,192-255\nVulnerability Gather data sampling:   Not affected\nVulnerability Itlb multihit:          Not affected\nVulnerability L1tf:                   Not affected\nVulnerability Mds:                    Not affected\nVulnerability Meltdown:               Not affected\nVulnerability Mmio stale data:        Not affected\nVulnerability Reg file data sampling: Not affected\nVulnerability Retbleed:               Not affected\nVulnerability Spec rstack overflow:   Mitigation; Safe RET\nVulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:             Mitigation; Retpolines; IBPB conditional; IBRS_FW; STIBP always-on; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected\nVulnerability Srbds:                  Not affected\nVulnerability Tsx async abort:        Not affected\n\nVersions of relevant libraries:\n[pip3] numpy==2.2.5\n[pip3] nvidia-cublas-cu12==12.4.5.8\n[pip3] nvidia-cuda-cupti-cu12==12.4.127\n[pip3] nvidia-cuda-nvrtc-cu12==12.4.127\n[pip3] nvidia-cuda-runtime-cu12==12.4.127\n[pip3] nvidia-cudnn-cu12==9.1.0.70\n[pip3] nvidia-cufft-cu12==11.2.1.3\n[pip3] nvidia-curand-cu12==10.3.5.147\n[pip3] nvidia-cusolver-cu12==11.6.1.9\n[pip3] nvidia-cusparse-cu12==12.3.1.170\n[pip3] nvidia-cusparselt-cu12==0.6.2\n[pip3] nvidia-nccl-cu12==2.21.5\n[pip3] nvidia-nvjitlink-cu12==12.4.127\n[pip3] nvidia-nvtx-cu12==12.4.127\n[pip3] pyzmq==26.4.0\n[pip3] torch==2.6.0\n[pip3] torchaudio==2.6.0\n[pip3] torchvision==0.21.0\n[pip3] transformers==4.51.3\n[pip3] triton==3.2.0\n[conda] Could not collect\nROCM Version: Could not collect\nNeuron SDK Version: N/A\nvLLM Version: 0.8.4\nvLLM Build Flags:\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\nGPU Topology:\n\tGPU0\tGPU1\tNIC0\tNIC1\tNIC2\tNIC3\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\nGPU0\tX \tNV12\tNODE\tNODE\tSYS\tSYS\t0-63,128-191\t0\t\tN/A\nGPU1\tNV12\tX \tSYS\tSYS\tNODE\tNODE\t64-127,192-255\t1\t\tN/A\nNIC0\tNODE\tSYS\tX \tPIX\tSYS\tSYS\t\t\t\t\nNIC1\tNODE\tSYS\tPIX\tX \tSYS\tSYS\t\t\t\t\nNIC2\tSYS\tNODE\tSYS\tSYS\tX \tPIX\t\t\t\t\nNIC3\tSYS\tNODE\tSYS\tSYS\tPIX\tX \t\t\t\t\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n\nNIC Legend:\n\n  NIC0: mlx5_0\n  NIC1: mlx5_1\n  NIC2: mlx5_2\n  NIC3: mlx5_3\n\nCUDA_VERSION=12.4.1\nLD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64\nNCCL_VERSION=2.21.5-1\nNVIDIA_DRIVER_CAPABILITIES=compute,utility\nNVIDIA_PRODUCT_NAME=CUDA\nNVIDIA_REQUIRE_CUDA=cuda>=12.4 brand=tesla,driver>=470,driver<471 brand=unknown,driver>=470,driver<471 brand=nvidia,driver>=470,driver<471 brand=nvidiartx,driver>=470,driver<471 brand=geforce,driver>=470,driver<471 brand=geforcertx,driver>=470,driver<471 brand=quadro,driver>=470,driver<471 brand=quadrortx,driver>=470,driver<471 brand=titan,driver>=470,driver<471 brand=titanrtx,driver>=470,driver<471 brand=tesla,driver>=525,driver<526 brand=unknown,driver>=525,driver<526 brand=nvidia,driver>=525,driver<526 brand=nvidiartx,driver>=525,driver<526 brand=geforce,driver>=525,driver<526 brand=geforcertx,driver>=525,driver<526 brand=quadro,driver>=525,driver<526 brand=quadrortx,driver>=525,driver<526 brand=titan,driver>=525,driver<526 brand=titanrtx,driver>=525,driver<526 brand=tesla,driver>=535,driver<536 brand=unknown,driver>=535,driver<536 brand=nvidia,driver>=535,driver<536 brand=nvidiartx,driver>=535,driver<536 brand=geforce,driver>=535,driver<536 brand=geforcertx,driver>=535,driver<536 brand=quadro,driver>=535,driver<536 brand=quadrortx,driver>=535,driver<536 brand=titan,driver>=535,driver<536 brand=titanrtx,driver>=535,driver<536\nNVIDIA_VISIBLE_DEVICES=all\nNCCL_CUMEM_ENABLE=0\nPYTORCH_NVML_BASED_CUDA_CHECK=1\nTORCHINDUCTOR_COMPILE_THREADS=1\nCUDA_MODULE_LOADING=LAZY\n```\n\n### \ud83d\udc1b Describe the bug\n\nIf a client connects to the openai server and uses `extra_body={\"guided_regex\":` as described here:\nhttps://docs.vllm.ai/en/v0.8.4_a/features/structured_outputs.html#online-serving-openai-api\n\nThen they can crash the server with invalid regex:\n```\nERROR 04-28 15:36:55 [core.py:387] EngineCore hit an exception: Traceback (most recent call last):\nERROR 04-28 15:36:55 [core.py:387]   File \"/root/.cache/uv/archive-v0/kYowyHpQY8CQtup1TNFhp/lib/python3.11/site-packages/vllm/v1/engine/core.py\", line 380, in run_engine_core\nERROR 04-28 15:36:55 [core.py:387]     engine_core.run_busy_loop()\nERROR 04-28 15:36:55 [core.py:387]   File \"/root/.cache/uv/archive-v0/kYowyHpQY8CQtup1TNFhp/lib/python3.11/site-packages/vllm/v1/engine/core.py\", line 402, in run_busy_loop\nERROR 04-28 15:36:55 [core.py:387]     self._process_engine_step()\nERROR 04-28 15:36:55 [core.py:387]   File \"/root/.cache/uv/archive-v0/kYowyHpQY8CQtup1TNFhp/lib/python3.11/site-packages/vllm/v1/engine/core.py\", line 431, in _process_engine_step\nERROR 04-28 15:36:55 [core.py:387]     outputs = self.step_fn()\nERROR 04-28 15:36:55 [core.py:387]               ^^^^^^^^^^^^^^\nERROR 04-28 15:36:55 [core.py:387]   File \"/root/.cache/uv/archive-v0/kYowyHpQY8CQtup1TNFhp/lib/python3.11/site-packages/vllm/v1/engine/core.py\", line 206, in step\nERROR 04-28 15:36:55 [core.py:387]     scheduler_output = self.scheduler.schedule()\nERROR 04-28 15:36:55 [core.py:387]                        ^^^^^^^^^^^^^^^^^^^^^^^^^\nERROR 04-28 15:36:55 [core.py:387]   File \"/root/.cache/uv/archive-v0/kYowyHpQY8CQtup1TNFhp/lib/python3.11/site-packages/vllm/v1/core/sched/scheduler.py\", line 286, in schedule\nERROR 04-28 15:36:55 [core.py:387]     if structured_output_req and structured_output_req.grammar:\nERROR 04-28 15:36:55 [core.py:387]                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nERROR 04-28 15:36:55 [core.py:387]   File \"/root/.cache/uv/archive-v0/kYowyHpQY8CQtup1TNFhp/lib/python3.11/site-packages/vllm/v1/structured_output/request.py\", line 43, in grammar\nERROR 04-28 15:36:55 [core.py:387]     completed = self._check_grammar_completion()\nERROR 04-28 15:36:55 [core.py:387]                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nERROR 04-28 15:36:55 [core.py:387]   File \"/root/.cache/uv/archive-v0/kYowyHpQY8CQtup1TNFhp/lib/python3.11/site-packages/vllm/v1/structured_output/request.py\", line 31, in _check_grammar_completion\nERROR 04-28 15:36:55 [core.py:387]     self._grammar = self._grammar.result(timeout=0.0001)\nERROR 04-28 15:36:55 [core.py:387]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nERROR 04-28 15:36:55 [core.py:387]   File \"/usr/lib/python3.11/concurrent/futures/_base.py\", line 449, in result\nERROR 04-28 15:36:55 [core.py:387]     return self.__get_result()\nERROR 04-28 15:36:55 [core.py:387]            ^^^^^^^^^^^^^^^^^^^\nERROR 04-28 15:36:55 [core.py:387]   File \"/usr/lib/python3.11/concurrent/futures/_base.py\", line 401, in __get_result\nERROR 04-28 15:36:55 [core.py:387]     raise self._exception\nERROR 04-28 15:36:55 [core.py:387]   File \"/usr/lib/python3.11/concurrent/futures/thread.py\", line 58, in run\nERROR 04-28 15:36:55 [core.py:387]     result = self.fn(*self.args, **self.kwargs)\nERROR 04-28 15:36:55 [core.py:387]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nERROR 04-28 15:36:55 [core.py:387]   File \"/root/.cache/uv/archive-v0/kYowyHpQY8CQtup1TNFhp/lib/python3.11/site-packages/vllm/v1/structured_output/__init__.py\", line 77, in _async_create_grammar\nERROR 04-28 15:36:55 [core.py:387]     return self.backend.compile_grammar(request_type, grammar_spec)\nERROR 04-28 15:36:55 [core.py:387]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nERROR 04-28 15:36:55 [core.py:387]   File \"/root/.cache/uv/archive-v0/kYowyHpQY8CQtup1TNFhp/lib/python3.11/site-packages/vllm/v1/structured_output/backend_xgrammar.py\", line 99, in compile_grammar\nERROR 04-28 15:36:55 [core.py:387]     ctx = self.compiler.compile_regex(grammar_spec)\nERROR 04-28 15:36:55 [core.py:387]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nERROR 04-28 15:36:55 [core.py:387]   File \"/root/.cache/uv/archive-v0/kYowyHpQY8CQtup1TNFhp/lib/python3.11/site-packages/xgrammar/compiler.py\", line 150, in compile_regex\nERROR 04-28 15:36:55 [core.py:387]     return CompiledGrammar._create_from_handle(self._handle.compile_regex(regex))\nERROR 04-28 15:36:55 [core.py:387]                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nERROR 04-28 15:36:55 [core.py:387] RuntimeError: [15:36:55] /project/cpp/regex_converter.cc:73: Regex parsing error at position 106: Invalid repetition count.\nERROR 04-28 15:36:55 [core.py:387] \nERROR 04-28 15:36:55 [core.py:387] \nCRITICAL 04-28 15:36:55 [core_client.py:359] Got fatal signal from worker processes, shutting down. See stack trace above for root cause issue.\n```\n\nMaybe not a bug but I think the server should be resistant to unexpected user inputs.\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "bug",
+      "security"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-28T15:27:44+00:00",
+    "closed_at": "2025-05-12T01:06:11+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/17313/reactions",
+      "total_count": 1,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 1
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/17313"
+  },
+  {
+    "number": 17128,
+    "title": "[Tracker] Merge security fixes for v0.8.5",
+    "body": "This issue is for tracking that pending security fixes are merged prior to releasing v0.8.5\n\n- [x] GHSA-hj4w-hm2g-p6w5 - https://github.com/vllm-project/vllm/pull/17192\n- [x] GHSA-9f8f-2vmf-885j - https://github.com/vllm-project/vllm/pull/17197",
+    "labels": [
+      "bug",
+      "security"
+    ],
+    "state": "closed",
+    "created_at": "2025-04-24T17:19:49+00:00",
+    "closed_at": "2025-04-25T16:23:36+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/17128/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/17128"
+  }
+]
