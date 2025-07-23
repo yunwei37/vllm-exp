@@ -2,9 +2,9 @@
 
 ## Abstract (250 words)
 - Problem statement: LLM serving reliability challenges
-- Methodology: Analysis of 12,349 production issues
-- Key findings: 8 major bug categories, 5 root causes
-- Contributions: Bug taxonomy, best practices, mitigation strategies
+- Methodology: Systematic analysis of production issues across major frameworks
+- Research questions and approach
+- Contributions: Bug taxonomy, empirical insights, mitigation strategies
 
 ## 1. Introduction (2 pages)
 
@@ -41,87 +41,162 @@
 - Memory management strategies
 - Batching and scheduling algorithms
 
-## 3. Methodology (1.5 pages)
+## 3. Methodology (3 pages)
 
-### 3.1 Data Collection
-```
-Framework    | Total Issues | Production | Bug/Perf
--------------|-------------|------------|----------
-vLLM         | 4,078       | 3,612      | 2,225
-llama.cpp    | 5,470       | 4,740      | 2,601
-SGLang       | 2,567       | 2,201      | 106
-```
+### 3.1 Research Questions
+- RQ1: What are the dominant failure patterns in production LLM serving?
+- RQ2: How do architectural choices influence bug manifestation?
+- RQ3: What are the root causes of critical production failures?
+- RQ4: How can we systematically categorize and prioritize LLM serving bugs?
 
-### 3.2 Issue Classification
-- Automated keyword-based categorization
-- Manual validation of samples
-- Cross-framework mapping
+### 3.2 Data Collection
+#### 3.2.1 Repository Selection Criteria
+- Open-source LLM serving frameworks with production usage
+- Active development and community engagement
+- Diverse architectural approaches
+- Sufficient issue history for analysis
 
-### 3.3 Analysis Framework
-- Temporal analysis of bug trends
-- Severity assessment
-- Root cause identification
+#### 3.2.2 Issue Mining Process
+- GitHub API for comprehensive issue extraction
+- Inclusion criteria: production deployment context
+- Temporal range and version considerations
+- Handling of duplicates and invalid issues
+
+### 3.3 Issue Classification Framework
+#### 3.3.1 Multi-Stage Filtering
+- Stage 1: Automated keyword-based filtering
+- Stage 2: Label-based categorization
+- Stage 3: Manual validation sampling
+
+#### 3.3.2 Production Relevance Criteria
+- Deployment context indicators
+- Performance and reliability keywords
+- User impact assessment
+- Environmental factors
+
+### 3.4 Bug Categorization Methodology
+#### 3.4.1 Taxonomy Development
+- Bottom-up category emergence
+- Cross-framework validation
+- Expert review process
+- Iterative refinement
+
+#### 3.4.2 Classification Process
+- Primary and secondary categories
+- Severity assessment framework
+- Root cause analysis methodology
+- Inter-rater reliability measures
+
+### 3.5 Analysis Framework
+#### 3.5.1 Quantitative Analysis
+- Statistical distribution of bug categories
+- Temporal evolution patterns
+- Cross-framework comparisons
+- Correlation analysis
+
+#### 3.5.2 Qualitative Analysis
+- Deep-dive case studies
+- Root cause investigation
+- Pattern identification
+- Expert interviews
+
+### 3.6 Validation and Threats to Validity
+#### 3.6.1 Internal Validity
+- Classification accuracy validation
+- Sampling bias mitigation
+- Temporal stability analysis
+
+#### 3.6.2 External Validity
+- Generalizability considerations
+- Framework representativeness
+- Production deployment diversity
+
+#### 3.6.3 Construct Validity
+- Bug definition clarity
+- Severity metric validation
+- Category orthogonality
 
 ## 4. Bug Taxonomy (3 pages)
 
-### 4.1 Memory Management (Section from BUG_TAXONOMY.md)
-- OOM errors: patterns and causes
-- Memory leaks: detection and impact
-- VRAM fragmentation
+### 4.1 Taxonomy Overview
+- Hierarchical classification structure
+- Category definitions and boundaries
+- Cross-cutting concerns
 
-### 4.2 Concurrency Issues
-- Race conditions in KV cache
-- Deadlocks in distributed settings
-- Thread safety violations
+### 4.2 Primary Bug Categories
+#### 4.2.1 Memory Management
+- Classification criteria
+- Subcategories and patterns
+- Framework-specific manifestations
 
-### 4.3 GPU/CUDA Failures
-- Device synchronization errors
-- Memory transfer bugs
-- Multi-GPU coordination
+#### 4.2.2 Concurrency and Synchronization
+- Race condition types
+- Deadlock scenarios
+- State consistency violations
 
-### 4.4 API & Protocol Issues
-- Request handling failures
-- Streaming corruption
-- Timeout management
+#### 4.2.3 Hardware Acceleration Issues
+- GPU-specific failures
+- Hardware-software interface bugs
+- Resource allocation conflicts
 
-### 4.5 Model-Specific Bugs
-- Loading failures
-- Quantization errors
-- Architecture incompatibilities
+#### 4.2.4 API and Communication
+- Protocol violations
+- Request handling errors
+- Streaming and batching issues
 
-## 5. Root Cause Analysis (2 pages)
+#### 4.2.5 Model Compatibility
+- Architecture support gaps
+- Quantization-related failures
+- Version incompatibilities
 
-### 5.1 Architectural Causes
-- Complex state management (35%)
-- Resource constraints (25%)
-- Concurrency complexity (20%)
+### 4.3 Severity and Impact Classification
+- User-facing impact metrics
+- System stability implications
+- Performance degradation levels
 
-### 5.2 Operational Causes
-- Configuration errors
-- Version mismatches
-- Deployment mistakes
+## 5. Empirical Findings (3 pages)
 
-### 5.3 Cross-Framework Patterns
-- Common failure modes
-- Framework-specific vulnerabilities
-- Design trade-offs
+### 5.1 Bug Distribution Analysis
+- Category prevalence across frameworks
+- Temporal evolution of bug types
+- Severity distribution patterns
+
+### 5.2 Root Cause Analysis
+#### 5.2.1 Systematic Root Cause Identification
+- Methodology for root cause extraction
+- Causal chain analysis
+- Contributing factor assessment
+
+#### 5.2.2 Primary Root Cause Categories
+- Architectural design decisions
+- Implementation complexity
+- Resource management challenges
+- Integration and compatibility issues
+
+### 5.3 Cross-Framework Comparative Analysis
+- Common vulnerability patterns
+- Framework-specific strengths and weaknesses
+- Architectural impact on bug manifestation
 
 ## 6. Case Studies (2 pages)
 
-### 6.1 Critical Bug: KV Cache Corruption
-- Bug description and impact
-- Root cause investigation
-- Resolution and prevention
+### 6.1 Selection Criteria for Case Studies
+- Representativeness of bug categories
+- Severity and production impact
+- Availability of detailed information
+- Lessons learned potential
 
-### 6.2 Performance Issue: Batch Processing Degradation
-- Symptom identification
-- Performance profiling
-- Optimization solution
+### 6.2 Case Study Methodology
+- Bug reproduction process
+- Root cause investigation approach
+- Solution evaluation criteria
+- Generalizability assessment
 
-### 6.3 Production Outage: Multi-GPU Deadlock
-- Incident timeline
-- Debugging process
-- Lessons learned
+### 6.3 Detailed Case Analyses
+- Representative critical bugs
+- Investigation methodology
+- Resolution strategies
+- Preventive measures
 
 ## 7. Best Practices & Recommendations (2 pages)
 
