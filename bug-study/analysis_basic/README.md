@@ -238,3 +238,125 @@ compare_frameworks(analyzers_dict)
 3. **Comparison Matrix**: Framework-by-framework metrics
 4. **Pattern Catalog**: Discovered patterns and anomalies
 5. **Raw Data Tables**: For reproducibility and further analysis
+
+## Advanced Label Analysis for Debugging and Performance
+
+### 9. Label Anomaly Detection
+
+#### Q9.1: Zombie Labels
+- **Question**: Which labels are barely used but still exist in the system?
+- **Method**: Identify labels used < 5 times in last 6 months
+- **Metrics**: Label decay rate, last usage date, historical frequency
+- **Application**: Label cleanup recommendations
+
+#### Q9.2: Label Usage Spikes
+- **Question**: When do sudden increases in label usage occur?
+- **Method**: Time series anomaly detection on label frequency
+- **Metrics**: Z-score of weekly label counts, spike magnitude
+- **Insight**: Correlate with releases, bugs, or system changes
+
+#### Q9.3: Orphaned and Solo Labels
+- **Question**: Which labels appear only on closed issues or never co-occur?
+- **Method**: Filter labels by issue state and co-occurrence patterns
+- **Metrics**: Orphan rate, solo rate, isolation index
+- **Application**: Label consolidation opportunities
+
+### 10. Label Quality and Consistency
+
+#### Q10.1: Labeling Delay Analysis
+- **Question**: How quickly are issues labeled after creation?
+- **Method**: Calculate time between issue creation and first label
+- **Metrics**: Mean/median delay, delay distribution, unlabeled duration
+- **Insight**: Triage efficiency, automation opportunities
+
+#### Q10.2: Label Stability Metrics
+- **Question**: How often are labels changed after initial assignment?
+- **Method**: Track label additions/removals per issue over time
+- **Metrics**: Change frequency, stability score, flip rate
+- **Application**: Label reliability assessment
+
+#### Q10.3: Label Coverage and Completeness
+- **Question**: What percentage of issues have adequate labeling?
+- **Method**: Analyze label count distribution and completeness metrics
+- **Metrics**: Coverage rate, average labels per issue, labeling entropy
+- **Insight**: Labeling system effectiveness
+
+### 11. Performance Bottleneck Identification
+
+#### Q11.1: Stalled Issue Patterns
+- **Question**: Which label combinations correlate with longest open times?
+- **Method**: Analyze resolution time by label combination
+- **Metrics**: P90/P99 resolution time per label set, stall rate
+- **Application**: Process improvement targets
+
+#### Q11.2: Comment Explosion Analysis
+- **Question**: Which labels correlate with excessive discussion?
+- **Method**: Statistical analysis of comment counts by label
+- **Metrics**: Comment rate, discussion intensity, resolution efficiency
+- **Insight**: Complex issue identification
+
+#### Q11.3: Re-opened Issue Labels
+- **Question**: Which labels appear most frequently on re-opened issues?
+- **Method**: Track label patterns on issues with multiple open/close cycles
+- **Metrics**: Re-open rate by label, cycle count distribution
+- **Application**: Quality improvement focus areas
+
+### 12. Label Optimization and Redundancy
+
+#### Q12.1: Label Co-occurrence Matrix
+- **Question**: Which labels always appear together (redundancy)?
+- **Method**: Association rule mining on label sets
+- **Metrics**: Lift, confidence, support, Jaccard similarity
+- **Application**: Label merging recommendations
+
+#### Q12.2: Label Confusion Analysis
+- **Question**: Which labels are frequently added then removed?
+- **Method**: Track label change sequences per issue
+- **Metrics**: Confusion rate, correction frequency, stability time
+- **Insight**: Ambiguous label identification
+
+#### Q12.3: Minimal Label Set Discovery
+- **Question**: What's the smallest label set covering most issues?
+- **Method**: Greedy set cover algorithm on label usage
+- **Metrics**: Coverage percentage, reduction ratio, efficiency gain
+- **Application**: Label system simplification
+
+### 13. Complete Label Distribution Analysis
+
+#### Q13.1: Full Distribution Statistics
+- **Question**: What is the complete distribution of all labels?
+- **Method**: Generate full frequency table with all labels
+- **Metrics**: Count, percentage, cumulative percentage for every label
+- **Output**: Complete CSV with all label statistics
+
+#### Q13.2: Distribution Shape Analysis
+- **Question**: Does label usage follow power law or other distributions?
+- **Method**: Fit various distributions and calculate goodness-of-fit
+- **Metrics**: Power law exponent, Gini coefficient, entropy
+- **Insight**: System organization level
+
+#### Q13.3: Long Tail Analysis
+- **Question**: How many labels constitute different usage percentiles?
+- **Method**: Calculate cumulative usage percentages
+- **Metrics**: Labels needed for 50%, 80%, 95% coverage
+- **Application**: Core vs. peripheral label identification
+
+### 14. Label System Health Metrics
+
+#### Q14.1: Label Entropy Over Time
+- **Question**: Is the labeling system becoming more or less organized?
+- **Method**: Calculate Shannon entropy of label distribution monthly
+- **Metrics**: Entropy trend, complexity growth rate
+- **Insight**: System evolution direction
+
+#### Q14.2: Label Lifecycle Stages
+- **Question**: What lifecycle stage is each label in?
+- **Method**: Classify labels as New/Growing/Stable/Declining/Dead
+- **Metrics**: Growth rate, usage trend, lifecycle duration
+- **Application**: Label retirement planning
+
+#### Q14.3: Cross-Team Label Usage
+- **Question**: How do different contributor types use labels?
+- **Method**: Analyze label usage by author_association
+- **Metrics**: Usage similarity, team-specific labels, consistency score
+- **Insight**: Training and standardization needs
