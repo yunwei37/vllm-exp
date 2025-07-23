@@ -38,13 +38,9 @@ temporal: $(VLLM_DATA)
 	@echo "Analyzing vLLM..."
 	@$(PYTHON) 01_temporal_analysis.py || true
 	@echo "Analyzing SGLang..."
-	@$(PYTHON) -c "import sys; sys.path.insert(0, '.'); from 01_temporal_analysis import TemporalAnalyzer; \
-	              analyzer = TemporalAnalyzer('sglang', '$(SGLANG_DATA)', '$(RESULTS_DIR)/temporal'); \
-	              analyzer.run()"
+	@$(PYTHON) run_analysis.py 01_temporal_analysis.py TemporalAnalyzer sglang $(SGLANG_DATA) $(RESULTS_DIR)/temporal
 	@echo "Analyzing llama.cpp..."
-	@$(PYTHON) -c "import sys; sys.path.insert(0, '.'); from 01_temporal_analysis import TemporalAnalyzer; \
-	              analyzer = TemporalAnalyzer('llama_cpp', '$(LLAMA_CPP_DATA)', '$(RESULTS_DIR)/temporal'); \
-	              analyzer.run()"
+	@$(PYTHON) run_analysis.py 01_temporal_analysis.py TemporalAnalyzer llama_cpp $(LLAMA_CPP_DATA) $(RESULTS_DIR)/temporal
 
 .PHONY: user
 user: $(VLLM_DATA)
@@ -52,13 +48,9 @@ user: $(VLLM_DATA)
 	@echo "Analyzing vLLM..."
 	@$(PYTHON) 02_user_behavior_analysis.py || true
 	@echo "Analyzing SGLang..."
-	@$(PYTHON) -c "import sys; sys.path.insert(0, '.'); from 02_user_behavior_analysis import UserBehaviorAnalyzer; \
-	              analyzer = UserBehaviorAnalyzer('sglang', '$(SGLANG_DATA)', '$(RESULTS_DIR)/user_behavior'); \
-	              analyzer.run()"
+	@$(PYTHON) run_analysis.py 02_user_behavior_analysis.py UserBehaviorAnalyzer sglang $(SGLANG_DATA) $(RESULTS_DIR)/user_behavior
 	@echo "Analyzing llama.cpp..."
-	@$(PYTHON) -c "import sys; sys.path.insert(0, '.'); from 02_user_behavior_analysis import UserBehaviorAnalyzer; \
-	              analyzer = UserBehaviorAnalyzer('llama_cpp', '$(LLAMA_CPP_DATA)', '$(RESULTS_DIR)/user_behavior'); \
-	              analyzer.run()"
+	@$(PYTHON) run_analysis.py 02_user_behavior_analysis.py UserBehaviorAnalyzer llama_cpp $(LLAMA_CPP_DATA) $(RESULTS_DIR)/user_behavior
 
 .PHONY: label
 label: $(VLLM_DATA)
@@ -66,13 +58,9 @@ label: $(VLLM_DATA)
 	@echo "Analyzing vLLM..."
 	@$(PYTHON) 03_label_complexity_analysis.py || true
 	@echo "Analyzing SGLang..."
-	@$(PYTHON) -c "import sys; sys.path.insert(0, '.'); from 03_label_complexity_analysis import LabelComplexityAnalyzer; \
-	              analyzer = LabelComplexityAnalyzer('sglang', '$(SGLANG_DATA)', '$(RESULTS_DIR)/label_complexity'); \
-	              analyzer.run()"
+	@$(PYTHON) run_analysis.py 03_label_complexity_analysis.py LabelComplexityAnalyzer sglang $(SGLANG_DATA) $(RESULTS_DIR)/label_complexity
 	@echo "Analyzing llama.cpp..."
-	@$(PYTHON) -c "import sys; sys.path.insert(0, '.'); from 03_label_complexity_analysis import LabelComplexityAnalyzer; \
-	              analyzer = LabelComplexityAnalyzer('llama_cpp', '$(LLAMA_CPP_DATA)', '$(RESULTS_DIR)/label_complexity'); \
-	              analyzer.run()"
+	@$(PYTHON) run_analysis.py 03_label_complexity_analysis.py LabelComplexityAnalyzer llama_cpp $(LLAMA_CPP_DATA) $(RESULTS_DIR)/label_complexity
 
 .PHONY: state
 state: $(VLLM_DATA)
@@ -80,13 +68,9 @@ state: $(VLLM_DATA)
 	@echo "Analyzing vLLM..."
 	@$(PYTHON) 04_state_transition_analysis.py || true
 	@echo "Analyzing SGLang..."
-	@$(PYTHON) -c "import sys; sys.path.insert(0, '.'); from 04_state_transition_analysis import StateTransitionAnalyzer; \
-	              analyzer = StateTransitionAnalyzer('sglang', '$(SGLANG_DATA)', '$(RESULTS_DIR)/state_transition'); \
-	              analyzer.run()"
+	@$(PYTHON) run_analysis.py 04_state_transition_analysis.py StateTransitionAnalyzer sglang $(SGLANG_DATA) $(RESULTS_DIR)/state_transition
 	@echo "Analyzing llama.cpp..."
-	@$(PYTHON) -c "import sys; sys.path.insert(0, '.'); from 04_state_transition_analysis import StateTransitionAnalyzer; \
-	              analyzer = StateTransitionAnalyzer('llama_cpp', '$(LLAMA_CPP_DATA)', '$(RESULTS_DIR)/state_transition'); \
-	              analyzer.run()"
+	@$(PYTHON) run_analysis.py 04_state_transition_analysis.py StateTransitionAnalyzer llama_cpp $(LLAMA_CPP_DATA) $(RESULTS_DIR)/state_transition
 
 .PHONY: cross
 cross: $(VLLM_DATA)

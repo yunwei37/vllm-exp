@@ -22,6 +22,7 @@ def generate_master_report():
     
     # Frameworks to analyze
     frameworks = ['vllm', 'sglang', 'llama_cpp']
+    framework_display_names = {'vllm': 'vLLM', 'sglang': 'SGLang', 'llama_cpp': 'llama.cpp'}
     
     # Start report
     report = f"""# LLM Serving Framework Issue Analysis - Master Report
@@ -58,7 +59,7 @@ using statistical and data mining techniques without NLP/LLM assistance.
         
         for metric_key, metric_name, formatter in metrics_to_show:
             row = f"| {metric_name} | "
-            for fw in ['vllm', 'sglang', 'llama_cpp']:
+            for fw in ['vLLM', 'SGLang', 'llama.cpp']:
                 if fw in cross_data['basic_metrics']:
                     value = cross_data['basic_metrics'][fw].get(metric_key, 'N/A')
                     row += f"{formatter(value) if value != 'N/A' else 'N/A'} | "
