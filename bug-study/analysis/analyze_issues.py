@@ -71,9 +71,9 @@ def main():
     
     # Load all issues
     datasets = [
-        ('vLLM', 'vllm_all_issues.json'),
-        ('llama.cpp', 'llama_cpp_issues.json'),
-        ('SGLang', 'sglang_issues.json')
+        ('vLLM', '../data/vllm_all_issues.json'),
+        ('llama.cpp', '../data/llama_cpp_issues.json'),
+        ('SGLang', '../data/sglang_issues.json')
     ]
     
     results = []

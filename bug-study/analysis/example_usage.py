@@ -3,6 +3,8 @@
 Example usage of the GitHub Issues Scraper
 """
 
+import sys
+sys.path.append('../scraper')
 from github_issues_scraper import GitHubIssuesScraper
 import json
 from datetime import datetime, timedelta, timezone
