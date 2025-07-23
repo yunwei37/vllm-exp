@@ -1,0 +1,414 @@
+# wontfix - issues
+
+**Total Issues**: 17
+**Generated**: 2025-07-23 11:45:14
+
+## Summary Statistics
+
+- Open Issues: 0
+- Closed Issues: 17
+
+### Label Distribution
+
+- wontfix: 17 issues
+- hardware: 2 issues
+- stale: 1 issues
+- good first issue: 1 issues
+- invalid: 1 issues
+- duplicate: 1 issues
+- need more info: 1 issues
+- enhancement: 1 issues
+- question: 1 issues
+- model: 1 issues
+
+---
+
+## Issue #N/A: GPT2: llama_model_load: error loading model: missing tensor 'output.weight'
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/12567
+**State**: closed
+**Created**: 2025-03-25T10:20:52+00:00
+**Closed**: 2025-03-25T18:03:59+00:00
+**Comments**: 2
+**Labels**: wontfix
+
+### Description
+
+### Name and Version
+
+build/bin/llama-cli --version
+ggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no
+ggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no
+ggml_cuda_init: found 1 CUDA devices:
+  Device 0: NVIDIA GeForce RTX 4090, compute capability 8.9, VMM: yes
+version: 4945 (9b169a4d)
+built with cc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-23) for x86_64-redhat-linux
+
+### Operating systems
+
+Linux
+
+### GGML backends
+
+CUDA
+
+### Hardware
+
+RTX 4090
+
+### Models
+
+GPT2LMHeadModel
+
+### Problem description & steps to reproduce
+
+when I convert the basic GPT2LMHeadModel using the convert_hf_to_gguf.py script. it work perfectly but then when I load it using:
+```
+from llama_cpp import Llama
+llama = Llama("model.path.gguf")
+```
+I got this error:
+
+llama_model_load: error loading model: missing tensor 'output.weight'
+
+obviously the output layer has not been convert but why? Does anyone have an idea
+
+### First Bad Commit
+
+_No response_
+
+### Relevant log output
+
+```shell
+nt_info: f_clamp_kqv      = 0.0e+00
+print_info: f_max
+
+[... truncated for brevity ...]
+
+---
+
+## Issue #N/A: Applying lora with CUDA crashes with failed assertion
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/1846
+**State**: closed
+**Created**: 2023-06-14T06:29:48+00:00
+**Closed**: 2024-04-10T01:07:09+00:00
+**Comments**: 10
+**Labels**: wontfix, stale
+
+### Description
+
+- [x] I am running the latest code. Development is very rapid so there are no tagged versions as of now.
+
+-  Running with CPU only with lora runs fine.
+
+$ ./main --n-predict 25  --model /data/LLaMA/13B/ggml-model-q8_0.bin --prompt "This is a test prompt" --lora /data/LLaMA/loras/llama-13b_test-lora/ggml-adapter-model.bin --lora-base /data/LLaMA/13B/ggml-model-f16.bin 
+main: build = 669 (9254920)
+main: seed  = 1686722870
+ggml_init_cublas: found 1 CUDA devices:
+  Device 0: NVIDIA GeForce RTX 3060
+llama.cpp: loading model from /data/LLaMA/13B/ggml-model-q8_0.bin
+llama_model_load_internal: format     = ggjt v3 (latest)
+llama_model_load_internal: n_vocab    = 32000
+llama_model_load_internal: n_ctx      = 512
+llama_model_load_internal: n_embd     = 5120
+llama_model_load_internal: n_mult     = 256
+llama_model_load_internal: n_head     = 40
+llama_model_load_internal: n_layer    = 40
+llama_model_load_internal: n_rot      = 128
+llama_model_load_internal: ftype      = 7 (mostly 
+
+[... truncated for brevity ...]
+
+---
+
+## Issue #N/A: Add OpenCL Support
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/741
+**State**: closed
+**Created**: 2023-04-03T12:53:28+00:00
+**Closed**: 2023-04-04T19:57:51+00:00
+**Comments**: 10
+**Labels**: wontfix
+
+### Description
+
+Please consider adding OpenCL support for devices with GPU's that Support OpenCL
+
+---
+
+## Issue #N/A: How do i download the models? 
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/650
+**State**: closed
+**Created**: 2023-03-31T11:55:15+00:00
+**Closed**: 2023-03-31T13:40:17+00:00
+**Comments**: 1
+**Labels**: good first issue, invalid, wontfix
+
+### Description
+
+`65B 30B 13B 7B tokenizer_checklist.chk tokenizer.model`
+
+This command in the readme.md file says to add the models into the models directory but the models arent even there in the directory.
+Please let me know how to download the 7B model to run on my computer.
+Thanks
+
+---
+
+## Issue #N/A: Windows defender finds a virus in current master branch
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/554
+**State**: closed
+**Created**: 2023-03-27T10:43:09+00:00
+**Closed**: 2023-03-28T09:13:13+00:00
+**Comments**: 3
+**Labels**: wontfix
+
+### Description
+
+I'm using Windows 10 LTSC
+At the moment, on the state of [this commit](https://github.com/ggerganov/llama.cpp/commit/7e5395575a3360598f2565c73c8a2ec0c0abbdb8), windows defender finds a virus in the master branch.
+
+![image](https://user-images.githubusercontent.com/33938415/227919494-c34cbb4d-32c3-4873-b094-98510ea36abc.png)
+
+
+---
+
+## Issue #N/A: Command line script usage
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/209
+**State**: closed
+**Created**: 2023-03-16T15:57:54+00:00
+**Closed**: 2023-03-16T16:27:50+00:00
+**Comments**: 1
+**Labels**: duplicate, wontfix
+
+### Description
+
+Hello, 
+
+I was wondering if there was a command line flag for toggling the output of the debug messages, making the executable only output the text generated by the LLM (optionally with the original prompt). This would make the program much easier to call from other scripts.
+
+Thanks for your time.
+
+---
+
+## Issue #N/A: Running " python3 convert-pth-to-ggml.py models/7B/ 1 " and running out of RAM
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/200
+**State**: closed
+**Created**: 2023-03-16T09:01:36+00:00
+**Closed**: 2023-03-16T15:04:32+00:00
+**Comments**: 8
+**Labels**: wontfix, need more info, hardware
+
+### Description
+
+No description provided.
+
+---
+
+## Issue #N/A: Interactive mode does not work
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/144
+**State**: closed
+**Created**: 2023-03-14T21:21:46+00:00
+**Closed**: 2023-03-15T07:12:15+00:00
+**Comments**: 3
+**Labels**: wontfix
+
+### Description
+
+On Windows 10 I run the command
+```
+G:/LLaMa/llama.cpp/Debug/llama.exe -m G:/LLaMa/llama.cpp/models/7B/ggml-model-q4_0.bin -t 8 -n 256 --repeat_penalty 1.0 --color -i -r "User:" -p "Transcript of a dialog, where the User interacts with an Assistant named Bob. Bob is helpful, kind, honest, good at writing, and never fails to answer the User's requests immediately and with precision.
+
+User: Hello, Bob.
+Bob: Hello. How may I help you today? 
+User: Please tell me the largest city in Europe.
+Bob: Sure. The largest city in Europe is Moscow, the capital of Russia.
+User:"
+```
+, it works out, but then the AI continues to simulate the dialogue, not giving me access
+Nothing happens when you try to press Enter
+Maybe I'm doing something wrong? 
+![image](https://user-images.githubusercontent.com/31831491/225138823-e03443ba-bd59-4ede-a0da-d0510c3263eb.png)
+
+
+
+---
+
+## Issue #N/A: Only show prompt and response 
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/140
+**State**: closed
+**Created**: 2023-03-14T19:52:32+00:00
+**Closed**: 2023-03-14T19:57:46+00:00
+**Comments**: 2
+**Labels**: wontfix
+
+### Description
+
+Hi!
+
+I was wondering if there is a way to only get the response without getting all the debug/info logs before?
+
+---
+
+## Issue #N/A: llama_model_load: llama_model_load: unknown tensor '' in model file
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/121
+**State**: closed
+**Created**: 2023-03-14T06:53:04+00:00
+**Closed**: 2023-03-14T07:12:00+00:00
+**Comments**: 2
+**Labels**: wontfix
+
+### Description
+
+$ ./main -m ./models/30B/ggml-model-q4_0.bin -t 8 -n 128 -p 'The first president of the USA was'
+main: seed = 1678775977
+llama_model_load: loading model from './models/30B/ggml-model-q4_0.bin' - please wait ...
+llama_model_load: n_vocab = 32000
+llama_model_load: n_ctx   = 512
+llama_model_load: n_embd  = 6656
+llama_model_load: n_mult  = 256
+llama_model_load: n_head  = 52
+llama_model_load: n_layer = 60
+llama_model_load: n_rot   = 128
+llama_model_load: f16     = 2
+llama_model_load: n_ff    = 17920
+llama_model_load: n_parts = 4
+llama_model_load: ggml ctx size = 20951.50 MB
+llama_model_load: memory_size =  1560.00 MB, n_mem = 30720
+llama_model_load: loading model part 1/4 from './models/30B/ggml-model-q4_0.bin'
+llama_model_load: ................................................................... done
+llama_model_load: model size =  4850.14 MB / num tensors = 543
+llama_model_load: loading model part 2/4 from './models/30B/ggml-model-q4_0.bin.1'
+llama_model_load: llama_mode
+
+[... truncated for brevity ...]
+
+---
+
+## Issue #N/A: Make a tag/release
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/111
+**State**: closed
+**Created**: 2023-03-14T02:04:37+00:00
+**Closed**: 2023-03-14T19:16:27+00:00
+**Comments**: 1
+**Labels**: wontfix
+
+### Description
+
+Thanks.
+
+---
+
+## Issue #N/A: Anyplan to make CodeGenCPP?
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/104
+**State**: closed
+**Created**: 2023-03-13T21:14:10+00:00
+**Closed**: 2023-03-14T11:34:49+00:00
+**Comments**: 3
+**Labels**: enhancement, wontfix
+
+### Description
+
+Llama models seesm to be not useful for code genration.
+
+Any chance to get CodeGen models work on CPU ? https://github.com/salesforce/CodeGen
+
+---
+
+## Issue #N/A: Segfault using the chat like interface on the 65B parameterized model
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/94
+**State**: closed
+**Created**: 2023-03-13T14:50:31+00:00
+**Closed**: 2023-03-13T14:54:10+00:00
+**Comments**: 1
+**Labels**: wontfix
+
+### Description
+
+$(: !524 ) ./main -m ./models/65B/ggml-model-q4_0.bin -t 8 -n 256 --repeat_penalty 1.0 --color -i -r "User:" -p
+Segmentation fault: 11
+
+---
+
+## Issue #N/A: .pth to .ggml Out of Memory
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/76
+**State**: closed
+**Created**: 2023-03-13T02:56:50+00:00
+**Closed**: 2023-03-13T03:05:56+00:00
+**Comments**: 2
+**Labels**: wontfix, hardware
+
+### Description
+
+I have 16 GBs of memory (14 GB free) and running `python3 convert-pth-to-ggml.py models/7B/ 1` causes an OOM error (Killed) on Linux.
+
+Here's the dmesg message:
+`Out of memory: Killed process 930269 (python3) total-vm:15643332kB, anon-rss:13201980kB, file-rss:4kB, shmem-rss:0kB, UID:0 pgtables:26524kB oom_score_adj:0`
+
+I will be receiving my new RAM in a few days but I think this is supposed to work with 16 GB memory?
+
+---
+
+## Issue #N/A: ggml_new_tensor_impl: not enough space in the context's memory pool
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/29
+**State**: closed
+**Created**: 2023-03-12T01:51:07+00:00
+**Closed**: 2023-03-13T17:23:15+00:00
+**Comments**: 16
+**Labels**: wontfix
+
+### Description
+
+Heya! Friend showed this to me and I'm trying to get it to work myself on Windows 10. I've applied the changes as seen in #22 to get it to build (more specifically, I pulled in the new commits from [etra0's fork](https://github.com/etra0/llama.cpp), but the actual executable fails to run - printing this before segfaulting:
+
+```
+ggml_new_tensor_impl: not enough space in the context's memory pool (needed 458853944, available 454395136)
+ggml_new_tensor_impl: not enough space in the context's memory pool (needed 458870468, available 454395136)
+```
+
+I'm trying to use 7B on an i9-13900K (and I have about 30 gigs of memory free right now), and I've verified my hashes with a friend. Any ideas? Thanks!
+
+---
+
+## Issue #N/A: Is there a requirements.txt ?
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/8
+**State**: closed
+**Created**: 2023-03-11T05:53:26+00:00
+**Closed**: 2023-03-12T06:23:30+00:00
+**Comments**: 4
+**Labels**: question, wontfix
+
+### Description
+
+No description provided.
+
+---
+
+## Issue #N/A: Make run without error but ./model folder is empty
+
+**Link**: https://github.com/ggml-org/llama.cpp/issues/7
+**State**: closed
+**Created**: 2023-03-11T05:06:05+00:00
+**Closed**: 2023-03-12T06:23:23+00:00
+**Comments**: 4
+**Labels**: wontfix, model
+
+### Description
+
+Did I miss anything?
+
+---
+
