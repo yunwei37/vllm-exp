@@ -3,6 +3,10 @@
 ## Overview
 This document outlines LLM-based analysis methods for understanding issue patterns in vLLM, SGLang, and llama.cpp. The analysis focuses on extracting semantic insights from issue content using language models.
 
+```
+'/root/yunwei37/vllm-exp/bug-study/analysis_llm/analysis_results/vllm/long_tail' start from this dir, read the sampling and summary and answer rq and discover patterns based on the sampled commits in '/root/yunwei37/vllm-exp/bug-study/analysis_llm/markdown_samples'. start from bug and performance, make sure you cover all. follow the guideline and make sure you read everything in the target dir. use /root/yunwei37/vllm-exp/bug-study/analysis_llm/check_analysis_completion.py to check your progress. the result should be like /root/yunwei37/vllm-exp/bug-study/analysis_llm/analysis_results/vllm/label_based/bug/findings.md
+```
+
 ## Label-Based Sampling Strategy
 
 ### Sampling Method
