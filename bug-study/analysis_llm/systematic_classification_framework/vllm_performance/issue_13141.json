@@ -1,0 +1,31 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 13141,
+    "title": "Does Tensor Parallelism Ignore GPU Memory When Applied?",
+    "body": "Hi~\n\nI understand that Tensor Parallelism can be applied at the head level or by splitting the heads.\nCurrently, in vLLM, it seems that the decision to use either v1 or v2 is made when calling the paged_attention kernel.\nI am curious whether this decision is made without considering the GPU memory(especially, shared memory) information.\n\n```python\n# NOTE(woosuk): We use a simple heuristic to decide whether to use\n# PagedAttention V1 or V2. If the number of partitions is 1, we use\n# V1 to avoid the overhead of reduction. Also, if the number of\n# sequences or heads is large, we use V1 since there is enough work\n# to parallelize.\n# TODO(woosuk): Tune this heuristic.\n# For context len > 8192, use V2 kernel to avoid shared memory shortage.\nuse_v1 = (max_seq_len <= 8192\n          and (max_num_partitions == 1 or num_seqs * num_heads > 512))\n```\nCan most cases be covered with only the above condition?",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-12T08:58:29+00:00",
+    "closed_at": "2025-06-13T02:13:14+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13141/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13141"
+  }
+}

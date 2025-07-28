@@ -1,0 +1,31 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 12153,
+    "title": "[Performance]: Very low generation throughput on CPU",
+    "body": "### Proposal to improve performance\n\n_No response_\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\nI am deploying vLLM API server with `ibm-granite/granite-3.1-8b-instruct` model on an Ubuntu server with only CPUs available.\n\nI noticed that the average generation throughput is as low as 0.1 token/s as shown below in the logs, plus it took 10 mins from \"Added request\" to actually generation (which was spent for prompt processing I believe?) \n```\nINFO 01-17 07:46:18 engine.py:270] Added request chatcmpl-522a81bb1b6d4e6196db0786acf51046.\nWARNING 01-17 07:57:05 _logger.py:72] Pin memory is not supported on CPU.\nINFO 01-17 07:57:05 metrics.py:467] Avg prompt throughput: 0.1 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 1 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\nINFO 01-17 07:57:22 metrics.py:467] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.1 tokens/s, Running: 1 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\nINFO 01-17 07:57:37 metrics.py:467] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.1 tokens/s, Running: 1 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\nINFO 01-17 07:57:54 metrics.py:467] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.1 tokens/s, Running: 1 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 0.0%, CPU KV cache usage: 0.0%.\n```\n\nI built the image to deploy using https://github.com/vllm-project/vllm/blob/main/Dockerfile.cpu, just updated the model. \n`docker build -f Dockerfile.cpu -t vllm-cpu-env-granite --shm-size=60g .`\n\nAnd run the image with below config, allocating 32GB for KVCACHE, with only 4k context length:\n```\ndocker run -it \\\n             --rm \\\n             --env \"VLLM_CPU_KVCACHE_SPACE=32\" \\\n             --network=host \\\n             vllm-cpu-env-granite-offline \\\n             --max_model_len=4000\n```\n\nIs 0.1 token/s the expected performance to run a 8b model on a CPU machine with 16 cores? \n\nBut I do see it took only ~ 118 seconds (so roughly 0.85 token/s), if I tried to run this exact same model directly using `transformer` lib on this machine, for the exact generation request like below (with max_tokens set to only 100)\n```\n{\n  \"messages\": [\n    {\n      \"content\": \"Write a code to find the maximum value in a list of numbers.\",\n      \"role\": \"user\"\n    }],\n  \"max_tokens\": 100\n}\n``` \n\nIs there any setting or config I could change that would help improve the generation performance in this case? Attaching the full logs FYI.\n\n[vllm_logs.txt](https://github.com/user-attachments/files/18450928/vllm_logs.txt)\n\n### Your current environment (if you think it is necessary)\n\n- vLLM API server version 0.6.6.post2.dev245+gd06e8240\n- System: Ubuntu 24.04.1 LTS, 16 core CPU, 64 GB Memory\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-17T08:10:25+00:00",
+    "closed_at": "2025-05-19T02:13:22+00:00",
+    "comments": 4,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/12153/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/12153"
+  }
+}

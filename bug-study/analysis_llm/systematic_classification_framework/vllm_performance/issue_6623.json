@@ -1,0 +1,30 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 6623,
+    "title": "[Performance]: Llava runs with small batch size and # of GPU blocks",
+    "body": "### Misc discussion on performance\r\n\r\nI was running `llava-hf/llava-1.5-7b-hf` vs. `meta-llama/Meta-Llama-3-8B-Instruct` on vLLM 0.5.2 and noticed that Llava 7B runs with a significantly smaller batch size overall -- Llama 3 8B would hit the maximum batch size 256, whereas Llava 7B would remain in the 70~80 range. I do notice that Llava 7B begins with much less GPU blocks allocated (# GPU blocks: 3631, # CPU blocks: 512) compared to LLama 3 8B (# GPU blocks: 13078, # CPU blocks: 2048), which probably explains the batch size.\r\n\r\nI wanted to understand whether this difference (existence and magnitude) is expected and the causes. I can think of some reasons that contribute to this:\r\n- Parameters of the vision tower and multimodal projector\r\n  - Less than half a billion parameters\r\n- Activations of the vision tower and multimodal projector\r\n  - They can't be *that* big, can they? I believe they can also be deallocated after generating the image embeddings.\r\n- Image tokens inserted into the prompt\r\n  - I attempted to read the source code and it seems like it's 576 image tokens? If so I suppose that's a fair amount. But does this get reflected in the number of GPU blocks?\r\n\r\nThanks.\r\n\r\n\r\n\r\n### Your current environment (if you think it is necessary)\r\n\r\nPyTorch version: 2.3.1+cu121\r\nCUDA used to build PyTorch: 12.1\r\n\r\nSingle NVIDIA A40 GPU with 46068 MiB VRAM.",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-21T16:14:21+00:00",
+    "closed_at": "2024-07-23T02:07:37+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6623/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6623"
+  }
+}

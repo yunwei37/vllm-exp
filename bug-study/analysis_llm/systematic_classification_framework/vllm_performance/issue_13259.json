@@ -1,0 +1,30 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 13259,
+    "title": "[Performance]: Added request take too much time, and the model will not run untill all the request are added into the cache",
+    "body": "### Proposal to improve performance\n\n```\nINFO 02-14 11:57:32 engine.py:275] Added request chatcmpl-1af15bd86d5f413683cd727e1028852c.                                                                                                                                                                              \nINFO 02-14 11:57:32 engine.py:275] Added request chatcmpl-b4e5eba8d8d144a0813ffb6e378ee784.                                                                                                                                                                              \nINFO 02-14 11:57:32 engine.py:275] Added request chatcmpl-1ca0f490ea104efc9884777815e51618.                                                                                                                                                                              \nINFO 02-14 11:57:33 engine.py:275] Added request chatcmpl-984040d9c3cf424984a719970de484f5.                                                                                                                                                                              \nINFO 02-14 11:57:33 engine.py:275] Added request chatcmpl-532cbdba66794d859a61423270e06baf.                                                                                                                                                                              \nINFO 02-14 11:57:33 engine.py:275] Added request chatcmpl-083f1271382f4bd189c35a604b137bc8.                                                                                                                                                                              \nINFO 02-14 11:57:33 engine.py:275] Added request chatcmpl-d5c44ff025cc44149c4b64dcd30fa494.                                                                                                                                                                              \nINFO 02-14 11:57:34 engine.py:275] Added request chatcmpl-087039221d0a463a9779b4f072b853ee.                                                                                                                                                                              \nINFO 02-14 11:57:34 engine.py:275] Added request chatcmpl-22734de905b74010910ea9511d27462c.                                                                                                                                                                              \nINFO 02-14 11:57:34 engine.py:275] Added request chatcmpl-3ad72c9c11f84b49ac6ae2437e1064cc.                                                                                                                                                                              \nINFO 02-14 11:57:35 engine.py:275] Added request chatcmpl-180206440e054294b53baf79ffbedce7.                                                                                                                                                                              \nINFO 02-14 11:57:35 engine.py:275] Added request chatcmpl-68d902705e3743a0b72add7e2711f9a0.                                                                                                                                                                              \nINFO 02-14 11:57:35 engine.py:275] Added request chatcmpl-c807fdcd39584de7a80b5c7e278a55c2.                                                                                                                                                                              \nINFO 02-14 11:57:35 engine.py:275] Added request chatcmpl-43bc35cb2cd94141bd9e24fffa06dacc. \n```\nI use 4xA800 to run qwen2-vl, vllm service;\nI found that when I request 100 requests, the first request will wait until the 100th request is cached.\nHow can I reduce the the latency and maximum the GPU usage?\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\nThe output of `python collect_env.py`\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "open",
+    "created_at": "2025-02-14T04:06:28+00:00",
+    "closed_at": null,
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13259/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13259"
+  }
+}

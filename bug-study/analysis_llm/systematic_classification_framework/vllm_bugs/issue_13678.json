@@ -1,0 +1,31 @@
+{
+  "issue_type": "bug",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/bug/issues.json",
+  "issue": {
+    "number": 13678,
+    "title": "[Bug]: Mamba2 models (Bamba and Codestral Mamba) fail on RoCM",
+    "body": "### Your current environment\n\nVia @hackey:\n>I am using:\nROCM (Dual AMD 7900 xtx)\nUbuntu 24.04\n\n### \ud83d\udc1b Describe the bug\n\nSee https://github.com/vllm-project/vllm/issues/6479#issuecomment-2674292711\n\nSpecifically this part:\n```\nregistry.py:321]     from vllm.attention.backends.flash_attn import FlashAttentionMetadata ERROR 02-21 11:17:10 registry.py:321]   File \"/usr/local/lib/python3.12/dist-packages/vllm/attention/backends/flash_attn.py\", line 25, in <module> ERROR 02-21 11:17:10 registry.py:321]     from vllm.vllm_flash_attn import (flash_attn_varlen_func, ERROR 02-21 11:17:10 registry.py:321] ImportError: cannot import name 'flash_attn_varlen_func' from 'vllm.vllm_flash_attn' (unknown location) ERROR 02-21 11:17:10 registry.py:321]  Traceback (most recent call last): File \"/usr/local/bin/vllm\", line 8, in <module> sys.exit(main()) ^^^^^^ File \"/usr/local/lib/python3.12/dist-packages/vllm/entrypoints/cli/main.py\", line 73, in main \n```\n\nIt looks like the problem is caused by importing FlashAttentionMetadata in MambaMixer2, which pulls in vllm_flash_attn, which is unsupported on RoCM.\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "bug",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2025-02-21T17:00:25+00:00",
+    "closed_at": "2025-06-26T02:26:03+00:00",
+    "comments": 5,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13678/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13678"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 7883,
+    "title": "[Performance]: Prefix-caching aware scheduling",
+    "body": "### Proposal to improve performance\r\n\r\nThe current execution flow with prefix caching is as follows:\r\n1. Scheduler takes the next prefill sequence:\r\n    a. Calculate how many blocks it needs.\r\n    b. Check whether we have sufficient number of blocks in the block manager.\r\n    c. If so, determine the number of tokens to be prefilled in this batch (it is equal to the prompt length without chunked prefill, or at maximum the chunked size otherwise).\r\n    d. Update the batch token budget by subtracting the tokens to be prefilled.\r\n    e. Allocate all (regardless how many tokens to prefill in this batch) blocks.\r\n    f. Match allocated block IDs with prefix cache, and list them in `computed_block_nums`.\r\n2. Prepare input:\r\n    a. Get the number of tokens to prefill for this sequence in this batch.\r\n    b. Setup input token IDs and positions.\r\n    c. If `computed_block_nums` is not none, then remove the cached tokens from input tokens, and adjust input positions, query length and context length accordingly.\r\n3. Execute the model.\r\n\r\nThe inefficiencies are then:\r\n1. In Step 1.b, we now don't consider prefix caching. Taking a sequence with 16 blocks in prompt as an example, it now requires block manager to have 16 free blocks to be scheduled. However, assuming 12 of 16 blocks are already cached, we actually only need free 4 blocks to schedule this sequence.\r\n2. In Step 1.d, we now don't consider prefix caching. Assuming the number of batched tokens is set to 2048, and we scheduled 2 sequences with 1024 tokens each. However, if the first 512 prefix tokens are already cached, then the batch size is actually 1024 instead of 2048.\r\n\r\nThe above inefficiencies come from the fact that we know which blocks are cached starting from Step 1.f. Thus, we propose the following changes:\r\n1. Improve `can_allocate` in block manager at Step 1.b to consider prefix caching. For example, although a sequence needs 16 blocks for its prompt, `can_allocate` could still return True even the block manager only has 4 blocks left when 12 of 16 blocks are already cached.\r\n2. Improve Step 1.c in the scheduler to consider prefix caching. Specifically, this step should guarantee the number of new tokens to prefill are not cached. If an entire prompt of a sequence is cached, we should only compute the last token.\r\n\r\ncc @rkooo567 @sighingnow @Juelianqvq @zhuohan123 \r\n\r\n### Before submitting a new issue...\r\n\r\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "help wanted",
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2024-08-26T21:30:38+00:00",
+    "closed_at": "2024-12-20T02:18:05+00:00",
+    "comments": 8,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/7883/reactions",
+      "total_count": 3,
+      "+1": 3,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "COLLABORATOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/7883"
+  }
+}

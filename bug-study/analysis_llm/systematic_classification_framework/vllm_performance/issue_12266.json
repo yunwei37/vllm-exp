@@ -1,0 +1,30 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 12266,
+    "title": "[Performance]:Why do the prefill and decoding need to be executed twice for the same task?",
+    "body": "### Proposal to improve performance\n\n\n\n\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\nHello, when I start the serving service using vllm serve and conduct tests using the benchmark_serving.py script, I captured the kernel pipeline of the CUDA backend through the nsight system. I found out why the prefill and decoding stages of the same task are executed twice?\n\n![Image](https://github.com/user-attachments/assets/19c57ea0-bb61-49a5-ad3e-e2e4a678b845)\n\nAt the same time, my commands are as follows:\n* serving:\n```\nvllm serve data/llama-3-8b-instruct \\\n        --swap-space 16 \\\n        --disable-log-requests \\\n        --tensor-parallel-size 2 \\\n        --gpu-memory-utilization 0.9 \\\n        --dtype bfloat16\n        --enforce-eager\n```\n* client:\n```\npython3 vllm/benchmarks/benchmark_serving.py \\\n        --backend vllm \\\n        --model data/llama-3-8b-instruct \\\n        --profile \\\n        --dataset-name random \\\n        --random-input-len 2048 \\\n        --random-output-len 200 \\\n        --num-prompts  1 \\\n        --trust-remote-code\n```\n\nI wonder, is there any trick for executing the prefill and decoding twice for the same prompt? \n\n\n### Your current environment (if you think it is necessary)\n\n_No response_\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-21T13:19:51+00:00",
+    "closed_at": "2025-01-22T05:44:54+00:00",
+    "comments": 3,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/12266/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/12266"
+  }
+}

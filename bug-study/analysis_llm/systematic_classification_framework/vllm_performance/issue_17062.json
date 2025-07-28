@@ -1,0 +1,30 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 17062,
+    "title": "[Performance]: UVA vs UVM for CPU offloading on v0.8.4+",
+    "body": "### Proposal to improve performance\n\nReferencing the recent implementation on https://github.com/vllm-project/vllm/pull/15354 (v0.8.4+) for CPU offloading\n\n@youkaichao, is there any specific reason to pick UVA (`cudaHostAlloc`) over UVM `cudaMallocManaged()`? \n\n1. UVM goes further than UVA to manage data automatically, often using page-faulting hardware to migrate pages on demand. On systems like the GH200, this has potentially additional benefits such as hardware orchestrated frequency based migration. \n2. A key benefit of Unified Memory is simplifying the heterogeneous computing memory model by eliminating the need for deep copies when accessing structured data in GPU kernels. [Source](https://developer.nvidia.com/blog/unified-memory-in-cuda-6/#unified_memory_or_unified_virtual_addressing)\n3. On several discussion threads, the larger access sizes of CPU offloading makes UVM seems to be the better approach compared to UVA [Source](https://forums.developer.nvidia.com/t/page-fault-profiling/265320/3?u=rajeshshashikumar)\n\nGoing by [this](https://arxiv.org/pdf/2407.07850), if transparent offloading is desired `cudaMallocManaged()` seems to be desirable for platforms such as the GH200\n\n<img width=\"474\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/936174e3-1559-48c8-b02f-440e93e30d61\" />\n\nAlternatively, [Pie](https://arxiv.org/pdf/2411.09317) seems to show that the old implementation where \n> before every forward in every layer, we move tensors from cpu to gpu, and compute in gpu\n\nseems to work best in cases such as the GH200 when carefully prefetching layers of the KV cache to reduce the penalty of oversubscription\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "open",
+    "created_at": "2025-04-23T15:58:29+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/17062/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/17062"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 15809,
+    "title": "[Performance]: Why AWQ model\u2018s performance issue on A100&H100",
+    "body": "\n\n### Misc discussion on performance\n\nI am using 0.8.3 version of vllm,driver 570.124.06, \nthis command to serve to depoly AWQ model casperhansen/llama-3.3-70b-instruct-awq \uff08GEMM\uff09 on single H100PCIE & single A100 PCIE\n\npython -m vllm.entrypoints.openai.api_server --model casperhansen/llama-3.3-70b-instruct-awq --max-num-seqs=256 --max-model-len=4096 --max-num-batched-tokens=4096 --tensor-parallel-size=1 --block-size=128 --host=0.0.0.0 --port=8000 --gpu-memory-utilization=0.9  --trust-remote-code\n \nWe run the test with 2048 input and output, on batch size 1,2,4,8,32,64, and we find H100 just little better than A00 about 10-30% on TTFT and TPOT almost all batch size.\n\nHowever on GPTQ model (w4a16). the perofromance is very different. H100 is 2 times better than A100. \n\nSo my question is what is going on with AWQ quantized model? Why AWQ model on H100 is not 2time better than A100 as GPTQ model, they both Q4A16, should have similar performance?\n\n\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "open",
+    "created_at": "2025-03-31T10:13:02+00:00",
+    "closed_at": null,
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/15809/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/15809"
+  }
+}

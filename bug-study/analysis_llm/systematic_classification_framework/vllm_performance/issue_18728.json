@@ -1,0 +1,30 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 18728,
+    "title": "[Performance]: yarn degrades the performance of qwen3",
+    "body": "### Proposal to improve performance\n\n`vllm version == 0.8.5.post1`\n\nwithout yarn\n```bash\nvllm serve Qwen/Qwen3-32B   \\\n --trust-remote-code --gpu_memory_utilization 0.95 --tensor-parallel-size 2 \\\n--quantization bitsandbytes --load_format bitsandbytes --enforce_eager \\\n--max-model-len 32768\n```\n\nwith yarn\n```bash\nvllm serve Qwen/Qwen3-32B   \\\n--trust-remote-code --gpu_memory_utilization 0.95 --tensor-parallel-size 2 \\\n--quantization bitsandbytes --load_format bitsandbytes --enforce_eager \\\n--rope-scaling '{\"rope_type\":\"yarn\",\"factor\":4.0,\"original_max_position_embeddings\":32768}' \\\n--max-model-len 131072\n```\n\nI have some tests on my end for its agentic capabilities based on qwen3 and I have some solid findings that enabling yarn to extend window context does degrade the performace, with around 15-20% performance drop. \n\ndo u also encounter the same findings ? any suggestion about this drop ?\n\n\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\nThe output of `python collect_env.py`\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "closed",
+    "created_at": "2025-05-26T18:32:46+00:00",
+    "closed_at": "2025-06-05T14:58:13+00:00",
+    "comments": 1,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/18728/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/18728"
+  }
+}

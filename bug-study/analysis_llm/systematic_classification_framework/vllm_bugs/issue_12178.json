@@ -1,0 +1,31 @@
+{
+  "issue_type": "bug",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/bug/issues.json",
+  "issue": {
+    "number": 12178,
+    "title": "[Bug]: AMD GPU docker image build No matching distribution found for torch==2.6.0.dev20241113+rocm6.2",
+    "body": "### Your current environment\n\nArchlinux 13th Gen Intel(R) Core(TM) i9-13900HX environment to build the docker image\n\n### Model Input Dumps\n\n_No response_\n\n### \ud83d\udc1b Describe the bug\n\nTrying to build the AMD GPU docker image:\n```\ngit checkout v0.6.6.post1\nDOCKER_BUILDKIT=1 docker build -f Dockerfile.rocm -t substratusai/vllm-rocm:v0.6.6.post1 .\n```\n\nResults in following error:\n\n```\n1.147 Looking in indexes: https://pypi.org/simple, https://download.pytorch.org/whl/nightly/rocm6.2\n1.717 ERROR: Could not find a version that satisfies the requirement torch==2.6.0.dev20241113+rocm6.2 (from versions: 1.7.1, 1.8.0, 1.8.1, 1.9.0, 1.9.1, 1.10.0, 1.10.1, 1.10.2, 1.11.0, 1.12.0, 1.12.1, 1.13.0, 1.13.1, 2.0.0, 2.0.1, 2.1.0, 2.1.1, 2.1.2, 2.2.0, 2.2.1, 2.2.2, 2.3.0, 2.3.1, 2.4.0, 2.4.1, 2.5.0, 2.5.1, 2.6.0.dev20241119+rocm6.2, 2.6.0.dev20241120+rocm6.2, 2.6.0.dev20241121+rocm6.2, 2.6.0.dev20241122+rocm6.2)\n2.135 ERROR: No matching distribution found for torch==2.6.0.dev20241113+rocm6.2\n------\nDockerfile.rocm:49\n--------------------\n  48 |     # Install torch == 2.6.0 on ROCm\n  49 | >>> RUN --mount=type=cache,target=/root/.cache/pip \\\n  50 | >>>     case \"$(ls /opt | grep -Po 'rocm-[0-9]\\.[0-9]')\" in \\\n  51 | >>>         *\"rocm-6.2\"*) \\\n  52 | >>>             python3 -m pip uninstall -y torch torchvision \\\n  53 | >>>             && python3 -m pip install --pre \\\n  54 | >>>                 torch==2.6.0.dev20241113+rocm6.2 \\\n  55 | >>>                 'setuptools-scm>=8' \\\n  56 | >>>                 torchvision==0.20.0.dev20241113+rocm6.2 \\\n  57 | >>>                 --extra-index-url https://download.pytorch.org/whl/nightly/rocm6.2;; \\\n  58 | >>>         *) ;; esac\n  59 |     \n--------------------\nERROR: failed to solve: process \"/bin/sh -c case \\\"$(ls /opt | grep -Po 'rocm-[0-9]\\\\.[0-9]')\\\" in         *\\\"rocm-6.2\\\"*)             python3 -m pip uninstall -y torch torchvision             && python3 -m pip install --pre                 torch==2.6.0.dev20241113+rocm6.2                 'setuptools-scm>=8'                 torchvision==0.20.0.dev20241113+rocm6.2                 --extra-index-url https://download.pytorch.org/whl/nightly/rocm6.2;;         *) ;; esac\" did not complete successfully: exit code: 1\n```\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "bug",
+      "rocm"
+    ],
+    "state": "closed",
+    "created_at": "2025-01-17T23:36:10+00:00",
+    "closed_at": "2025-03-12T05:50:14+00:00",
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/12178/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "CONTRIBUTOR",
+    "html_url": "https://github.com/vllm-project/vllm/issues/12178"
+  }
+}

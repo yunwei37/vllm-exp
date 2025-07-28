@@ -1,0 +1,30 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 20009,
+    "title": "[Performance]: Performance Bottleneck in Mooncake PD Disaggregation: tensorhash() and safetensor_save() Overhead",
+    "body": "### Proposal to improve performance\n\nHi team,\n\nI've been conducting performance tests on vllm PD Disaggregation using mooncake_store_connector, and found that the most time-consuming parts are not the actual put() operations, but rather:\n- [tensorhash()](https://github.com/vllm-project/vllm/blob/b6553be1bc75f046b00046a4ad7576364d03c835/vllm/distributed/kv_transfer/kv_connector/mooncake_store_connector.py#L198)\n- [safetensor_save()](https://github.com/vllm-project/vllm/blob/b6553be1bc75f046b00046a4ad7576364d03c835/vllm/distributed/kv_transfer/kv_lookup_buffer/mooncake_store.py#L131)\n\nBased on profiling traces, these two steps dominate the runtime during PD disaggregation, more than the actual storage or network transmission:\n![Image](https://github.com/user-attachments/assets/320e80c2-976e-4ff5-9fd4-ff65ecf3ba83)\n\n**Observations:**\n\ntensorhash() seems to repeatedly compute SHA256 hashes over possibly large tensors.\nsafetensor_save() is used per tensor and appears to serialize, which is expensive when invoked frequently.\n\n**Questions:**\n\nMaybe we could parallelize the hash computation using multithreading?\nIs there any alternatives for safetensor_save()?\n\nThanks!\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\nThe output of `python collect_env.py`\n```\n\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance"
+    ],
+    "state": "open",
+    "created_at": "2025-06-24T08:14:19+00:00",
+    "closed_at": null,
+    "comments": 2,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/20009/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/20009"
+  }
+}

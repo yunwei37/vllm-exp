@@ -1,0 +1,31 @@
+{
+  "issue_type": "bug",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/bug/issues.json",
+  "issue": {
+    "number": 13848,
+    "title": "[Bug]: vLLM 0.7.3 TypeError in vllm.entrypoints.api_server Argument Parsing",
+    "body": "### Your current environment\n\n<details>\n<summary>The output of `python collect_env.py`</summary>\n\n```text\nINFO 02-25 14:13:01 __init__.py:190] Automatically detected platform cpu.\nCollecting environment information...\nPyTorch version: 2.5.1\nIs debug build: False\nCUDA used to build PyTorch: None\nROCM used to build PyTorch: N/A\n\nOS: macOS 14.7.3 (arm64)\nGCC version: Could not collect\nClang version: 16.0.0 (clang-1600.0.26.6)\nCMake version: Could not collect\nLibc version: N/A\n\nPython version: 3.11.6 (main, Feb 25 2025, 12:41:54) [Clang 16.0.0 (clang-1600.0.26.6)] (64-bit runtime)\nPython platform: macOS-14.7.3-arm64-arm-64bit\nIs CUDA available: False\nCUDA runtime version: No CUDA\nCUDA_MODULE_LOADING set to: N/A\nGPU models and configuration: No CUDA\nNvidia driver version: No CUDA\ncuDNN version: No CUDA\nHIP runtime version: N/A\nMIOpen runtime version: N/A\nIs XNNPACK available: True\n\nCPU:\nApple M2 Pro\n\nVersions of relevant libraries:\n[pip3] numpy==1.26.4\n[pip3] nvidia-ml-py==12.570.86\n[pip3] pyzmq==26.2.1\n[pip3] torch==2.5.1\n[pip3] torchaudio==2.5.1\n[pip3] torchvision==0.20.1\n[pip3] transformers==4.49.0\n[conda] Could not collect\nROCM Version: Could not collect\nNeuron SDK Version: N/A\nvLLM Version: 0.7.2\nvLLM Build Flags:\nCUDA Archs: Not Set; ROCm: Disabled; Neuron: Disabled\nGPU Topology:\nCould not collect\n\nLD_LIBRARY_PATH=/Users/mdobbali@mastercontrol.com/Library/Caches/pypoetry/virtualenvs/models-gt-QYEJX-py3.11/lib/python3.11/site-packages/cv2/../../lib:\nNCCL_CUMEM_ENABLE=0\nTORCHINDUCTOR_COMPILE_THREADS=1\n\n```\n\n</details>\n\n\n### \ud83d\udc1b Describe the bug\n\nWhen running vllm.entrypoints.api_server, I encounter a TypeError related to argparse argument parsing.\n\n```bash\npoetry run python -m vllm.entrypoints.api_server \\\n    --model SomeOrg/SomeModel \\\n    --host 0.0.0.0 \\\n    --port 8000\n```\n\n**Error Message**\n\n```bash\nTraceback (most recent call last):\n  File \"/path/to/python3.11/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/path/to/python3.11/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)\n  File \"/path/to/vllm/entrypoints/api_server.py\", line 148, in <module>\n    parser.add_argument(\"--port\", type=int, default=8000, ge=1024, le=65535)\n  File \"/path/to/python3.11/argparse.py\", line 1430, in add_argument\n    action = action_class(**kwargs)\nTypeError: _StoreAction.__init__() got an unexpected keyword argument 'ge'\n```\n\n**Steps to Reproduce**\n\n1. Install vLLM from source using:\n```bash\ngit clone https://github.com/vllm-project/vllm.git\ncd vllm\npip install .\n\n```\n2. Run the vLLM API Server command as shown above.\n3. Observe the TypeError due to the `ge` argument\n\n**Expected Behavior**\nThe API server should start normally, listening on the specified port.\n\n**Additional Debugging Attempts**\n\n- Tried using a different Python version (3.12) but encountered the same issue.\n- Installed the latest vLLM from the main branch.\n- Downgraded vLLM to 0.7.2, and the error disappeared\n\n**Proposed Solution**\n\n- It seems like argparse in Python 3.11+ does not support `ge` and `le` constraints in `parser.add_argument()`.\n\nPotential fixes:\n\n- Remove or Replace ge and le constraints with manual validation inside api_server.py.\n\n### Before submitting a new issue...\n\n- [x] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "bug",
+      "stale"
+    ],
+    "state": "open",
+    "created_at": "2025-02-25T21:27:29+00:00",
+    "closed_at": null,
+    "comments": 7,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/13848/reactions",
+      "total_count": 1,
+      "+1": 1,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/13848"
+  }
+}

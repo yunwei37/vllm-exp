@@ -1,0 +1,31 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 6879,
+    "title": "[Performance]: use Python array to replace Python list for zero-copy tensor creation",
+    "body": "### Proposal to improve performance\n\nFor flexibility, lots of code in vLLM uses Python list.\r\n\r\nThe memory layout for a Python list of `[1, 2, 3, 4, 5]`, is:\r\n\r\n```\r\n----\r\nPyObject pointer --> PyLong(1)\r\n----\r\nPyObject pointer --> PyLong(2)\r\n----\r\nPyObject pointer --> PyLong(3)\r\n----\r\nPyObject pointer --> PyLong(4)\r\n----\r\nPyObject pointer --> PyLong(5)\r\n----\r\n```\r\n\r\nThis is because a Python list can hold arbitrary Python object.\r\n\r\nWhen we use `torch.tensor([1, 2, 3, 4, 5], dtype=torch.int, device=\"cuda\")`, there's two copy operation happening:\r\n\r\n1. PyTorch has to collect all the data from scattered memory into a continuous memory area, i.e. a CPU memory segment holding `1, 2, 3, 4, 5` consecutively (40 bytes)\r\n2. PyTorch launches an operation to copy the CPU memory to GPU memory, wraps it into a GPU tensor\r\n\r\nThere is a better alternative in Python, called `array.array`. It is very similar to `vector` type in `C++`, which can hold variable length data with the same type. Since the memory layout is already compact, we can directly create pytorch tensor from it, without copying, and then copy it to GPU. i.e., we can reduce the copy in step 1.\r\n\r\nHere is some microbenchmark:\r\n\r\n```python\r\nimport array\r\nimport torch\r\n\r\n# print header\r\nprint(\"N\\tlist\\tarray\")\r\n\r\nfor N in [100, 1000, 10000, 100000, 1000000]:\r\n    list_data = list(range(N))\r\n    array_data = array.array('l', list_data)\r\n\r\n    def create_from_list():\r\n        tensor = torch.tensor(list_data, dtype=torch.int, device='cuda')\r\n        torch.cuda.synchronize()\r\n        return tensor\r\n\r\n    def create_from_array():\r\n        tensor = torch.frombuffer(array_data, dtype=torch.int).to('cuda')\r\n        torch.cuda.synchronize()\r\n        return tensor\r\n\r\n    import time\r\n\r\n    for _ in range(10):\r\n        # warmup\r\n        create_from_list()\r\n    start = time.time()\r\n    for _ in range(100):\r\n        create_from_list()\r\n    elapsed_list = (time.time() - start) / 100 * 1000 # ms\r\n\r\n    for _ in range(10):\r\n        create_from_array()\r\n    start = time.time()\r\n    for _ in range(100):\r\n        create_from_array()\r\n    elapsed_array = (time.time() - start) / 100 * 1000 # ms\r\n\r\n    print(f\"{N}\\t{elapsed_list:.3f}\\t{elapsed_array:.3f}\")\r\n```\r\n\r\nThe output is:\r\n\r\n| N       | list to GPU (ms)   | array to GPU (ms)  |\r\n|---------|-----------------|---------------------|\r\n| 100     | 0.020  | 0.016  |\r\n| 1000    | 0.046  | 0.017  |\r\n| 10000   | 0.300  | 0.024  |\r\n| 100000  | 2.793  | 0.071  |\r\n| 1000000 | 27.219 | 0.512  |\r\n\r\nAs we can see, use array to copy to GPU is always faster. When the input is large, the difference is even larger.\r\n\r\nHowever, how can we get an array object? If we do `array_data = array.array('l', list_data)` , it is another copy, and will not give us any benefit.\r\n\r\nThe answer is, we should try to start with `array`, and use `array.append` / `array.extend` to replace `list.append` / `list.extend`. Then, we should replace `torch.tensor(data, dtype=torch.int, device=\"cuda\")` to `torch.frombuffer(data, dtype=torch.int).to(device=\"cuda\")`.\r\n\r\nThis will require rewrite lots of the code in prepare-input and block table preparation, one of the main performance bottleneck.\r\n\r\ncc @comaniac for prepare input\r\ncc @alexm-neuralmagic @cadedaniel  for block manager\n\n### Report of performance regression\n\n_No response_\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\r\nThe output of `python collect_env.py`\r\n```\r\n",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-07-28T23:58:48+00:00",
+    "closed_at": "2024-12-01T02:14:38+00:00",
+    "comments": 19,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/6879/reactions",
+      "total_count": 5,
+      "+1": 2,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 3,
+      "eyes": 0
+    },
+    "author_association": "MEMBER",
+    "html_url": "https://github.com/vllm-project/vllm/issues/6879"
+  }
+}

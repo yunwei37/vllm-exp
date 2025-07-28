@@ -1,0 +1,31 @@
+{
+  "issue_type": "performance",
+  "extracted_from": "/root/yunwei37/vllm-exp/bug-study/analysis_llm/sample_results/vllm/label_based/performance/issues.json",
+  "issue": {
+    "number": 11317,
+    "title": "[Performance]: vllm0.6.5\u52a0\u8f7dGLM4-9B-Chat\uff0c\u52a8\u6001\u52a0\u8f7dlora\uff0c\u8f93\u5165\u957f\u6587\u672c\u65f6\u63a8\u7406\u6027\u80fd\u4e0b\u964d\u8f83\u591a",
+    "body": "### Proposal to improve performance\n\n_No response_\n\n### Report of performance regression\n\n### A800\uff0c\u5355\u5361\u5904\u7406\u5355\u6761\u8bf7\u6c42\r\n1. **vllm0.6.5\u4e0d\u52a0\u8f7dlora**\r\n\uff081\uff09\u542f\u52a8\uff1a\r\nCUDA_VISIBLE_DEVICES=7 python -m vllm.entrypoints.openai.api_server --model /Work/....../glm-4-9b-chat/ --trust-remote-code\r\n\uff082\uff09\u8bf7\u6c42\uff1a\r\nresponse = client.chat.completions.create(\r\n        model='/Work/....../glm-4-9b-chat/',\r\n        messages=messages,\r\n        n=1,\r\n        temperature=0,\r\n        extra_body={\"stop_token_ids\": [151329, 151336, 151338]},\r\n        max_tokens=2048,\r\n        stream=True)\r\n\r\n2. **vllm0.6.5\u52a8\u6001\u52a0\u8f7dlora**\r\n\u3010lora\u6a21\u578b\u4f7f\u7528llama_factory\u6846\u67b6\u8bad\u7ec3\u3011\r\n\uff081\uff09\u542f\u52a8\uff1a\r\nCUDA_VISIBLE_DEVICES=7 python -m vllm.entrypoints.openai.api_server --model /Work/....../glm-4-9b-chat/ --enable-lora --max-loras 10 --lora-modules summary=/Work/....../sft_1218/ --trust-remote-code --max-lora-rank 64\r\n\uff082\uff09\u8bf7\u6c42\uff1a\r\nresponse = client.chat.completions.create(\r\n        model='summary',\r\n        messages=messages,\r\n        n=1,\r\n        temperature=0,\r\n        extra_body={\"stop_token_ids\": [151329, 151336, 151338]},\r\n        max_tokens=2048,\r\n        stream=True)\r\n\r\n**\u6d4b\u8bd5messages\u4e2d\u8f93\u5165\u4e0d\u540c\u957f\u5ea6\u6587\u672c\u65f6\uff0c\u4e0d\u540c\u60c5\u51b5\u4e0b\u7684\u63a8\u7406\u901f\u5ea6\uff1a**\r\n![d2dccaa39734cc6f41449b48aad6a65](https://github.com/user-attachments/assets/c28cbcfb-447b-49b4-972c-00569e52730f)\r\n\u53d1\u73b0\u52a0\u8f7dlora\u540e\uff0c\u8f93\u5165\u6587\u672c\u8f83\u957f\u65f6\uff0c\u63a8\u7406\u901f\u5ea6\u76f8\u6bd4\u4e8e\u4e0d\u52a0\u8f7dlora\u4e0b\u964d\u8f83\u591a\uff0c\u8f93\u5165\u6587\u672c\u8f83\u77ed\u65f6\u4e0b\u964d\u4e0d\u591a\r\n\u8bf7\u95ee\u662f\u4ec0\u4e48\u539f\u56e0\u9020\u6210\u7684\uff0c\u6211\u5e94\u8be5\u5982\u4f55\u89e3\u51b3\uff1f\u8c22\u8c22~\n\n### Misc discussion on performance\n\n_No response_\n\n### Your current environment (if you think it is necessary)\n\n```text\r\nThe output of `python collect_env.py`\r\n```\r\n\n\n### Before submitting a new issue...\n\n- [X] Make sure you already searched for relevant issues, and asked the chatbot living at the bottom right corner of the [documentation page](https://docs.vllm.ai/en/latest/), which can answer lots of frequently asked questions.",
+    "labels": [
+      "performance",
+      "stale"
+    ],
+    "state": "closed",
+    "created_at": "2024-12-19T03:37:08+00:00",
+    "closed_at": "2025-03-21T08:44:54+00:00",
+    "comments": 14,
+    "reactions": {
+      "url": "https://api.github.com/repos/vllm-project/vllm/issues/11317/reactions",
+      "total_count": 0,
+      "+1": 0,
+      "-1": 0,
+      "laugh": 0,
+      "hooray": 0,
+      "confused": 0,
+      "heart": 0,
+      "rocket": 0,
+      "eyes": 0
+    },
+    "author_association": "NONE",
+    "html_url": "https://github.com/vllm-project/vllm/issues/11317"
+  }
+}
