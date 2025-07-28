@@ -2,7 +2,7 @@
 
 ## Abstract
 
-This document presents a comprehensive taxonomy for classifying bugs and performance issues in Large Language Model (LLM) serving systems. The framework provides a systematic approach to categorizing issues across multiple dimensions: root causes, impact levels, and temporal characteristics.
+This document presents a comprehensive taxonomy for classifying bugs and performance issues in Large Language Model (LLM) serving systems. The framework provides a systematic approach to categorizing issues across multiple dimensions: root causes, system layers, impact levels, and temporal characteristics.
 
 ## 1. Introduction
 
@@ -26,7 +26,7 @@ This framework provides a multi-dimensional classification system for understand
 #### 2.1.2 Compute Resource Conflicts
 - **Hardware Capability Mismatches**: Incompatibilities between kernel requirements and GPU compute capabilities
 - **CUDA Kernel Compatibility**: Version-specific CUDA features causing runtime failures
-- **Multi-GPU Synchronization Failures**: Race conditions and deadlocks in distributed inference
+- **Multi-GPU Synchronization Failures**: Coordination problems in distributed inference
 - **CPU Thread Contention**: Excessive thread creation or poor thread pool management
 - **GPU Kernel Launch Failures**: Incorrect grid/block dimensions or resource limits
 - **Tensor Core Utilization**: Inefficient use of specialized hardware units
@@ -122,11 +122,33 @@ This framework provides a multi-dimensional classification system for understand
 - **WebSocket Disconnections**: Persistent connection failures
 - **gRPC/HTTP Errors**: Transport layer protocol issues
 
-## 3. Impact-Based Classification
+## 3. System Layer Classification
 
-### 3.1 System Impact Levels
+### 3.1 Infrastructure Layer
+- **Hardware**: Physical computing resources (CPU, GPU, memory, storage)
+- **Operating System**: Kernel, drivers, system libraries
+- **Container/Virtualization**: Docker, Kubernetes, VMs
 
-#### 3.1.1 Critical Impact
+### 3.2 Framework Layer  
+- **ML Frameworks**: PyTorch, TensorFlow, JAX
+- **CUDA/ROCm Runtime**: GPU computing platforms
+- **Dependencies**: NumPy, Triton, other libraries
+
+### 3.3 Engine Layer
+- **Core Engine**: vLLM, TGI, or other serving engine internals
+- **Memory Management**: KV cache, attention mechanisms
+- **Scheduling**: Request batching, priority queuing
+
+### 3.4 API/Interface Layer
+- **REST/gRPC APIs**: External communication interfaces
+- **Client Libraries**: Language-specific bindings
+- **Protocol Implementation**: OpenAI compatibility, custom protocols
+
+## 4. Impact-Based Classification
+
+### 4.1 System Impact Levels
+
+#### 4.1.1 Critical Impact
 - **Complete System Failure**: Total inability to serve requests
 - **Data Corruption**: Permanent loss or corruption of data
 - **Security Breach**: Unauthorized access or data exposure
@@ -134,7 +156,7 @@ This framework provides a multi-dimensional classification system for understand
 - **Unrecoverable State**: System unable to restart without intervention
 - **Hardware Damage**: Physical damage to computing resources
 
-#### 3.1.2 High Impact
+#### 4.1.2 High Impact
 - **Major Performance Degradation**: 10x or greater slowdown
 - **Service Unavailability**: Temporary inability to serve requests
 - **Large-Scale Errors**: Affecting majority of requests
@@ -142,7 +164,7 @@ This framework provides a multi-dimensional classification system for understand
 - **Resource Deadlock**: System resources permanently blocked
 - **Configuration Corruption**: System settings damaged
 
-#### 3.1.3 Medium Impact
+#### 4.1.3 Medium Impact
 - **Moderate Performance Loss**: 2-10x slowdown
 - **Feature Unavailability**: Specific functionality not working
 - **Intermittent Errors**: Sporadic failures affecting subset of requests
@@ -150,7 +172,7 @@ This framework provides a multi-dimensional classification system for understand
 - **Partial Resource Failure**: Some resources unavailable
 - **Degraded Accuracy**: Reduced model output quality
 
-#### 3.1.4 Low Impact
+#### 4.1.4 Low Impact
 - **Minor Performance Impact**: Less than 2x slowdown
 - **Cosmetic Issues**: UI/UX problems without functional impact
 - **Warning Messages**: Non-critical alerts and notifications
@@ -158,105 +180,106 @@ This framework provides a multi-dimensional classification system for understand
 - **Documentation Gaps**: Missing or unclear documentation
 - **Logging Verbosity**: Excessive or insufficient logging
 
-### 3.2 Scope of Impact
+### 4.2 Scope of Impact
 
-#### 3.2.1 Universal Scope
+#### 4.2.1 Universal Scope
 - **All Deployments Affected**: Issue present in every installation
 - **Platform-Independent**: Occurs across all operating systems and hardware
 - **Model-Agnostic**: Affects all model types and sizes
 - **Version-Independent**: Present in all software versions
 
-#### 3.2.2 Environment-Specific Scope
+#### 4.2.2 Environment-Specific Scope
 - **Hardware-Specific**: Limited to particular GPU/CPU models
 - **OS-Specific**: Only affects certain operating systems
 - **Cloud-Specific**: Issues in particular cloud environments
 - **Network-Specific**: Problems in certain network configurations
 - **Scale-Specific**: Only appears at certain deployment scales
 
-#### 3.2.3 Configuration-Specific Scope
+#### 4.2.3 Configuration-Specific Scope
 - **Model-Specific**: Only affects certain model architectures
 - **Parameter-Specific**: Triggered by specific configuration values
 - **Feature-Specific**: Limited to when certain features are enabled
 - **Version-Specific**: Only present in particular software versions
 - **Language-Specific**: Affects specific programming language bindings
 
-## 4. Temporal Characteristics
+## 5. Temporal Characteristics
 
-### 4.1 Onset Patterns
+### 5.1 Onset Patterns
 
-#### 4.1.1 Immediate Onset
+#### 5.1.1 Immediate Onset
 - **Startup Failures**: Errors during system initialization
 - **First-Request Failures**: Problems on initial request processing
 - **Configuration Errors**: Invalid settings preventing operation
 - **Dependency Missing**: Required components not available
 - **Permission Denied**: Insufficient privileges from start
 
-#### 4.1.2 Delayed Onset
-- **Memory Leaks**: Gradual memory consumption over time
+#### 5.1.2 Delayed Onset
+- **Gradual Resource Depletion**: Resources consumed over time
 - **Performance Degradation**: Slowly decreasing throughput
 - **Cache Pollution**: Performance impact after cache fills
 - **Connection Pool Exhaustion**: Problems after many connections
 - **Log File Growth**: Issues when logs consume disk space
 
-#### 4.1.3 Triggered Onset
+#### 5.1.3 Triggered Onset
 - **Load-Triggered**: Problems appearing under high load
 - **Time-Triggered**: Issues at specific times or intervals
 - **Event-Triggered**: Problems following specific events
 - **Threshold-Triggered**: Issues when limits are exceeded
 - **Sequence-Triggered**: Problems with specific operation sequences
 
-### 4.2 Duration and Persistence
+### 5.2 Duration and Persistence
 
-#### 4.2.1 Transient Issues
+#### 5.2.1 Transient Issues
 - **Self-Recovering**: Problems that resolve automatically
 - **Timeout-Based**: Issues that clear after timeout
 - **Retry-Successful**: Problems solved by retry logic
 - **Load-Dependent**: Issues that disappear with reduced load
 - **Time-Bounded**: Problems with natural expiration
 
-#### 4.2.2 Persistent Issues
+#### 5.2.2 Persistent Issues
 - **Permanent Failures**: Problems requiring manual intervention
 - **State Corruption**: Issues persisting across restarts
 - **Configuration Required**: Problems needing setting changes
 - **Code Fix Required**: Issues needing software updates
 - **Hardware Replacement**: Problems requiring physical changes
 
-#### 4.2.3 Intermittent Issues
+#### 5.2.3 Intermittent Issues
 - **Random Occurrence**: Unpredictable problem manifestation
 - **Heisenbug**: Issues disappearing when investigated
-- **Race Condition**: Timing-dependent problems
+- **Timing-Dependent**: Problems based on specific timing
 - **Environmental**: Issues dependent on external factors
 - **Partial Manifestation**: Problems affecting random subset
 
-### 4.3 Recovery Characteristics
+### 5.3 Recovery Characteristics
 
-#### 4.3.1 Automatic Recovery
+#### 5.3.1 Automatic Recovery
 - **Self-Healing**: System automatically detects and fixes
 - **Failover**: Automatic switch to backup systems
 - **Circuit Breaker**: Temporary isolation of failing components
 - **Retry Logic**: Automatic retry of failed operations
 - **Garbage Collection**: Automatic resource cleanup
 
-#### 4.3.2 Manual Recovery
+#### 5.3.2 Manual Recovery
 - **Restart Required**: System or component restart needed
 - **Reconfiguration**: Settings must be changed
 - **Repair Scripts**: Manual execution of fix procedures
 - **Data Recovery**: Manual restoration from backups
 - **Component Replacement**: Manual swap of failed parts
 
-#### 4.3.3 Recovery Impact
+#### 5.3.3 Recovery Impact
 - **Zero-Downtime**: Recovery without service interruption
 - **Brief Interruption**: Short service unavailability
 - **Extended Downtime**: Long recovery period
 - **Data Loss**: Some data cannot be recovered
 - **Degraded Operation**: Reduced functionality during recovery
 
-## 5. Conclusion
+## 6. Conclusion
 
-This taxonomy provides a comprehensive framework for classifying issues in LLM serving systems across three key dimensions:
+This taxonomy provides a comprehensive framework for classifying issues in LLM serving systems across four key dimensions:
 
 1. **Root Causes**: Understanding the fundamental source of problems
-2. **Impact Levels**: Assessing the severity and scope of issues  
-3. **Temporal Patterns**: Characterizing how issues manifest over time
+2. **System Layers**: Identifying where in the stack issues occur
+3. **Impact Levels**: Assessing the severity and scope of issues  
+4. **Temporal Patterns**: Characterizing how issues manifest over time
 
 By applying this classification system, teams can better understand, prioritize, and resolve issues in their LLM serving deployments.
